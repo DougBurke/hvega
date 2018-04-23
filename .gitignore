@@ -1,0 +1,5 @@
+*~
+dist/
+dist-newstyle/
+.stack-work/
+.ipynb_checkpoints/
