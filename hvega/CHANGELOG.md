@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.1.0.2
+
+Updated the upper bounds of `aeson` to really allow v1.4.
+
 ## 0.1.0.1
 
 Updated the upper bounds of `aeson` from v1.2 to v1.4.

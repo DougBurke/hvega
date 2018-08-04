@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.1.0.2
+
+Updated the upper bounds of `aeson` to really allow v1.4.
+
 ## 0.1.0.1
 
 The source code has been moved to the `src` sub-directory to match the

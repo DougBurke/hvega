@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.1.0.1
+version:             0.1.0.2
 synopsis:            Create Vega and Vega-Lite visualizations.
 description:         This is an almost-direct port of elm-vega
                      (<http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1>)
@@ -25,7 +25,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
   build-depends:       base >= 4.7 && < 5
-                     , aeson >= 0.11 && < 1.4
+                     , aeson >= 0.11 && < 1.5
                      , text == 1.2.*
                      , vector >= 0.11 && < 0.13
                      
