@@ -1,9 +1,15 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.1.0.3
+
+The only change is to the cabal file, where `cabal-version: >=1.18` has
+been changed to `cabal-version: 1.18`.
+
 ## 0.1.0.2
 
-Updated the upper bounds of `aeson` to really allow v1.4.
+Updated the upper bounds of `aeson` to really allow v1.4. This was not
+released on Hackage.
 
 ## 0.1.0.1
 

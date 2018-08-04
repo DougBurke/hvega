@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.1.0.2
+version:             0.1.0.3
 synopsis:            Create Vega and Vega-Lite visualizations.
 description:         This is an almost-direct port of elm-vega
                      (<http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1>)
@@ -19,7 +19,7 @@ extra-source-files:  README.md
                      default.nix
 extra-doc-files:     images/example.png
                      images/intro.png
-cabal-version:       >=1.18
+cabal-version:       1.18
 
 library
   hs-source-dirs:      src

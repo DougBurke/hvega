@@ -1,5 +1,5 @@
 name:                ihaskell-hvega
-version:             0.1.0.2
+version:             0.1.0.3
 synopsis:            IHaskell display instance for hvega types.
 description:         Support Vega-Lite visualizations in IHaskell notebooks.
 homepage:            https://github.com/DougBurke/hvega
@@ -15,7 +15,7 @@ extra-source-files:  README.md
                      CHANGELOG.md
                      stack.yaml
                      default.nix
-cabal-version:       >=1.10
+cabal-version:       1.18
 
 library
   hs-source-dirs:      src
