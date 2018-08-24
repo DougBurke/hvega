@@ -1,20 +1,51 @@
 let
-  pkgs = ./nixpkgs ;
-  fetchOverlay = self: super:
-    { fetch = path:
+  fetch = package:
+    let
+      versions = builtins.fromJSON (builtins.readFile ./versions.json);
+      spec = versions.${package};
+      fetchTarball =
+        # fetchTarball version that is compatible between all the versions of
+        # Nix
+        { url, sha256 }@attrs:
         let
-          dropBranch = {...}@attrs:
-            { inherit (attrs) rev sha256 owner repo; };
-          fullSpec = (builtins.fromJSON (builtins.readFile path));
-        in self.fetchFromGitHub (dropBranch fullSpec);
-    };
+          inherit (builtins) lessThan nixVersion fetchTarball;
+        in
+          if lessThan nixVersion "1.12" then
+            fetchTarball { inherit url; }
+          else
+            fetchTarball attrs;
+    in
+      fetchTarball {
+        url =
+          with spec;
+          "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
+        sha256 = spec.sha256;
+      };
+in { nixpkgs ? fetch "nixpkgs" }: import nixpkgs {
+  config = {};
+  overlays =
+    [
+      (self: super:
+        { haskellPackages =
+            super.haskellPackages.extend
+              (super.haskell.lib.packageSourceOverrides
+                { hvega = self.lib.cleanSource ../hvega;
+                  ihaskell-hvega = self.lib.cleanSource ../ihaskell-hvega;
+                }
+              );
+        }
+      )
 
-  extra =
-    { overlays =
-        [
-          fetchOverlay
-          (import ./haskellPackages/overlay.nix)
-          (import ./ihaskell/overlay.nix)
-        ];
-    };
-in import pkgs extra
+      (self: super:
+        { ihaskellWithPackages = ps:
+            self.callPackage
+              "${self.path}/pkgs/development/tools/haskell/ihaskell/wrapper.nix"
+              {
+                ghcWithPackages = self.haskellPackages.ghcWithPackages;
+                jupyter = self.python3.withPackages (ps: [ ps.jupyter ps.notebook ]);
+                packages = ps;
+              };
+        }
+      )
+    ];
+  }
