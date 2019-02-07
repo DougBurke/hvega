@@ -167,6 +167,7 @@ module Graphics.Vega.VegaLite
        , MarkProperty(..)
        , MarkOrientation(..)
        , MarkInterpolation(..)
+       , MarkErrorExtent(..)
        , Symbol(..)
        , Cursor(..)
 
@@ -1200,6 +1201,8 @@ data Mark
     = Area
     | Bar
     | Circle
+    | ErrorBar
+    | ErrorBand
     | Geoshape
     | Line
     | Point
@@ -1211,17 +1214,19 @@ data Mark
 
 
 markLabel :: Mark -> T.Text
-markLabel Area     = "area"
-markLabel Bar      = "bar"
-markLabel Circle   = "circle"
-markLabel Line     = "line"
+markLabel Area = "area"
+markLabel Bar = "bar"
+markLabel Circle = "circle"
+markLabel ErrorBar = "errorbar"
+markLabel ErrorBand = "errorband"
+markLabel Line = "line"
 markLabel Geoshape = "geoshape"
-markLabel Point    = "point"
-markLabel Rect     = "rect"
-markLabel Rule     = "rule"
-markLabel Square   = "square"
-markLabel Text     = "text"
-markLabel Tick     = "tick"
+markLabel Point = "point"
+markLabel Rect = "rect"
+markLabel Rule = "rule"
+markLabel Square = "square"
+markLabel Text = "text"
+markLabel Tick = "tick"
 
 
 {-|
@@ -1311,6 +1316,7 @@ data MarkProperty
     | MBandSize Double
     | MBaseline VAlign
     | MBinSpacing Double
+    | MBorders Bool
     | MClip Bool
     | MColor T.Text
     | MCursor Cursor
@@ -1318,6 +1324,7 @@ data MarkProperty
     | MDiscreteBandSize Double
     | MdX Double
     | MdY Double
+    | MExtent MarkErrorExtent
     | MFill T.Text
     | MFilled Bool
     | MFillOpacity Double
@@ -1343,7 +1350,6 @@ data MarkProperty
     | MTheta Double
     | MThickness Double
 
-
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = ("filled", toJSON b)
 markProperty (MClip b) = ("clip", toJSON b)
@@ -1368,6 +1374,7 @@ markProperty (MAlign align) = ("align", toJSON (hAlignLabel align))
 markProperty (MBaseline va) = ("baseline", toJSON (vAlignLabel va))
 markProperty (MdX dx) = ("dx", toJSON dx)
 markProperty (MdY dy) = ("dy", toJSON dy)
+markProperty (MExtent mee) = ("extent", toJSON (markErrorExtentLabel mee))
 markProperty (MFont fnt) = ("font", toJSON fnt)
 markProperty (MFontSize x) = ("fontSize", toJSON x)
 markProperty (MFontStyle fSty) = ("fontStyle", toJSON fSty)
@@ -1381,7 +1388,7 @@ markProperty (MDiscreteBandSize x) = ("discreteBandSize", toJSON x)
 markProperty (MShortTimeLabels b) = ("shortTimeLabels", toJSON b)
 markProperty (MBandSize x) = ("bandSize", toJSON x)
 markProperty (MThickness x) = ("thickness", toJSON x)
-
+markProperty (MBorders b) = ("borders", toJSON b)
 
 {-|
 
@@ -2355,6 +2362,20 @@ data MarkOrientation
 markOrientationLabel :: MarkOrientation -> T.Text
 markOrientationLabel Horizontal = "horizontal"
 markOrientationLabel Vertical = "vertical"
+
+
+data MarkErrorExtent
+  = ConfidenceInterval
+  | StdErr
+  | StdDev
+  | Iqr
+
+
+markErrorExtentLabel :: MarkErrorExtent -> T.Text
+markErrorExtentLabel ConfidenceInterval = "ci"
+markErrorExtentLabel StdErr             = "stderr"
+markErrorExtentLabel StdDev             = "stddev"
+markErrorExtentLabel Iqr                = "iqr"
 
 
 -- | Identifies the type of symbol.
