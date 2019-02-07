@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-
+{-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
 {-|
 Module      : Graphics.Vega.VegaLite
 Copyright   : (c) Douglas Burke, 2018-2019
@@ -362,7 +362,7 @@ import qualified Data.Vector as V
 import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
-import Data.Aeson ((.=), Value, decode, encode, object, toJSON)
+import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Monoid ((<>))
 
@@ -1211,17 +1211,17 @@ data Mark
 
 
 markLabel :: Mark -> T.Text
-markLabel Area = "area"
-markLabel Bar = "bar"
-markLabel Circle = "circle"
-markLabel Line = "line"
+markLabel Area     = "area"
+markLabel Bar      = "bar"
+markLabel Circle   = "circle"
+markLabel Line     = "line"
 markLabel Geoshape = "geoshape"
-markLabel Point = "point"
-markLabel Rect = "rect"
-markLabel Rule = "rule"
-markLabel Square = "square"
-markLabel Text = "text"
-markLabel Tick = "tick"
+markLabel Point    = "point"
+markLabel Rect     = "rect"
+markLabel Rule     = "rule"
+markLabel Square   = "square"
+markLabel Text     = "text"
+markLabel Tick     = "tick"
 
 
 {-|
@@ -1833,22 +1833,22 @@ positionChannelProperty (PStack sp) = stackProperty sp
 
 
 measurementLabel :: Measurement -> T.Text
-measurementLabel Nominal = "nominal"
-measurementLabel Ordinal = "ordinal"
+measurementLabel Nominal      = "nominal"
+measurementLabel Ordinal      = "ordinal"
 measurementLabel Quantitative = "quantitative"
-measurementLabel Temporal = "temporal"
-measurementLabel GeoFeature = "geojson"
+measurementLabel Temporal     = "temporal"
+measurementLabel GeoFeature   = "geojson"
 
 
 positionLabel :: Position -> T.Text
-positionLabel X = "x"
-positionLabel Y = "y"
-positionLabel X2 = "x2"
-positionLabel Y2 = "y2"
-positionLabel Longitude = "longitude"
-positionLabel Latitude = "latitude"
+positionLabel X          = "x"
+positionLabel Y          = "y"
+positionLabel X2         = "x2"
+positionLabel Y2         = "y2"
+positionLabel Longitude  = "longitude"
+positionLabel Latitude   = "latitude"
 positionLabel Longitude2 = "longitude2"
-positionLabel Latitude2 = "latitude2"
+positionLabel Latitude2  = "latitude2"
 
 
 {-|
