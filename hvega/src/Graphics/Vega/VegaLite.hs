@@ -3,12 +3,12 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite
-Copyright   : (c) Douglas Burke, 2018
+Copyright   : (c) Douglas Burke, 2018-2019
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : Requires OverloadedStrings, TupleSections
+Portability : OverloadedStrings, TupleSections
 
 This is essentially a straight port of the 
 <http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite Elm Vega Lite module>
@@ -27,27 +27,52 @@ changes to the exported types and symbols (e.g. 'Utc' is exported rather than
 @utc@ and @bin@ is not exported). 
 
 Note that this module exports several symbols that are exported
-by the Prelude, namely 'Left', 'Right', 'filter', 'lookup',
-and 'repeat'.
+by the Prelude, namely 'filter', 'lookup',
+and 'repeat'; to avoid name clashes it's therefore advised
+to either import the module qualified, for example:
+
+@
+import qualified Graphics.Vega.VegaLite as VL
+@
+
+or to hide the clashing names explicitly:
+
+@
+import Prelude hiding (filter, lookup)
+@
+
+In the following example, we'll assume the latter.
 
 == Example
 
-@
-let desc = "A very exciting bar chart"
+Let's say we have the following plot declaration in a module:
 
-    dat = dataFromRows [Parse [("start", FoDate "%Y-%m-%d")]]
-          . dataRow [("start", Str "2011-03-25"), ("count", Number 23)]
+@
+\{\-\# language OverloadedStrings \#\-\}
+
+vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', 'enc' []] where
+    desc = "A very exciting bar chart"
+
+    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
+          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
           . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
           . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
 
-    barOpts = [MOpacity 0.4, MColor "teal"]
+    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
 
-    enc = encoding
-          . position X [PName "start", PmType Temporal, PAxis [AxTitle "Inception date"]]
+    enc = 'encoding'
+          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
           . position Y [PName "count", PmType Quantitative]
-
-    in toVegaLite [description desc, background "white", dat [], mark Bar barOpts, enc []]
 @
+
+We can inspect how the encoded JSON looks like in an GHCi session:
+
+@
+> 'A.encode' $ 'fromVL' vl1
+> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v2.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
+@
+
+The produced JSON can then be processed with vega-lite, which renders the following image :
 
 <<images/example.png>>
 
@@ -320,7 +345,7 @@ module Graphics.Vega.VegaLite
     where
 
 -- VegaLite uses these symbols.
-import Prelude hiding (Either(..), filter, lookup, repeat)
+import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Text as T
@@ -443,7 +468,6 @@ import Data.Monoid ((<>))
 --
 -- For details, see the
 -- <https://vega.github.io/vega-lite/docs/condition.html Vega-Lite documentation>.
-
 
 --- helpers not in VegaLite.elm
 
@@ -2463,23 +2487,23 @@ for more details.
 -}
 
 data LegendOrientation
-    = BottomLeft
-    | BottomRight
-    | Left
-    | None
-    | Right
-    | TopLeft
-    | TopRight
+    = LOBottomLeft
+    | LOBottomRight
+    | LOLeft
+    | LONone
+    | LORight
+    | LOTopLeft
+    | LOTopRight
 
 
 legendOrientLabel :: LegendOrientation -> T.Text
-legendOrientLabel Left = "left"
-legendOrientLabel BottomLeft = "bottom-left"
-legendOrientLabel BottomRight = "bottom-right"
-legendOrientLabel Right = "right"
-legendOrientLabel TopLeft = "top-left"
-legendOrientLabel TopRight = "top-right"
-legendOrientLabel None = "none"
+legendOrientLabel LOLeft = "left"
+legendOrientLabel LOBottomLeft = "bottom-left"
+legendOrientLabel LOBottomRight = "bottom-right"
+legendOrientLabel LORight = "right"
+legendOrientLabel LOTopLeft = "top-left"
+legendOrientLabel LOTopRight = "top-right"
+legendOrientLabel LONone = "none"
 
 
 {-|
