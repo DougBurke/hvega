@@ -3,9 +3,13 @@ For the latest version of this document, please see
 
 ## 0.2
 
-Rename Left and Right constructors to avoid name clashes (breaking API change).
+The constructors for the LegendOrientation type have been renamed (by
+adding the prefix `LO`) which avoids the name clash with `Left` and `Right`
+seen in earlier releases. This is a breaking API change.
 
 Clarify how to use the library in the main `hvega` module.
+
+Thanks to contributions from Nicolas Mattia (nmattia) and Marco Zocca (ocramz).
 
 ## 0.1.0.3
 
