@@ -8,7 +8,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings, TupleSections, DeriveGeneric
+Portability : OverloadedStrings, TupleSections
 
 This is essentially a straight port of the 
 <http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite Elm Vega Lite module>
@@ -45,6 +45,8 @@ In the following example, we'll assume the latter.
 
 == Example
 
+Let's say we have the following plot declaration in a module:
+
 @
 \{\-\# language OverloadedStrings \#\-\}
 
@@ -62,6 +64,8 @@ vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' '
           . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
           . position Y [PName "count", PmType Quantitative]
 @
+
+We can inspect how the encoded JSON looks like in an GHCi session:
 
 @
 > 'A.encode' $ 'fromVL' vl1
