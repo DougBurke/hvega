@@ -1,6 +1,6 @@
 name:                hvega
-version:             0.2
-synopsis:            Create Vega and Vega-Lite visualizations.
+version:             0.2.0.0
+synopsis:            Create Vega-Lite visualizations in Haskell.
 description:         This is an almost-direct port of elm-vega
                      (<http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1>)
                      to Haskell.

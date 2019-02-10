@@ -1,7 +1,7 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
-## 0.2
+## 0.2.0.0
 
 The constructors for the LegendOrientation type have been renamed (by
 adding the prefix `LO`) which avoids the name clash with `Left` and `Right`
