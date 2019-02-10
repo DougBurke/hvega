@@ -519,7 +519,7 @@ newtype VegaLite =
   -- the Vega Lite schema. That is, it is possible to create an invalid visualization
   -- with this module (e.g. missing a data source or referring to an undefined
   -- field).
-  } 
+  }
 
 -- | The specification is represented as JSON.
 type VLSpec = Value
