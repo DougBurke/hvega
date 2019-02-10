@@ -26,9 +26,6 @@ There is also a `shell.nix` file for development with
 [Nix](https://nixos.org/nix/), although this is not guaranteed to work
 as I have not yet fully integrated Nix into my life.
 
-Hopefully it will appear on Stackage soon (see
-[issue #2](https://github.com/DougBurke/hvega/issues/2)).
-
 # Testing
 
 This would be nice. The IHaskell notebook

@@ -1,14 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
+{-# LANGUAGE DeriveGeneric #-}
 
 {-|
 Module      : Graphics.Vega.VegaLite
-Copyright   : (c) Douglas Burke, 2018
+Copyright   : (c) Douglas Burke, 2018-2019
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : Requires OverloadedStrings, TupleSections
+Portability : OverloadedStrings, TupleSections, DeriveGeneric
 
 This is essentially a straight port of the 
 <http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite Elm Vega Lite module>
@@ -27,8 +28,21 @@ changes to the exported types and symbols (e.g. 'Utc' is exported rather than
 @utc@ and @bin@ is not exported). 
 
 Note that this module exports several symbols that are exported
-by the Prelude, namely 'Left', 'Right', 'filter', 'lookup',
-and 'repeat'.
+by the Prelude, namely 'filter', 'lookup',
+and 'repeat'; to avoid name clashes it's therefore advised
+to either import the module qualified, for example:
+
+@
+import qualified Graphics.Vega.VegaLite as VL
+@
+
+or to hide the clashing names explicitly:
+
+@
+import Prelude hiding (filter, lookup)
+@
+
+In the following example, we'll assume the latter.
 
 == Example
 
@@ -320,12 +334,12 @@ module Graphics.Vega.VegaLite
     where
 
 -- VegaLite uses these symbols.
-import Prelude hiding (Either(..), filter, lookup, repeat)
+import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Text as T
 import qualified Data.Vector as V
-
+import qualified GHC.Generics as G
 import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
@@ -495,7 +509,9 @@ newtype VegaLite =
   -- the Vega Lite schema. That is, it is possible to create an invalid visualization
   -- with this module (e.g. missing a data source or referring to an undefined
   -- field).
-  }
+  } deriving (G.Generic)
+
+instance A.ToJSON VegaLite
 
 -- | The specification is represented as JSON.
 type VLSpec = Value
@@ -2463,23 +2479,23 @@ for more details.
 -}
 
 data LegendOrientation
-    = BottomLeft
-    | BottomRight
-    | Left
-    | None
-    | Right
-    | TopLeft
-    | TopRight
+    = LOBottomLeft
+    | LOBottomRight
+    | LOLeft
+    | LONone
+    | LORight
+    | LOTopLeft
+    | LOTopRight
 
 
 legendOrientLabel :: LegendOrientation -> T.Text
-legendOrientLabel Left = "left"
-legendOrientLabel BottomLeft = "bottom-left"
-legendOrientLabel BottomRight = "bottom-right"
-legendOrientLabel Right = "right"
-legendOrientLabel TopLeft = "top-left"
-legendOrientLabel TopRight = "top-right"
-legendOrientLabel None = "none"
+legendOrientLabel LOLeft = "left"
+legendOrientLabel LOBottomLeft = "bottom-left"
+legendOrientLabel LOBottomRight = "bottom-right"
+legendOrientLabel LORight = "right"
+legendOrientLabel LOTopLeft = "top-left"
+legendOrientLabel LOTopRight = "top-right"
+legendOrientLabel LONone = "none"
 
 
 {-|
