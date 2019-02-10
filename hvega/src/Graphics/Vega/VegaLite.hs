@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-{-# LANGUAGE DeriveGeneric #-}
 
 {-|
 Module      : Graphics.Vega.VegaLite
@@ -47,21 +46,29 @@ In the following example, we'll assume the latter.
 == Example
 
 @
-let desc = "A very exciting bar chart"
+\{\-\# language OverloadedStrings \#\-\}
 
-    dat = dataFromRows [Parse [("start", FoDate "%Y-%m-%d")]]
-          . dataRow [("start", Str "2011-03-25"), ("count", Number 23)]
+vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', 'enc' []] where
+    desc = "A very exciting bar chart"
+
+    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
+          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
           . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
           . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
 
-    barOpts = [MOpacity 0.4, MColor "teal"]
+    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
 
-    enc = encoding
-          . position X [PName "start", PmType Temporal, PAxis [AxTitle "Inception date"]]
+    enc = 'encoding'
+          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
           . position Y [PName "count", PmType Quantitative]
-
-    in toVegaLite [description desc, background "white", dat [], mark Bar barOpts, enc []]
 @
+
+@
+> 'A.encode' $ 'fromVL' vl1
+> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v2.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
+@
+
+The produced JSON can then be processed with vega-lite, which renders the following image :
 
 <<images/example.png>>
 
@@ -339,7 +346,7 @@ import Prelude hiding (filter, lookup, repeat)
 import qualified Data.Aeson as A
 import qualified Data.Text as T
 import qualified Data.Vector as V
-import qualified GHC.Generics as G
+
 import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
@@ -458,7 +465,6 @@ import Data.Monoid ((<>))
 -- For details, see the
 -- <https://vega.github.io/vega-lite/docs/condition.html Vega-Lite documentation>.
 
-
 --- helpers not in VegaLite.elm
 
 aggregate_ :: Operation -> LabelledSpec
@@ -509,9 +515,7 @@ newtype VegaLite =
   -- the Vega Lite schema. That is, it is possible to create an invalid visualization
   -- with this module (e.g. missing a data source or referring to an undefined
   -- field).
-  } deriving (G.Generic)
-
-instance A.ToJSON VegaLite
+  } 
 
 -- | The specification is represented as JSON.
 type VLSpec = Value

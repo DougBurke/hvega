@@ -3,8 +3,6 @@ For the latest version of this document, please see
 
 ## 0.2
 
-The VegaLite type now has a Generic and ToJSON instance, making it immediate to render plot data as JSON.
-
 Rename Left and Right constructors to avoid name clashes (breaking API change).
 
 Clarify how to use the library in the main `hvega` module.
