@@ -2363,7 +2363,12 @@ markOrientationLabel :: MarkOrientation -> T.Text
 markOrientationLabel Horizontal = "horizontal"
 markOrientationLabel Vertical = "vertical"
 
+{-|
 
+Indicates the extent of the rule used for the error bar.  See
+<https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
+for details.
+-}
 data MarkErrorExtent
   = ConfidenceInterval
   | StdErr
