@@ -36,6 +36,26 @@ in { nixpkgs ? fetch "nixpkgs" }: import nixpkgs {
         }
       )
 
+      # can I over-ride zeromq4 because of its test failures
+      # https://gitlab.com/twittner/zeromq-haskell/issues/63
+      #
+      (self: super:
+        { haskellPackages =
+	    super.haskellPackages.extend
+	      (super.haskell.lib.packageSourceOverrides
+	        {
+		  zeromq4-haskell = self.fetchFromGitLab {
+		    owner = "twittner";
+		    repo = "zeromq-haskell";
+		    domain = "gitlab.com";
+		    rev = "3ba947586baf44dc8c2acc03bd81c3a8dd9bf18c";
+		    sha256 = "05x74h8pniclgqak8pvlv5hjhm124xglri1xwc49lv43z3z1c4qh";
+		  };
+		}
+	      );
+	 }
+      )
+
       (self: super:
         { ihaskellWithPackages = ps:
             self.callPackage
@@ -44,7 +64,7 @@ in { nixpkgs ? fetch "nixpkgs" }: import nixpkgs {
                 ghcWithPackages = self.haskellPackages.ghcWithPackages;
                 jupyter = self.python3.withPackages (ps: [ ps.jupyter ps.notebook ]);
                 packages = ps;
-              };
+	      };
         }
       )
     ];

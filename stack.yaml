@@ -4,4 +4,7 @@ packages:
 - hvega/
 - ihaskell-hvega/
 
-resolver: lts-11.19
+extra-deps:
+- ihaskell-0.9.1.0
+
+resolver: lts-12.26
