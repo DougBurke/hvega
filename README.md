@@ -32,6 +32,10 @@ This would be nice. The IHaskell notebook
 `notebooks/VegaLiteGallery.ipynb` is used as a manual test case, but
 automated tests would be ideal.
 
+The `notebooks/` directory also contains an example notebook for
+Jupyter Lab support, `notebooks/vegalite.ipynb`, which can be used
+with [Tweag's jupyterWith environment](https://github.com/tweag/jupyterWith).
+
 There is also a
 [Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb).
 

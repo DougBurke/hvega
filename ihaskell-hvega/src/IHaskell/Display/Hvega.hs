@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
-Module      : IHaskell.Display.HvegaLab
+Module      : IHaskell.Display.Hvega
 Copyright   : (c) Douglas Burke 2018, 2019
 License     : BSD3
 
@@ -42,9 +42,9 @@ vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' '
 
 then it can be displayed automatically in Jupyter Lab by
 
-> import IHaskell.Display.HvegaLab (vlShow)
 > vlShow vl1
 
+where @vlShow@ should be imported automatically by IHaskell.
 -}
 
 module IHaskell.Display.Hvega (vlShow) where
