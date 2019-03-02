@@ -44,11 +44,12 @@ vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' '
 
 then it can be displayed automatically in Jupyter Lab by
 
-> vl1
+> import IHaskell.Display.HvegaLab
+> vlShow vl1
 
 -}
 
-module IHaskell.Display.HvegaLab where
+module IHaskell.Display.HvegaLab (vlShow) where
 
 import qualified Data.Text.Lazy as LT
 
@@ -58,6 +59,20 @@ import Graphics.Vega.VegaLite (VegaLite, fromVL)
 
 import IHaskell.Display (IHaskellDisplay(..), Display(..), vegalite)
 
+-- | A wrapper around 'VegaLite' so that we can write a 'Display'
+--   instance for JupyterLab and not end up with "overlapping
+--   instances".
+--
+--   Is there a better way to do this (other than drop support for
+--   Jupyter notebook users)?
+--
+newtype VegaLiteLab = VLL VegaLite
+
+-- | Convert a VegaLite visualization so that it can be auto-displayed
+--   in Jupyter Lab.
+--
+vlShow :: VegaLite -> VegaLiteLab
+vlShow = VLL
 
 -- ^ Display Vega-Lite visualizations in an IHaskell notebook when
 --   using Jupyter Lab.
@@ -69,7 +84,11 @@ import IHaskell.Display (IHaskellDisplay(..), Display(..), vegalite)
 --   @dataFromUrl@ where the file name refers to a local file -
 --   since the JavaScript @fs@ module may not be loaded.
 --
-instance IHaskellDisplay VegaLite where
-  display vl = let js = LT.unpack (encodeToLazyText (fromVL vl))
-               in pure (Display [vegalite js])
+--   It would be nice to create a PNG version for non-browser viewers,
+--   but I am not sure how to get Jupyter to do this (and if it would
+--   even do what I hope it does).
+--
+instance IHaskellDisplay VegaLiteLab where
+  display (VLL vl) = let js = LT.unpack (encodeToLazyText (fromVL vl))
+                     in pure (Display [vegalite js])
   
