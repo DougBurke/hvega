@@ -3,9 +3,9 @@ For the latest version of this document, please see
 
 ## 0.2.0.0
 
-Added the `IHaskell.Display.HvegaLab` module for use with Jupyter Lab,
-which has native VegaLite support. It requires the use of the `vlShow`
-helper (needed to avoid an overlapping instance from `IHaskell.Display.Hveva`).
+Added the `vlShow` helper to allow Vega-Lite visualizations to be
+viewed directly in Jupyter lab (rather than Jupyter notebook).
+
 Try it out in [Tweag's jupyterWith environment](https://github.com/tweag/jupyterWith).
 
 ## 0.1.0.3

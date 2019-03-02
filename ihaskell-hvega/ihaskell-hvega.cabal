@@ -20,7 +20,6 @@ cabal-version:       1.18
 library
   hs-source-dirs:      src
   exposed-modules:     IHaskell.Display.Hvega
-                       IHaskell.Display.HvegaLab
   build-depends:       base >= 4.7 && < 5
                      , aeson >= 0.11 && < 1.5
                      , hvega < 0.3
