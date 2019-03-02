@@ -1,5 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+{-|
+Module      : IHaskell.Display.HvegaLab
+Copyright   : (c) Douglas Burke 2018, 2019
+License     : BSD3
+
+Maintainer  : dburke.gw@gmail.com
+Stability   : unstable
+Portability : OverloadedStrings
+
+Allow VegaLite visualizations to be displayed directly in Jupyter notebooks.
+There is also @IHaskell.Display.HvegaLab@ which is for Jupyter Lab,
+and it is suggested that you migrate to that environment, since Jupyter Lab
+has in-built support for Vega and Vega-Lite visualizations.
+
+Jupyter Lab can be installed with nix using the
+<https://github.com/tweag/jupyterWith jupyterWith> setup.
+
+-}
+
 module IHaskell.Display.Hvega where
 
 import qualified Data.Text.Lazy as LT
