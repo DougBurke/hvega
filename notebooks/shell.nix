@@ -37,12 +37,13 @@ let
   iHaskell = jupyter.kernels.iHaskellWith {
     name = "haskell";
     haskellPackages = haskellPackages;
-    packages = p: with p; [ hvega ihaskell-hvega formatting ];
+    packages = p: with p; [ hvega ihaskell-hvega aeson aeson-pretty formatting ];
   };
 
   jupyterEnvironment =
     jupyter.jupyterlabWith {
-      kernels = [ iPython iHaskell ];
+      # kernels = [ iPython iHaskell ];
+      kernels = [ iHaskell ];
     };
 in
   jupyterEnvironment.env
