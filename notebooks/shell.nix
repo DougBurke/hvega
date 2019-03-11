@@ -25,7 +25,7 @@ let
 
   hvegaDir = hvegaSource + "/hvega";
   ihaskellvegaDir = hvegaSource + "/ihaskell-hvega";
-  
+
   haskellPackages = pkgs.haskellPackages.override (old: {
     overrides = pkgs.lib.composeExtensions old.overrides
       (self: ps: {
@@ -33,13 +33,15 @@ let
         ihaskell-hvega = ps.callCabal2nix "ihaskell-hvega" ihaskellvegaDir {};
       });
     });
-    
+
   iHaskell = jupyter.kernels.iHaskellWith {
     name = "haskell";
     haskellPackages = haskellPackages;
-    packages = p: with p; [ hvega ihaskell-hvega aeson aeson-pretty formatting ];
+    packages = p: with p; [ hvega ihaskell-hvega aeson aeson-pretty Frames foldl formatting microlens ];
   };
 
+  # For now exclude iPython
+  #
   jupyterEnvironment =
     jupyter.jupyterlabWith {
       # kernels = [ iPython iHaskell ];
