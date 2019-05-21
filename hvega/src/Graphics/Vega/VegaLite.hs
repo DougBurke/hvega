@@ -2870,6 +2870,8 @@ data Channel
     | ChX2
     | ChY2
     | ChColor
+    | ChFill
+    | ChStroke
     | ChOpacity
     | ChShape
     | ChSize
@@ -2881,6 +2883,8 @@ channelLabel ChY = "y"
 channelLabel ChX2 = "x2"
 channelLabel ChY2 = "y2"
 channelLabel ChColor = "color"
+channelLabel ChFill = "fill"
+channelLabel ChStroke = "stroke"
 channelLabel ChOpacity = "opacity"
 channelLabel ChShape = "shape"
 channelLabel ChSize = "size"
