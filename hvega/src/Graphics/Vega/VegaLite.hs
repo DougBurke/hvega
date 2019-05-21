@@ -10,7 +10,7 @@ Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
 Portability : OverloadedStrings, TupleSections
 
-This is essentially a straight port of the 
+This is essentially a straight port of the
 <http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite Elm Vega Lite module>
 (version 2.2.1).
 It allows users to create a Vega-Lite specification, targeting
@@ -24,7 +24,7 @@ the full Vega-Lite specification - that is, the return value of
 'toVegaLite' - is not a 'VLSpec' (an alias for 'Data.Aeson.Value')
 but is instead a newtype around this ('VegaLite'). There are also some minor
 changes to the exported types and symbols (e.g. 'Utc' is exported rather than
-@utc@ and @bin@ is not exported). 
+@utc@ and @bin@ is not exported).
 
 Note that this module exports several symbols that are exported
 by the Prelude, namely 'filter', 'lookup',
@@ -86,7 +86,7 @@ module Graphics.Vega.VegaLite
        , fromVL
        , VLProperty
        , VLSpec
-       , VegaLite 
+       , VegaLite
        , LabelledSpec
        , BuildLabelledSpecs
        , combineSpecs
@@ -95,7 +95,7 @@ module Graphics.Vega.VegaLite
          --
          -- Functions and types for declaring the input data to the
          -- visualization.
-         
+
        , dataFromUrl
        , dataFromColumns
        , dataFromRows
@@ -119,15 +119,15 @@ module Graphics.Vega.VegaLite
          -- Functions and types for declaring the transformation rules that
          -- are applied to data fields or geospatial coordinates before they
          -- are encoded visually.
-         
+
        , transform
        , projection
        , ProjectionProperty(..)
        , Projection(..)
        , ClipRect(..)
-         
+
          -- ** Aggregation
-         
+
        , aggregate
        , Operation(..)
        , opAs
@@ -137,7 +137,7 @@ module Graphics.Vega.VegaLite
 
        , binAs
        , BinProperty(..)
-         
+
          -- ** Data Calculation
 
        , calculateAs
@@ -169,7 +169,7 @@ module Graphics.Vega.VegaLite
          -- * Creating the Encoding Specification
          --
          -- $encoding
-         
+
        , encoding
        , Measurement(..)
 
@@ -189,7 +189,7 @@ module Graphics.Vega.VegaLite
        , VAlign(..)
        , FontWeight(..)
        , TimeUnit(..)
-         
+
          -- ** Mark channels
          --
          -- Control the appearance of the visual marks in the visualization
@@ -214,11 +214,11 @@ module Graphics.Vega.VegaLite
        , text
        , tooltip
        , TextChannel(..)
-         
+
          -- ** Hyperlink Channels
          --
          -- $hyperlink
-         
+
        , hyperlink
        , HyperlinkChannel(..)
 
@@ -235,11 +235,11 @@ module Graphics.Vega.VegaLite
 
        , row
        , column
-         
+
          -- ** Level of detail Channel
          --
          -- $detail
-         
+
        , detail
        , DetailChannel(..)
 
@@ -255,7 +255,7 @@ module Graphics.Vega.VegaLite
        , ScaleRange(..)
        , ScaleNice(..)
        , CInterpolate(..)
-         
+
          -- * Creating view compositions
          --
          -- $view
@@ -329,7 +329,7 @@ module Graphics.Vega.VegaLite
        , ViewConfig(..)
        , RangeConfig(..)
        , FieldTitleProperty(..)
-         
+
          -- * General Data types
          --
          -- In addition to more general data types like integers and string, the following types
@@ -559,7 +559,7 @@ toVegaLite vals =
   let kvals = ("$schema" .= vlSchemaName)
               : map toProp vals
       toProp = first vlPropertyLabel
-      
+
   in VL { fromVL = object kvals }
 
 
@@ -842,7 +842,7 @@ formatProperty (JSON js) =
   let ps = [("type", "json")]
            <> if T.null (T.strip js) then [] else [("property", js)]
   in map (second toJSON) ps
-     
+
 formatProperty CSV = [("type", "csv")]
 formatProperty TSV = [("type", "tsv")]
 formatProperty (TopojsonFeature os) = [ ("type", "topojson")
@@ -863,7 +863,7 @@ dataTypeSpec dType =
                    | otherwise -> "date:'" <> fmt <> "'"
         FoUtc fmt | T.null fmt -> "utc"
                   | otherwise -> "utc:'" <> fmt <> "'"
-  in toJSON s                   
+  in toJSON s
 
 
 {-|
@@ -913,7 +913,7 @@ datasets namedData =
   -- written rather differently
   --
   -- The input is expected to be a singleton list containing a pair.
-  let convert = extract . snd 
+  let convert = extract . snd
       specs = map (second convert) namedData
 
       extract din =
@@ -922,7 +922,7 @@ datasets namedData =
             extract' _ = din
 
         in maybe din extract' (decode (encode din))
-                  
+
   in (VLDatasets, object specs)
 
 
@@ -955,7 +955,7 @@ dataFromColumns fmts cols =
                 else [("format", toJSON fmtObject)]
 
       fmtObject = object (concatMap formatProperty fmts)
-      
+
   in (VLData, object vals)
 
 
@@ -973,7 +973,7 @@ transpose ((x:xs) : xss) =
       elmTail (_:ts) = Just ts
 
       filterMap = mapMaybe
-      
+
   in (x : heads) : transpose (xs : tails)
 
 
@@ -1056,7 +1056,7 @@ dataColumn colName dVals xs =
 
       dtToJSON = object . map dateTimeProperty
       x = map (colName,) col
-      
+
   in x : xs
 
 
@@ -1193,7 +1193,7 @@ mark mrk props =
       vals = if null props
              then jsName
              else object (("type" .= jsName) : map markProperty props)
-                  
+
   in (VLMark, vals)
 
 
@@ -1565,7 +1565,7 @@ schemeProperty nme extent =
   let js = case extent of
         [mn, mx] -> object ["name" .= nme, "extent" .= [mn, mx]]
         _ -> toJSON nme
-        
+
   in ("scheme", js)
 
 
@@ -2388,7 +2388,7 @@ data Legend
       -- ^ Typically used for continuous quantitative data.
     | Symbol
       -- ^ Typically used for categorical data.
-      
+
 
 legendLabel :: Legend -> T.Text
 legendLabel Gradient = "gradient"
@@ -2557,8 +2557,8 @@ data Padding
       -- ^ Use the same padding on all four edges of the container.
     | PEdges Double Double Double Double
       -- ^ Specify the padding for the left, top, right, and bottom edges.
-      
-      
+
+
 paddingSpec :: Padding -> VLSpec
 paddingSpec (PSize p) = toJSON p
 paddingSpec (PEdges l t r b) =
@@ -2706,7 +2706,7 @@ rangeConfigProperty rangeCfg =
         ROrdinal nme -> ("ordinal", nme)
         RRamp nme -> ("ramp", nme)
         RSymbol nme -> ("symbol", nme)
-            
+
   in l .= object [schemeProperty n []]
 
 
@@ -2805,7 +2805,7 @@ data SelectionProperty
       -- ^ A <https://vega.github.io/vega/docs/expressions Vega expression> that evaluates
       --   to @true@ or @false@.
 
-      
+
 selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
 selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
@@ -2829,6 +2829,8 @@ data Channel
     | ChX2
     | ChY2
     | ChColor
+    | ChFill
+    | ChStroke
     | ChOpacity
     | ChShape
     | ChSize
@@ -2840,6 +2842,8 @@ channelLabel ChY = "y"
 channelLabel ChX2 = "x2"
 channelLabel ChY2 = "y2"
 channelLabel ChColor = "color"
+channelLabel ChFill = "fill"
+channelLabel ChStroke = "stroke"
 channelLabel ChOpacity = "opacity"
 channelLabel ChShape = "shape"
 channelLabel ChSize = "size"
@@ -3129,7 +3133,7 @@ configProperty (NamedStyle nme mps) = "style" .= object [nme .= object (map mark
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
 configProperty (Stack sp) = stackProperty sp
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
-configProperty (SelectionStyle selConfig) = 
+configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
   in "selection" .= object (map selProp selConfig)
 configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
@@ -3908,8 +3912,8 @@ transform transforms =
               _ -> A.Null
 
           _ -> object [(str, val)]
-                
-    in (VLTransform, js)       
+
+    in (VLTransform, js)
 
 
 {-|
@@ -4042,7 +4046,7 @@ color ::
   -> BuildLabelledSpecs
 color markProps ols =
   let cs = object (concatMap markChannelProperty markProps)
-  in ("color", cs) : ols 
+  in ("color", cs) : ols
 
 
 {-|
@@ -4166,10 +4170,10 @@ filter f ols =
                         DateTimes dts -> map (object . map dateTimeProperty) dts
                         Strings ss -> map toJSON ss
                         Booleans bs -> map toJSON bs
-                  
+
             in object [field_ field, "oneOf" .= ans]
 
-  in ("filter", js) : ols 
+  in ("filter", js) : ols
 
 
 {-|
@@ -4265,7 +4269,7 @@ lookupAs ::
   -- ^ The name of the field in the secondary data source to match against
   --   the primary key.
   -> T.Text
-  -- ^ The field name for the new data. 
+  -- ^ The field name for the new data.
   -> BuildLabelledSpecs
 lookupAs key1 (_, spec) key2 asName ols =
   ("lookupAs" .= [toJSON key1, spec, toJSON key2, toJSON asName]) : ols
