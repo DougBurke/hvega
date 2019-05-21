@@ -34,9 +34,19 @@ can be used as a guide to using this module. The
 [Vega-Lite Example Gallery](https://vega.github.io/vega-lite/examples/) has
 been converted to an
 [IHaskell notebook](https://github.com/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb)
-(unfortunately the plots created by VegaEmbed **do not appear**
+Uunfortunately the plots created by VegaEmbed **do not appear**
 in the notebook when viewed with either GitHub's viewer or
-[ipynb viewer](http://nbviewer.jupyter.org/github/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb)).
+[ipynb viewer](http://nbviewer.jupyter.org/github/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb),
+but things seem much better when using Jupyter Lab (rather than
+notebook) to create the notebooks (since Vega is natively
+supported in this environment). The notebooks have been re-created
+using Jupyter Lab (thanks to Tweag I/O's
+[JupyterWith environment](https://www.tweag.io/posts/2019-02-28-jupyter-with.html)), which should make the plots appear on GitHub (you may need
+to reload the notebooks as I find they don't display on the
+first try).
+
+The [notebooks directory](https://github.com/DougBurke/hvega/tree/master/notebooks)
+contains a poorly-curated set of examples and experiments with hvega.
 
 ## Differences to Elm Vega
 
@@ -55,3 +65,7 @@ are:
   replace several symbols (such as add the `Utc` constructor to `TimeUnit`, remove the `bin`
   function, and use `Data` rather than `(VLProperty, VLSpec)` in function
   signatures).
+
+- In version 0.2.0.0, the constructors for the `LegendOrientation` type
+  have gained a `LO` prefix, which avoids clashing with the Prelude's
+  `Either` type.

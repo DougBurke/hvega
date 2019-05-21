@@ -26,14 +26,16 @@ There is also a `shell.nix` file for development with
 [Nix](https://nixos.org/nix/), although this is not guaranteed to work
 as I have not yet fully integrated Nix into my life.
 
-Hopefully it will appear on Stackage soon (see
-[issue #2](https://github.com/DougBurke/hvega/issues/2)).
-
 # Testing
 
 This would be nice. The IHaskell notebook
 `notebooks/VegaLiteGallery.ipynb` is used as a manual test case, but
 automated tests would be ideal.
+
+The [`notebooks/` directory](https://github.com/DougBurke/hvega/tree/master/notebooks) contains a (very small, very random) sample
+of notebooks experimenting with `hvega`. I recommend using
+[Tweag I/O's jupyterWith environment](https://github.com/tweag/jupyterWith)
+to view these.
 
 There is also a
 [Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb).

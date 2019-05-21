@@ -1,6 +1,6 @@
 name:                hvega
-version:             0.1.0.3
-synopsis:            Create Vega and Vega-Lite visualizations.
+version:             0.2.0.0
+synopsis:            Create Vega-Lite visualizations in Haskell.
 description:         This is an almost-direct port of elm-vega
                      (<http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1>)
                      to Haskell.
@@ -10,7 +10,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Douglas Burke
 maintainer:          dburke.gw@gmail.com
-copyright:           2018 Douglas Burke
+copyright:           2018-2019 Douglas Burke
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md

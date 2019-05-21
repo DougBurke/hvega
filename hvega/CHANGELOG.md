@@ -1,6 +1,16 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.2.0.0
+
+The constructors for the LegendOrientation type have been renamed (by
+adding the prefix `LO`) which avoids the name clash with `Left` and `Right`
+seen in earlier releases. This is a breaking API change.
+
+Clarify how to use the library in the main `hvega` module.
+
+Thanks to contributions from Nicolas Mattia (nmattia) and Marco Zocca (ocramz).
+
 ## 0.1.0.3
 
 The only change is to the cabal file, where `cabal-version: >=1.18` has

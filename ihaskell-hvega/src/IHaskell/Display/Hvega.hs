@@ -1,6 +1,53 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module IHaskell.Display.Hvega where
+{-|
+Module      : IHaskell.Display.Hvega
+Copyright   : (c) Douglas Burke 2018, 2019
+License     : BSD3
+
+Maintainer  : dburke.gw@gmail.com
+Stability   : unstable
+Portability : OverloadedStrings
+
+Allow VegaLite visualizations to be displayed directly in Jupyter notebooks
+or Jupyter Lab. For the moment they are handled separately, in that the Jupyter
+Lab version requires use of the `vlShow` routine.
+
+Jupyter Lab can be installed with nix using the
+<https://github.com/tweag/jupyterWith jupyterWith> setup.
+
+== Example
+
+If we have the following Vega-Lite definition:
+
+@
+\{\-\# language OverloadedStrings \#\-\}
+
+import Graphics.Vega.VegaLite
+
+vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', 'enc' []] where
+    desc = "A very exciting bar chart"
+
+    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
+          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
+          . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
+          . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
+
+    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
+
+    enc = 'encoding'
+          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
+          . position Y [PName "count", PmType Quantitative]
+@
+
+then it can be displayed automatically in Jupyter Lab by
+
+> vlShow vl1
+
+where @vlShow@ should be imported automatically by IHaskell.
+-}
+
+module IHaskell.Display.Hvega (vlShow) where
 
 import qualified Data.Text.Lazy as LT
 
@@ -9,11 +56,12 @@ import Data.Monoid ((<>))
 
 import Graphics.Vega.VegaLite (VegaLite, fromVL)
 
-import IHaskell.Display (IHaskellDisplay(..), Display(..), javascript)
+import IHaskell.Display (IHaskellDisplay(..), Display(..)
+                        , javascript, vegalite)
 
 
--- ^ Use <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>
---   to include the Vega-Lite visualization in an IHaskell notebook.
+-- ^ View a Vega-Lite visualization in a Jupyter *notebook*. Use 'vlShow'
+--   instead if you are using Jupyter *lab*.
 --
 --   There is currently no way to pass
 --   <https://github.com/vega/vega-embed#options options>
@@ -73,3 +121,36 @@ instance IHaskellDisplay VegaLite where
         ds = [javascript (config <> makeDiv <> plot)]
              
     in pure (Display ds)
+
+-- | A wrapper around 'VegaLite' so that we can write a 'Display'
+--   instance for JupyterLab and not end up with "overlapping
+--   instances".
+--
+--   Is there a better way to do this (other than drop support for
+--   Jupyter notebook users)?
+--
+newtype VegaLiteLab = VLL VegaLite
+
+-- | Convert a VegaLite visualization so that it can be auto-displayed
+--   in Jupyter Lab.
+--
+vlShow :: VegaLite -> VegaLiteLab
+vlShow = VLL
+
+-- ^ Display Vega-Lite visualizations in an IHaskell notebook when
+--   using Jupyter Lab.
+--
+--   Use the @IHaskell.Display.Hvega@ module when using IHaskell from
+--   a Jupyter notebook.
+--
+--   Note that local file access is __not__ guaranteed to work - e.g.
+--   @dataFromUrl@ where the file name refers to a local file -
+--   since the JavaScript @fs@ module may not be loaded.
+--
+--   It would be nice to create a PNG version for non-browser viewers,
+--   but I am not sure how to get Jupyter to do this (and if it would
+--   even do what I hope it does).
+--
+instance IHaskellDisplay VegaLiteLab where
+  display (VLL vl) = let js = LT.unpack (encodeToLazyText (fromVL vl))
+                     in pure (Display [vegalite js])
