@@ -531,7 +531,7 @@ newtype VegaLite =
 type VLSpec = Value
 
 vlSchemaName :: T.Text
-vlSchemaName = "https://vega.github.io/schema/vega-lite/v2.json"
+vlSchemaName = "https://vega.github.io/schema/vega-lite/v3.json"
 
 {-|
 
