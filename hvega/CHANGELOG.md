@@ -1,6 +1,18 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.2.1.0
+
+Added the `toHtml` and `toHtmlFile` functions which create the necessary
+HTML to view the  Vega-Lite visualization using
+[Vega Embed](https://vega.github.io/vega-lite/usage/embed.html)
+(this is similar to how
+[ihaskell-hvega](https://hackage.haskell.org/package/ihaskell-hvega)
+works).
+
+This functionality was provided by Gregory Schwartz; apologies for
+taking so long to get it released.
+
 ## 0.2.0.0
 
 The constructors for the LegendOrientation type have been renamed (by
