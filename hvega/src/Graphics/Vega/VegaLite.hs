@@ -14,17 +14,19 @@ This is essentially a straight port of the
 <http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite Elm Vega Lite module>
 (version 2.2.1).
 It allows users to create a Vega-Lite specification, targeting
-version 2 of the <https://vega.github.io/schema/vega-lite/v2.json JSON schema>.
+version 3 of the <https://vega.github.io/schema/vega-lite/v3.json JSON schema>.
 The ihaskell-hvega module provides an easy way to embed Vega-Lite
 visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
-The major change to version 2.2.1 of the Elm version is that the type representing
+The major changes to version 2.2.1 of the Elm version is that the type representing
 the full Vega-Lite specification - that is, the return value of
 'toVegaLite' - is not a 'VLSpec' (an alias for 'Data.Aeson.Value')
 but is instead a newtype around this ('VegaLite'). There are also some minor
 changes to the exported types and symbols (e.g. 'Utc' is exported rather than
-@utc@ and @bin@ is not exported).
+@utc@ and @bin@ is not exported). As time goes on there are more
+changes (in particular the Elm module is being updated much-more rapidly
+than this is).
 
 Note that this module exports several symbols that are exported
 by the Prelude, namely 'filter', 'lookup',
@@ -69,7 +71,7 @@ We can inspect how the encoded JSON looks like in an GHCi session:
 
 @
 > 'A.encode' $ 'fromVL' vl1
-> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v2.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
+> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v3.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
 @
 
 The produced JSON can then be processed with vega-lite, which renders the following image :
@@ -531,7 +533,7 @@ newtype VegaLite =
 type VLSpec = Value
 
 vlSchemaName :: T.Text
-vlSchemaName = "https://vega.github.io/schema/vega-lite/v2.json"
+vlSchemaName = "https://vega.github.io/schema/vega-lite/v3.json"
 
 {-|
 
@@ -559,6 +561,9 @@ let dat = dataFromColumns []
 
 in toVegaLite [ dat [], mark Bar [], enc [] ]
 @
+
+The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>.
+
 -}
 toVegaLite :: [(VLProperty, VLSpec)] -> VegaLite
 toVegaLite vals =

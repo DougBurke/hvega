@@ -5,7 +5,9 @@ For the latest version of this document, please see
 
 The `Channel` type has been extended to include `ChFill` and `ChStroke`
 constructors and the `tooltips` function allows you to provide
-multiple tooltips for a channel.
+multiple tooltips for a channel. The schema version has been changed
+from 2 to 3, but there has been limited checking to see if the API
+correctly reflects the new schema.
 
 This functionality was provided by Adam Massmann (massma) and
 BinderDavid.
