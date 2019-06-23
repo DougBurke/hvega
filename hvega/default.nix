@@ -1,7 +1,7 @@
 { mkDerivation, aeson, base, stdenv, text, vector }:
 mkDerivation {
   pname = "hvega";
-  version = "0.2.0.0";
+  version = "0.3.0.0";
   src = ./.;
   libraryHaskellDepends = [ aeson base text vector ];
   homepage = "https://github.com/DougBurke/hvega";
