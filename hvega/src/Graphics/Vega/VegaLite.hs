@@ -4509,7 +4509,7 @@ enc =
     encoding
         . position X [ PName "miles", PmType Quantitative ]
         . position Y [ PName "gas", PmType Quantitative ]
-        . text [ TName "miles", TmType Quantitative ]
+        . text [ 'TName' "miles", 'TmType' Quantitative ]
 @
 -}
 text ::
@@ -4566,7 +4566,7 @@ for formatting the appearance of the text.
 enc = encoding
         . position X [ PName \"Horsepower\", PmType Quantitative ]
         . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
-        . tooltip [ TName \"Year\", TmType Temporal, TFormat "%Y" ]
+        . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
 -}
 tooltip ::
@@ -4586,7 +4586,7 @@ channel properties that define the channel.
 enc = encoding
         . position X [ PName \"Horsepower\", PmType Quantitative ]
         . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
-        . tooltips [ [ TName \"Year\",  TmType Temporal, TFormat "%Y" ]
+        . tooltips [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
                     ,[ TName \"Month\", TmType Temporal, TFormat "%Y" ] ]
 @
 -}
