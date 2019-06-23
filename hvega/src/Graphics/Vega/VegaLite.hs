@@ -215,6 +215,7 @@ module Graphics.Vega.VegaLite
 
        , text
        , tooltip
+       , tooltips
        , TextChannel(..)
 
          -- ** Hyperlink Channels
@@ -4508,7 +4509,7 @@ enc =
     encoding
         . position X [ PName "miles", PmType Quantitative ]
         . position Y [ PName "gas", PmType Quantitative ]
-        . text [ TName "miles", TmType Quantitative ]
+        . text [ 'TName' "miles", 'TmType' Quantitative ]
 @
 -}
 text ::
@@ -4565,7 +4566,7 @@ for formatting the appearance of the text.
 enc = encoding
         . position X [ PName \"Horsepower\", PmType Quantitative ]
         . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
-        . tooltip [ TName \"Year\", TmType Temporal, TFormat "%Y" ]
+        . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
 -}
 tooltip ::
@@ -4574,3 +4575,24 @@ tooltip ::
   -> BuildLabelledSpecs
 tooltip tDefs ols =
   ("tooltip" .= object (concatMap textChannelProperty tDefs)) : ols
+
+{-|
+
+Encode a tooltip channel with multiple tooltips.
+The first parameter is a list of the multiple tooltips, each of which is a list of text
+channel properties that define the channel.
+
+@
+enc = encoding
+        . position X [ PName \"Horsepower\", PmType Quantitative ]
+        . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
+        . tooltips [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
+                    ,[ TName \"Month\", TmType Temporal, TFormat "%Y" ] ]
+@
+-}
+tooltips ::
+  [[TextChannel]]
+  -- ^ A separate list of properties for each channel.
+  -> BuildLabelledSpecs
+tooltips tDefs ols =
+  ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols

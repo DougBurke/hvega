@@ -4,9 +4,11 @@ For the latest version of this document, please see
 ## 0.3.0.0
 
 The `Channel` type has been extended to include `ChFill` and `ChStroke`
-constructors.
+constructors and the `tooltips` function allows you to provide
+multiple tooltips for a channel.
 
-This functionality was provided by Adam Massmann (massma).
+This functionality was provided by Adam Massmann (massma) and
+BinderDavid.
 
 ## 0.2.1.0
 
