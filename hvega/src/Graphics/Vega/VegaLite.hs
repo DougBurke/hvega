@@ -595,6 +595,7 @@ combineSpecs = object
 
 Converts VegaLite to html Text. Uses Vega-Embed.
 
+@since 0.2.1.0
 -}
 toHtml :: VegaLite -> TL.Text
 toHtml vl = TL.unlines
@@ -623,6 +624,7 @@ toHtml vl = TL.unlines
 
 Converts VegaLite to an html file. Uses Vega-Embed.
 
+@since 0.2.1.0
 -}
 toHtmlFile :: FilePath -> VegaLite -> IO ()
 toHtmlFile file = TL.writeFile file . toHtml
@@ -2881,8 +2883,8 @@ data Channel
     | ChX2
     | ChY2
     | ChColor
-    | ChFill
-    | ChStroke
+    | ChFill      -- ^ @since 0.3.0.0
+    | ChStroke    -- ^ @since 0.3.0.0
     | ChOpacity
     | ChShape
     | ChSize
@@ -4591,6 +4593,8 @@ tooltip tDefs ols =
 Encode a tooltip channel with multiple tooltips.
 The first parameter is a list of the multiple tooltips, each of which is a list of text
 channel properties that define the channel.
+
+@since 0.3.0.0
 
 @
 enc = encoding

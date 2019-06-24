@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.3.0.1
+
+There has been no functional changes in this release, just minor
+documentation updates.
+
 ## 0.3.0.0
 
 The `Channel` type has been extended to include `ChFill` and `ChStroke`
