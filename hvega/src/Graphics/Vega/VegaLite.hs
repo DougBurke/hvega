@@ -52,7 +52,7 @@ Let's say we have the following plot declaration in a module:
 @
 \{\-\# language OverloadedStrings \#\-\}
 
-vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', 'enc' []] where
+vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', enc []] where
     desc = "A very exciting bar chart"
 
     dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
@@ -445,15 +445,15 @@ import Data.Monoid ((<>))
 -- the cylinder field with an ordinal color scheme, else make them grey\".
 --
 -- @
--- sel = selection . select "myBrush" Interval []
+-- sel = 'selection' . 'select' "myBrush" 'Interval' []
 --
--- enc = encoding
---         . position X [ PName \"Horsepower\", PmType Quantitative ]
---         . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
---         . color
---             [ MSelectionCondition (SelectionName "myBrush")
---                 [ MName \"Cylinders\", MmType Ordinal ]
---                 [ MString "grey" ]
+-- enc = 'encoding'
+--         . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
+--         . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
+--         . 'color'
+--             [ 'MSelectionCondition' ('SelectionName' "myBrush")
+--                 [ 'MName' \"Cylinders\", 'MmType' 'Ordinal' ]
+--                 [ 'MString' "grey" ]
 --             ]
 -- @
 --
@@ -465,8 +465,8 @@ import Data.Monoid ((<>))
 --         . position X [ PName \"IMDB_Rating\", PmType Quantitative ]
 --         . position Y [ PName \"Rotten_Tomatoes_Rating\", PmType Quantitative ]
 --           . color
---               [ MDataCondition
---                   (Or (Expr "datum.IMDB_Rating === null")
+--               [ 'MDataCondition'
+--                   ('Or' ('Expr' "datum.IMDB_Rating === null")
 --                       (Expr "datum.Rotten_Tomatoes_Rating === null")
 --                   )
 --                   [ MString "#ddd" ]
@@ -551,15 +551,15 @@ or 'position' in the example below). Functional composition using the '.' operat
 allows this to be done compactly.
 
 @
-let dat = dataFromColumns []
-          . dataColumn "a" (Strings [ \"C", \"C", \"D", \"D", \"E", \"E" ])
-          . dataColumn "b" (Numbers [ 2, 7, 1, 2, 6, 8 ])
+let dat = 'dataFromColumns' []
+          . 'dataColumn' "a" ('Strings' [ \"C", \"C", \"D", \"D", \"E", \"E" ])
+          . dataColumn "b" ('Numbers' [ 2, 7, 1, 2, 6, 8 ])
 
-    enc = encoding
-          . position X [ PName "a", PmType Nominal ]
-          . position Y [ PName "b", PmType Quantitative, PAggregate Mean ]
+    enc = 'encoding'
+          . 'position' 'X' [ 'PName' "a", 'PmType' 'Nominal' ]
+          . position 'Y' [ PName "b", 'PmType' 'Quantitative', 'PAggregate' 'Mean' ]
 
-in toVegaLite [ dat [], mark Bar [], enc [] ]
+in toVegaLite [ dat [], mark 'Bar' [], enc [] ]
 @
 
 The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>.
@@ -654,8 +654,8 @@ function.
 @
 geojson =
     geoFeatureCollection
-        [ geometry (GeoPolygon [ [ ( -3, 59 ), ( -3, 52 ), ( 4, 52 ), ( -3, 59 ) ] ])
-            [ ( "myRegionName", Str "Northern region" ) ]
+        [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( -3, 52 ), ( 4, 52 ), ( -3, 59 ) ] ])
+            [ ( "myRegionName", 'Str' "Northern region" ) ]
         , geometry (GeoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 52 ) ] ])
             [ ( "myRegionName", Str "Southern region" ) ]
         ]
@@ -677,8 +677,8 @@ function.
 @
 geojson =
     geometryCollection
-        [ geometry (GeoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
-        , geometry (GeoPoint -3.5 55.5) []
+        [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
+        , geometry ('GeoPoint' -3.5 55.5) []
         ]
 @
 -}
@@ -697,10 +697,10 @@ For further details see the
 
 @
 trans =
-    transform
-        . aggregate
-            [ opAs Min "people" "lowerBound"
-            , opAs Max "people" "upperBound"
+    'transform'
+        . 'aggregate'
+            [ opAs 'Min' "people" "lowerBound"
+            , opAs 'Max' "people" "upperBound"
             ]
             [ "age" ]
 @
@@ -876,10 +876,10 @@ type DataRow = VLSpec
 Convenience type annotation label for use with data generation functions.
 
 @
-myRegion : [DataColumn] -> Data
+myRegion : ['DataColumn'] -> Data
 myRegion =
-    dataFromColumns []
-        . dataColumn "easting" (Numbers [ -3, 4, 4, -3, -3 ])
+    'dataFromColumns' []
+        . 'dataColumn' "easting" ('Numbers' [ -3, 4, 4, -3, -3 ])
         . dataColumn "northing" (Numbers [ 52, 52, 45, 45, 52 ])
 @
 -}
@@ -921,7 +921,7 @@ Create a row of data. A row comprises a list of (columnName, value) pairs.
 The final parameter is the list of any other rows to which this is added.
 
 @
-dataRow [(\"Animal\", Str \"Fish\"), (\"Age\",Number 28), (\"Year\", Str "2010")] []
+dataRow [(\"Animal\", 'Str' \"Fish\"), (\"Age\", 'Number' 28), (\"Year\", Str "2010")] []
 @
 -}
 dataRow :: [(T.Text, DataValue)] -> [DataRow] -> [DataRow]
@@ -938,8 +938,8 @@ can be created with normal data generating functions such as 'dataFromRows' or
 let toJS = Data.Aeson.toJSON
     obj = Data.Aeson.object
 
-    data = dataFromRows []
-            . dataRow [ ( "cat", Str "a" ), ( "val", Number 10 ) ]
+    data = 'dataFromRows' []
+            . 'dataRow' [ ( "cat", 'Str' "a" ), ( "val", 'Number' 10 ) ]
             . dataRow [ ( "cat", Str "b" ), ( "val", Number 18 ) ]
     json = toJS
             [ obj [ ( "cat", toJS "a" ), ( "val", toJS 120 ) ]
@@ -948,10 +948,10 @@ let toJS = Data.Aeson.toJSON
 
     enc = ...
 
-in toVegaLite
-    [ datasets [ ( "myData", data [] ),  ( "myJson", dataFromJson json [] ) ]
-    , dataFromSource "myData" []
-    , mark Bar []
+in 'toVegaLite'
+    [ datasets [ ( "myData", data [] ),  ( "myJson", 'dataFromJson' json [] ) ]
+    , 'dataFromSource' "myData" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -988,9 +988,9 @@ for details. The columns themselves are most easily generated with 'dataColumn'
 
 @
 data =
-    dataFromColumns [ Parse [ ( \"Year\", FoDate "%Y" ) ] ]
-        . dataColumn \"Animal\" (Strings [ \"Fish\", \"Dog\", \"Cat\" ])
-        . dataColumn \"Age\" (Numbers [ 28, 12, 6 ])
+    dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
+        . 'dataColumn' \"Animal\" ('Strings' [ \"Fish\", \"Dog\", \"Cat\" ])
+        . dataColumn \"Age\" ('Numbers' [ 28, 12, 6 ])
         . dataColumn \"Year\" (Strings [ "2010", "2014", "2015" ])
 @
 -}
@@ -1035,13 +1035,13 @@ may be used. For more general cases of json creation, consider 'Data.Aeson.encod
 
 @
 let geojson =
-        geometry (GeoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
-in toVegaLite
-    [ width 200
-    , height 200
+        'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
+in 'toVegaLite'
+    [ 'width' 200
+    , 'height' 200
     , dataFromJson geojson []
-    , projection [ PType Orthographic ]
-    , mark Geoshape []
+    , 'projection' [ 'PType' 'Orthographic' ]
+    , 'mark' 'Geoshape' []
     ]
 @
 -}
@@ -1092,7 +1092,7 @@ Create a column of data. A column has a name and a list of values. The final
 parameter is the list of any other columns to which this is added.
 
 @
-dataColumn \"Animal\" (Strings [ \"Cat\", \"Dog\", \"Mouse\"]) []
+dataColumn \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
 @
 -}
 dataColumn :: T.Text -> DataValues -> [DataColumn] -> [DataColumn]
@@ -1125,8 +1125,8 @@ if you are creating data inline (as opposed to reading from a file), adding data
 is more efficient and less error-prone.
 
 @
-data = dataFromRows [ Parse [ ( \"Year\", FoDate "%Y" ) ] ]
-        . dataRow [ ( \"Animal\", Str \"Fish\" ), ( \"Age\", Number 28 ), ( \"Year\", Str "2010" ) ]
+data = dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
+        . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", Str "2010" ) ]
         . dataRow [ ( \"Animal\", Str \"Dog\" ), ( \"Age\", Number 12 ), ( \"Year\", Str "2014" ) ]
         . dataRow [ ( \"Animal\", Str \"Cat\" ), ( \"Age\", Number 6 ), ( \"Year\", Str "2015" ) ]
 @
@@ -1151,10 +1151,10 @@ parameter or an empty list to use the default formatting. See the
 for details.
 
 @
-toVegaLite
-    [ datasets [ ( "myData", data [] ),  ( "myJson", dataFromJson json [] ) ]
+'toVegaLite'
+    [ 'datasets' [ ( "myData", data [] ),  ( "myJson", 'dataFromJson' json [] ) ]
     , dataFromSource "myData" []
-    , mark Bar []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -1178,9 +1178,9 @@ parameter or an empty list to use the default formatting. See the
 for details.
 
 @
-toVegaLite
-    [ dataFromUrl "data/weather.csv" [ Parse [ ( "date", FoDate "%Y-%m-%d %H:%M" ) ] ]
-    , mark Line []
+'toVegaLite'
+    [ dataFromUrl "data/weather.csv" [ 'Parse' [ ( "date", 'FoDate' "%Y-%m-%d %H:%M" ) ] ]
+    , 'mark' 'Line' []
     , enc []
     ]
 @
@@ -1232,8 +1232,8 @@ style for lines. To keep the default style for the mark, just provide an empty l
 for the second parameter.
 
 @
-mark Circle []
-mark Line [ MInterpolate StepAfter ]
+mark 'Circle' []
+mark 'Line' [ 'MInterpolate' 'StepAfter' ]
 @
 -}
 mark :: Mark -> [MarkProperty] -> (VLProperty, VLSpec)
@@ -1389,10 +1389,10 @@ Create an encoding specification from a list of channel encodings.
 
 @
 enc = encoding
-        . position X [ PName \"Animal\", PmType Ordinal ]
-        . position Y [ PName \"Age\", PmType Quantitative ]
-        . shape [ MName \"Species\", MmType Nominal ]
-        . size [ MName \"Population\", MmType Quantitative ]
+        . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
+        . position 'Y' [ PName \"Age\", PmType 'Quantitative' ]
+        . 'shape' [ 'MName' \"Species\", 'MmType' 'Nominal' ]
+        . 'size' [ MName \"Population\", MmType Quantitative ]
 @
 -}
 encoding :: [LabelledSpec] -> (VLProperty, VLSpec)
@@ -1854,14 +1854,14 @@ positionLabel Latitude2 = "latitude2"
 {-|
 
 Set the background color of the visualization. Should be specified with a CSS
-string such as \"#ffe\" or \"rgb(200,20,150)\". If not specified the background will
+string such as @\"#ffe\"@ or @\"rgb(200,20,150)\"@. If not specified the background will
 be transparent.
 
 @
-toVegaLite
+'toVegaLite'
     [ background "rgb(251,247,238)"
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -1875,10 +1875,10 @@ background colour = (VLBackground, toJSON colour)
 Provides an optional description to be associated with the visualization.
 
 @
-toVegaLite
+'toVegaLite'
     [ description "Population change of key regions since 1900"
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -1892,10 +1892,10 @@ description s = (VLDescription, toJSON s)
 Provide an optional title to be displayed in the visualization.
 
 @
-toVegaLite
+'toVegaLite'
     [ title "Population Growth"
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -2082,8 +2082,8 @@ Describes a unit of time. Useful for encoding and transformations. See the
 for further details.
 
 @
-encoding
-    . position X [ PName "date", PmType Temporal, PTimeUnit (Utc YearMonthDateHours) ]
+'encoding'
+    . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' (Utc 'YearMonthDateHours') ]
 @
 -}
 
@@ -2404,12 +2404,12 @@ Declare the way the view is sized. See the
 for details.
 
 @
-toVegaLite
-    [ width 250
-    , height 300
-    , autosize [ AFit, APadding, AResize ]
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+'toVegaLite'
+    [ 'width' 250
+    , 'height' 300
+    , autosize [ 'AFit', 'APadding', 'AResize' ]
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -2678,7 +2678,7 @@ data ClipRect
 {-|
 
 Properties for customising a geospatial projection that converts longitude,latitude
-pairs into planar (x,y) coordinate pairs for rendering and query. For details see the
+pairs into planar @(x,y)@ coordinate pairs for rendering and query. For details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 -}
 data ProjectionProperty
@@ -3284,10 +3284,10 @@ axisConfigProperty (TitleY y) = ("titleY", toJSON y)
 Used for creating logical compositions. For example
 
 @
-color
-    [ MSelectionCondition (Or (SelectionName "alex") (SelectionName "morgan"))
-        [ MAggregate Count, MName "*", MmType Quantitative ]
-        [ MString "gray" ]
+'color'
+    [ 'MSelectionCondition' (Or ('SelectionName' "alex") (SelectionName "morgan"))
+        [ 'MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative' ]
+        [ 'MString' "gray" ]
     ]
 @
 
@@ -3365,7 +3365,7 @@ associated with the object.
 
 @
 geojson =
-    geometry (GeoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
+    geometry ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
 @
 -}
 geometry :: Geometry -> [(T.Text, DataValue)] -> VLSpec
@@ -3504,10 +3504,10 @@ and 'SRange' lists and is safer as it guarantees a one-to-one correspondence bet
 domain and range values.
 
 @
-color
-    [ MName "year"
-    , MmType Ordinal
-    , MScale (domainRangeMap ( 1955, "#e6959c" ) ( 2000, "#911a24" ))
+'color'
+    [ 'MName' "year"
+    , 'MmType' 'Ordinal'
+    , 'MScale' (domainRangeMap ( 1955, "#e6959c" ) ( 2000, "#911a24" ))
     ]
 @
 -}
@@ -3527,10 +3527,10 @@ to specifying separate 'SDomain' and 'SRange' lists and is safer as it guarantee
 a one-to-one correspondence between domain and range values.
 
 @
-color
-    [ MName "weather"
-    , MmType Nominal
-    , MScale (
+'color'
+    [ 'MName' "weather"
+    , 'MmType' Nominal
+    , 'MScale' (
         categoricalDomainMap
             [ ( "sun", "yellow" )
             , ( "rain", "blue" )
@@ -3694,9 +3694,9 @@ more details.
 @
 config =
     configure
-        . configuration (Axis [ DomainWidth 1 ])
-        . configuration (View [ Stroke (Just "transparent") ])
-        . configuration (SelectionStyle [ ( Single, [ On "dblclick" ] ) ])
+        . 'configuration' ('Axis' [ 'DomainWidth' 1 ])
+        . configuration ('View' [ 'Stroke' (Just "transparent") ])
+        . configuration ('SelectionStyle' [ ( 'Single', [ 'On' "dblclick" ] ) ])
 @
 -}
 configure :: [LabelledSpec] -> (VLProperty, VLSpec)
@@ -3712,9 +3712,9 @@ creating a faceted view in this way you also need to define a full specification
 to apply to each of those facets using 'asSpec'.
 
 @
-toVegaLite
-    [ facet [ RowBy [ FName \"Origin\", FmType Nominal ] ]
-    , specifcation spec
+'toVegaLite'
+    [ facet [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
+    , 'specifcation' spec
     ]
 @
 
@@ -3734,10 +3734,10 @@ Overrides the default height of the visualization. If not specified the height
 will be calculated based on the content of the visualization.
 
 @
-toVegaLite
+'toVegaLite'
     [ height 300
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -3751,8 +3751,8 @@ height h = (VLHeight, toJSON h)
 Assigns a list of specifications to be juxtaposed horizontally in a visualization.
 
 @
-toVegaLite
-    [ dataFromUrl "data/driving.json" []
+'toVegaLite'
+    [ 'dataFromUrl' "data/driving.json" []
     , hConcat [ spec1, spec2 ]
     ]
 @
@@ -3766,8 +3766,8 @@ hConcat specs = (VLHConcat, toJSON specs)
 Assigns a list of specifications to superposed layers in a visualization.
 
 @
-toVegaLite
-    [ dataFromUrl "data/driving.json" []
+'toVegaLite'
+    [ 'dataFromUrl' "data/driving.json" []
     , layer [ spec1, spec2 ]
     ]
 @
@@ -3781,10 +3781,10 @@ layer specs = (VLLayer, toJSON specs)
 Provides an optional name to be associated with the visualization.
 
 @
-toVegaLite
-    [ name \"PopGrowth\"
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+'toVegaLite'
+    [ name "PopGrowth"
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -3801,11 +3801,11 @@ interpreted will depend on the 'autosize' properties. See the
 for details.
 
 @
-toVegaLite
-    [ width 500
-    , padding (PEdges 20 10 5 15)
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+'toVegaLite'
+    [ 'width' 500
+    , padding ('PEdges' 20 10 5 15)
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -3823,9 +3823,9 @@ a list of fields is identified with @repeat@ you also need to define a full spec
 to apply to each of those fields using 'asSpec'.
 
 @
-toVegaLite
-    [ repeat [ ColumnFields [ \"Cat\", \"Dog\", \"Fish\" ] ]
-    , specification (asSpec spec)
+'toVegaLite'
+    [ repeat [ 'ColumnFields' [ \"Cat\", \"Dog\", \"Fish\" ] ]
+    , 'specification' ('asSpec' spec)
     ]
 @
 
@@ -3848,10 +3848,10 @@ applies and the rule type.
 
 @
 let res = resolve
-            . resolution (RLegend [ ( ChColor, Independent ) ])
-in toVegaLite
-    [ dataFromUrl "data/movies.json" []
-    , vConcat [ heatSpec, barSpec ]
+            . 'resolution' ('RLegend' [ ( 'ChColor', 'Independent' ) ])
+in 'toVegaLite'
+    [ 'dataFromUrl' "data/movies.json" []
+    , 'vConcat' [ heatSpec, barSpec ]
     , res []
     ]
 @
@@ -3871,7 +3871,7 @@ see the
 <https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
 
 @
-selection = selection . select "view" Interval [ BindScales ]
+sel = selection . 'select' "view" 'Interval' [ 'BindScales' ]
 @
 -}
 selection :: [LabelledSpec] -> (VLProperty, VLSpec)
@@ -3883,8 +3883,8 @@ selection sels = (VLSelection, object sels)
 Defines a specification object for use with faceted and repeated small multiples.
 
 @
-toVegaLite
-    [ facet [ RowBy [ FName \"Origin\", FmType Nominal ] ]
+'toVegaLite'
+    [ 'facet' [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
     , specifcation spec
     ]
 @
@@ -3903,8 +3903,8 @@ provide the transformations in the order intended in a clear manner.
 
 @
 trans = transform
-        . filter (FExpr "datum.year == 2010")
-        . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
+        . 'filter' ('FExpr' "datum.year == 2010")
+        . 'calculateAs' "datum.sex == 2 ? 'Female' : 'Male'" "gender"
 @
 -}
 
@@ -3975,8 +3975,8 @@ transform transforms =
 Assigns a list of specifications to be juxtaposed vertically in a visualization.
 
 @
-toVegaLite
-    [ dataFromUrl "data/driving.json" []
+'toVegaLite'
+    [ 'dataFromUrl' "data/driving.json" []
     , vConcat [ spec1, spec2 ]
     ]
 @
@@ -3991,10 +3991,10 @@ Override the default width of the visualization. If not specified the width
 will be calculated based on the content of the visualization.
 
 @
-toVegaLite
+'toVegaLite'
     [ width 500
-    , dataFromUrl "data/population.json" []
-    , mark Bar []
+    , 'dataFromUrl' "data/population.json" []
+    , 'mark' 'Bar' []
     , enc []
     ]
 @
@@ -4013,9 +4013,9 @@ see the
 
 @
 trans =
-    transform
+    'transform'
         . aggregate
-            [ opAs Min "people" "lowerBound", opAs Max "people" "upperBound" ]
+            [ 'opAs' 'Min' "people" "lowerBound", opAs 'Max' "people" "upperBound" ]
             [ "age" ]
 @
 -}
@@ -4040,8 +4040,8 @@ over this form of bin transformation.
 
 @
 trans =
-    transform
-        . binAs [ MaxBins 3 ] \"IMDB_Rating\" "ratingGroup"
+    'transform'
+        . binAs [ 'MaxBins' 3 ] \"IMDB_Rating\" "ratingGroup"
 @
 -}
 binAs ::
@@ -4066,8 +4066,7 @@ See the <https://vega.github.io/vega-lite/docs/calculate.html Vega-Lite document
 for further details.
 
 @
-trans =
-    transform . calculateAs "datum.sex == 2 ? 'F' : 'M'" "gender"
+trans = 'transform' . calculateAs "datum.sex == 2 ? 'F' : 'M'" "gender"
 @
 -}
 calculateAs ::
@@ -4084,14 +4083,14 @@ calculateAs expr label ols = ("calculate" .= [expr, label]) : ols
 Encode a color channel.
 
 @
-color [ MName \"Species\", MmType Nominal ] []
+color [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Encoding a color channel will generate a legend by default. To stop the legend
 appearing, just supply an empty list of legend properties to 'MLegend':
 
 @
-color [ MName \"Species\", MmType Nominal, MLegend [] ] []
+color [ MName \"Species\", MmType Nominal, 'MLegend' [] ] []
 @
 -}
 color ::
@@ -4109,10 +4108,10 @@ Encodes a new facet to be arranged in columns.
 
 @
 enc =
-    encoding
-        . position X [ PName "people", PmType Quantitative ]
-        . position Y [ PName "gender", PmType Nominal ]
-        . column [ FName "age", FmType Ordinal ]
+    'encoding'
+        . 'position' 'X' [ 'PName' "people", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName "gender", PmType 'Nominal' ]
+        . column [ 'FName' "age", 'FmType' 'Ordinal' ]
 @
 -}
 column ::
@@ -4132,7 +4131,7 @@ The first parameter identifies the type of configuration, the second a list of p
 configurations to which this one may be added.
 
 @
-configuration (Axis [ DomainWidth 4 ]) []
+configuration ('Axis' [ 'DomainWidth' 4 ]) []
 @
 -}
 configuration :: ConfigurationProperty -> BuildLabelledSpecs
@@ -4149,7 +4148,7 @@ is a list of any previous channels to which this detail channel should be added.
 for details.
 
 @
-detail [ DName \"Species\", DmType Nominal ] []
+detail [ 'DName' \"Species\", 'DmType' 'Nominal' ] []
 @
 -}
 detail :: [DetailChannel] -> BuildLabelledSpecs
@@ -4166,7 +4165,7 @@ The second parameter is a list of any previous channels to which this fill chann
 should be added.
 
 @
-fill [ MName \"Species\", MmType Nominal ] []
+fill [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Note that if both @fill@ and 'color' encodings are specified, @fill@ takes precedence.
@@ -4186,8 +4185,8 @@ should be added in sequence.
 
 @
 trans =
-    transform
-        . filter (FEqual \"Animal\" (Str \"Cat\"))
+    'transform'
+        . filter ('FEqual' \"Animal\" ('Str' \"Cat\"))
 @
 
 Filter operations can combine selections and data predicates with 'BooleanOp'
@@ -4196,7 +4195,7 @@ expressions:
 @
 trans =
     transform
-        . filter (FCompose (And (Expr "datum.Weight_in_lbs > 3000") (Selection "brush")))
+        . filter ('FCompose' ('And' ('Expr' "datum.Weight_in_lbs > 3000") ('Selection' "brush")))
 @
 -}
 filter :: Filter -> BuildLabelledSpecs
@@ -4238,7 +4237,7 @@ type. The second parameter is a list of any previous encoding channels to which
 this hyperlink channel should be added.
 
 @
-hyperlink [ HName \"Species\", HmType Nominal ] []
+hyperlink [ 'HName' \"Species\", 'HmType' 'Nominal' ] []
 @
 
 For further details see the
@@ -4269,8 +4268,8 @@ file matches the value of @person@ in the primary data source.
 
 @
 trans =
-    transform
-        . lookup "person" (dataFromUrl "data/lookup_people.csv" []) "name" [ "age", "height" ]
+    'transform'
+        . lookup "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" [ "age", "height" ]
 @
 -}
 lookup ::
@@ -4309,8 +4308,8 @@ In the following example, @personDetails@ would reference all the field values i
 file matches the value of @person@ in the primary data source.
 
 @
-trans = transform
-        . lookupAs "person" (dataFromUrl "data/lookup_people.csv" []) "name" "personDetails"
+trans = 'transform'
+        . lookupAs "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
 @
 -}
 lookupAs ::
@@ -4336,7 +4335,7 @@ that characterise the way a data field is encoded by opacity. The second paramet
 is a list of any previous channels to which this opacity channel should be added.
 
 @
-opacity [ MName \"Age\", MmType Quantitative ] []
+opacity [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
 -}
 opacity :: [MarkChannel] -> BuildLabelledSpecs
@@ -4352,10 +4351,10 @@ which this order channel is to be added.
 
 @
 enc =
-    encoding
-        . position X [ PName "miles", PmType Quantitative ]
-        . position Y [ PName "gas", PmType Quantitative ]
-        . order [ OName "year", OmType Temporal ]
+    'encoding'
+        . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName "gas", PmType Quantitative ]
+        . order [ 'OName' "year", 'OmType' 'Temporal' ]
 @
 -}
 order :: [OrderChannel] -> BuildLabelledSpecs
@@ -4369,8 +4368,8 @@ Encode a position channel.
 
 @
 enc =
-    encoding
-      . position X [ PName \"Animal\", PmType Ordinal ]
+    'encoding'
+      . position 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
 @
 
 Encoding by position will generate an axis by default. To prevent the axis from
@@ -4379,7 +4378,7 @@ appearing, simply provide an empty list of axis properties to 'PAxis':
 @
 enc =
     encoding
-      . position X [ PName \"Animal\", PmType Ordinal, PAxis [] ]
+      . position X [ PName \"Animal\", PmType Ordinal, 'PAxis' [] ]
 @
 -}
 position ::
@@ -4404,8 +4403,8 @@ share color channels between layers. Each resolution rule should be in a tuple
 pairing the channel to which it applies and the rule type.
 
 @
-resolve
-    . resolution (RScale [ ( ChY, Independent ) ])
+'resolve'
+    . resolution ('RScale' [ ( 'ChY', 'Independent' ) ])
 @
 -}
 resolution :: Resolve -> BuildLabelledSpecs
@@ -4418,10 +4417,10 @@ Encode a new facet to be arranged in rows.
 
 @
 enc =
-    encoding
-        . position X [ PName "people", PmType Quantitative ]
-        . position Y [ PName "gender", PmType Nominal ]
-        . row [ FName "age", FmType Ordinal ]
+    'encoding'
+        . 'position' 'X' [ 'PName' "people", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName "gender", PmType 'Nominal' ]
+        . row [ 'FName' "age", 'FmType' 'Ordinal' ]
 @
 -}
 row ::
@@ -4438,10 +4437,10 @@ Create a single named selection that may be applied to a data query or transform
 
 @
 sel =
-    selection
-        . select "view" Interval [ BindScales ] []
+    'selection'
+        . select "view" 'Interval' [ 'BindScales' ] []
         . select "myBrush" Interval []
-        . select "myPaintbrush" Multi [ On "mouseover", Nearest True ]
+        . select "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
 -}
 select ::
@@ -4462,7 +4461,7 @@ select nme sType options ols =
 Encode a shape channel.
 
 @
-shape [ MName \"Species\", MmType Nominal ] []
+shape [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 -}
 shape ::
@@ -4477,7 +4476,7 @@ shape markProps ols = ("shape" .= object (concatMap markChannelProperty markProp
 Encode a size channel.
 
 @
-size [ MName \"Age\", MmType Quantitative ] []
+size [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
 -}
 size ::
@@ -4493,7 +4492,7 @@ Encode a stroke channel. This acts in a similar way to encoding by 'color' but
 only affects the exterior boundary of marks.
 
 @
-stroke [ MName \"Species\", MmType Nominal ] []
+stroke [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Note that if both @stroke@ and 'color' encodings are specified, @stroke@ takes
@@ -4518,9 +4517,9 @@ for formatting the appearance of the text.
 
 @
 enc =
-    encoding
-        . position X [ PName "miles", PmType Quantitative ]
-        . position Y [ PName "gas", PmType Quantitative ]
+    'encoding'
+        . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName "gas", PmType Quantitative ]
         . text [ 'TName' "miles", 'TmType' Quantitative ]
 @
 -}
@@ -4546,12 +4545,12 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = transform . timeUnitAs Month "date" "monthly"
+trans = 'transform' . timeUnitAs 'Month' "date" "monthly"
 
-enc = encoding
-        . position X [ PName "date", PmType Temporal, PTimeUnit Day ]
-        . position Y [ PAggregate Sum, PmType Quantitative ]
-        . detail [ DName "monthly", DmType Temporal ]
+enc = 'encoding'
+        . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
+        . position 'Y' [ 'PAggregate' 'Sum', PmType 'Quantitative' ]
+        . 'detail' [ 'DName' "monthly", 'DmType' 'Temporal' ]
 @
 -}
 timeUnitAs ::
@@ -4575,9 +4574,9 @@ for further details on the text and tooltip channels and
 for formatting the appearance of the text.
 
 @
-enc = encoding
-        . position X [ PName \"Horsepower\", PmType Quantitative ]
-        . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
+enc = 'encoding'
+        . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
         . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
 -}
@@ -4597,9 +4596,9 @@ channel properties that define the channel.
 @since 0.3.0.0
 
 @
-enc = encoding
-        . position X [ PName \"Horsepower\", PmType Quantitative ]
-        . position Y [ PName \"Miles_per_Gallon\", PmType Quantitative ]
+enc = 'encoding'
+        . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
+        . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
         . tooltips [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
                     ,[ TName \"Month\", TmType Temporal, TFormat "%Y" ] ]
 @
