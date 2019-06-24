@@ -1,6 +1,16 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.3.0.1
+
+The minimum base version has been bumped from 4.7 to 4.9, which
+means ghc 8.0 or later. This is because the 0.2.0.1 release
+does not appear to build with ghc 7.10. If this restriction is
+a problem then please comment on the issues list.
+
+There have been minor documentation updates, adding `@since`
+annotations.
+
 ## 0.3.0.0
 
 The `Channel` type has been extended to include `ChFill` and `ChStroke`

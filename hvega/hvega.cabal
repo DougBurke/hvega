@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.3.0.0
+version:             0.3.0.1
 synopsis:            Create Vega-Lite visualizations (version 3) in Haskell.
 description:         This is an almost-direct port of elm-vega
                      (<http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1>)
@@ -24,7 +24,7 @@ cabal-version:       1.18
 library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
-  build-depends:       base >= 4.7 && < 5
+  build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5
                      , text == 1.2.*
                      , vector >= 0.11 && < 0.13
