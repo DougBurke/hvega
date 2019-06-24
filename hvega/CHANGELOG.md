@@ -3,8 +3,13 @@ For the latest version of this document, please see
 
 ## 0.3.0.1
 
-There has been no functional changes in this release, just minor
-documentation updates.
+The minimum base version has been bumped from 4.7 to 4.9, which
+means ghc 8.0 or later. This is because the 0.2.0.1 release
+does not appear to build with ghc 7.10. If this restriction is
+a problem then please comment on the issues list.
+
+There have been minor documentation updates, adding `@since`
+annotations.
 
 ## 0.3.0.0
 

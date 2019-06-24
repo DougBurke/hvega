@@ -24,7 +24,7 @@ cabal-version:       1.18
 library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
-  build-depends:       base >= 4.7 && < 5
+  build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5
                      , text == 1.2.*
                      , vector >= 0.11 && < 0.13
