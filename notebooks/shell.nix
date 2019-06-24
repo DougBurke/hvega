@@ -16,12 +16,13 @@ let
   };
 
   # I haven't released the updated ihaskell-vega yet, so need to grab
-  # it from GitHub.
+  # it from GitHub. Why am I not just using the on-disk source?
   #
-  hvegaSource = builtins.fetchGit {
-    url = https://github.com/DougBurke/hvega;
-    rev = "";
-  };
+  # hvegaSource = builtins.fetchGit {
+  #   url = https://github.com/DougBurke/hvega;
+  #   rev = "";
+  # };
+  hvegaSource = ../.;
 
   hvegaDir = hvegaSource + "/hvega";
   ihaskellvegaDir = hvegaSource + "/ihaskell-hvega";
