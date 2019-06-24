@@ -1581,8 +1581,13 @@ data ScaleProperty
     | SInterpolate CInterpolate
     | SNice ScaleNice
     | SZero Bool
-      -- TODO: Check: This is a Vega, not Vega-Lite property so can generate a warning if validated against the Vega-Lite spec.
+      -- TODO: remove this
     | SReverse Bool
+      -- ^ This is a Vega, rather than Vega-Lite, property and its use will generate
+      --   warnings when you validate the JSON against the schema. The order
+      --   of a scale (e.g. axis) can be reversed by setting @'PSort' ['Descending']@.
+      --
+      --   This property will be removed in a future release.
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
