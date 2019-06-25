@@ -108,14 +108,20 @@ module Graphics.Vega.VegaLite
        , datasets
        , dataColumn
        , dataRow
-       , geometry
-       , geoFeatureCollection
-       , geometryCollection
        , Data
        , DataColumn
        , DataRow
-       , Format(..)
+
+         -- ** Geographic Data
+
+       , geometry
+       , geoFeatureCollection
+       , geometryCollection
        , Geometry(..)
+
+       -- ** Formatting Input Data
+
+       , Format(..)
        , DataType(..)
 
          -- * Creating the Transform Specification
@@ -710,7 +716,8 @@ opAs ::
   Operation
   -- ^ The aggregation operation to use.
   -> T.Text
-  -- ^ The name of the field which is to be aggregated.
+  -- ^ The name of the field which is to be aggregated (when the operation
+  --   is 'Count' leave as the empty string).
   -> T.Text
   -- ^ The name given to the transformed data.
   -> VLSpec
