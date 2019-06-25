@@ -1,0 +1,69 @@
+{
+    "height": 300,
+    "mark": "geoshape",
+    "data": {
+        "values": {
+            "features": [
+                {
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                [
+                                    -2,
+                                    58
+                                ],
+                                [
+                                    3,
+                                    58
+                                ],
+                                [
+                                    3,
+                                    53
+                                ],
+                                [
+                                    -2,
+                                    53
+                                ],
+                                [
+                                    -2,
+                                    58
+                                ]
+                            ]
+                        ],
+                        "type": "Polygon"
+                    },
+                    "type": "Feature"
+                },
+                {
+                    "geometry": {
+                        "coordinates": [
+                            [
+                                4,
+                                52
+                            ],
+                            [
+                                4,
+                                59
+                            ],
+                            [
+                                -3,
+                                59
+                            ]
+                        ],
+                        "type": "LineString"
+                    },
+                    "type": "Feature"
+                }
+            ],
+            "type": "FeatureCollection"
+        }
+    },
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "features.geometry.type",
+            "type": "nominal"
+        }
+    }
+}

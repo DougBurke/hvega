@@ -24,8 +24,8 @@ testSpecs = [ ("default", defChart)
             , ("combined1", combined1)
             , ("combined2", combined2)
             , ("combined3", combined3)
-            -- , ("geo1", geo1)
-            -- , ("geo2", geo2)
+            , ("geo1", geo1)
+            , ("geo2", geo2)
             ]
 
 encChart :: ([a] -> [LabelledSpec]) -> VegaLite
@@ -68,8 +68,6 @@ combined1 = encChart (stroke [] . fill [])
 combined2 = encChart (stroke [ MName "y", MmType Ordinal ] . fill [ MString "red" ])
 combined3 = encChart (stroke [ MString "red" ] . fill [ MName "y", MmType Ordinal ])
 
-{- TODO: add geoshape
-
 geo1 :: VegaLite
 geo1 =
     let
@@ -83,7 +81,7 @@ geo1 =
         [ width 300
         , height 300
         , dataFromJson geojson []
-        , geoshape []
+        , mark Geoshape []
         ]
 
 geo2 :: VegaLite
@@ -107,5 +105,3 @@ geo2 =
         , dataFromJson geojson []
         , mark Geoshape []
         ]
-
--}

@@ -1,0 +1,172 @@
+{
+    "hconcat": [
+        {
+            "layer": [
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            -65,
+                            0,
+                            0
+                        ]
+                    }
+                },
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.5,
+                        "stroke": "white",
+                        "fill": "black",
+                        "type": "geoshape"
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "countries",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            -65,
+                            0,
+                            0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "layer": [
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            115,
+                            0,
+                            0
+                        ]
+                    }
+                },
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.5,
+                        "stroke": "white",
+                        "fill": "black",
+                        "type": "geoshape"
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "countries",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            115,
+                            0,
+                            0
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "layer": [
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            -65,
+                            0,
+                            0
+                        ]
+                    }
+                },
+                {
+                    "height": 300,
+                    "mark": {
+                        "strokeWidth": 0.5,
+                        "stroke": "white",
+                        "fill": "black",
+                        "type": "geoshape"
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "countries",
+                            "type": "topojson"
+                        }
+                    },
+                    "width": 300,
+                    "projection": {
+                        "type": "orthographic",
+                        "rotate": [
+                            -65,
+                            0,
+                            0
+                        ]
+                    }
+                }
+            ]
+        }
+    ],
+    "config": {
+        "view": {
+            "stroke": ""
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
+}

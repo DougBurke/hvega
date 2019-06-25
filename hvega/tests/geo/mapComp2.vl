@@ -1,0 +1,124 @@
+{
+    "hconcat": [
+        {
+            "height": 300,
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            },
+            "layer": [
+                {
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    }
+                },
+                {
+                    "mark": {
+                        "fill": "black",
+                        "type": "geoshape",
+                        "fillOpacity": 0.7
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "height": 300,
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            },
+            "layer": [
+                {
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    }
+                },
+                {
+                    "mark": {
+                        "fill": "black",
+                        "type": "geoshape",
+                        "fillOpacity": 0.7
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "height": 300,
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            },
+            "layer": [
+                {
+                    "mark": {
+                        "strokeWidth": 0.1,
+                        "stroke": "#411",
+                        "type": "geoshape",
+                        "filled": false
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        }
+                    }
+                },
+                {
+                    "mark": {
+                        "fill": "black",
+                        "type": "geoshape",
+                        "fillOpacity": 0.7
+                    },
+                    "data": {
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "config": {
+        "view": {
+            "stroke": ""
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
+}

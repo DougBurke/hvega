@@ -28,8 +28,8 @@ testSpecs = [ ("data1", data1)
             , ("namedData2", namedData2)
             , ("namedData3", namedData3)
             -}
-            -- , ("geodata1", geodata1)
-            -- , ("geodata2", geodata2)
+            , ("geodata1", geodata1)
+            , ("geodata2", geodata2)
             -- , ("flatten1", flatten1)
             -- , ("fold1", fold1)
             {-
@@ -215,38 +215,37 @@ namedData3 =
     toVegaLite [ dataName "source" (dataFromColumns [] []), enc [], mark Bar [] ]
 -}
 
-{-
-
+geodata1 :: VegaLite
 geodata1 =
     toVegaLite
         [ width 700
         , height 500
-        , configure <| configuration (coView [ vicoStroke Nothing ]) []
-        , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ topojsonFeature "boroughs" ]
-        , geoshape []
-        , encoding <| color [ mName "id", MmType Nominal ] []
+        , configure $ configuration (View [ Stroke Nothing ]) []
+        , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ TopojsonFeature "boroughs" ]
+        , mark Geoshape []
+        , encoding $ color [ MName "id", MmType Nominal ] []
         ]
 
+-- TODO: add LNoTitle
 
+geodata2 :: VegaLite
 geodata2 =
     let
         geojson =
             geoFeatureCollection
-                [ geometry (geoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 45 ), ( -3, 52 ) ] ]) [ ( "Region", str "Southsville" ) ]
-                , geometry (geoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 52 ), ( -3, 59 ) ] ]) [ ( "Region", str "Northerton" ) ]
+                [ geometry (GeoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 45 ), ( -3, 52 ) ] ]) [ ( "Region", Str "Southsville" ) ]
+                , geometry (GeoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 52 ), ( -3, 59 ) ] ]) [ ( "Region", Str "Northerton" ) ]
                 ]
     in
     toVegaLite
         [ width 300
         , height 400
-        , configure <| configuration (coView [ vicoStroke Nothing ]) []
-        , dataFromJson geojson [ jsonProperty "features" ]
-        , projection [ prType orthographic ]
-        , encoding (color [ mName "properties.Region", MmType Nominal, mLegend [ leTitle "" ] ] [])
-        , geoshape []
+        , configure $ configuration (View [ Stroke Nothing ]) []
+        , dataFromJson geojson [ JSON "features" ]
+        , projection [ PType Orthographic ]
+        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LTitle "" ] ] [])
+        , mark Geoshape []
         ]
-
--}
 
 {- TODO: add flattenAs
 

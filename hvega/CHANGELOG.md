@@ -14,6 +14,9 @@ and the `Position` type has added `XError`, `XError2`, `YError`, and
 
 This functionality was provided by Adam Conner-Sax (adamConnerSax).
 
+The `dataSequence, `dataSequenceAs`, `sphere`, and `graticule` functions
+have been added, as well as associated properties (`GraticuleProperty`).
+
 The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`
 constructor is used to change the order of an axis.

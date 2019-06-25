@@ -1,0 +1,59 @@
+{
+    "hconcat": [
+        {
+            "height": 300,
+            "mark": {
+                "type": "geoshape",
+                "filled": false
+            },
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                "format": {
+                    "feature": "graticule",
+                    "type": "topojson"
+                }
+            },
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            }
+        },
+        {
+            "height": 300,
+            "mark": {
+                "type": "geoshape",
+                "filled": false
+            },
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                "format": {
+                    "feature": "graticule",
+                    "type": "topojson"
+                }
+            },
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            }
+        },
+        {
+            "height": 300,
+            "mark": {
+                "type": "geoshape",
+                "filled": false
+            },
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/graticule.json",
+                "format": {
+                    "feature": "graticule",
+                    "type": "topojson"
+                }
+            },
+            "width": 300,
+            "projection": {
+                "type": "orthographic"
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
+}
