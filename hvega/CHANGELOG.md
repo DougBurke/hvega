@@ -11,6 +11,10 @@ and the `Position` type has added `XError`, `XError2`, `YError`, and
 
 This functionality was provided by Adam Conner-Sax (adamConnerSax).
 
+The `SReverse` construtor was removed from `ScaleProperty` as it
+represented a Vega, rather than Vega-Lite, property. The `PSort`
+constructor is used to change the order of an axis.
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which
