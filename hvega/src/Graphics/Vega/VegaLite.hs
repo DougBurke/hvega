@@ -1201,8 +1201,8 @@ data Mark
     = Area
     | Bar
     | Circle
-    | ErrorBar
-    | ErrorBand
+    | ErrorBar   -- ^ @since 0.4.0.0
+    | ErrorBand  -- ^ @since 0.4.0.0
     | Geoshape
     | Line
     | Point
@@ -1316,7 +1316,7 @@ data MarkProperty
     | MBandSize Double
     | MBaseline VAlign
     | MBinSpacing Double
-    | MBorders Bool
+    | MBorders Bool                -- ^ @since 0.4.0.0
     | MClip Bool
     | MColor T.Text
     | MCursor Cursor
@@ -1324,7 +1324,7 @@ data MarkProperty
     | MDiscreteBandSize Double
     | MdX Double
     | MdY Double
-    | MExtent MarkErrorExtent
+    | MExtent MarkErrorExtent      -- ^ @since 0.4.0.0
     | MFill T.Text
     | MFilled Bool
     | MFillOpacity Double
@@ -1420,10 +1420,10 @@ data Position
     | Y
     | X2
     | Y2
-    | XError
-    | YError
-    | XError2
-    | YError2
+    | XError    -- ^ @since 0.4.0.0
+    | YError    -- ^ @since 0.4.0.0
+    | XError2   -- ^ @since 0.4.0.0
+    | YError2   -- ^ @since 0.4.0.0
     | Longitude
     | Latitude
     | Longitude2
@@ -2368,6 +2368,8 @@ markOrientationLabel Vertical = "vertical"
 Indicates the extent of the rule used for the error bar.  See
 <https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
 for details.
+
+@since 0.4.0.0
 -}
 data MarkErrorExtent
   = ConfidenceInterval
