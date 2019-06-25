@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
-
+{-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
 {-|
 Module      : Graphics.Vega.VegaLite
 Copyright   : (c) Douglas Burke, 2018-2019
@@ -167,6 +167,7 @@ module Graphics.Vega.VegaLite
        , MarkProperty(..)
        , MarkOrientation(..)
        , MarkInterpolation(..)
+       , MarkErrorExtent(..)
        , Symbol(..)
        , Cursor(..)
 
@@ -362,7 +363,7 @@ import qualified Data.Vector as V
 import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
-import Data.Aeson ((.=), Value, decode, encode, object, toJSON)
+import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Monoid ((<>))
 
@@ -1200,6 +1201,8 @@ data Mark
     = Area
     | Bar
     | Circle
+    | ErrorBar   -- ^ @since 0.4.0.0
+    | ErrorBand  -- ^ @since 0.4.0.0
     | Geoshape
     | Line
     | Point
@@ -1214,6 +1217,8 @@ markLabel :: Mark -> T.Text
 markLabel Area = "area"
 markLabel Bar = "bar"
 markLabel Circle = "circle"
+markLabel ErrorBar = "errorbar"
+markLabel ErrorBand = "errorband"
 markLabel Line = "line"
 markLabel Geoshape = "geoshape"
 markLabel Point = "point"
@@ -1311,6 +1316,7 @@ data MarkProperty
     | MBandSize Double
     | MBaseline VAlign
     | MBinSpacing Double
+    | MBorders Bool                -- ^ @since 0.4.0.0
     | MClip Bool
     | MColor T.Text
     | MCursor Cursor
@@ -1318,6 +1324,7 @@ data MarkProperty
     | MDiscreteBandSize Double
     | MdX Double
     | MdY Double
+    | MExtent MarkErrorExtent      -- ^ @since 0.4.0.0
     | MFill T.Text
     | MFilled Bool
     | MFillOpacity Double
@@ -1343,7 +1350,6 @@ data MarkProperty
     | MTheta Double
     | MThickness Double
 
-
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = ("filled", toJSON b)
 markProperty (MClip b) = ("clip", toJSON b)
@@ -1368,6 +1374,7 @@ markProperty (MAlign align) = ("align", toJSON (hAlignLabel align))
 markProperty (MBaseline va) = ("baseline", toJSON (vAlignLabel va))
 markProperty (MdX dx) = ("dx", toJSON dx)
 markProperty (MdY dy) = ("dy", toJSON dy)
+markProperty (MExtent mee) = ("extent", toJSON (markErrorExtentLabel mee))
 markProperty (MFont fnt) = ("font", toJSON fnt)
 markProperty (MFontSize x) = ("fontSize", toJSON x)
 markProperty (MFontStyle fSty) = ("fontStyle", toJSON fSty)
@@ -1381,7 +1388,7 @@ markProperty (MDiscreteBandSize x) = ("discreteBandSize", toJSON x)
 markProperty (MShortTimeLabels b) = ("shortTimeLabels", toJSON b)
 markProperty (MBandSize x) = ("bandSize", toJSON x)
 markProperty (MThickness x) = ("thickness", toJSON x)
-
+markProperty (MBorders b) = ("borders", toJSON b)
 
 {-|
 
@@ -1413,6 +1420,10 @@ data Position
     | Y
     | X2
     | Y2
+    | XError    -- ^ @since 0.4.0.0
+    | YError    -- ^ @since 0.4.0.0
+    | XError2   -- ^ @since 0.4.0.0
+    | YError2   -- ^ @since 0.4.0.0
     | Longitude
     | Latitude
     | Longitude2
@@ -1845,6 +1856,10 @@ positionLabel X = "x"
 positionLabel Y = "y"
 positionLabel X2 = "x2"
 positionLabel Y2 = "y2"
+positionLabel XError     = "xError"
+positionLabel YError     = "yError"
+positionLabel XError2    = "xError2"
+positionLabel YError2    = "yError2"
 positionLabel Longitude = "longitude"
 positionLabel Latitude = "latitude"
 positionLabel Longitude2 = "longitude2"
@@ -2347,6 +2362,27 @@ data MarkOrientation
 markOrientationLabel :: MarkOrientation -> T.Text
 markOrientationLabel Horizontal = "horizontal"
 markOrientationLabel Vertical = "vertical"
+
+{-|
+
+Indicates the extent of the rule used for the error bar.  See
+<https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
+for details.
+
+@since 0.4.0.0
+-}
+data MarkErrorExtent
+  = ConfidenceInterval
+  | StdErr
+  | StdDev
+  | Iqr
+
+
+markErrorExtentLabel :: MarkErrorExtent -> T.Text
+markErrorExtentLabel ConfidenceInterval = "ci"
+markErrorExtentLabel StdErr             = "stderr"
+markErrorExtentLabel StdDev             = "stddev"
+markErrorExtentLabel Iqr                = "iqr"
 
 
 -- | Identifies the type of symbol.

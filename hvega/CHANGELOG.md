@@ -1,6 +1,16 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.4.0.0
+
+Added the `MarkErrorExtent` type, to indicate the extent of the rule
+used for error bars and added the `ErrorBar` and `ErrorBand` marks.
+The `MarkProperty` type has gained `MBorders` and `MExtent` constructors,
+and the `Position` type has added `XError`, `XError2`, `YError`, and
+`YError2` constructors as part of this change.
+
+This functionality was provided by Adam Conner-Sax (adamConnerSax).
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which
