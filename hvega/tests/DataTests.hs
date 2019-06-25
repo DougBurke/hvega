@@ -44,8 +44,8 @@ testSpecs = [ ("data1", data1)
             -}
             -- , ("sample1", sample1)
             , ("bin1", bin1)
-            -- , ("sequence1", sequence1)
-            -- , ("sequence2", sequence2)
+            , ("sequence1", sequence1)
+            , ("sequence2", sequence2)
             ]
 
 showData :: (VLProperty, VLSpec) -> VegaLite
@@ -465,10 +465,7 @@ bin1 =
     in
     toVegaLite [ dvals [], enc [], mark Bar [] ]
 
-{-
-
-TODO: add dataSequence
-
+sequence1 :: VegaLite
 sequence1 =
     let
         dvals =
@@ -486,6 +483,7 @@ sequence1 =
     toVegaLite [ dvals, trans [], enc [], mark Line [] ]
 
 
+sequence2 :: VegaLite
 sequence2 =
     let
         dvals =
@@ -501,6 +499,3 @@ sequence2 =
                 . position Y [ PName "v", PmType Quantitative ]
     in
     toVegaLite [ dvals, trans [], enc [], mark Line [] ]
-
--}
-
