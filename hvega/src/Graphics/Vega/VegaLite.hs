@@ -1577,6 +1577,9 @@ transformation. To customise all scales use 'config' and supply relevant
 'ScaleConfig' values. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html Vega-Lite documentation>.
 
+The @SReverse@ constructor was removed in version 0.4.0.0, as it
+represented a Vega, rather than Vega-Lite, property. The order of
+a scale can be changed with the 'PSort' constructor.
 -}
 
 data ScaleProperty
@@ -1594,13 +1597,6 @@ data ScaleProperty
     | SInterpolate CInterpolate
     | SNice ScaleNice
     | SZero Bool
-      -- TODO: remove this
-    | SReverse Bool
-      -- ^ This is a Vega, rather than Vega-Lite, property and its use will generate
-      --   warnings when you validate the JSON against the schema. The order
-      --   of a scale (e.g. axis) can be reversed by setting @'PSort' ['Descending']@.
-      --
-      --   This property will be removed in a future release.
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
@@ -1622,7 +1618,6 @@ scaleProperty (SClamp b) = ("clamp", toJSON b)
 scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
 scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
 scaleProperty (SZero b) = ("zero", toJSON b)
-scaleProperty (SReverse b) = ("reverse", toJSON b)
 
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
