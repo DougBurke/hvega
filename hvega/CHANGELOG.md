@@ -16,6 +16,8 @@ This functionality was provided by Adam Conner-Sax (adamConnerSax).
 
 The `dataSequence, `dataSequenceAs`, `sphere`, and `graticule` functions
 have been added, as well as associated properties (`GraticuleProperty`).
+The `Format` type has been extended to support delimeter-separated
+values (`DSV`).
 
 The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`

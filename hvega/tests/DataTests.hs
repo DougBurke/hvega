@@ -17,7 +17,7 @@ testSpecs = [ ("data1", data1)
             , ("data3", data3)
             , ("data4", data4)
             , ("data5", data5)
-            -- , ("data6", data6)
+            , ("data6", data6)
             , ("data7", data7)
             , ("data8", data8)
             , ("data9", data9)
@@ -105,10 +105,10 @@ data5 =
     showData (dataFromUrl "data/dataTest.tsv" [])
 
 
-{- TODO add DSV
+data6 :: VegaLite
 data6 =
     showData (dataFromUrl "data/dataTest.csv" [ DSV ',' ])
--}
+
 
 data7 :: VegaLite
 data7 =

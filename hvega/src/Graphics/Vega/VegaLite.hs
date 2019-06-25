@@ -853,6 +853,17 @@ data Format
     = JSON T.Text
     | CSV
     | TSV
+    | DSV Char
+      -- ^ The fields are separated by the given character (which must be a
+      --   single 16-bit code unit).
+      --
+      -- @since 0.4.0.0
+      {- This isn't in the current vega-lite v3 schema as far as I can see
+    | Arrow
+      -- ^ <https://observablehq.com/@theneuralbit/introduction-to-apache-arrow Apache Arrow> format.
+      --
+      -- @since 0.4.0.0
+      -}
     | TopojsonFeature T.Text
     | TopojsonMesh T.Text
     | Parse [(T.Text, DataType)]
@@ -910,10 +921,14 @@ formatProperty (JSON js) =
 
 formatProperty CSV = [("type", "csv")]
 formatProperty TSV = [("type", "tsv")]
-formatProperty (TopojsonFeature os) = [ ("type", "topojson")
-                                      , ("feature", toJSON os) ]
-formatProperty (TopojsonMesh os) = [ ("type", "topojson")
-                                   , ("mesh", toJSON os) ]
+formatProperty (DSV delim) = [("type", "dsv"), "delimiter" .= delim]
+-- formatProperty Arrow = [("type", "arrow")]
+formatProperty (TopojsonFeature os) = [("type", "topojson")
+                                      , "feature" .= os
+                                      ]
+formatProperty (TopojsonMesh os) = [("type", "topojson")
+                                   , "mesh" .= os
+                                   ]
 formatProperty (Parse fmts) =
   let pObj = object (map (second dataTypeSpec) fmts)
   in [("parse", pObj)]
