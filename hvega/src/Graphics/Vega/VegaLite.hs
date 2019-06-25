@@ -1413,6 +1413,10 @@ data Position
     | Y
     | X2
     | Y2
+    | XError
+    | YError
+    | XError2
+    | YError2
     | Longitude
     | Latitude
     | Longitude2
@@ -1833,22 +1837,26 @@ positionChannelProperty (PStack sp) = stackProperty sp
 
 
 measurementLabel :: Measurement -> T.Text
-measurementLabel Nominal      = "nominal"
-measurementLabel Ordinal      = "ordinal"
+measurementLabel Nominal = "nominal"
+measurementLabel Ordinal = "ordinal"
 measurementLabel Quantitative = "quantitative"
-measurementLabel Temporal     = "temporal"
-measurementLabel GeoFeature   = "geojson"
+measurementLabel Temporal = "temporal"
+measurementLabel GeoFeature = "geojson"
 
 
 positionLabel :: Position -> T.Text
-positionLabel X          = "x"
-positionLabel Y          = "y"
-positionLabel X2         = "x2"
-positionLabel Y2         = "y2"
-positionLabel Longitude  = "longitude"
-positionLabel Latitude   = "latitude"
+positionLabel X = "x"
+positionLabel Y = "y"
+positionLabel X2 = "x2"
+positionLabel Y2 = "y2"
+positionLabel XError     = "xError"
+positionLabel YError     = "yError"
+positionLabel XError2    = "xError2"
+positionLabel YError2    = "yError2"
+positionLabel Longitude = "longitude"
+positionLabel Latitude = "latitude"
 positionLabel Longitude2 = "longitude2"
-positionLabel Latitude2  = "latitude2"
+positionLabel Latitude2 = "latitude2"
 
 
 {-|
