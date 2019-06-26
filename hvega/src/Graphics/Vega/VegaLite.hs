@@ -2795,27 +2795,49 @@ projections see the
 
 data Projection
     = Albers
+      -- ^ An Albers equal-area conic map projection.
     | AlbersUsa
+      -- ^ An Albers USA map projection that combines continental USA with
+      --   Alaska and Hawaii. Unlike other projection types, this remains
+      --   unaffected by 'PRotate'.
     | AzimuthalEqualArea
+      -- ^ An azimuthal equal area map projection.
     | AzimuthalEquidistant
+      -- ^ An azimuthal equidistant map projection.
     | ConicConformal
+      -- ^ A conformal conic map projection.
     | ConicEqualArea
+      -- ^ An equal area conic map projection.
     | ConicEquidistant
+      -- ^ An equidistant conic map projection.
     | Custom T.Text
       -- ^ Specify the name of the custom D3 prohection to use. See the
       --   <https://vega.github.io/vega/docs/projections/#register Vega API>
       --   for more information.
+      --
+      --   An example: @Custom "winkle3"@
     | Equirectangular
+      -- ^ An equirectangular map projection that maps longitude to x and latitude to y.
+      --   While showing less area distortion towards the poles than the default 'Mercator'
+      --   projection, it is neither equal-area nor conformal.
     | Gnomonic
+      -- ^ A gnomonic map projection.
     | Identity
       -- ^ The identiy projection. This can be combined with 'PReflectX' and
       --   'PReflectY' in the list of projection properties.
       --
       --   @since 0.4.0.0
     | Mercator
+      -- ^ A Mercator map projection. This is the default projection of longitude, latitude
+      --   values if no projection is set explicitly. It preserves shape (local angle) and
+      --   lines of equal angular bearing remain parallel straight lines. The area is
+      --   /significantly/ enlarged towards the poles.
     | Orthographic
+      -- ^ An orthographic map projection.
     | Stereographic
+      -- ^ A stereographic map projection.
     | TransverseMercator
+      -- ^ A transverse Mercator map projection.
 
 
 projectionLabel :: Projection -> T.Text
@@ -2836,13 +2858,15 @@ projectionLabel Stereographic = "stereographic"
 projectionLabel TransverseMercator = "transverseMercator"
 
 
--- | Specifies a clipping rectangle in pixel units for defining
+-- | Specifies a clipping rectangle for defining
 --   the clip extent of a map projection.
 
 data ClipRect
     = NoClip
+      -- ^ No clipping it to be applied.
     | LTRB Double Double Double Double
-      -- ^ The left, top, right, and bottom extents.
+      -- ^ The left, top, right, and bottom extents, in pixels,
+      --   of a rectangular clip.
 
 
 {-|
