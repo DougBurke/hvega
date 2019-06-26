@@ -81,285 +81,296 @@ The produced JSON can then be processed with vega-lite, which renders the follow
 -}
 
 module Graphics.Vega.VegaLite
-  (
+       (
          -- * Creating a Vega-Lite Specification
-    toVegaLite
-  , fromVL
-  , VLProperty
-  , VLSpec
-  , VegaLite
-  , LabelledSpec
-  , BuildLabelledSpecs
-  , combineSpecs
-  , toHtml
-  , toHtmlFile
+
+         toVegaLite
+       , fromVL
+       , VLProperty
+       , VLSpec
+       , VegaLite
+       , LabelledSpec
+       , BuildLabelledSpecs
+       , combineSpecs
+       , toHtml
+       , toHtmlFile
 
          -- * Creating the Data Specification
          --
          -- Functions and types for declaring the input data to the
          -- visualization.
-  , dataFromUrl
-  , dataFromColumns
-  , dataFromRows
-  , dataFromJson
-  , dataFromSource
-  , datasets
-  , dataColumn
-  , dataRow
-  , geometry
-  , geoFeatureCollection
-  , geometryCollection
-  , Data
-  , DataColumn
-  , DataRow
-  , Format(..)
-  , Geometry(..)
-  , DataType(..)
+
+       , dataFromUrl
+       , dataFromColumns
+       , dataFromRows
+       , dataFromJson
+       , dataFromSource
+       , datasets
+       , dataColumn
+       , dataRow
+       , geometry
+       , geoFeatureCollection
+       , geometryCollection
+       , Data
+       , DataColumn
+       , DataRow
+       , Format(..)
+       , Geometry(..)
+       , DataType(..)
 
          -- * Creating the Transform Specification
          --
          -- Functions and types for declaring the transformation rules that
          -- are applied to data fields or geospatial coordinates before they
          -- are encoded visually.
-  , transform
-  , projection
-  , ProjectionProperty(..)
-  , Projection(..)
-  , ClipRect(..)
+
+       , transform
+       , projection
+       , ProjectionProperty(..)
+       , Projection(..)
+       , ClipRect(..)
 
          -- ** Aggregation
-  , aggregate
-  , Operation(..)
-  , opAs
-  , timeUnitAs
+
+       , aggregate
+       , Operation(..)
+       , opAs
+       , timeUnitAs
 
          -- ** Binning
-  , binAs
-  , BinProperty(..)
+
+       , binAs
+       , BinProperty(..)
 
          -- ** Data Calculation
-  , calculateAs
+
+       , calculateAs
 
          -- ** Filtering
-  , filter
-  , Filter(..)
-  , FilterRange(..)
+
+       , filter
+       , Filter(..)
+       , FilterRange(..)
 
          -- ** Relational Joining (lookup)
-  , lookup
-  , lookupAs
+
+       , lookup
+       , lookupAs
 
          -- * Creating the Mark Specification
          --
          -- Types and functions for declaring the type of visual
          -- marks used in the visualization.
-  , mark
-  , Mark(..)
-  , MarkProperty(..)
-  , MarkOrientation(..)
-  , MarkInterpolation(..)
-  , MarkErrorExtent(..)
-  , Symbol(..)
-  , Cursor(..)
+
+       , mark
+       , Mark(..)
+       , MarkProperty(..)
+       , MarkOrientation(..)
+       , MarkInterpolation(..)
+       , MarkErrorExtent(..)
+       , Symbol(..)
+       , Cursor(..)
 
          -- * Creating the Encoding Specification
          --
          -- $encoding
-  , encoding
-  , Measurement(..)
+
+       , encoding
+       , Measurement(..)
 
          -- ** Position Channels
          --
          -- Control where items appear in the visualization.
-  , position
-  , PositionChannel(..)
-  , Position(..)
-  , SortProperty(..)
-  , StackProperty(..)
-  , AxisProperty(..)
-  , OverlapStrategy(..)
-  , Side(..)
-  , HAlign(..)
-  , VAlign(..)
-  , FontWeight(..)
-  , TimeUnit(..)
+
+       , position
+       , PositionChannel(..)
+       , Position(..)
+       , SortProperty(..)
+       , StackProperty(..)
+       , AxisProperty(..)
+       , OverlapStrategy(..)
+       , Side(..)
+       , HAlign(..)
+       , VAlign(..)
+       , FontWeight(..)
+       , TimeUnit(..)
 
          -- ** Mark channels
          --
          -- Control the appearance of the visual marks in the visualization
          -- (e.g. 'color' and 'size').
-  , size
-  , color
-  , fill
-  , stroke
-  , opacity
-  , shape
-  , MarkChannel(..)
-  , LegendProperty(..)
-  , Legend(..)
-  , LegendOrientation(..)
-  , LegendValues(..)
+
+       , size
+       , color
+       , fill
+       , stroke
+       , opacity
+       , shape
+       , MarkChannel(..)
+       , LegendProperty(..)
+       , Legend(..)
+       , LegendOrientation(..)
+       , LegendValues(..)
 
          -- ** Text Channels
          --
          -- Control the appearance of the text and tooltip elements in the visualization.
-  , text
-  , tooltip
-  , tooltips
-  , TextChannel(..)
+
+       , text
+       , tooltip
+       , tooltips
+       , TextChannel(..)
 
          -- ** Hyperlink Channels
          --
          -- $hyperlink
-  , hyperlink
-  , HyperlinkChannel(..)
+
+       , hyperlink
+       , HyperlinkChannel(..)
 
          -- ** Order Channels
          --
          -- $order
-  , order
-  , OrderChannel(..)
+
+       , order
+       , OrderChannel(..)
 
          -- ** Facet Channels
          --
          -- $facet
-  , row
-  , column
+
+       , row
+       , column
 
          -- ** Level of detail Channel
          --
          -- $detail
-  , detail
-  , DetailChannel(..)
+
+       , detail
+       , DetailChannel(..)
 
          -- ** Scaling
          --
          -- How the encoding of a data field is applied.
-  , ScaleProperty(..)
-  , Scale(..)
-  , categoricalDomainMap
-  , domainRangeMap
-  , ScaleDomain(..)
-  , ScaleRange(..)
-  , ScaleNice(..)
-  , CInterpolate(..)
+
+       , ScaleProperty(..)
+       , Scale(..)
+       , categoricalDomainMap
+       , domainRangeMap
+       , ScaleDomain(..)
+       , ScaleRange(..)
+       , ScaleNice(..)
+       , CInterpolate(..)
 
          -- * Creating view compositions
          --
          -- $view
-  , layer
-  , hConcat
-  , vConcat
-  , resolve
-  , resolution
-  , Resolve(..)
-  , Channel(..)
-  , Resolution(..)
+
+       , layer
+       , hConcat
+       , vConcat
+       , resolve
+       , resolution
+       , Resolve(..)
+       , Channel(..)
+       , Resolution(..)
 
          -- ** Faceted views
          -- #facetview#
          --
          -- $facetview
-  , repeat
-  , RepeatFields(..)
-  , facet
-  , FacetMapping(..)
-  , FacetChannel(..)
-  , asSpec
-  , specification
-  , Arrangement(..)
-  , HeaderProperty(..)
+
+       , repeat
+       , RepeatFields(..)
+       , facet
+       , FacetMapping(..)
+       , FacetChannel(..)
+       , asSpec
+       , specification
+       , Arrangement(..)
+       , HeaderProperty(..)
 
          -- * Creating Selections for Interaction
          --
          -- $selections
-  , selection
-  , select
-  , Selection(..)
-  , SelectionProperty(..)
-  , Binding(..)
-  , InputProperty(..)
-  , SelectionResolution(..)
-  , SelectionMarkProperty(..)
+
+       , selection
+       , select
+       , Selection(..)
+       , SelectionProperty(..)
+       , Binding(..)
+       , InputProperty(..)
+       , SelectionResolution(..)
+       , SelectionMarkProperty(..)
 
          -- ** Making conditional channel encodings
          --
          -- $conditional
-  , BooleanOp(..)
+
+       , BooleanOp(..)
 
          -- * Global Configuration
          --
          -- Configuration options that affect the entire visualization. These are in addition
          -- to the data and transform options described above.
-  , name
-  , title
-  , description
-  , height
-  , width
-  , padding
-  , autosize
-  , background
-  , configure
-  , configuration
-  , ConfigurationProperty(..)
-  , Autosize(..)
-  , Padding(..)
-  , AxisConfig(..)
-  , LegendConfig(..)
-  , ScaleConfig(..)
-  , TitleConfig(..)
-  , APosition(..)
-  , ViewConfig(..)
-  , RangeConfig(..)
-  , FieldTitleProperty(..)
+
+       , name
+       , title
+       , description
+       , height
+       , width
+       , padding
+       , autosize
+       , background
+       , configure
+       , configuration
+       , ConfigurationProperty(..)
+       , Autosize(..)
+       , Padding(..)
+       , AxisConfig(..)
+       , LegendConfig(..)
+       , ScaleConfig(..)
+       , TitleConfig(..)
+       , APosition(..)
+       , ViewConfig(..)
+       , RangeConfig(..)
+       , FieldTitleProperty(..)
 
          -- * General Data types
          --
          -- In addition to more general data types like integers and string, the following types
-         -- can carry data used in specifications.    
-  , DataValue(..)
-  , DataValues(..)
-  , DateTime(..)
-  , MonthName(..)
-  , DayName(..)
+         -- can carry data used in specifications.
+
+       , DataValue(..)
+       , DataValues(..)
+       , DateTime(..)
+       , MonthName(..)
+       , DayName(..)
          -- * Versions for Html
-  , vlSchemaName
-  , vegaScriptName
-  , vegaLiteScriptName
-  , vegaEmbedScriptName
-  , vlEmbedScriptNames
-  )
-where
+       , vlSchemaName
+       , vegaScriptName
+       , vegaLiteScriptName
+       , vegaEmbedScriptName
+       , vlEmbedScriptNames
+        )
+    where
 
 -- VegaLite uses these symbols.
-import           Prelude                 hiding ( filter
-                                                , lookup
-                                                , repeat
-                                                )
+import Prelude hiding (filter, lookup, repeat)
 
-import qualified Data.Aeson                    as A
-import qualified Data.Aeson.Text               as A
-import qualified Data.Text                     as T
-import qualified Data.Text.Lazy                as TL
-import qualified Data.Text.Lazy.IO             as TL
-import qualified Data.Vector                   as V
+import qualified Data.Aeson as A
+import qualified Data.Aeson.Text as A
+import qualified Data.Text as T
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.IO as TL
+import qualified Data.Vector as V
 
-import           Control.Arrow                  ( first
-                                                , second
-                                                )
+import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
-import           Data.Aeson                     ( Value
-                                                , decode
-                                                , encode
-                                                , object
-                                                , toJSON
-                                                , (.=)
-                                                )
-import           Data.Maybe                     ( fromMaybe
-                                                , mapMaybe
-                                                )
-import           Data.Monoid                    ( (<>) )
+import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
+import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Monoid ((<>))
 
 -- Documentation
 
@@ -527,18 +538,24 @@ newtype VegaLite =
 -- | The specification is represented as JSON.
 type VLSpec = Value
 
+-- | Schema name for vega-embed scripts
 vlSchemaName :: T.Text
 vlSchemaName = "https://vega.github.io/schema/vega-lite/v3.json"
 
+-- | Script name for vega
 vegaScriptName :: T.Text
 vegaScriptName = "vega@5"
 
+-- | Script name for vega-lite
 vegaLiteScriptName :: T.Text
 vegaLiteScriptName = "vega-lite@3"
 
+-- | Script name for vega-embed
 vegaEmbedScriptName :: T.Text
 vegaEmbedScriptName = "vega-embed@4"
 
+-- | All script names together to make loading all from, e.g., a CDN,
+-- easier
 vlEmbedScriptNames :: [T.Text]
 vlEmbedScriptNames = [vegaScriptName, vegaLiteScriptName, vegaEmbedScriptName]
 
@@ -574,9 +591,11 @@ The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>.
 -}
 toVegaLite :: [(VLProperty, VLSpec)] -> VegaLite
 toVegaLite vals =
-  let kvals  = ("$schema" .= vlSchemaName) : map toProp vals
+  let kvals = ("$schema" .= vlSchemaName)
+              : map toProp vals
       toProp = first vlPropertyLabel
-  in  VL {fromVL = object kvals}
+
+  in VL { fromVL = object kvals }
 
 
 {-|
@@ -608,7 +627,7 @@ toHtml vl = TL.unlines
   , "<html>"
   , "<head>"
   , "  <!-- Import Vega 5 & Vega-Lite 3 (does not have to be from CDN) -->"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/"
+   , "  <script src=\"https://cdn.jsdelivr.net/npm/"
   <> TL.fromStrict vegaScriptName
   <> "\"></script>"
   , "  <script src=\"https://cdn.jsdelivr.net/npm/"
@@ -674,7 +693,9 @@ geojson =
 -}
 geoFeatureCollection :: [VLSpec] -> VLSpec
 geoFeatureCollection geoms =
-  object ["type" .= ("FeatureCollection" :: T.Text), "features" .= geoms]
+  object [ "type" .= ("FeatureCollection" :: T.Text)
+         , "features" .=  geoms
+         ]
 
 
 {-|
@@ -693,7 +714,9 @@ geojson =
 -}
 geometryCollection :: [VLSpec] -> VLSpec
 geometryCollection geoms =
-  object ["type" .= ("GeometryCollection" :: T.Text), "geometries" .= geoms]
+  object [ "type" .= ("GeometryCollection" :: T.Text)
+         , "geometries" .= geoms
+         ]
 
 
 {-|
@@ -712,15 +735,19 @@ trans =
             [ "age" ]
 @
 -}
-opAs
-  :: Operation
+opAs ::
+  Operation
   -- ^ The aggregation operation to use.
   -> T.Text
   -- ^ The name of the field which is to be aggregated.
   -> T.Text
   -- ^ The name given to the transformed data.
   -> VLSpec
-opAs op field label = object [op_ op, field_ field, "as" .= label]
+opAs op field label =
+  object [ op_ op
+         , field_ field
+         , "as" .= label
+         ]
 
 
 {-|
@@ -785,29 +812,29 @@ data VLProperty
 
 
 vlPropertyLabel :: VLProperty -> T.Text
-vlPropertyLabel VLName        = "name"
+vlPropertyLabel VLName = "name"
 vlPropertyLabel VLDescription = "description"
-vlPropertyLabel VLTitle       = "title"
-vlPropertyLabel VLWidth       = "width"
-vlPropertyLabel VLHeight      = "height"
-vlPropertyLabel VLPadding     = "padding"
-vlPropertyLabel VLAutosize    = "autosize"
-vlPropertyLabel VLBackground  = "background"
-vlPropertyLabel VLData        = "data"
-vlPropertyLabel VLDatasets    = "datasets"
-vlPropertyLabel VLProjection  = "projection"
-vlPropertyLabel VLMark        = "mark"
-vlPropertyLabel VLTransform   = "transform"
-vlPropertyLabel VLEncoding    = "encoding"
-vlPropertyLabel VLConfig      = "config"
-vlPropertyLabel VLSelection   = "selection"
-vlPropertyLabel VLHConcat     = "hconcat"
-vlPropertyLabel VLVConcat     = "vconcat"
-vlPropertyLabel VLLayer       = "layer"
-vlPropertyLabel VLRepeat      = "repeat"
-vlPropertyLabel VLFacet       = "facet"
-vlPropertyLabel VLSpec        = "spec"
-vlPropertyLabel VLResolve     = "resolve"
+vlPropertyLabel VLTitle = "title"
+vlPropertyLabel VLWidth = "width"
+vlPropertyLabel VLHeight = "height"
+vlPropertyLabel VLPadding = "padding"
+vlPropertyLabel VLAutosize = "autosize"
+vlPropertyLabel VLBackground = "background"
+vlPropertyLabel VLData = "data"
+vlPropertyLabel VLDatasets = "datasets"
+vlPropertyLabel VLProjection = "projection"
+vlPropertyLabel VLMark = "mark"
+vlPropertyLabel VLTransform = "transform"
+vlPropertyLabel VLEncoding = "encoding"
+vlPropertyLabel VLConfig = "config"
+vlPropertyLabel VLSelection = "selection"
+vlPropertyLabel VLHConcat = "hconcat"
+vlPropertyLabel VLVConcat = "vconcat"
+vlPropertyLabel VLLayer = "layer"
+vlPropertyLabel VLRepeat = "repeat"
+vlPropertyLabel VLFacet = "facet"
+vlPropertyLabel VLSpec = "spec"
+vlPropertyLabel VLResolve = "resolve"
 
 
 {-|
@@ -892,28 +919,30 @@ type Data = (VLProperty, VLSpec)
 formatProperty :: Format -> [LabelledSpec]
 formatProperty (JSON js) =
   let ps = [("type", "json")]
-        <> if T.null (T.strip js) then [] else [("property", js)]
-  in  map (second toJSON) ps
+           <> if T.null (T.strip js) then [] else [("property", js)]
+  in map (second toJSON) ps
 
 formatProperty CSV = [("type", "csv")]
 formatProperty TSV = [("type", "tsv")]
-formatProperty (TopojsonFeature os) =
-  [("type", "topojson"), ("feature", toJSON os)]
-formatProperty (TopojsonMesh os) = [("type", "topojson"), ("mesh", toJSON os)]
+formatProperty (TopojsonFeature os) = [ ("type", "topojson")
+                                      , ("feature", toJSON os) ]
+formatProperty (TopojsonMesh os) = [ ("type", "topojson")
+                                   , ("mesh", toJSON os) ]
 formatProperty (Parse fmts) =
-  let pObj = object (map (second dataTypeSpec) fmts) in [("parse", pObj)]
+  let pObj = object (map (second dataTypeSpec) fmts)
+  in [("parse", pObj)]
 
 
 dataTypeSpec :: DataType -> VLSpec
 dataTypeSpec dType =
   let s = case dType of
-        FoNumber  -> "number"
+        FoNumber -> "number"
         FoBoolean -> "boolean"
         FoDate fmt | T.null fmt -> "date"
-                   | otherwise  -> "date:'" <> fmt <> "'"
+                   | otherwise -> "date:'" <> fmt <> "'"
         FoUtc fmt | T.null fmt -> "utc"
-                  | otherwise  -> "utc:'" <> fmt <> "'"
-  in  toJSON s
+                  | otherwise -> "utc:'" <> fmt <> "'"
+  in toJSON s
 
 
 {-|
@@ -964,14 +993,16 @@ datasets namedData =
   --
   -- The input is expected to be a singleton list containing a pair.
   let convert = extract . snd
-      specs   = map (second convert) namedData
+      specs = map (second convert) namedData
 
       extract din =
         let extract' :: [(T.Text, Value)] -> Value
             extract' [(_, v)] = v
-            extract' _        = din
-        in  maybe din extract' (decode (encode din))
-  in  (VLDatasets, object specs)
+            extract' _ = din
+
+        in maybe din extract' (decode (encode din))
+
+  in (VLDatasets, object specs)
 
 
 {-|
@@ -997,28 +1028,32 @@ dataFromColumns :: [Format] -> [DataColumn] -> Data
 dataFromColumns fmts cols =
   let dataArray = map object (transpose cols)
 
-      vals      = [("values", toJSON dataArray)]
-        <> if null fmts then [] else [("format", toJSON fmtObject)]
+      vals = [("values", toJSON dataArray)]
+             <> if null fmts
+                then []
+                else [("format", toJSON fmtObject)]
 
       fmtObject = object (concatMap formatProperty fmts)
-  in  (VLData, object vals)
+
+  in (VLData, object vals)
 
 
 transpose :: [[a]] -> [[a]]
-transpose []         = []
-transpose ([] : xss) = transpose xss
-transpose ((x : xs) : xss) =
+transpose [] = []
+transpose ([]:xss) = transpose xss
+transpose ((x:xs) : xss) =
   let heads = filterMap elmHead xss --
       tails = filterMap elmTail xss
 
-      elmHead (h : _) = Just h
-      elmHead []      = Nothing
+      elmHead (h:_) = Just h
+      elmHead [] = Nothing
 
-      elmTail []       = Nothing
-      elmTail (_ : ts) = Just ts
+      elmTail [] = Nothing
+      elmTail (_:ts) = Just ts
 
       filterMap = mapMaybe
-  in  (x : heads) : transpose (xs : tails)
+
+  in (x : heads) : transpose (xs : tails)
 
 
 {-|
@@ -1041,16 +1076,13 @@ in 'toVegaLite'
 @
 -}
 dataFromJson :: VLSpec -> [Format] -> Data
-dataFromJson vlspec fmts
-  = let
-      js = if null fmts
-        then object [("values", vlspec)]
-        else
-          object
-            [ ("values", vlspec)
-            , ("format", object (concatMap formatProperty fmts))
-            ]
-    in  (VLData, js)
+dataFromJson vlspec fmts =
+  let js = if null fmts
+           then object [("values", vlspec)]
+           else object [ ("values", vlspec)
+                       , ("format",
+                          object (concatMap formatProperty fmts)) ]
+  in (VLData, js)
 
 
 {-|
@@ -1066,10 +1098,10 @@ data DataValue
 
 
 dataValueSpec :: DataValue -> VLSpec
-dataValueSpec (Boolean  b ) = toJSON b
+dataValueSpec (Boolean b) = toJSON b
 dataValueSpec (DateTime dt) = object (map dateTimeProperty dt)
-dataValueSpec (Number   x ) = toJSON x
-dataValueSpec (Str      t ) = toJSON t
+dataValueSpec (Number x) = toJSON x
+dataValueSpec (Str t) = toJSON t
 
 
 {-|
@@ -1096,14 +1128,15 @@ dataColumn \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
 dataColumn :: T.Text -> DataValues -> [DataColumn] -> [DataColumn]
 dataColumn colName dVals xs =
   let col = case dVals of
-        Booleans  cs -> map toJSON cs
+        Booleans cs -> map toJSON cs
         DateTimes cs -> map dtToJSON cs
-        Numbers   cs -> map toJSON cs
-        Strings   cs -> map toJSON cs
+        Numbers cs -> map toJSON cs
+        Strings cs -> map toJSON cs
 
       dtToJSON = object . map dateTimeProperty
-      x        = map (colName, ) col
-  in  x : xs
+      x = map (colName,) col
+
+  in x : xs
 
 
 {-|
@@ -1130,10 +1163,11 @@ data = dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
 -}
 dataFromRows :: [Format] -> [DataRow] -> Data
 dataFromRows fmts rows =
-  let kvs = ("values", toJSON rows) : if null fmts
-        then []
-        else [("format", object (concatMap formatProperty fmts))]
-  in  (VLData, object kvs)
+  let kvs = ("values", toJSON rows)
+            : if null fmts
+              then []
+              else [("format", object (concatMap formatProperty fmts))]
+  in (VLData, object kvs)
 
 
 {-|
@@ -1157,10 +1191,11 @@ for details.
 -}
 dataFromSource :: T.Text -> [Format] -> Data
 dataFromSource sourceName fmts =
-  let kvs = ("name" .= sourceName) : if null fmts
-        then []
-        else [("format", object (concatMap formatProperty fmts))]
-  in  (VLData, object kvs)
+  let kvs = ("name" .= sourceName)
+            : if null fmts
+              then []
+              else [("format", object (concatMap formatProperty fmts))]
+  in (VLData, object kvs)
 
 
 {-|
@@ -1183,10 +1218,11 @@ for details.
 -- TODO: should use a URL type
 dataFromUrl :: T.Text -> [Format] -> Data
 dataFromUrl url fmts =
-  let kvs = ("url" .= url) : if null fmts
-        then []
-        else [("format", object (concatMap formatProperty fmts))]
-  in  (VLData, object kvs)
+  let kvs = ("url" .= url)
+            : if null fmts
+              then []
+              else [("format", object (concatMap formatProperty fmts))]
+  in (VLData, object kvs)
 
 
 -- | Type of visual mark used to represent data in the visualization.
@@ -1207,19 +1243,19 @@ data Mark
 
 
 markLabel :: Mark -> T.Text
-markLabel Area      = "area"
-markLabel Bar       = "bar"
-markLabel Circle    = "circle"
-markLabel ErrorBar  = "errorbar"
+markLabel Area = "area"
+markLabel Bar = "bar"
+markLabel Circle = "circle"
+markLabel ErrorBar = "errorbar"
 markLabel ErrorBand = "errorband"
-markLabel Line      = "line"
-markLabel Geoshape  = "geoshape"
-markLabel Point     = "point"
-markLabel Rect      = "rect"
-markLabel Rule      = "rule"
-markLabel Square    = "square"
-markLabel Text      = "text"
-markLabel Tick      = "tick"
+markLabel Line = "line"
+markLabel Geoshape = "geoshape"
+markLabel Point = "point"
+markLabel Rect = "rect"
+markLabel Rule = "rule"
+markLabel Square = "square"
+markLabel Text = "text"
+markLabel Tick = "tick"
 
 
 {-|
@@ -1237,10 +1273,11 @@ mark 'Line' [ 'MInterpolate' 'StepAfter' ]
 mark :: Mark -> [MarkProperty] -> (VLProperty, VLSpec)
 mark mrk props =
   let jsName = toJSON (markLabel mrk)
-      vals   = if null props
-        then jsName
-        else object (("type" .= jsName) : map markProperty props)
-  in  (VLMark, vals)
+      vals = if null props
+             then jsName
+             else object (("type" .= jsName) : map markProperty props)
+
+  in (VLMark, vals)
 
 
 {-|
@@ -1267,32 +1304,32 @@ data MarkChannel
 
 
 markChannelProperty :: MarkChannel -> [LabelledSpec]
-markChannelProperty (MName   s  ) = [field_ s]
+markChannelProperty (MName s) = [field_ s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
-markChannelProperty (MmType  t  ) = [type_ t]
+markChannelProperty (MmType t) = [type_ t]
 markChannelProperty (MScale sps) =
   [("scale", if null sps then A.Null else object (map scaleProperty sps))]
 markChannelProperty (MLegend lps) =
   [("legend", if null lps then A.Null else object (map legendProperty lps))]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap markChannelProperty
-      hkey    = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
+      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
 markChannelProperty (MDataCondition predicate ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap markChannelProperty
-      hkey    = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
-markChannelProperty (MTimeUnit  tu) = [timeUnit_ tu]
+      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
+markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]
 markChannelProperty (MAggregate op) = [aggregate_ op]
-markChannelProperty (MPath      s ) = ["value" .= s]
-markChannelProperty (MNumber    x ) = ["value" .= x]
-markChannelProperty (MString    s ) = ["value" .= s]
-markChannelProperty (MBoolean   b ) = ["value" .= b]
+markChannelProperty (MPath s) = ["value" .= s]
+markChannelProperty (MNumber x) = ["value" .= x]
+markChannelProperty (MString s) = ["value" .= s]
+markChannelProperty (MBoolean b) = ["value" .= b]
 
 
 {-|
@@ -1343,46 +1380,44 @@ data MarkProperty
     | MThickness Double
 
 markProperty :: MarkProperty -> LabelledSpec
-markProperty (MFilled           b     ) = ("filled", toJSON b)
-markProperty (MClip             b     ) = ("clip", toJSON b)
-markProperty (MColor            col   ) = ("color", toJSON col)
-markProperty (MCursor           cur   ) = ("cursor", toJSON (cursorLabel cur))
-markProperty (MFill             col   ) = ("fill", toJSON col)
-markProperty (MStroke           t     ) = ("stroke", toJSON t)
-markProperty (MStrokeOpacity    x     ) = ("strokeOpacity", toJSON x)
-markProperty (MStrokeWidth      w     ) = ("strokeWidth", toJSON w)
-markProperty (MStrokeDash       xs    ) = ("strokeDash", toJSON (map toJSON xs))
-markProperty (MStrokeDashOffset x     ) = ("strokeDashOffset", toJSON x)
-markProperty (MOpacity          x     ) = ("opacity", toJSON x)
-markProperty (MFillOpacity      x     ) = ("fillOpacity", toJSON x)
-markProperty (MStyle            styles) = ("style", toJSON (map toJSON styles))
-markProperty (MInterpolate interp) =
-  ("interpolate", toJSON (markInterpolationLabel interp))
+markProperty (MFilled b) = ("filled", toJSON b)
+markProperty (MClip b) = ("clip", toJSON b)
+markProperty (MColor col) = ("color", toJSON col)
+markProperty (MCursor cur) = ("cursor", toJSON (cursorLabel cur))
+markProperty (MFill col) = ("fill", toJSON col)
+markProperty (MStroke t) = ("stroke", toJSON t)
+markProperty (MStrokeOpacity x) = ("strokeOpacity", toJSON x)
+markProperty (MStrokeWidth w) = ("strokeWidth", toJSON w)
+markProperty (MStrokeDash xs) = ("strokeDash", toJSON (map toJSON xs))
+markProperty (MStrokeDashOffset x) = ("strokeDashOffset", toJSON x)
+markProperty (MOpacity x) = ("opacity", toJSON x)
+markProperty (MFillOpacity x) = ("fillOpacity", toJSON x)
+markProperty (MStyle styles) = ("style", toJSON (map toJSON styles))
+markProperty (MInterpolate interp) = ("interpolate", toJSON (markInterpolationLabel interp))
 markProperty (MTension x) = ("tension", toJSON x)
-markProperty (MOrient orient) =
-  ("orient", toJSON (markOrientationLabel orient))
-markProperty (MShape              sym  ) = ("shape", toJSON (symbolLabel sym))
-markProperty (MSize               x    ) = ("size", toJSON x)
-markProperty (MAngle              x    ) = ("angle", toJSON x)
-markProperty (MAlign              align) = ("align", toJSON (hAlignLabel align))
-markProperty (MBaseline           va   ) = ("baseline", toJSON (vAlignLabel va))
-markProperty (MdX                 dx   ) = ("dx", toJSON dx)
-markProperty (MdY                 dy   ) = ("dy", toJSON dy)
+markProperty (MOrient orient) = ("orient", toJSON (markOrientationLabel orient))
+markProperty (MShape sym) = ("shape", toJSON (symbolLabel sym))
+markProperty (MSize x) = ("size", toJSON x)
+markProperty (MAngle x) = ("angle", toJSON x)
+markProperty (MAlign align) = ("align", toJSON (hAlignLabel align))
+markProperty (MBaseline va) = ("baseline", toJSON (vAlignLabel va))
+markProperty (MdX dx) = ("dx", toJSON dx)
+markProperty (MdY dy) = ("dy", toJSON dy)
 markProperty (MExtent mee) = ("extent", toJSON (markErrorExtentLabel mee))
-markProperty (MFont               fnt  ) = ("font", toJSON fnt)
-markProperty (MFontSize           x    ) = ("fontSize", toJSON x)
-markProperty (MFontStyle          fSty ) = ("fontStyle", toJSON fSty)
-markProperty (MFontWeight         w    ) = ("fontWeight", fontWeightSpec w)
-markProperty (MRadius             x    ) = ("radius", toJSON x)
-markProperty (MText               txt  ) = ("text", toJSON txt)
-markProperty (MTheta              x    ) = ("theta", toJSON x)
-markProperty (MBinSpacing         x    ) = ("binSpacing", toJSON x)
-markProperty (MContinuousBandSize x    ) = ("continuousBandSize", toJSON x)
-markProperty (MDiscreteBandSize   x    ) = ("discreteBandSize", toJSON x)
-markProperty (MShortTimeLabels    b    ) = ("shortTimeLabels", toJSON b)
-markProperty (MBandSize           x    ) = ("bandSize", toJSON x)
-markProperty (MThickness          x    ) = ("thickness", toJSON x)
-markProperty (MBorders            b    ) = ("borders", toJSON b)
+markProperty (MFont fnt) = ("font", toJSON fnt)
+markProperty (MFontSize x) = ("fontSize", toJSON x)
+markProperty (MFontStyle fSty) = ("fontStyle", toJSON fSty)
+markProperty (MFontWeight w) = ("fontWeight", fontWeightSpec w)
+markProperty (MRadius x) = ("radius", toJSON x)
+markProperty (MText txt) = ("text", toJSON txt)
+markProperty (MTheta x) = ("theta", toJSON x)
+markProperty (MBinSpacing x) = ("binSpacing", toJSON x)
+markProperty (MContinuousBandSize x) = ("continuousBandSize", toJSON x)
+markProperty (MDiscreteBandSize x) = ("discreteBandSize", toJSON x)
+markProperty (MShortTimeLabels b) = ("shortTimeLabels", toJSON b)
+markProperty (MBandSize x) = ("bandSize", toJSON x)
+markProperty (MThickness x) = ("thickness", toJSON x)
+markProperty (MBorders b) = ("borders", toJSON b)
 
 {-|
 
@@ -1465,21 +1500,22 @@ data BinProperty
 
 
 binProperty :: BinProperty -> LabelledSpec
-binProperty (MaxBins n   ) = ("maxbins", toJSON n)
-binProperty (Base    x   ) = ("base", toJSON x)
-binProperty (Step    x   ) = ("step", toJSON x)
-binProperty (Steps   xs  ) = ("steps", toJSON (map toJSON xs))
-binProperty (MinStep x   ) = ("minstep", toJSON x)
-binProperty (Divide x  y ) = ("divide", toJSON [toJSON x, toJSON y])
-binProperty (Extent mn mx) = ("extent", toJSON [toJSON mn, toJSON mx])
-binProperty (Nice b      ) = ("nice", toJSON b)
+binProperty (MaxBins n) = ("maxbins", toJSON n)
+binProperty (Base x) = ("base", toJSON x)
+binProperty (Step x) = ("step", toJSON x)
+binProperty (Steps xs) = ("steps", toJSON (map toJSON xs))
+binProperty (MinStep x) = ("minstep", toJSON x)
+binProperty (Divide x y) = ("divide", toJSON [ toJSON x, toJSON y ])
+binProperty (Extent mn mx) = ("extent", toJSON [ toJSON mn, toJSON mx ])
+binProperty (Nice b) = ("nice", toJSON b)
 
 
 bin :: [BinProperty] -> LabelledSpec
 bin bProps =
-  let ans =
-        if null bProps then toJSON True else object (map binProperty bProps)
-  in  ("bin", ans)
+  let ans = if null bProps
+            then toJSON True
+            else object (map binProperty bProps)
+  in ("bin", ans)
 
 
 {-|
@@ -1513,26 +1549,26 @@ data Operation
 
 
 operationLabel :: Operation -> T.Text
-operationLabel ArgMax    = "argmax"
-operationLabel ArgMin    = "argmin"
-operationLabel Average   = "average"
-operationLabel CI0       = "ci0"
-operationLabel CI1       = "ci1"
-operationLabel Count     = "count"
-operationLabel Distinct  = "distinct"
-operationLabel Max       = "max"
-operationLabel Mean      = "mean"
-operationLabel Median    = "median"
-operationLabel Min       = "min"
-operationLabel Missing   = "missing"
-operationLabel Q1        = "q1"
-operationLabel Q3        = "q3"
-operationLabel Stderr    = "stderr"
-operationLabel Stdev     = "stdev"
-operationLabel StdevP    = "stdevp"
-operationLabel Sum       = "sum"
-operationLabel Valid     = "valid"
-operationLabel Variance  = "variance"
+operationLabel ArgMax = "argmax"
+operationLabel ArgMin = "argmin"
+operationLabel Average = "average"
+operationLabel CI0 = "ci0"
+operationLabel CI1 = "ci1"
+operationLabel Count = "count"
+operationLabel Distinct = "distinct"
+operationLabel Max = "max"
+operationLabel Mean = "mean"
+operationLabel Median = "median"
+operationLabel Min = "min"
+operationLabel Missing = "missing"
+operationLabel Q1 = "q1"
+operationLabel Q3 = "q3"
+operationLabel Stderr = "stderr"
+operationLabel Stdev = "stdev"
+operationLabel StdevP = "stdevp"
+operationLabel Sum = "sum"
+operationLabel Valid = "valid"
+operationLabel Variance = "variance"
 operationLabel VarianceP = "variancep"
 
 
@@ -1544,7 +1580,7 @@ data Arrangement
 
 arrangementLabel :: Arrangement -> T.Text
 arrangementLabel Column = "column"
-arrangementLabel Row    = "row"
+arrangementLabel Row = "row"
 
 
 -- | Describes the type of stacking to apply to a bar chart.
@@ -1557,10 +1593,10 @@ data StackProperty
 
 
 stackProperty :: StackProperty -> LabelledSpec
-stackProperty StZero      = ("stack", "zero")
+stackProperty StZero = ("stack", "zero")
 stackProperty StNormalize = ("stack", "normalize")
-stackProperty StCenter    = ("stack", "center")
-stackProperty NoStack     = ("stack", A.Null)
+stackProperty StCenter = ("stack", "center")
+stackProperty NoStack = ("stack", A.Null)
 
 
 {-|
@@ -1593,33 +1629,33 @@ data ScaleProperty
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
-scaleProperty (SType   sType ) = ("type", toJSON (scaleLabel sType))
+scaleProperty (SType sType) = ("type", toJSON (scaleLabel sType))
 scaleProperty (SDomain sdType) = ("domain", scaleDomainSpec sdType)
 scaleProperty (SRange range) =
   let js = case range of
         RNumbers xs -> toJSON (map toJSON xs)
         RStrings ss -> toJSON (map toJSON ss)
-        RName    s  -> toJSON s
-  in  ("range", js)
+        RName s -> toJSON s
+  in ("range", js)
 scaleProperty (SScheme nme extent) = schemeProperty nme extent
-scaleProperty (SPadding      x   ) = ("padding", toJSON x)
-scaleProperty (SPaddingInner x   ) = ("paddingInner", toJSON x)
-scaleProperty (SPaddingOuter x   ) = ("paddingOuter", toJSON x)
-scaleProperty (SRangeStep numOrNull) =
-  ("rangeStep", maybe A.Null toJSON numOrNull)
-scaleProperty (SRound       b     ) = ("round", toJSON b)
-scaleProperty (SClamp       b     ) = ("clamp", toJSON b)
+scaleProperty (SPadding x) = ("padding", toJSON x)
+scaleProperty (SPaddingInner x) = ("paddingInner", toJSON x)
+scaleProperty (SPaddingOuter x) = ("paddingOuter", toJSON x)
+scaleProperty (SRangeStep numOrNull) = ("rangeStep", maybe A.Null toJSON numOrNull)
+scaleProperty (SRound b) = ("round", toJSON b)
+scaleProperty (SClamp b) = ("clamp", toJSON b)
 scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
-scaleProperty (SNice        ni    ) = ("nice", scaleNiceSpec ni)
-scaleProperty (SZero        b     ) = ("zero", toJSON b)
+scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
+scaleProperty (SZero b) = ("zero", toJSON b)
 
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
 schemeProperty nme extent =
   let js = case extent of
         [mn, mx] -> object ["name" .= nme, "extent" .= [mn, mx]]
-        _        -> toJSON nme
-  in  ("scheme", js)
+        _ -> toJSON nme
+
+  in ("scheme", js)
 
 
 -- | Used to indicate the type of scale transformation to apply.
@@ -1640,17 +1676,17 @@ data Scale
 
 
 scaleLabel :: Scale -> T.Text
-scaleLabel ScLinear     = "linear"
-scaleLabel ScPow        = "pow"
-scaleLabel ScSqrt       = "sqrt"
-scaleLabel ScLog        = "log"
-scaleLabel ScTime       = "time"
-scaleLabel ScUtc        = "utc"
+scaleLabel ScLinear = "linear"
+scaleLabel ScPow = "pow"
+scaleLabel ScSqrt = "sqrt"
+scaleLabel ScLog = "log"
+scaleLabel ScTime = "time"
+scaleLabel ScUtc = "utc"
 scaleLabel ScSequential = "sequential"
-scaleLabel ScOrdinal    = "ordinal"
-scaleLabel ScBand       = "band"
-scaleLabel ScPoint      = "point"
-scaleLabel ScBinLinear  = "bin-linear"
+scaleLabel ScOrdinal = "ordinal"
+scaleLabel ScBand = "band"
+scaleLabel ScPoint = "point"
+scaleLabel ScBinLinear = "bin-linear"
 scaleLabel ScBinOrdinal = "bin-ordinal"
 
 
@@ -1670,11 +1706,10 @@ data ScaleDomain
 
 scaleDomainSpec :: ScaleDomain -> VLSpec
 scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
-scaleDomainSpec (DDateTimes dts) =
-  toJSON (map (object . map dateTimeProperty) dts)
-scaleDomainSpec (DStrings   cats   ) = toJSON (map toJSON cats)
+scaleDomainSpec (DDateTimes dts) = toJSON (map (object . map dateTimeProperty) dts)
+scaleDomainSpec (DStrings cats) = toJSON (map toJSON cats)
 scaleDomainSpec (DSelection selName) = object ["selection" .= selName]
-scaleDomainSpec Unaggregated         = "unaggregated"
+scaleDomainSpec Unaggregated = "unaggregated"
 
 
 {-|
@@ -1698,16 +1733,16 @@ data ScaleNice
 
 scaleNiceSpec :: ScaleNice -> VLSpec
 scaleNiceSpec NMillisecond = fromT "millisecond"
-scaleNiceSpec NSecond      = fromT "second"
-scaleNiceSpec NMinute      = fromT "minute"
-scaleNiceSpec NHour        = fromT "hour"
-scaleNiceSpec NDay         = fromT "day"
-scaleNiceSpec NWeek        = fromT "week"
-scaleNiceSpec NMonth       = fromT "month"
-scaleNiceSpec NYear        = fromT "year"
+scaleNiceSpec NSecond = fromT "second"
+scaleNiceSpec NMinute = fromT "minute"
+scaleNiceSpec NHour = fromT "hour"
+scaleNiceSpec NDay = fromT "day"
+scaleNiceSpec NWeek = fromT "week"
+scaleNiceSpec NMonth = fromT "month"
+scaleNiceSpec NYear = fromT "year"
 scaleNiceSpec (NInterval tu step) =
   object ["interval" .= timeUnitLabel tu, "step" .= step]
-scaleNiceSpec (IsNice     b) = toJSON b
+scaleNiceSpec (IsNice b) = toJSON b
 scaleNiceSpec (NTickCount n) = toJSON n
 
 
@@ -1759,15 +1794,13 @@ pairT a b = a .= b
 
 cInterpolateSpec :: CInterpolate -> VLSpec
 cInterpolateSpec (Rgb gamma) = object [pairT "type" "rgb", "gamma" .= gamma]
-cInterpolateSpec Hsl         = object [pairT "type" "hsl"]
-cInterpolateSpec HslLong     = object [pairT "type" "hsl-long"]
-cInterpolateSpec Lab         = object [pairT "type" "lab"]
-cInterpolateSpec Hcl         = object [pairT "type" "hcl"]
-cInterpolateSpec HclLong     = object [pairT "type" "hcl-long"]
-cInterpolateSpec (CubeHelix gamma) =
-  object [pairT "type" "cubehelix", "gamma" .= gamma]
-cInterpolateSpec (CubeHelixLong gamma) =
-  object [pairT "type" "cubehelix-long", "gamma" .= gamma]
+cInterpolateSpec Hsl = object [pairT "type" "hsl"]
+cInterpolateSpec HslLong = object [pairT "type" "hsl-long"]
+cInterpolateSpec Lab = object [pairT "type" "lab"]
+cInterpolateSpec Hcl = object [pairT "type" "hcl"]
+cInterpolateSpec HclLong = object [pairT "type" "hcl-long"]
+cInterpolateSpec (CubeHelix gamma) = object [pairT "type" "cubehelix", "gamma" .= gamma]
+cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", "gamma" .= gamma]
 
 
 {-|
@@ -1784,18 +1817,18 @@ data SortProperty
 
 
 sortProperty :: SortProperty -> LabelledSpec
-sortProperty Ascending        = "order" .= fromT "ascending"
-sortProperty Descending       = "order" .= fromT "descending"
-sortProperty (ByField  field) = field_ field
-sortProperty (Op       op   ) = op_ op
-sortProperty (ByRepeat arr  ) = ("field", object [repeat_ arr])
+sortProperty Ascending = "order" .= fromT "ascending"
+sortProperty Descending = "order" .= fromT "descending"
+sortProperty (ByField field) = field_ field
+sortProperty (Op op) = op_ op
+sortProperty (ByRepeat arr) = ("field", object [repeat_ arr])
 
 
 sortPropertySpec :: [SortProperty] -> VLSpec
-sortPropertySpec []           = A.Null
-sortPropertySpec [Ascending ] = fromT "ascending"
+sortPropertySpec [] = A.Null
+sortPropertySpec [Ascending] = fromT "ascending"
 sortPropertySpec [Descending] = fromT "descending"
-sortPropertySpec ops          = object (map sortProperty ops)
+sortPropertySpec ops = object (map sortProperty ops)
 
 
 -- | Position channel properties used for creating a position channel encoding.
@@ -1814,43 +1847,47 @@ data PositionChannel
 
 
 positionChannelProperty :: PositionChannel -> LabelledSpec
-positionChannelProperty (PName      s  ) = field_ s
-positionChannelProperty (PRepeat    arr) = "field" .= object [repeat_ arr]
-positionChannelProperty (PmType     m  ) = type_ m
-positionChannelProperty (PBin       b  ) = bin b
-positionChannelProperty (PTimeUnit  tu ) = timeUnit_ tu
-positionChannelProperty (PAggregate op ) = aggregate_ op
+positionChannelProperty (PName s) = field_ s
+positionChannelProperty (PRepeat arr) = "field" .= object [repeat_ arr]
+positionChannelProperty (PmType m) = type_ m
+positionChannelProperty (PBin b) = bin b
+positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
+positionChannelProperty (PAggregate op) = aggregate_ op
 positionChannelProperty (PScale sps) =
-  let js = if null sps then A.Null else object (map scaleProperty sps)
-  in  "scale" .= js
+  let js = if null sps
+           then A.Null
+           else object (map scaleProperty sps)
+  in "scale" .=  js
 positionChannelProperty (PAxis aps) =
-  let js = if null aps then A.Null else object (map axisProperty aps)
-  in  "axis" .= js
-positionChannelProperty (PSort  ops) = sort_ ops
-positionChannelProperty (PStack sp ) = stackProperty sp
+  let js = if null aps
+           then A.Null
+           else object (map axisProperty aps)
+  in "axis" .= js
+positionChannelProperty (PSort ops) = sort_ ops
+positionChannelProperty (PStack sp) = stackProperty sp
 
 
 measurementLabel :: Measurement -> T.Text
-measurementLabel Nominal      = "nominal"
-measurementLabel Ordinal      = "ordinal"
+measurementLabel Nominal = "nominal"
+measurementLabel Ordinal = "ordinal"
 measurementLabel Quantitative = "quantitative"
-measurementLabel Temporal     = "temporal"
-measurementLabel GeoFeature   = "geojson"
+measurementLabel Temporal = "temporal"
+measurementLabel GeoFeature = "geojson"
 
 
 positionLabel :: Position -> T.Text
-positionLabel X          = "x"
-positionLabel Y          = "y"
-positionLabel X2         = "x2"
-positionLabel Y2         = "y2"
+positionLabel X = "x"
+positionLabel Y = "y"
+positionLabel X2 = "x2"
+positionLabel Y2 = "y2"
 positionLabel XError     = "xError"
 positionLabel YError     = "yError"
 positionLabel XError2    = "xError2"
 positionLabel YError2    = "yError2"
-positionLabel Longitude  = "longitude"
-positionLabel Latitude   = "latitude"
+positionLabel Longitude = "longitude"
+positionLabel Latitude = "latitude"
 positionLabel Longitude2 = "longitude2"
-positionLabel Latitude2  = "latitude2"
+positionLabel Latitude2 = "latitude2"
 
 
 {-|
@@ -1940,30 +1977,29 @@ data AxisProperty
 
 
 axisProperty :: AxisProperty -> LabelledSpec
-axisProperty (AxFormat       fmt ) = "format" .= fmt
-axisProperty (AxLabels       b   ) = "labels" .= b
-axisProperty (AxLabelAngle   a   ) = "labelAngle" .= a
-axisProperty (AxLabelOverlap s   ) = "labelOverlap" .= overlapStrategyLabel s
-axisProperty (AxLabelPadding pad ) = "labelPadding" .= pad
-axisProperty (AxDomain       b   ) = "domain" .= b
-axisProperty (AxGrid         b   ) = "grid" .= b
-axisProperty (AxMaxExtent    n   ) = "maxExtent" .= n
-axisProperty (AxMinExtent    n   ) = "minExtent" .= n
-axisProperty (AxOrient       side) = "orient" .= sideLabel side
-axisProperty (AxOffset       n   ) = "offset" .= n
-axisProperty (AxPosition     n   ) = "position" .= n
-axisProperty (AxZIndex       n   ) = "zindex" .= n
-axisProperty (AxTicks        b   ) = "ticks" .= b
-axisProperty (AxTickCount    n   ) = "tickCount" .= n
-axisProperty (AxTickSize     sz  ) = "tickSize" .= sz
-axisProperty (AxValues       vals) = "values" .= map toJSON vals
-axisProperty (AxDates dtss) =
-  "values" .= map (object . map dateTimeProperty) dtss
-axisProperty (AxTitle          ttl  ) = "title" .= ttl
-axisProperty (AxTitleAlign     align) = "titleAlign" .= hAlignLabel align
-axisProperty (AxTitleAngle     angle) = "titleAngle" .= angle
-axisProperty (AxTitleMaxLength len  ) = "titleMaxLength" .= len
-axisProperty (AxTitlePadding   pad  ) = "titlePadding" .= pad
+axisProperty (AxFormat fmt) = "format" .= fmt
+axisProperty (AxLabels b) = "labels" .= b
+axisProperty (AxLabelAngle a) = "labelAngle" .= a
+axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
+axisProperty (AxLabelPadding pad) = "labelPadding" .= pad
+axisProperty (AxDomain b) = "domain" .= b
+axisProperty (AxGrid b) = "grid" .= b
+axisProperty (AxMaxExtent n) = "maxExtent" .= n
+axisProperty (AxMinExtent n) = "minExtent" .= n
+axisProperty (AxOrient side) = "orient" .= sideLabel side
+axisProperty (AxOffset n) = "offset" .= n
+axisProperty (AxPosition n) = "position" .= n
+axisProperty (AxZIndex n) = "zindex" .= n
+axisProperty (AxTicks b) = "ticks" .= b
+axisProperty (AxTickCount n) = "tickCount" .= n
+axisProperty (AxTickSize sz) = "tickSize" .= sz
+axisProperty (AxValues vals) = "values" .= map toJSON vals
+axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
+axisProperty (AxTitle ttl) = "title" .= ttl
+axisProperty (AxTitleAlign align) = "titleAlign" .= hAlignLabel align
+axisProperty (AxTitleAngle angle) = "titleAngle" .= angle
+axisProperty (AxTitleMaxLength len) = "titleMaxLength" .= len
+axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
 
 
 -- | Indicates the horizontal alignment of text such as on an axis or legend.
@@ -1983,13 +2019,13 @@ data VAlign
 
 
 hAlignLabel :: HAlign -> T.Text
-hAlignLabel AlignLeft   = "left"
+hAlignLabel AlignLeft = "left"
 hAlignLabel AlignCenter = "center"
-hAlignLabel AlignRight  = "right"
+hAlignLabel AlignRight = "right"
 
 
 vAlignLabel :: VAlign -> T.Text
-vAlignLabel AlignTop    = "top"
+vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
 
@@ -2004,10 +2040,10 @@ data Side
 
 
 sideLabel :: Side -> T.Text
-sideLabel STop    = "top"
+sideLabel STop = "top"
 sideLabel SBottom = "bottom"
-sideLabel SLeft   = "left"
-sideLabel SRight  = "right"
+sideLabel SLeft = "left"
+sideLabel SRight = "right"
 
 
 {-|
@@ -2025,7 +2061,7 @@ data OverlapStrategy
 
 
 overlapStrategyLabel :: OverlapStrategy -> T.Text
-overlapStrategyLabel ONone   = "false"
+overlapStrategyLabel ONone = "false"
 overlapStrategyLabel OParity = "parity"
 overlapStrategyLabel OGreedy = "greedy"
 
@@ -2119,15 +2155,15 @@ data TimeUnit
 
 
 dateTimeProperty :: DateTime -> LabelledSpec
-dateTimeProperty (DTYear         y  ) = "year" .= y
-dateTimeProperty (DTQuarter      q  ) = "quarter" .= q
-dateTimeProperty (DTMonth        mon) = "month" .= monthNameLabel mon
-dateTimeProperty (DTDate         dt ) = "date" .= dt
-dateTimeProperty (DTDay          day) = "day" .= dayLabel day
-dateTimeProperty (DTHours        h  ) = "hours" .= h
-dateTimeProperty (DTMinutes      m  ) = "minutes" .= m
-dateTimeProperty (DTSeconds      s  ) = "seconds" .= s
-dateTimeProperty (DTMilliseconds ms ) = "milliseconds" .= ms
+dateTimeProperty (DTYear y) = "year" .= y
+dateTimeProperty (DTQuarter q) = "quarter" .= q
+dateTimeProperty (DTMonth mon) = "month" .= monthNameLabel mon
+dateTimeProperty (DTDate dt) = "date" .= dt
+dateTimeProperty (DTDay day) = "day" .= dayLabel day
+dateTimeProperty (DTHours h) = "hours" .= h
+dateTimeProperty (DTMinutes m) = "minutes" .= m
+dateTimeProperty (DTSeconds s) = "seconds" .= s
+dateTimeProperty (DTMilliseconds ms) = "milliseconds" .= ms
 
 
 dayLabel :: DayName -> T.Text
@@ -2156,30 +2192,29 @@ monthNameLabel Dec = "Dec"
 
 
 timeUnitLabel :: TimeUnit -> T.Text
-timeUnitLabel Year                      = "year"
-timeUnitLabel YearQuarter               = "yearquarter"
-timeUnitLabel YearQuarterMonth          = "yearquartermonth"
-timeUnitLabel YearMonth                 = "yearmonth"
-timeUnitLabel YearMonthDate             = "yearmonthdate"
-timeUnitLabel YearMonthDateHours        = "yearmonthdatehours"
+timeUnitLabel Year = "year"
+timeUnitLabel YearQuarter = "yearquarter"
+timeUnitLabel YearQuarterMonth = "yearquartermonth"
+timeUnitLabel YearMonth = "yearmonth"
+timeUnitLabel YearMonthDate = "yearmonthdate"
+timeUnitLabel YearMonthDateHours = "yearmonthdatehours"
 timeUnitLabel YearMonthDateHoursMinutes = "yearmonthdatehoursminutes"
-timeUnitLabel YearMonthDateHoursMinutesSeconds =
-  "yearmonthdatehoursminutesseconds"
-timeUnitLabel Quarter             = "quarter"
-timeUnitLabel QuarterMonth        = "quartermonth"
-timeUnitLabel Month               = "month"
-timeUnitLabel MonthDate           = "monthdate"
-timeUnitLabel Date                = "date"
-timeUnitLabel Day                 = "day"
-timeUnitLabel Hours               = "hours"
-timeUnitLabel HoursMinutes        = "hoursminutes"
+timeUnitLabel YearMonthDateHoursMinutesSeconds = "yearmonthdatehoursminutesseconds"
+timeUnitLabel Quarter = "quarter"
+timeUnitLabel QuarterMonth = "quartermonth"
+timeUnitLabel Month = "month"
+timeUnitLabel MonthDate = "monthdate"
+timeUnitLabel Date = "date"
+timeUnitLabel Day = "day"
+timeUnitLabel Hours = "hours"
+timeUnitLabel HoursMinutes = "hoursminutes"
 timeUnitLabel HoursMinutesSeconds = "hoursminutesseconds"
-timeUnitLabel Minutes             = "minutes"
-timeUnitLabel MinutesSeconds      = "minutesseconds"
-timeUnitLabel Seconds             = "seconds"
+timeUnitLabel Minutes = "minutes"
+timeUnitLabel MinutesSeconds = "minutesseconds"
+timeUnitLabel Seconds = "seconds"
 timeUnitLabel SecondsMilliseconds = "secondsmilliseconds"
-timeUnitLabel Milliseconds        = "milliseconds"
-timeUnitLabel (Utc tu)            = "utc" <> timeUnitLabel tu
+timeUnitLabel Milliseconds = "milliseconds"
+timeUnitLabel (Utc tu) = "utc" <> timeUnitLabel tu
 
 
 {-|
@@ -2228,42 +2263,42 @@ data Cursor
 
 
 cursorLabel :: Cursor -> T.Text
-cursorLabel CAuto         = "auto"
-cursorLabel CDefault      = "default"
-cursorLabel CNone         = "none"
-cursorLabel CContextMenu  = "context-menu"
-cursorLabel CHelp         = "help"
-cursorLabel CPointer      = "pointer"
-cursorLabel CProgress     = "progress"
-cursorLabel CWait         = "wait"
-cursorLabel CCell         = "cell"
-cursorLabel CCrosshair    = "crosshair"
-cursorLabel CText         = "text"
+cursorLabel CAuto = "auto"
+cursorLabel CDefault = "default"
+cursorLabel CNone = "none"
+cursorLabel CContextMenu = "context-menu"
+cursorLabel CHelp = "help"
+cursorLabel CPointer = "pointer"
+cursorLabel CProgress = "progress"
+cursorLabel CWait = "wait"
+cursorLabel CCell = "cell"
+cursorLabel CCrosshair = "crosshair"
+cursorLabel CText = "text"
 cursorLabel CVerticalText = "vertical-text"
-cursorLabel CAlias        = "alias"
-cursorLabel CCopy         = "copy"
-cursorLabel CMove         = "move"
-cursorLabel CNoDrop       = "no-drop"
-cursorLabel CNotAllowed   = "not-allowed"
-cursorLabel CAllScroll    = "all-scroll"
-cursorLabel CColResize    = "col-resize"
-cursorLabel CRowResize    = "row-resize"
-cursorLabel CNResize      = "n-resize"
-cursorLabel CEResize      = "e-resize"
-cursorLabel CSResize      = "s-resize"
-cursorLabel CWResize      = "w-resize"
-cursorLabel CNEResize     = "ne-resize"
-cursorLabel CNWResize     = "nw-resize"
-cursorLabel CSEResize     = "se-resize"
-cursorLabel CSWResize     = "sw-resize"
-cursorLabel CEWResize     = "ew-resize"
-cursorLabel CNSResize     = "ns-resize"
-cursorLabel CNESWResize   = "nesw-resize"
-cursorLabel CNWSEResize   = "nwse-resize"
-cursorLabel CZoomIn       = "zoom-in"
-cursorLabel CZoomOut      = "zoom-out"
-cursorLabel CGrab         = "grab"
-cursorLabel CGrabbing     = "grabbing"
+cursorLabel CAlias = "alias"
+cursorLabel CCopy = "copy"
+cursorLabel CMove = "move"
+cursorLabel CNoDrop = "no-drop"
+cursorLabel CNotAllowed = "not-allowed"
+cursorLabel CAllScroll = "all-scroll"
+cursorLabel CColResize = "col-resize"
+cursorLabel CRowResize = "row-resize"
+cursorLabel CNResize = "n-resize"
+cursorLabel CEResize = "e-resize"
+cursorLabel CSResize = "s-resize"
+cursorLabel CWResize = "w-resize"
+cursorLabel CNEResize = "ne-resize"
+cursorLabel CNWResize = "nw-resize"
+cursorLabel CSEResize = "se-resize"
+cursorLabel CSWResize = "sw-resize"
+cursorLabel CEWResize = "ew-resize"
+cursorLabel CNSResize = "ns-resize"
+cursorLabel CNESWResize = "nesw-resize"
+cursorLabel CNWSEResize = "nwse-resize"
+cursorLabel CZoomIn = "zoom-in"
+cursorLabel CZoomOut = "zoom-out"
+cursorLabel CGrab = "grab"
+cursorLabel CGrabbing = "grabbing"
 
 
 -- | Indicates the weight options for a font.
@@ -2285,19 +2320,19 @@ data FontWeight
 
 
 fontWeightSpec :: FontWeight -> VLSpec
-fontWeightSpec Bold    = fromT "bold"
-fontWeightSpec Bolder  = fromT "bolder"
+fontWeightSpec Bold = fromT "bold"
+fontWeightSpec Bolder = fromT "bolder"
 fontWeightSpec Lighter = fromT "lighter"
-fontWeightSpec Normal  = fromT "normal"
-fontWeightSpec W100    = fromF 100
-fontWeightSpec W200    = fromF 200
-fontWeightSpec W300    = fromF 300
-fontWeightSpec W400    = fromF 400
-fontWeightSpec W500    = fromF 500
-fontWeightSpec W600    = fromF 600
-fontWeightSpec W700    = fromF 700
-fontWeightSpec W800    = fromF 800
-fontWeightSpec W900    = fromF 900
+fontWeightSpec Normal = fromT "normal"
+fontWeightSpec W100 = fromF 100
+fontWeightSpec W200 = fromF 200
+fontWeightSpec W300 = fromF 300
+fontWeightSpec W400 = fromF 400
+fontWeightSpec W500 = fromF 500
+fontWeightSpec W600 = fromF 600
+fontWeightSpec W700 = fromF 700
+fontWeightSpec W800 = fromF 800
+fontWeightSpec W900 = fromF 900
 
 
 {-|
@@ -2323,19 +2358,19 @@ data MarkInterpolation
 
 
 markInterpolationLabel :: MarkInterpolation -> T.Text
-markInterpolationLabel Linear         = "linear"
-markInterpolationLabel LinearClosed   = "linear-closed"
-markInterpolationLabel Stepwise       = "step"
-markInterpolationLabel StepBefore     = "step-before"
-markInterpolationLabel StepAfter      = "step-after"
-markInterpolationLabel Basis          = "basis"
-markInterpolationLabel BasisOpen      = "basis-open"
-markInterpolationLabel BasisClosed    = "basis-closed"
-markInterpolationLabel Cardinal       = "cardinal"
-markInterpolationLabel CardinalOpen   = "cardinal-open"
+markInterpolationLabel Linear = "linear"
+markInterpolationLabel LinearClosed = "linear-closed"
+markInterpolationLabel Stepwise = "step"
+markInterpolationLabel StepBefore = "step-before"
+markInterpolationLabel StepAfter = "step-after"
+markInterpolationLabel Basis = "basis"
+markInterpolationLabel BasisOpen = "basis-open"
+markInterpolationLabel BasisClosed = "basis-closed"
+markInterpolationLabel Cardinal = "cardinal"
+markInterpolationLabel CardinalOpen = "cardinal-open"
 markInterpolationLabel CardinalClosed = "cardinal-closed"
-markInterpolationLabel Bundle         = "bundle"
-markInterpolationLabel Monotone       = "monotone"
+markInterpolationLabel Bundle = "bundle"
+markInterpolationLabel Monotone = "monotone"
 
 
 {-|
@@ -2350,7 +2385,7 @@ data MarkOrientation
 
 markOrientationLabel :: MarkOrientation -> T.Text
 markOrientationLabel Horizontal = "horizontal"
-markOrientationLabel Vertical   = "vertical"
+markOrientationLabel Vertical = "vertical"
 
 {-|
 
@@ -2388,12 +2423,12 @@ data Symbol
 
 
 symbolLabel :: Symbol -> T.Text
-symbolLabel SymCircle      = "circle"
-symbolLabel SymSquare      = "square"
-symbolLabel Cross          = "cross"
-symbolLabel Diamond        = "diamond"
-symbolLabel TriangleUp     = "triangle-up"
-symbolLabel TriangleDown   = "triangle-down"
+symbolLabel SymCircle = "circle"
+symbolLabel SymSquare = "square"
+symbolLabel Cross = "cross"
+symbolLabel Diamond = "diamond"
+symbolLabel TriangleUp = "triangle-up"
+symbolLabel TriangleDown = "triangle-down"
 symbolLabel (Path svgPath) = svgPath
 
 
@@ -2414,10 +2449,10 @@ data Autosize
 
 
 autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad     = ("type", fromT "pad")
-autosizeProperty AFit     = ("type", fromT "fit")
-autosizeProperty ANone    = ("type", fromT "none")
-autosizeProperty AResize  = "resize" .= True
+autosizeProperty APad = ("type", fromT "pad")
+autosizeProperty AFit = ("type", fromT "fit")
+autosizeProperty ANone = ("type", fromT "none")
+autosizeProperty AResize = "resize".= True
 autosizeProperty AContent = ("contains", fromT "content")
 autosizeProperty APadding = ("contains", fromT "padding")
 
@@ -2455,9 +2490,9 @@ data FieldTitleProperty
 
 
 fieldTitleLabel :: FieldTitleProperty -> T.Text
-fieldTitleLabel Verbal   = "verbal"
+fieldTitleLabel Verbal = "verbal"
 fieldTitleLabel Function = "function"
-fieldTitleLabel Plain    = "plain"
+fieldTitleLabel Plain = "plain"
 
 
 -- | Indicates the type of legend to create.
@@ -2471,7 +2506,7 @@ data Legend
 
 legendLabel :: Legend -> T.Text
 legendLabel Gradient = "gradient"
-legendLabel Symbol   = "symbol"
+legendLabel Symbol = "symbol"
 
 
 {-|
@@ -2520,43 +2555,41 @@ data LegendConfig
 
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
-legendConfigProperty (CornerRadius  r  ) = "cornerRadius" .= r
-legendConfigProperty (FillColor     s  ) = "fillColor" .= s
-legendConfigProperty (Orient        orl) = "orient" .= legendOrientLabel orl
-legendConfigProperty (Offset        x  ) = "offset" .= x
-legendConfigProperty (StrokeColor   s  ) = "strokeColor" .= s
-legendConfigProperty (LeStrokeDash  xs ) = "strokeDash" .= map toJSON xs
-legendConfigProperty (LeStrokeWidth x  ) = "strokeWidth" .= x
-legendConfigProperty (LePadding     x  ) = "padding" .= x
-legendConfigProperty (GradientLabelBaseline va) =
-  "gradientLabelBaseline" .= vAlignLabel va
-legendConfigProperty (GradientLabelLimit  x ) = "gradientLabelLimit" .= x
-legendConfigProperty (GradientLabelOffset x ) = "gradientLabelOffset" .= x
-legendConfigProperty (GradientStrokeColor s ) = "gradientStrokeColor" .= s
-legendConfigProperty (GradientStrokeWidth x ) = "gradientStrokeWidth" .= x
-legendConfigProperty (GradientHeight      x ) = "gradientHeight" .= x
-legendConfigProperty (GradientWidth       x ) = "gradientWidth" .= x
-legendConfigProperty (LeLabelAlign        ha) = "labelAlign" .= hAlignLabel ha
+legendConfigProperty (CornerRadius r) = "cornerRadius" .= r
+legendConfigProperty (FillColor s) = "fillColor" .= s
+legendConfigProperty (Orient orl) = "orient" .= legendOrientLabel orl
+legendConfigProperty (Offset x) = "offset" .= x
+legendConfigProperty (StrokeColor s) = "strokeColor" .= s
+legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= map toJSON xs
+legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
+legendConfigProperty (LePadding x) = "padding" .= x
+legendConfigProperty (GradientLabelBaseline va) = "gradientLabelBaseline" .= vAlignLabel va
+legendConfigProperty (GradientLabelLimit x) = "gradientLabelLimit" .= x
+legendConfigProperty (GradientLabelOffset x) = "gradientLabelOffset" .= x
+legendConfigProperty (GradientStrokeColor s) = "gradientStrokeColor" .= s
+legendConfigProperty (GradientStrokeWidth x) = "gradientStrokeWidth" .= x
+legendConfigProperty (GradientHeight x) = "gradientHeight" .= x
+legendConfigProperty (GradientWidth x) = "gradientWidth" .= x
+legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-legendConfigProperty (LeLabelColor        s ) = "labelColor" .= s
-legendConfigProperty (LeLabelFont         s ) = "labelFont" .= s
-legendConfigProperty (LeLabelFontSize     x ) = "labelFontSize" .= x
-legendConfigProperty (LeLabelLimit        x ) = "labelLimit" .= x
-legendConfigProperty (LeLabelOffset       x ) = "labelOffset" .= x
-legendConfigProperty (LeShortTimeLabels   b ) = "shortTimeLabels" .= b
-legendConfigProperty (EntryPadding        x ) = "entryPadding" .= x
-legendConfigProperty (SymbolColor         s ) = "symbolColor" .= s
-legendConfigProperty (SymbolType          s ) = "symbolType" .= symbolLabel s
-legendConfigProperty (SymbolSize          x ) = "symbolSize" .= x
-legendConfigProperty (SymbolStrokeWidth   x ) = "symbolStrokeWidth" .= x
-legendConfigProperty (LeTitleAlign        ha) = "titleAlign" .= hAlignLabel ha
+legendConfigProperty (LeLabelColor s) = "labelColor" .= s
+legendConfigProperty (LeLabelFont s) = "labelFont" .= s
+legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
+legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
+legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
+legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
+legendConfigProperty (EntryPadding x) = "entryPadding" .= x
+legendConfigProperty (SymbolColor s) = "symbolColor" .= s
+legendConfigProperty (SymbolType s) = "symbolType" .= symbolLabel s
+legendConfigProperty (SymbolSize x) = "symbolSize" .= x
+legendConfigProperty (SymbolStrokeWidth x) = "symbolStrokeWidth" .= x
+legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-legendConfigProperty (LeTitleColor        s ) = "titleColor" .= s
-legendConfigProperty (LeTitleFont         s ) = "titleFont" .= s
-legendConfigProperty (LeTitleFontSize     x ) = "titleFontSize" .= x
-legendConfigProperty (LeTitleFontWeight fw) =
-  "titleFontWeight" .= fontWeightSpec fw
-legendConfigProperty (LeTitleLimit   x) = "titleLimit" .= x
+legendConfigProperty (LeTitleColor s) = "titleColor" .= s
+legendConfigProperty (LeTitleFont s) = "titleFont" .= s
+legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
+legendConfigProperty (LeTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
+legendConfigProperty (LeTitleLimit x) = "titleLimit" .= x
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 
 
@@ -2578,13 +2611,13 @@ data LegendOrientation
 
 
 legendOrientLabel :: LegendOrientation -> T.Text
-legendOrientLabel LOLeft        = "left"
-legendOrientLabel LOBottomLeft  = "bottom-left"
+legendOrientLabel LOLeft = "left"
+legendOrientLabel LOBottomLeft = "bottom-left"
 legendOrientLabel LOBottomRight = "bottom-right"
-legendOrientLabel LORight       = "right"
-legendOrientLabel LOTopLeft     = "top-left"
-legendOrientLabel LOTopRight    = "top-right"
-legendOrientLabel LONone        = "none"
+legendOrientLabel LORight = "right"
+legendOrientLabel LOTopLeft = "top-left"
+legendOrientLabel LOTopRight = "top-right"
+legendOrientLabel LONone = "none"
 
 
 {-|
@@ -2606,21 +2639,20 @@ data LegendProperty
 
 
 legendProperty :: LegendProperty -> LabelledSpec
-legendProperty (LType         lType) = "type" .= legendLabel lType
-legendProperty (LEntryPadding x    ) = "entryPadding" .= x
-legendProperty (LFormat       s    ) = "format" .= s
-legendProperty (LOffset       x    ) = "offset" .= x
-legendProperty (LOrient       orl  ) = "orient" .= legendOrientLabel orl
-legendProperty (LPadding      x    ) = "padding" .= x
-legendProperty (LTickCount    x    ) = "tickCount" .= x
-legendProperty (LTitle ttl) =
-  "title" .= if T.null ttl then A.Null else fromT ttl
+legendProperty (LType lType) = "type" .= legendLabel lType
+legendProperty (LEntryPadding x) = "entryPadding" .= x
+legendProperty (LFormat s) = "format" .= s
+legendProperty (LOffset x) = "offset" .= x
+legendProperty (LOrient orl) = "orient" .= legendOrientLabel orl
+legendProperty (LPadding x) = "padding" .= x
+legendProperty (LTickCount x) = "tickCount" .= x
+legendProperty (LTitle ttl) = "title" .= if T.null ttl then A.Null else fromT ttl
 legendProperty (LValues vals) =
   let ls = case vals of
-        LNumbers   xs  -> map toJSON xs
+        LNumbers xs    -> map toJSON xs
         LDateTimes dts -> map (object . map dateTimeProperty) dts
-        LStrings   ss  -> map toJSON ss
-  in  "values" .= ls
+        LStrings ss    -> map toJSON ss
+  in "values" .= ls
 legendProperty (LZIndex n) = "zindex" .= n
 
 
@@ -2644,7 +2676,11 @@ data Padding
 paddingSpec :: Padding -> VLSpec
 paddingSpec (PSize p) = toJSON p
 paddingSpec (PEdges l t r b) =
-  object ["left" .= l, "top" .= t, "right" .= r, "bottom" .= b]
+  object [ "left" .= l
+         , "top" .= t
+         , "right" .= r
+         , "bottom" .= b
+         ]
 
 {-|
 
@@ -2674,20 +2710,20 @@ data Projection
 
 
 projectionLabel :: Projection -> T.Text
-projectionLabel Albers               = "albers"
-projectionLabel AlbersUsa            = "albersUsa"
-projectionLabel AzimuthalEqualArea   = "azimuthalEqualArea"
+projectionLabel Albers = "albers"
+projectionLabel AlbersUsa = "albersUsa"
+projectionLabel AzimuthalEqualArea = "azimuthalEqualArea"
 projectionLabel AzimuthalEquidistant = "azimuthalEquidistant"
-projectionLabel ConicConformal       = "conicConformal"
-projectionLabel ConicEqualArea       = "conicEqualarea"
-projectionLabel ConicEquidistant     = "conicEquidistant"
-projectionLabel (Custom pName)       = pName
-projectionLabel Equirectangular      = "equirectangular"
-projectionLabel Gnomonic             = "gnomonic"
-projectionLabel Mercator             = "mercator"
-projectionLabel Orthographic         = "orthographic"
-projectionLabel Stereographic        = "stereographic"
-projectionLabel TransverseMercator   = "transverseMercator"
+projectionLabel ConicConformal = "conicConformal"
+projectionLabel ConicEqualArea = "conicEqualarea"
+projectionLabel ConicEquidistant = "conicEquidistant"
+projectionLabel (Custom pName) = pName
+projectionLabel Equirectangular = "equirectangular"
+projectionLabel Gnomonic = "gnomonic"
+projectionLabel Mercator = "mercator"
+projectionLabel Orthographic = "orthographic"
+projectionLabel Stereographic = "stereographic"
+projectionLabel TransverseMercator = "transverseMercator"
 
 
 -- | Specifies a clipping rectangle in pixel units for defining
@@ -2725,27 +2761,24 @@ data ProjectionProperty
 
 projectionProperty :: ProjectionProperty -> LabelledSpec
 projectionProperty (PType proj) = "type" .= projectionLabel proj
-projectionProperty (PClipAngle numOrNull) =
-  "clipAngle" .= maybe A.Null toJSON numOrNull
+projectionProperty (PClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
 projectionProperty (PClipExtent rClip) =
-  ( "clipExtent"
-  , case rClip of
-    NoClip       -> A.Null
+  ("clipExtent", case rClip of
+    NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
 projectionProperty (PCenter lon lat) = "center" .= map toJSON [lon, lat]
-projectionProperty (PRotate lambda phi gamma) =
-  "rotate" .= map toJSON [lambda, phi, gamma]
-projectionProperty (PPrecision   pr) = "precision" .= pr
-projectionProperty (PCoefficient x ) = "coefficient" .= x
-projectionProperty (PDistance    x ) = "distance" .= x
-projectionProperty (PFraction    x ) = "fraction" .= x
-projectionProperty (PLobes       n ) = "lobes" .= n
-projectionProperty (PParallel    x ) = "parallel" .= x
-projectionProperty (PRadius      x ) = "radius" .= x
-projectionProperty (PRatio       x ) = "ratio" .= x
-projectionProperty (PSpacing     x ) = "spacing" .= x
-projectionProperty (PTilt        x ) = "tilt" .= x
+projectionProperty (PRotate lambda phi gamma) = "rotate" .= map toJSON [lambda, phi, gamma]
+projectionProperty (PPrecision pr) = "precision" .= pr
+projectionProperty (PCoefficient x) = "coefficient" .= x
+projectionProperty (PDistance x) = "distance" .= x
+projectionProperty (PFraction x) = "fraction" .= x
+projectionProperty (PLobes n) = "lobes" .= n
+projectionProperty (PParallel x) = "parallel" .= x
+projectionProperty (PRadius x) = "radius" .= x
+projectionProperty (PRatio x) = "ratio" .= x
+projectionProperty (PSpacing x) = "spacing" .= x
+projectionProperty (PTilt x) = "tilt" .= x
 
 
 {-|
@@ -2781,13 +2814,14 @@ data RangeConfig
 rangeConfigProperty :: RangeConfig -> LabelledSpec
 rangeConfigProperty rangeCfg =
   let (l, n) = case rangeCfg of
-        RCategory  nme -> ("category", nme)
+        RCategory nme -> ("category", nme)
         RDiverging nme -> ("diverging", nme)
-        RHeatmap   nme -> ("heatmap", nme)
-        ROrdinal   nme -> ("ordinal", nme)
-        RRamp      nme -> ("ramp", nme)
-        RSymbol    nme -> ("symbol", nme)
-  in  l .= object [schemeProperty n []]
+        RHeatmap nme -> ("heatmap", nme)
+        ROrdinal nme -> ("ordinal", nme)
+        RRamp nme -> ("ramp", nme)
+        RSymbol nme -> ("symbol", nme)
+
+  in l .= object [schemeProperty n []]
 
 
 {-|
@@ -2820,22 +2854,21 @@ data ScaleConfig
 scaleConfigProperty :: ScaleConfig -> LabelledSpec
 scaleConfigProperty (SCBandPaddingInner x) = "bandPaddingInner" .= x
 scaleConfigProperty (SCBandPaddingOuter x) = "bandPaddingOuter" .= x
-scaleConfigProperty (SCClamp            b) = "clamp" .= b
-scaleConfigProperty (SCMaxBandSize      x) = "maxBandSize" .= x
-scaleConfigProperty (SCMinBandSize      x) = "minBandSize" .= x
-scaleConfigProperty (SCMaxFontSize      x) = "maxFontSize" .= x
-scaleConfigProperty (SCMinFontSize      x) = "minFontSize" .= x
-scaleConfigProperty (SCMaxOpacity       x) = "maxOpacity" .= x
-scaleConfigProperty (SCMinOpacity       x) = "minOpacity" .= x
-scaleConfigProperty (SCMaxSize          x) = "maxSize" .= x
-scaleConfigProperty (SCMinSize          x) = "minSize" .= x
-scaleConfigProperty (SCMaxStrokeWidth   x) = "maxStrokeWidth" .= x
-scaleConfigProperty (SCMinStrokeWidth   x) = "minStrokeWidth" .= x
-scaleConfigProperty (SCPointPadding     x) = "pointPadding" .= x
-scaleConfigProperty (SCRangeStep numOrNull) =
-  "rangeStep" .= maybe A.Null toJSON numOrNull
-scaleConfigProperty (SCRound                 b) = "round" .= b
-scaleConfigProperty (SCTextXRangeStep        x) = "textXRangeStep" .= x
+scaleConfigProperty (SCClamp b) = "clamp" .= b
+scaleConfigProperty (SCMaxBandSize x) = "maxBandSize" .= x
+scaleConfigProperty (SCMinBandSize x) = "minBandSize" .= x
+scaleConfigProperty (SCMaxFontSize x) = "maxFontSize" .= x
+scaleConfigProperty (SCMinFontSize x) = "minFontSize" .= x
+scaleConfigProperty (SCMaxOpacity x) = "maxOpacity" .= x
+scaleConfigProperty (SCMinOpacity x) = "minOpacity" .= x
+scaleConfigProperty (SCMaxSize x) = "maxSize" .= x
+scaleConfigProperty (SCMinSize x) = "minSize" .= x
+scaleConfigProperty (SCMaxStrokeWidth x) = "maxStrokeWidth" .= x
+scaleConfigProperty (SCMinStrokeWidth x) = "minStrokeWidth" .= x
+scaleConfigProperty (SCPointPadding x) = "pointPadding" .= x
+scaleConfigProperty (SCRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
+scaleConfigProperty (SCRound b) = "round" .= b
+scaleConfigProperty (SCTextXRangeStep x) = "textXRangeStep" .= x
 scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
 
 
@@ -2853,8 +2886,8 @@ data Selection
 
 
 selectionLabel :: Selection -> T.Text
-selectionLabel Single   = "single"
-selectionLabel Multi    = "multi"
+selectionLabel Single = "single"
+selectionLabel Multi = "multi"
 selectionLabel Interval = "interval"
 
 
@@ -2889,22 +2922,17 @@ data SelectionProperty
 
 selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
-selectionProperty (Encodings channels) =
-  "encodings" .= map (toJSON . channelLabel) channels
+selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
 selectionProperty (On e) = "on" .= e
-selectionProperty Empty  = "empty" .= ("none" :: T.Text)
-selectionProperty (ResolveSelections res) =
-  "resolve" .= selectionResolutionLabel res
-selectionProperty (SelectionMark markProps) =
-  "mark" .= object (map selectionMarkProperty markProps)
-selectionProperty BindScales      = "bind" .= ("scales" :: T.Text)
-selectionProperty (Bind    binds) = "bind" .= object (map bindingSpec binds)
-selectionProperty (Nearest b    ) = "nearest" .= b
-selectionProperty (Toggle  expr ) = "toggle" .= expr
-selectionProperty (Translate e) =
-  "translate" .= if T.null e then toJSON False else toJSON e
-selectionProperty (Zoom e) =
-  "zoom" .= if T.null e then toJSON False else toJSON e
+selectionProperty Empty = "empty" .= ("none" :: T.Text)
+selectionProperty (ResolveSelections res) = "resolve" .= selectionResolutionLabel res
+selectionProperty (SelectionMark markProps) = "mark" .= object (map selectionMarkProperty markProps)
+selectionProperty BindScales = "bind" .= ("scales" :: T.Text)
+selectionProperty (Bind binds) = "bind" .= object (map bindingSpec binds)
+selectionProperty (Nearest b) = "nearest" .= b
+selectionProperty (Toggle expr) = "toggle" .= expr
+selectionProperty (Translate e) = "translate" .= if T.null e then toJSON False else toJSON e
+selectionProperty (Zoom e) = "zoom" .= if T.null e then toJSON False else toJSON e
 
 
 -- | Indicates a channel type to be used in a resolution specification.
@@ -2923,16 +2951,16 @@ data Channel
 
 
 channelLabel :: Channel -> T.Text
-channelLabel ChX       = "x"
-channelLabel ChY       = "y"
-channelLabel ChX2      = "x2"
-channelLabel ChY2      = "y2"
-channelLabel ChColor   = "color"
-channelLabel ChFill    = "fill"
-channelLabel ChStroke  = "stroke"
+channelLabel ChX = "x"
+channelLabel ChY = "y"
+channelLabel ChX2 = "x2"
+channelLabel ChY2 = "y2"
+channelLabel ChColor = "color"
+channelLabel ChFill = "fill"
+channelLabel ChStroke = "stroke"
 channelLabel ChOpacity = "opacity"
-channelLabel ChShape   = "shape"
-channelLabel ChSize    = "size"
+channelLabel ChShape = "shape"
+channelLabel ChSize = "size"
 
 
 {-|
@@ -2948,8 +2976,8 @@ data SelectionResolution
 
 
 selectionResolutionLabel :: SelectionResolution -> T.Text
-selectionResolutionLabel Global       = "global"
-selectionResolutionLabel Union        = "union"
+selectionResolutionLabel Global = "global"
+selectionResolutionLabel Union = "union"
 selectionResolutionLabel Intersection = "intersect"
 
 
@@ -2970,13 +2998,13 @@ data SelectionMarkProperty
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
-selectionMarkProperty (SMFill             colour) = "fill" .= colour
-selectionMarkProperty (SMFillOpacity      x     ) = "fillOpacity" .= x
-selectionMarkProperty (SMStroke           colour) = "stroke" .= colour
-selectionMarkProperty (SMStrokeOpacity    x     ) = "strokeOpacity" .= x
-selectionMarkProperty (SMStrokeWidth      x     ) = "strokeWidth" .= x
+selectionMarkProperty (SMFill colour) = "fill" .= colour
+selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
+selectionMarkProperty (SMStroke colour) = "stroke" .= colour
+selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
+selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
 selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= map toJSON xs
-selectionMarkProperty (SMStrokeDashOffset x     ) = "strokeDashOffset" .= x
+selectionMarkProperty (SMStrokeDashOffset x) = "strokeDashOffset" .= x
 
 
 {-|
@@ -3005,14 +3033,14 @@ data InputProperty
 
 
 inputProperty :: InputProperty -> LabelledSpec
-inputProperty (InMin         x   ) = "min" .= x
-inputProperty (InMax         x   ) = "max" .= x
-inputProperty (InStep        x   ) = "step" .= x
-inputProperty (Debounce      x   ) = "debounce" .= x
-inputProperty (InName        s   ) = "name" .= s
-inputProperty (InOptions     opts) = "options" .= map toJSON opts
-inputProperty (InPlaceholder el  ) = "placeholder" .= toJSON el
-inputProperty (Element       el  ) = "element" .= toJSON el
+inputProperty (InMin x) = "min".= x
+inputProperty (InMax x) = "max".= x
+inputProperty (InStep x) = "step".= x
+inputProperty (Debounce x) = "debounce".= x
+inputProperty (InName s) = "name" .= s
+inputProperty (InOptions opts) = "options" .= map toJSON opts
+inputProperty (InPlaceholder el) = "placeholder" .= toJSON el
+inputProperty (Element el) = "element" .= toJSON el
 
 
 {-|
@@ -3043,20 +3071,21 @@ data Binding
 bindingSpec :: Binding -> LabelledSpec
 bindingSpec bnd =
   let (lbl, input, ps) = case bnd of
-        IRange         label props -> (label, "range" :: T.Text, props)
-        ICheckbox      label props -> (label, "checkbox", props)
-        IRadio         label props -> (label, "radio", props)
-        ISelect        label props -> (label, "select", props)
-        IText          label props -> (label, "text", props)
-        INumber        label props -> (label, "number", props)
-        IDate          label props -> (label, "date", props)
-        ITime          label props -> (label, "time", props)
-        IMonth         label props -> (label, "month", props)
-        IWeek          label props -> (label, "week", props)
+        IRange label props -> (label, "range" :: T.Text, props)
+        ICheckbox label props -> (label, "checkbox", props)
+        IRadio label props -> (label, "radio", props)
+        ISelect label props -> (label, "select", props)
+        IText label props -> (label, "text", props)
+        INumber label props -> (label, "number", props)
+        IDate label props -> (label, "date", props)
+        ITime label props -> (label, "time", props)
+        IMonth label props -> (label, "month", props)
+        IWeek label props -> (label, "week", props)
         IDateTimeLocal label props -> (label, "datetimelocal", props)
-        ITel           label props -> (label, "tel", props)
-        IColor         label props -> (label, "color", props)
-  in  (lbl, object (("input" .= input) : map inputProperty ps))
+        ITel label props -> (label, "tel", props)
+        IColor label props -> (label, "color", props)
+
+  in (lbl, object (("input" .= input) : map inputProperty ps))
 
 
 -- | Indicates the anchor position for text.
@@ -3068,9 +3097,9 @@ data APosition
 
 
 anchorLabel :: APosition -> T.Text
-anchorLabel AStart  = "start"
+anchorLabel AStart = "start"
 anchorLabel AMiddle = "middle"
-anchorLabel AEnd    = "end"
+anchorLabel AEnd = "end"
 
 
 {-|
@@ -3094,16 +3123,16 @@ data TitleConfig
 
 
 titleConfigSpec :: TitleConfig -> LabelledSpec
-titleConfigSpec (TAnchor     an ) = "anchor" .= anchorLabel an
-titleConfigSpec (TAngle      x  ) = "angle" .= x
-titleConfigSpec (TBaseline   va ) = "baseline" .= vAlignLabel va
-titleConfigSpec (TColor      clr) = "color" .= clr
-titleConfigSpec (TFont       fnt) = "font" .= fnt
-titleConfigSpec (TFontSize   x  ) = "fontSize" .= x
-titleConfigSpec (TFontWeight w  ) = "fontWeight" .= fontWeightSpec w
-titleConfigSpec (TLimit      x  ) = "limit" .= x
-titleConfigSpec (TOffset     x  ) = "offset" .= x
-titleConfigSpec (TOrient     sd ) = "orient" .= sideLabel sd
+titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
+titleConfigSpec (TAngle x) = "angle" .= x
+titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
+titleConfigSpec (TColor clr) = "color" .= clr
+titleConfigSpec (TFont fnt) = "font" .= fnt
+titleConfigSpec (TFontSize x) = "fontSize" .= x
+titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
+titleConfigSpec (TLimit x) = "limit" .= x
+titleConfigSpec (TOffset x) = "offset" .= x
+titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 
 
 {-|
@@ -3127,16 +3156,16 @@ data ViewConfig
 
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
-viewConfigProperty (ViewWidth        x ) = "width" .= x
-viewConfigProperty (ViewHeight       x ) = "height" .= x
-viewConfigProperty (Clip             b ) = "clip" .= b
-viewConfigProperty (Fill             ms) = "fill" .= fromMaybe "" ms
-viewConfigProperty (FillOpacity      x ) = "fillOpacity" .= x
-viewConfigProperty (Stroke           ms) = "stroke" .= fromMaybe "" ms
-viewConfigProperty (StrokeOpacity    x ) = "strokeOpacity" .= x
-viewConfigProperty (StrokeWidth      x ) = "strokeWidth" .= x
-viewConfigProperty (StrokeDash       xs) = "strokeDash" .= map toJSON xs
-viewConfigProperty (StrokeDashOffset x ) = "strokeDashOffset" .= x
+viewConfigProperty (ViewWidth x) = "width" .= x
+viewConfigProperty (ViewHeight x) = "height" .= x
+viewConfigProperty (Clip b) = "clip" .= b
+viewConfigProperty (Fill ms) = "fill" .= fromMaybe "" ms
+viewConfigProperty (FillOpacity x) = "fillOpacity" .= x
+viewConfigProperty (Stroke ms) = "stroke" .= fromMaybe "" ms
+viewConfigProperty (StrokeOpacity x) = "strokeOpacity" .= x
+viewConfigProperty (StrokeWidth x) = "strokeWidth" .= x
+viewConfigProperty (StrokeDash xs) = "strokeDash" .= map toJSON xs
+viewConfigProperty (StrokeDashOffset x) = "strokeDashOffset" .= x
 
 
 {-|
@@ -3185,50 +3214,42 @@ data ConfigurationProperty
 
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Background bg ) = "background" .= bg
+configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (RemoveInvalid b) =
-  "invalidValues" .= if b then "filter" else A.Null
+configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
 configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt
 configProperty (Axis acs) = "axis" .= object (map axisConfigProperty acs)
 configProperty (AxisX acs) = "axisX" .= object (map axisConfigProperty acs)
 configProperty (AxisY acs) = "axisY" .= object (map axisConfigProperty acs)
-configProperty (AxisLeft acs) =
-  "axisLeft" .= object (map axisConfigProperty acs)
-configProperty (AxisRight acs) =
-  "axisRight" .= object (map axisConfigProperty acs)
+configProperty (AxisLeft acs) = "axisLeft" .= object (map axisConfigProperty acs)
+configProperty (AxisRight acs) = "axisRight" .= object (map axisConfigProperty acs)
 configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
-configProperty (AxisBottom acs) =
-  "axisBottom" .= object (map axisConfigProperty acs)
-configProperty (AxisBand acs) =
-  "axisBand" .= object (map axisConfigProperty acs)
+configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
+configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (MarkStyle mps) = "mark" .= object (map markProperty mps)
-configProperty (Projection pps) =
-  "projection" .= object (map projectionProperty pps)
-configProperty (AreaStyle   mps) = "area" .= object (map markProperty mps)
-configProperty (BarStyle    mps) = "bar" .= object (map markProperty mps)
+configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
+configProperty (AreaStyle mps) = "area" .= object (map markProperty mps)
+configProperty (BarStyle mps) = "bar" .= object (map markProperty mps)
 configProperty (CircleStyle mps) = "circle" .= object (map markProperty mps)
-configProperty (LineStyle   mps) = "line" .= object (map markProperty mps)
-configProperty (PointStyle  mps) = "point" .= object (map markProperty mps)
-configProperty (RectStyle   mps) = "rect" .= object (map markProperty mps)
-configProperty (RuleStyle   mps) = "rule" .= object (map markProperty mps)
+configProperty (LineStyle mps) = "line" .= object (map markProperty mps)
+configProperty (PointStyle mps) = "point" .= object (map markProperty mps)
+configProperty (RectStyle mps) = "rect" .= object (map markProperty mps)
+configProperty (RuleStyle mps) = "rule" .= object (map markProperty mps)
 configProperty (SquareStyle mps) = "square" .= object (map markProperty mps)
-configProperty (TextStyle   mps) = "text" .= object (map markProperty mps)
-configProperty (TickStyle   mps) = "tick" .= object (map markProperty mps)
-configProperty (TitleStyle  tcs) = "title" .= object (map titleConfigSpec tcs)
-configProperty (NamedStyle nme mps) =
-  "style" .= object [nme .= object (map markProperty mps)]
+configProperty (TextStyle mps) = "text" .= object (map markProperty mps)
+configProperty (TickStyle mps) = "tick" .= object (map markProperty mps)
+configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
+configProperty (NamedStyle nme mps) = "style" .= object [nme .= object (map markProperty mps)]
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
-configProperty (Stack sp ) = stackProperty sp
+configProperty (Stack sp) = stackProperty sp
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) =
-        selectionLabel sel .= object (map selectionProperty sps)
-  in  "selection" .= object (map selProp selConfig)
+  let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
+  in "selection" .= object (map selProp selConfig)
 configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 
 
@@ -3279,46 +3300,43 @@ data AxisConfig
 
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
-axisConfigProperty (BandPosition  x    ) = ("bandPosition", toJSON x)
-axisConfigProperty (Domain        b    ) = ("domain", toJSON b)
-axisConfigProperty (DomainColor   c    ) = ("domainColor", fromT c)
-axisConfigProperty (DomainWidth   w    ) = ("domainWidth", toJSON w)
-axisConfigProperty (MaxExtent     n    ) = ("maxExtent", toJSON n)
-axisConfigProperty (MinExtent     n    ) = ("minExtent", toJSON n)
-axisConfigProperty (Grid          b    ) = ("grid", toJSON b)
-axisConfigProperty (GridColor     c    ) = ("gridColor", fromT c)
-axisConfigProperty (GridDash      ds   ) = ("gridDash", toJSON (map toJSON ds))
-axisConfigProperty (GridOpacity   o    ) = ("gridOpacity", toJSON o)
-axisConfigProperty (GridWidth     x    ) = ("gridWidth", toJSON x)
-axisConfigProperty (Labels        b    ) = ("labels", toJSON b)
-axisConfigProperty (LabelAngle    angle) = ("labelAngle", toJSON angle)
-axisConfigProperty (LabelColor    c    ) = ("labelColor", fromT c)
-axisConfigProperty (LabelFont     f    ) = ("labelFont", fromT f)
-axisConfigProperty (LabelFontSize x    ) = ("labelFontSize", toJSON x)
-axisConfigProperty (LabelLimit    x    ) = ("labelLimit", toJSON x)
-axisConfigProperty (LabelOverlap strat) =
-  ("labelOverlap", fromT (overlapStrategyLabel strat))
-axisConfigProperty (LabelPadding    pad) = ("labelPadding", toJSON pad)
-axisConfigProperty (ShortTimeLabels b  ) = ("shortTimeLabels", toJSON b)
-axisConfigProperty (Ticks           b  ) = ("ticks", toJSON b)
-axisConfigProperty (TickColor       c  ) = ("tickColor", fromT c)
-axisConfigProperty (TickRound       b  ) = ("tickRound", toJSON b)
-axisConfigProperty (TickSize        x  ) = ("tickSize", toJSON x)
-axisConfigProperty (TickWidth       x  ) = ("tickWidth", toJSON x)
-axisConfigProperty (TitleAlign align) =
-  ("titleAlign", fromT (hAlignLabel align))
+axisConfigProperty (BandPosition x) = ("bandPosition", toJSON x)
+axisConfigProperty (Domain b) = ("domain", toJSON b)
+axisConfigProperty (DomainColor c) = ("domainColor", fromT c)
+axisConfigProperty (DomainWidth w) = ("domainWidth", toJSON w)
+axisConfigProperty (MaxExtent n) = ("maxExtent", toJSON n)
+axisConfigProperty (MinExtent n) = ("minExtent", toJSON n)
+axisConfigProperty (Grid b) = ("grid", toJSON b)
+axisConfigProperty (GridColor c) = ("gridColor", fromT c)
+axisConfigProperty (GridDash ds) = ("gridDash", toJSON (map toJSON ds))
+axisConfigProperty (GridOpacity o) = ("gridOpacity", toJSON o)
+axisConfigProperty (GridWidth x) = ("gridWidth", toJSON x)
+axisConfigProperty (Labels b) = ("labels", toJSON b)
+axisConfigProperty (LabelAngle angle) = ("labelAngle", toJSON angle)
+axisConfigProperty (LabelColor c) = ("labelColor", fromT c)
+axisConfigProperty (LabelFont f) = ("labelFont", fromT f)
+axisConfigProperty (LabelFontSize x) = ("labelFontSize", toJSON x)
+axisConfigProperty (LabelLimit x) = ("labelLimit", toJSON x)
+axisConfigProperty (LabelOverlap strat) = ("labelOverlap", fromT (overlapStrategyLabel strat))
+axisConfigProperty (LabelPadding pad) = ("labelPadding", toJSON pad)
+axisConfigProperty (ShortTimeLabels b) = ("shortTimeLabels", toJSON b)
+axisConfigProperty (Ticks b) = ("ticks", toJSON b)
+axisConfigProperty (TickColor c) = ("tickColor", fromT c)
+axisConfigProperty (TickRound b) = ("tickRound", toJSON b)
+axisConfigProperty (TickSize x) = ("tickSize", toJSON x)
+axisConfigProperty (TickWidth x) = ("tickWidth", toJSON x)
+axisConfigProperty (TitleAlign align) = ("titleAlign", fromT (hAlignLabel align))
 axisConfigProperty (TitleAngle angle) = ("titleAngle", toJSON angle)
-axisConfigProperty (TitleBaseline va) =
-  ("titleBaseline", fromT (vAlignLabel va))
-axisConfigProperty (TitleColor      c) = ("titleColor", fromT c)
-axisConfigProperty (TitleFont       f) = ("titleFont", fromT f)
+axisConfigProperty (TitleBaseline va) = ("titleBaseline", fromT (vAlignLabel va))
+axisConfigProperty (TitleColor c) = ("titleColor", fromT c)
+axisConfigProperty (TitleFont f) = ("titleFont", fromT f)
 axisConfigProperty (TitleFontWeight w) = ("titleFontWeight", fontWeightSpec w)
-axisConfigProperty (TitleFontSize   x) = ("titleFontSize", toJSON x)
-axisConfigProperty (TitleLimit      x) = ("titleLimit", toJSON x)
-axisConfigProperty (TitleMaxLength  x) = ("titleMaxLength", toJSON x)
-axisConfigProperty (TitlePadding    x) = ("titlePadding", toJSON x)
-axisConfigProperty (TitleX          x) = ("titleX", toJSON x)
-axisConfigProperty (TitleY          y) = ("titleY", toJSON y)
+axisConfigProperty (TitleFontSize x) = ("titleFontSize", toJSON x)
+axisConfigProperty (TitleLimit x) = ("titleLimit", toJSON x)
+axisConfigProperty (TitleMaxLength x) = ("titleMaxLength", toJSON x)
+axisConfigProperty (TitlePadding x) = ("titlePadding", toJSON x)
+axisConfigProperty (TitleX x) = ("titleX", toJSON x)
+axisConfigProperty (TitleY y) = ("titleY", toJSON y)
 
 
 {-|
@@ -3349,13 +3367,11 @@ data BooleanOp
 
 
 booleanOpSpec :: BooleanOp -> VLSpec
-booleanOpSpec (Expr          expr   ) = toJSON expr
+booleanOpSpec (Expr expr) = toJSON expr
 booleanOpSpec (SelectionName selName) = toJSON selName
-booleanOpSpec (Selection     sel    ) = object ["selection" .= sel]
-booleanOpSpec (And operand1 operand2) =
-  object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
-booleanOpSpec (Or operand1 operand2) =
-  object ["or" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
+booleanOpSpec (Selection sel) = object ["selection" .= sel]
+booleanOpSpec (And operand1 operand2) = object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
+booleanOpSpec (Or operand1 operand2) = object ["or" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
 booleanOpSpec (Not operand) = object ["not" .= booleanOpSpec operand]
 
 
@@ -3413,18 +3429,19 @@ geojson =
 @
 -}
 geometry :: Geometry -> [(T.Text, DataValue)] -> VLSpec
-geometry gType properties = object
-  (  [("type", fromT "Feature"), ("geometry", geometryTypeSpec gType)]
-  <> if null properties
-       then []
-       else [("properties", object (map (second dataValueSpec) properties))]
-  )
+geometry gType properties =
+  object ([ ("type", fromT "Feature")
+          , ("geometry", geometryTypeSpec gType) ]
+          <> if null properties
+             then []
+             else [("properties",
+                    object (map (second dataValueSpec) properties))]
+         )
 
 
 geometryTypeSpec :: Geometry -> VLSpec
-geometryTypeSpec gType
-  = let
-      toCoords :: [(Double, Double)] -> VLSpec
+geometryTypeSpec gType =
+  let toCoords :: [(Double, Double)] -> VLSpec
       toCoords = toJSON -- rely on Aeson converting a pair to a 2-element list
 
       toCoordList :: [[(Double, Double)]] -> VLSpec
@@ -3432,15 +3449,14 @@ geometryTypeSpec gType
 
       -- can we replace this infinite tower of toJSON calls with one toJSON call?
       (ptype, cs) = case gType of
-        GeoPoint x y      -> ("Point", toJSON [x, y])
-        GeoPoints  coords -> ("MultiPoint", toCoords coords)
-        GeoLine    coords -> ("LineString", toCoords coords)
-        GeoLines   coords -> ("MultiLineString", toCoordList coords)
+        GeoPoint x y -> ("Point", toJSON [x, y])
+        GeoPoints coords -> ("MultiPoint", toCoords coords)
+        GeoLine coords -> ("LineString", toCoords coords)
+        GeoLines coords -> ("MultiLineString", toCoordList coords)
         GeoPolygon coords -> ("Polygon", toCoordList coords)
-        GeoPolygons ccoords ->
-          ("MultiPolygon", toJSON (map toCoordList ccoords))
-    in
-      object [("type", ptype), ("coordinates", cs)]
+        GeoPolygons ccoords -> ("MultiPolygon", toJSON (map toCoordList ccoords))
+
+  in object [("type", ptype), ("coordinates", cs)]
 
 
 {-|
@@ -3456,7 +3472,7 @@ data Resolution
 
 
 resolutionLabel :: Resolution -> T.Text
-resolutionLabel Shared      = "shared"
+resolutionLabel Shared = "shared"
 resolutionLabel Independent = "independent"
 
 
@@ -3476,12 +3492,12 @@ data Resolve
 resolveProperty :: Resolve -> LabelledSpec
 resolveProperty res =
   let (nme, rls) = case res of
-        RAxis   chRules -> ("axis", chRules)
+        RAxis chRules -> ("axis", chRules)
         RLegend chRules -> ("legend", chRules)
-        RScale  chRules -> ("scale", chRules)
+        RScale chRules -> ("scale", chRules)
 
       ans = map (\(ch, rule) -> (channelLabel ch .= resolutionLabel rule)) rls
-  in  (nme, object ans)
+  in (nme, object ans)
 
 
 {-|
@@ -3496,7 +3512,7 @@ data HeaderProperty
 
 headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
-headerProperty (HTitle  ttl) = "title" .= ttl
+headerProperty (HTitle ttl) = "title" .= ttl
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
@@ -3514,25 +3530,25 @@ data HyperlinkChannel
 
 
 hyperlinkChannelProperty :: HyperlinkChannel -> [LabelledSpec]
-hyperlinkChannelProperty (HName   s  ) = [field_ s]
+hyperlinkChannelProperty (HName s) = [field_ s]
 hyperlinkChannelProperty (HRepeat arr) = ["field" .= object [repeat_ arr]]
-hyperlinkChannelProperty (HmType  t  ) = [type_ t]
-hyperlinkChannelProperty (HBin    bps) = [bin bps]
+hyperlinkChannelProperty (HmType t) = [type_ t]
+hyperlinkChannelProperty (HBin bps) = [bin bps]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap hyperlinkChannelProperty
-      hkey    = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
+      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
 hyperlinkChannelProperty (HDataCondition predicate ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap hyperlinkChannelProperty
-      hkey    = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
-hyperlinkChannelProperty (HTimeUnit  tu) = [timeUnit_ tu]
+      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
+hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
 hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
-hyperlinkChannelProperty (HString    s ) = [value_ s]
+hyperlinkChannelProperty (HString s) = [value_ s]
 
 ----
 
@@ -3559,7 +3575,7 @@ domain and range values.
 domainRangeMap :: (Double, T.Text) -> (Double, T.Text) -> [ScaleProperty]
 domainRangeMap lowerMap upperMap =
   let (domain, range) = unzip [lowerMap, upperMap]
-  in  [SDomain (DNumbers domain), SRange (RStrings range)]
+  in [SDomain (DNumbers domain), SRange (RStrings range)]
 
 
 {-|
@@ -3588,7 +3604,7 @@ a one-to-one correspondence between domain and range values.
 categoricalDomainMap :: [(T.Text, T.Text)] -> [ScaleProperty]
 categoricalDomainMap scaleDomainPairs =
   let (domain, range) = unzip scaleDomainPairs
-  in  [SDomain (DStrings domain), SRange (RStrings range)]
+  in [SDomain (DStrings domain), SRange (RStrings range)]
 
 
 {-|
@@ -3605,9 +3621,10 @@ data RepeatFields
 repeatFieldsProperty :: RepeatFields -> LabelledSpec
 repeatFieldsProperty rfs =
   let (nme, vs) = case rfs of
-        RowFields    fields -> ("row", fields)
+        RowFields fields -> ("row", fields)
         ColumnFields fields -> ("column", fields)
-  in  nme .= map toJSON vs
+
+  in nme .= map toJSON vs
 
 
 {-|
@@ -3625,13 +3642,12 @@ data FacetChannel
 
 
 facetChannelProperty :: FacetChannel -> LabelledSpec
-facetChannelProperty (FName      s      ) = field_ s
-facetChannelProperty (FmType     measure) = type_ measure
-facetChannelProperty (FBin       bps    ) = bin bps
-facetChannelProperty (FAggregate op     ) = aggregate_ op
-facetChannelProperty (FTimeUnit  tu     ) = timeUnit_ tu
-facetChannelProperty (FHeader hProps) =
-  "header" .= object (map headerProperty hProps)
+facetChannelProperty (FName s) = field_ s
+facetChannelProperty (FmType measure) = type_ measure
+facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FAggregate op) = aggregate_ op
+facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
+facetChannelProperty (FHeader hProps) = "header" .= object (map headerProperty hProps)
 
 
 -- | Types of text channel property used for displaying text as part of the visualization.
@@ -3649,25 +3665,25 @@ data TextChannel
 
 
 textChannelProperty :: TextChannel -> [LabelledSpec]
-textChannelProperty (TName      s      ) = [field_ s]
-textChannelProperty (TRepeat    arr    ) = ["field" .= object [repeat_ arr]]
-textChannelProperty (TmType     measure) = [type_ measure]
-textChannelProperty (TBin       bps    ) = [bin bps]
-textChannelProperty (TAggregate op     ) = [aggregate_ op]
-textChannelProperty (TTimeUnit  tu     ) = [timeUnit_ tu]
-textChannelProperty (TFormat    fmt    ) = ["format" .= fmt]
+textChannelProperty (TName s) = [field_  s]
+textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
+textChannelProperty (TmType measure) = [type_ measure]
+textChannelProperty (TBin bps) = [bin bps]
+textChannelProperty (TAggregate op) = [aggregate_ op]
+textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
+textChannelProperty (TFormat fmt) = ["format" .= fmt]
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap textChannelProperty
-      hkey    = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
+      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
 textChannelProperty (TDataCondition predicate ifClause elseClause) =
-  let h       = ("condition", hkey)
+  let h = ("condition", hkey)
       toProps = concatMap textChannelProperty
-      hkey    = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs      = toProps elseClause
-  in  h : hs
+      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
 
 
 -- | Properties of an ordering channel used for sorting data fields.
@@ -3683,13 +3699,13 @@ data OrderChannel
 
 
 orderChannelProperty :: OrderChannel -> LabelledSpec
-orderChannelProperty (OName      s      ) = field_ s
-orderChannelProperty (ORepeat    arr    ) = "field" .= object [repeat_ arr]
-orderChannelProperty (OmType     measure) = type_ measure
-orderChannelProperty (OBin       bps    ) = bin bps
-orderChannelProperty (OAggregate op     ) = aggregate_ op
-orderChannelProperty (OTimeUnit  tu     ) = timeUnit_ tu
-orderChannelProperty (OSort      ops    ) = sort_ ops
+orderChannelProperty (OName s) = field_ s
+orderChannelProperty (ORepeat arr) = "field" .= object [repeat_ arr]
+orderChannelProperty (OmType measure) = type_ measure
+orderChannelProperty (OBin bps) = bin bps
+orderChannelProperty (OAggregate op) = aggregate_ op
+orderChannelProperty (OTimeUnit tu) = timeUnit_ tu
+orderChannelProperty (OSort ops) = sort_ ops
 
 
 -- | Level of detail channel properties used for creating a grouped channel encoding.
@@ -3703,11 +3719,11 @@ data DetailChannel
 
 
 detailChannelProperty :: DetailChannel -> LabelledSpec
-detailChannelProperty (DName      s  ) = field_ s
-detailChannelProperty (DmType     t  ) = type_ t
-detailChannelProperty (DBin       bps) = bin bps
-detailChannelProperty (DTimeUnit  tu ) = timeUnit_ tu
-detailChannelProperty (DAggregate op ) = aggregate_ op
+detailChannelProperty (DName s) = field_ s
+detailChannelProperty (DmType t) = type_ t
+detailChannelProperty (DBin bps) = bin bps
+detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
+detailChannelProperty (DAggregate op) = aggregate_ op
 
 
 {-|
@@ -3954,65 +3970,64 @@ trans = transform
 
 transform :: [LabelledSpec] -> (VLProperty, VLSpec)
 transform transforms =
-  let
-    js = if null transforms then A.Null else toJSON (map assemble transforms)
+  let js = if null transforms then A.Null else toJSON (map assemble transforms)
 
-    -- use the same approach as Elm of encoding the spec, then decoding it,
-    -- rather than inspecting the structure of the JSON
-    --
-    assemble :: LabelledSpec -> VLSpec
-    assemble (str, val)
-      = let dval = decode (encode val)
-        in
-          case str of
-            "aggregate" -> case dval of
-              Just (A.Array vs) | V.length vs == 2 ->
-                object [("aggregate", vs V.! 0), ("groupby", vs V.! 1)]
+      -- use the same approach as Elm of encoding the spec, then decoding it,
+      -- rather than inspecting the structure of the JSON
+      --
+      assemble :: LabelledSpec -> VLSpec
+      assemble (str, val) =
+
+        let dval = decode (encode val)
+        in case str of
+          "aggregate" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 2 -> object [ ("aggregate", vs V.! 0)
+                                                             , ("groupby", vs V.! 1) ]
               _ -> A.Null
 
-            "bin" -> case dval of
-              Just (A.Array vs) | V.length vs == 3 -> object
-                [("bin", vs V.! 0), ("field", vs V.! 1), ("as", vs V.! 2)]
+          "bin" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 3 -> object [ ("bin", vs V.! 0)
+                                                             , ("field", vs V.! 1)
+                                                             , ("as", vs V.! 2) ]
               _ -> A.Null
 
-            "calculate" -> case dval of
-              Just (A.Array vs) | V.length vs == 2 ->
-                object [("calculate", vs V.! 0), ("as", vs V.! 1)]
+          "calculate" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 2 -> object [ ("calculate", vs V.! 0)
+                                                             , ("as", vs V.! 1) ]
               _ -> A.Null
 
-            "lookup" -> case dval of
-              Just (A.Array vs) | V.length vs == 4 -> object
-                [ ("lookup", vs V.! 0)
-                , ( "from"
-                  , object
-                    [ ("data"  , vs V.! 1)
-                    , ("key"   , vs V.! 2)
-                    , ("fields", vs V.! 3)
-                    ]
-                  )
-                ]
+          "lookup" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
+                                                             , ("from",
+                                                                object [ ("data", vs V.! 1)
+                                                                       , ("key", vs V.! 2)
+                                                                       , ("fields", vs V.! 3) ] )
+                                                             ]
               _ -> A.Null
 
-            "lookupAs" -> case dval of
-              Just (A.Array vs) | V.length vs == 4 -> object
-                [ ("lookup", vs V.! 0)
-                , ("from", object [("data", vs V.! 1), ("key", vs V.! 2)])
-                , ("as"    , vs V.! 3)
-                ]
+          "lookupAs" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
+                                                             , ("from",
+                                                                object [ ("data", vs V.! 1)
+                                                                       , ("key", vs V.! 2) ] )
+                                                             , ("as", vs V.! 3) ]
               _ -> A.Null
 
-            "timeUnit" -> case dval of
-              Just (A.Array vs) | V.length vs == 3 ->
-                object
-                  [ ("timeUnit", vs V.! 0)
-                  , ("field"   , vs V.! 1)
-                  , ("as"      , vs V.! 2)
-                  ]
+          "timeUnit" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 3 -> object [ ("timeUnit", vs V.! 0)
+                                                             , ("field", vs V.! 1)
+                                                             , ("as", vs V.! 2) ]
               _ -> A.Null
 
-            _ -> object [(str, val)]
-  in
-    (VLTransform, js)
+          _ -> object [(str, val)]
+
+    in (VLTransform, js)
 
 
 {-|
@@ -4064,15 +4079,15 @@ trans =
             [ "age" ]
 @
 -}
-aggregate
-  :: [VLSpec]
+aggregate ::
+  [VLSpec]
   -- ^ The named aggregation operations to apply.
   -> [T.Text]
   -- ^ The \"group by\" fields.
   -> BuildLabelledSpecs
 aggregate ops groups ols =
   let ags = toJSON [toJSON ops, toJSON (map toJSON groups)]
-  in  ("aggregate", ags) : ols
+  in ("aggregate", ags) : ols
 
 
 {-|
@@ -4089,8 +4104,8 @@ trans =
         . binAs [ 'MaxBins' 3 ] \"IMDB_Rating\" "ratingGroup"
 @
 -}
-binAs
-  :: [BinProperty]
+binAs ::
+  [BinProperty]
   -- ^ An empty list means that the default binning is used.
   -> T.Text
   -- ^ The field to bin.
@@ -4099,9 +4114,9 @@ binAs
   -> BuildLabelledSpecs
 binAs bProps field label ols =
   let js = if null bProps
-        then [toJSON True, toJSON field, toJSON label]
-        else [object (map binProperty bProps), toJSON field, toJSON label]
-  in  ("bin" .= js) : ols
+           then [toJSON True, toJSON field, toJSON label]
+           else [object (map binProperty bProps), toJSON field, toJSON label]
+ in ("bin" .= js) : ols
 
 
 {-|
@@ -4114,8 +4129,8 @@ for further details.
 trans = 'transform' . calculateAs "datum.sex == 2 ? 'F' : 'M'" "gender"
 @
 -}
-calculateAs
-  :: T.Text
+calculateAs ::
+  T.Text
   -- ^ The calculation to perform.
   -> T.Text
   -- ^ The field to assign the new values.
@@ -4138,13 +4153,13 @@ appearing, just supply an empty list of legend properties to 'MLegend':
 color [ MName \"Species\", MmType Nominal, 'MLegend' [] ] []
 @
 -}
-color
-  :: [MarkChannel]
+color ::
+  [MarkChannel]
   -- ^ Control how the data field is encoded by color.
   -> BuildLabelledSpecs
 color markProps ols =
   let cs = object (concatMap markChannelProperty markProps)
-  in  ("color", cs) : ols
+  in ("color", cs) : ols
 
 
 {-|
@@ -4159,8 +4174,8 @@ enc =
         . column [ 'FName' "age", 'FmType' 'Ordinal' ]
 @
 -}
-column
-  :: [FacetChannel]
+column ::
+  [FacetChannel]
   -- ^ The list of properties that define the faceting channel. At a minimum
   --   this should include the data field ('FName') and its measurement type
   --   ('FmType').
@@ -4198,7 +4213,7 @@ detail [ 'DName' \"Species\", 'DmType' 'Nominal' ] []
 -}
 detail :: [DetailChannel] -> BuildLabelledSpecs
 detail detailProps ols =
-  ("detail" .= object (map detailChannelProperty detailProps)) : ols
+    ("detail" .= object (map detailChannelProperty detailProps)) : ols
 
 
 {-|
@@ -4245,32 +4260,33 @@ trans =
 -}
 filter :: Filter -> BuildLabelledSpecs
 filter f ols =
-  let
-    js = case f of
-      FExpr    expr      -> toJSON expr
-      FCompose boolExpr  -> booleanOpSpec boolExpr
+  let js = case f of
+        FExpr expr -> toJSON expr
+        FCompose boolExpr -> booleanOpSpec boolExpr
 
-      FEqual field val   -> object [field_ field, "equal" .= dataValueSpec val]
+        FEqual field val -> object [field_ field, "equal" .= dataValueSpec val]
 
-      FSelection selName -> object ["selection" .= selName]
+        FSelection selName -> object ["selection" .= selName]
 
-      FRange field vals ->
-        let ans = case vals of
-              NumberRange mn mx -> map toJSON [mn, mx]
-              DateRange dMin dMax ->
-                [ object (map dateTimeProperty dMin)
-                , object (map dateTimeProperty dMax)
-                ]
-        in  object [field_ field, "range" .= ans]
+        FRange field vals ->
+            let ans = case vals of
+                        NumberRange mn mx -> map toJSON [mn, mx]
+                        DateRange dMin dMax ->
+                          [ object (map dateTimeProperty dMin)
+                          , object (map dateTimeProperty dMax)
+                          ]
+            in object [field_ field, "range" .= ans]
 
-      FOneOf field vals ->
-        let ans = case vals of
-              Numbers   xs  -> map toJSON xs
-              DateTimes dts -> map (object . map dateTimeProperty) dts
-              Strings   ss  -> map toJSON ss
-              Booleans  bs  -> map toJSON bs
-        in  object [field_ field, "oneOf" .= ans]
-  in  ("filter", js) : ols
+        FOneOf field vals ->
+            let ans = case vals of
+                        Numbers xs -> map toJSON xs
+                        DateTimes dts -> map (object . map dateTimeProperty) dts
+                        Strings ss -> map toJSON ss
+                        Booleans bs -> map toJSON bs
+
+            in object [field_ field, "oneOf" .= ans]
+
+  in ("filter", js) : ols
 
 
 {-|
@@ -4316,8 +4332,8 @@ trans =
         . lookup "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" [ "age", "height" ]
 @
 -}
-lookup
-  :: T.Text
+lookup ::
+  T.Text
   -- ^ The field in the primary data structure acting as the key.
   -> Data
   -- ^ The secondary data source (e.g. the return from the data-generating
@@ -4330,7 +4346,7 @@ lookup
   -> BuildLabelledSpecs
 lookup key1 (_, spec) key2 fields ols =
   let js = [toJSON key1, spec, toJSON key2, toJSON (map toJSON fields)]
-  in  ("lookup" .= js) : ols
+  in ("lookup" .= js) : ols
 
 
 {-|
@@ -4356,8 +4372,8 @@ trans = 'transform'
         . lookupAs "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
 @
 -}
-lookupAs
-  :: T.Text
+lookupAs ::
+  T.Text
   -- ^ The field in the primary data structure acting as the key.
   -> Data
   -- ^ The secondary data source (e.g. the return from the data-generating
@@ -4402,7 +4418,8 @@ enc =
 @
 -}
 order :: [OrderChannel] -> BuildLabelledSpecs
-order oDefs ols = ("order" .= object (map orderChannelProperty oDefs)) : ols
+order oDefs ols =
+  ("order" .= object (map orderChannelProperty oDefs)) : ols
 
 
 {-|
@@ -4424,8 +4441,8 @@ enc =
       . position X [ PName \"Animal\", PmType Ordinal, 'PAxis' [] ]
 @
 -}
-position
-  :: Position
+position ::
+  Position
   -- ^ The channel to encode.
   -> [PositionChannel]
   -- ^ The options for the channel; this will usually include the name ('PName')
@@ -4434,7 +4451,7 @@ position
   -> BuildLabelledSpecs
 position pos pDefs ols =
   let defs = object (map positionChannelProperty pDefs)
-  in  (positionLabel pos, defs) : ols
+  in (positionLabel pos, defs) : ols
 
 
 {-|
@@ -4466,8 +4483,8 @@ enc =
         . row [ 'FName' "age", 'FmType' 'Ordinal' ]
 @
 -}
-row
-  :: [FacetChannel]
+row ::
+  [FacetChannel]
   -- ^ The facet properties for the channel; this should include the name of
   --   the field ('FName') and its measurement type ('FmType').
   -> BuildLabelledSpecs
@@ -4486,8 +4503,8 @@ sel =
         . select "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
 -}
-select
-  :: T.Text
+select ::
+  T.Text
   -- ^ The name given to the selection.
   -> Selection
   -- ^ The type of the selection.
@@ -4495,9 +4512,8 @@ select
   -- ^ What options are applied to the selection.
   -> BuildLabelledSpecs
 select nme sType options ols =
-  let selProps =
-        ("type" .= selectionLabel sType) : map selectionProperty options
-  in  (nme .= object selProps) : ols
+    let selProps = ("type" .= selectionLabel sType) : map selectionProperty options
+    in (nme .= object selProps) : ols
 
 
 {-|
@@ -4508,12 +4524,11 @@ Encode a shape channel.
 shape [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 -}
-shape
-  :: [MarkChannel]
+shape ::
+  [MarkChannel]
   -- ^ What data values are used to control the shape parameters of the mark.
   -> BuildLabelledSpecs
-shape markProps ols =
-  ("shape" .= object (concatMap markChannelProperty markProps)) : ols
+shape markProps ols = ("shape" .= object (concatMap markChannelProperty markProps)) : ols
 
 
 {-|
@@ -4524,12 +4539,11 @@ Encode a size channel.
 size [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
 -}
-size
-  :: [MarkChannel]
+size ::
+  [MarkChannel]
   -- ^ What data values are used to control the size parameters of the mark.
   -> BuildLabelledSpecs
-size markProps ols =
-  ("size" .= object (concatMap markChannelProperty markProps)) : ols
+size markProps ols = ("size" .= object (concatMap markChannelProperty markProps)) : ols
 
 
 {-|
@@ -4545,8 +4559,8 @@ Note that if both @stroke@ and 'color' encodings are specified, @stroke@ takes
 precedence.
 
 -}
-stroke
-  :: [MarkChannel]
+stroke ::
+  [MarkChannel]
   -- ^ What data values are used to control the stoke parameters of the mark.
   -> BuildLabelledSpecs
 stroke markProps ols =
@@ -4569,11 +4583,12 @@ enc =
         . text [ 'TName' "miles", 'TmType' Quantitative ]
 @
 -}
-text
-  :: [TextChannel]
+text ::
+  [TextChannel]
   -- ^ What data values are used to control the text parameters.
   -> BuildLabelledSpecs
-text tDefs ols = ("text" .= object (concatMap textChannelProperty tDefs)) : ols
+text tDefs ols =
+  ("text" .= object (concatMap textChannelProperty tDefs)) : ols
 
 
 {-|
@@ -4598,8 +4613,8 @@ enc = 'encoding'
         . 'detail' [ 'DName' "monthly", 'DmType' 'Temporal' ]
 @
 -}
-timeUnitAs
-  :: TimeUnit
+timeUnitAs ::
+  TimeUnit
   -- ^ The width of each bin.
   -> T.Text
   -- ^ The field to bin.
@@ -4625,8 +4640,8 @@ enc = 'encoding'
         . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
 -}
-tooltip
-  :: [TextChannel]
+tooltip ::
+  [TextChannel]
   -- ^ The properties for the channel.
   -> BuildLabelledSpecs
 tooltip tDefs ols =
@@ -4648,10 +4663,9 @@ enc = 'encoding'
                     ,[ TName \"Month\", TmType Temporal, TFormat "%Y" ] ]
 @
 -}
-tooltips
-  :: [[TextChannel]]
+tooltips ::
+  [[TextChannel]]
   -- ^ A separate list of properties for each channel.
   -> BuildLabelledSpecs
 tooltips tDefs ols =
-  ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs))
-    : ols
+  ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols
