@@ -3511,11 +3511,17 @@ GeoJSON specification.
 -}
 data Geometry
     = GeoPoint Double Double
+    -- ^ The GeoJson geometry @point@ type.
     | GeoPoints [(Double, Double)]
+    -- ^ The GeoJson geometry @multi-point@ type.
     | GeoLine [(Double, Double)]
+    -- ^ The GeoJson geometry @line@ type.
     | GeoLines [[(Double, Double)]]
+    -- ^ The GeoJson geometry @multi-line@ type.
     | GeoPolygon [[(Double, Double)]]
+    -- ^ The GeoJson geometry @polygon@ type.
     | GeoPolygons [[[(Double, Double)]]]
+    -- ^ The GeoJson geometry @multi-polygon@ type.
 
 
 {-|
