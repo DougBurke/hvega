@@ -1,0 +1,42 @@
+{
+    "height": 300,
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "orthographic",
+        "translate": [
+            0,
+            100
+        ]
+    },
+    "layer": [
+        {
+            "mark": {
+                "fill": "rgb(149,181,146)",
+                "type": "geoshape"
+            },
+            "data": {
+                "url": "https://gicentre.github.io/data/geoTutorials/world-110m.json",
+                "format": {
+                    "feature": "countries1",
+                    "type": "topojson"
+                }
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.3,
+                "type": "geoshape",
+                "filled": false
+            },
+            "data": {
+                "graticule": {
+                    "stepMinor": [
+                        5,
+                        5
+                    ]
+                }
+            }
+        }
+    ]
+}

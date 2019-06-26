@@ -2790,6 +2790,9 @@ by the <https://github.com/d3/d3-geo d3-geo library>. For details of available
 projections see the
 <https://vega.github.io/vega-lite/docs/projection.html#projection-types Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/ProjectionType
+
 data Projection
     = Albers
     | AlbersUsa
@@ -2842,22 +2845,71 @@ Properties for customising a geospatial projection that converts longitude,latit
 pairs into planar @(x,y)@ coordinate pairs for rendering and query. For details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/Projection
+
 data ProjectionProperty
     = PType Projection
+      -- ^ The type of the map projection.
     | PClipAngle (Maybe Double)
+      -- ^ The clipping circle angle in degrees. A value of @Nothing@ will switch to
+      --   antimeridian cutting rather than small-circle clipping.
     | PClipExtent ClipRect
+      -- ^ Projection’s viewport clip extent to the specified bounds in pixels.
     | PCenter Double Double
+      -- ^ Projection’s center as longitude and latitude in degrees.
+    | PrScale Double
+      -- ^ The projection's zoom scale, which if set, overrides automatic scaling of a
+      --   geo feature to fit within the viewing area.
+      --
+      --   Note that the prefix is @Pr@ and not @P@, so that is does not conflict with
+      --   'PScale'.
+      --
+      --   @since 0.4.0.0
+    | PrTranslate Double Double
+      -- ^ A projection’s panning translation, which if set, overrides automatic positioning
+      --   of a geo feature to fit within the viewing area
+      --
+      --   Note that the prefix is @Pr@ and not @P@, to match the Elm API.
+      --
+      --   @since 0.4.0.0
     | PRotate Double Double Double
+      -- ^ A projection’s three-axis rotation angle. The order is @lambda@ @phi@ @gamma@,
+      --   and specifies the rotation angles in degrees about each spherical axis.
     | PPrecision Double
+      -- ^ Threshold for the projection’s adaptive resampling in pixels, and corresponds to the
+      --   Douglas–Peucker distance. If precision is not specified, the projection’s current
+      --   resampling precision of 0.707 is used.
+    | PReflectX Bool
+      -- ^ Reflect the x-coordinates after performing an identity projection. This
+      -- creates a left-right mirror image of the geoshape marks when subject to an
+      -- identity projection with 'identityProjection'.
+      --
+      -- @since 0.4.0.0
+    | PReflectY Bool
+      -- ^ Reflect the y-coordinates after performing an identity projection. This
+      -- creates a left-right mirror image of the geoshape marks when subject to an
+      -- identity projection with 'identityProjection'.
+      --
+      -- @since 0.4.0.0
     | PCoefficient Double
+      -- ^ The @Hammer@ map projection coefficient.
     | PDistance Double
+      -- ^ The @Satellite@ map projection distance.
     | PFraction Double
+      -- ^ The @Bottomley@ map projection fraction.
     | PLobes Int
+      -- ^ Number of lobes in lobed map projections such as the @Berghaus star@.
     | PParallel Double
+      -- ^ Parallel for map projections such as the @Armadillo@.
     | PRadius Double
+      -- ^ Radius value for map projections such as the @Gingery@.
     | PRatio Double
+      -- ^ Ratio value for map projections such as the @Hill@.
     | PSpacing Double
+      -- ^ Spacing value for map projections such as the @Lagrange@.
     | PTilt Double
+      -- ^ @Satellite@ map projection tilt.
 
 
 projectionProperty :: ProjectionProperty -> LabelledSpec
@@ -2868,9 +2920,13 @@ projectionProperty (PClipExtent rClip) =
     NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
-projectionProperty (PCenter lon lat) = "center" .= map toJSON [lon, lat]
-projectionProperty (PRotate lambda phi gamma) = "rotate" .= map toJSON [lambda, phi, gamma]
-projectionProperty (PPrecision pr) = "precision" .= pr
+projectionProperty (PCenter lon lat) = "center" .= [lon, lat]
+projectionProperty (PrScale sc) = "scale" .= sc
+projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
+projectionProperty (PRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
+projectionProperty (PPrecision pr) = "precision" .= show pr  -- this is a string, not a number, in v3.3.0 of the spec!
+projectionProperty (PReflectX b) = "reflectX" .= b
+projectionProperty (PReflectY b) = "reflectY" .= b
 projectionProperty (PCoefficient x) = "coefficient" .= x
 projectionProperty (PDistance x) = "distance" .= x
 projectionProperty (PFraction x) = "fraction" .= x

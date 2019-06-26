@@ -52,7 +52,7 @@ import qualified HyperlinkTests as HT
 import qualified LegendTests as LT
 import qualified NullTests as NT
 import qualified PositionTests as PT
--- import qualified ProjectionTests as PjT
+import qualified ProjectionTests as PjT
 import qualified ScaleTests as ScT
 import qualified ShapeTests as ShT
 import qualified SortTests as SoT
@@ -91,7 +91,7 @@ goldenTests = testGroup "tests"
   , toTests "Legend" "legend" LT.testSpecs
   , toTests "Null" "null" NT.testSpecs
   , toTests "Position" "position" PT.testSpecs
-  -- , toTests "Projection" "projection" PjT.testSpecs
+  , toTests "Projection" "projection" PjT.testSpecs
   , toTests "Scale" "scale" ScT.testSpecs
   , toTests "Shape" "shape" ShT.testSpecs
   , toTests "Sort" "sort" SoT.testSpecs
