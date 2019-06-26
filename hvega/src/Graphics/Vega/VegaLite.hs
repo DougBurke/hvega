@@ -531,13 +531,13 @@ vlSchemaName :: T.Text
 vlSchemaName = "https://vega.github.io/schema/vega-lite/v3.json"
 
 vegaScriptName :: T.Text
-vegaScriptName = "vega@3"
+vegaScriptName = "vega@5"
 
 vegaLiteScriptName :: T.Text
-vegaLiteScriptName = "vega-lite@2"
+vegaLiteScriptName = "vega-lite@3"
 
 vegaEmbedScriptName :: T.Text
-vegaEmbedScriptName = "vega-embed@3"
+vegaEmbedScriptName = "vega-embed@4"
 
 vlEmbedScriptNames :: [T.Text]
 vlEmbedScriptNames = [vegaScriptName, vegaLiteScriptName, vegaEmbedScriptName]
