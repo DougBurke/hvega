@@ -127,17 +127,15 @@ vbTest =
                 [ title "Car Histogram"
                 , width 200
                 , height 200
-                {- TODO: add viewBackground
                 , viewBackground
-                    [ viewFill (Just "white")
-                    , viewCornerRadius 18
-                    , viewStroke (Just "red")
-                    , viewStrokeWidth 4
-                    , viewStrokeCap caRound
-                    , viewStrokeDash [ 10, 10 ]
-                    , viewStrokeJoin joBevel
+                    [ VBFill (Just "white")
+                    , VBCornerRadius 18
+                    , VBStroke (Just "red")
+                    , VBStrokeWidth 4
+                    , VBStrokeCap CRound
+                    , VBStrokeDash [ 10, 10 ]
+                    , VBStrokeJoin JBevel
                     ]
-                -}
                 , mark Bar []
                 , barEnc []
                 ]
@@ -156,9 +154,7 @@ vbTest =
                 [ title "Car Streamgraph"
                 , width 200
                 , height 200
-                {- TODO: add viewBackground
-                , viewBackground [ viewStyle [ "myStyle", "mySecondStyle" ] ]
-                -}
+                , viewBackground [ VBStyle [ "myStyle", "mySecondStyle" ] ]
                 , mark Area []
                 , streamEnc []
                 ]

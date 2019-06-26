@@ -31,6 +31,18 @@
             "height": 200,
             "mark": "bar",
             "width": 200,
+            "view": {
+                "cornerRadius": 18,
+                "strokeWidth": 4,
+                "strokeCap": "round",
+                "strokeJoin": "bevel",
+                "stroke": "red",
+                "fill": "white",
+                "strokeDash": [
+                    10,
+                    10
+                ]
+            },
             "title": "Car Histogram",
             "encoding": {
                 "color": {
@@ -51,6 +63,12 @@
             "height": 200,
             "mark": "area",
             "width": 200,
+            "view": {
+                "style": [
+                    "myStyle",
+                    "mySecondStyle"
+                ]
+            },
             "title": "Car Streamgraph",
             "encoding": {
                 "color": {
