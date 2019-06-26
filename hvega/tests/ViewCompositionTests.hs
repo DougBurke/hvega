@@ -13,9 +13,9 @@ import Prelude hiding (filter, repeat)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("columns1", columns1)
-            -- , ("columns2", columns2)
-            -- , ("columns3", columns3)
-            -- , ("columns4", columns4)
+            , ("columns2", columns2)
+            , ("columns3", columns3)
+            , ("columns4", columns4)
             , ("grid1", grid1)
             , ("grid2", grid2)
             , ("grid3", grid3)
@@ -23,15 +23,12 @@ testSpecs = [ ("columns1", columns1)
             , ("grid5", grid5)
             ]
 
--- TODO: add HeaderStyle
 
 genderChart :: [HeaderProperty] -> [HeaderProperty] -> VegaLite
-genderChart hdProps {- cProps -} _ =
+genderChart hdProps cProps =
     let
-        {-
         conf =
             configure . configuration (HeaderStyle cProps)
-        -}
 
         pop =
             dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
@@ -65,31 +62,21 @@ genderChart hdProps {- cProps -} _ =
                     , MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ]
                     ]
     in
-    toVegaLite [ {- conf [], -} pop, trans [], enc [], mark Bar [] ]
+    toVegaLite [ conf [], pop, trans [], enc [], mark Bar [] ]
 
 
-columns1 :: VegaLite
+columns1, columns2, columns3, columns4 :: VegaLite
 columns1 = genderChart [] []
-
-{-
--- TODO: add constructrs
-
-columns2, columns3, columns4 :: VegaLite
-
 columns2 = genderChart [ HTitleFontSize 20, HLabelFontSize 15 ] []
 columns3 = genderChart [] [ HTitleFontSize 20, HLabelFontSize 15 ]
-
-columns4 :: VegaLite
 columns4 =
     genderChart
         [ HTitleFontSize 20
         , HLabelFontSize 15
-        , HTitlePadding -27
+        , HTitlePadding (-27)
         , HLabelPadding 40
         ]
         []
-
--}
 
 -- is this in the prelude
 repeatN :: Int -> a -> [a]
@@ -120,19 +107,13 @@ dataVals =
         . dataColumn "cat" cats
         . dataColumn "val" vals
 
--- TODO: add HeaderStyle, FacetStyle
-
 cfg :: [LabelledSpec] -> (VLProperty, VLSpec)
 cfg =
     -- Styling to remove axis gridlines and labels
     configure
-        {-
         . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-        -}
         . configuration (View [ Stroke Nothing, ViewHeight 120 ])
-        {-
         . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
-        -}
 
 -- TODO: add HNoTitle
 

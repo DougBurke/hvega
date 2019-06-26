@@ -1,8 +1,15 @@
 {
     "config": {
+        "header": {
+            "labelFontSize": 0.1
+        },
         "view": {
             "height": 120,
             "stroke": ""
+        },
+        "facet": {
+            "columns": 5,
+            "spacing": 80
         }
     },
     "data": {

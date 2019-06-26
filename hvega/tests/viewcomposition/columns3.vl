@@ -9,7 +9,10 @@
         }
     ],
     "config": {
-        "header": {}
+        "header": {
+            "labelFontSize": 15,
+            "titleFontSize": 20
+        }
     },
     "mark": "bar",
     "data": {

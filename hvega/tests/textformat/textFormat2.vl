@@ -26,7 +26,8 @@
         "column": {
             "field": "month",
             "header": {
-                "format": "%b %y"
+                "format": "%b %y",
+                "formatType": "time"
             },
             "type": "temporal"
         },

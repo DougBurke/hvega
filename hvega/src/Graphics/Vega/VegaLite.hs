@@ -317,6 +317,7 @@ module Graphics.Vega.VegaLite
        , facetFlow
        , FacetMapping(..)
        , FacetChannel(..)
+       , FacetConfig(..)
        , asSpec
        , specification
        , Arrangement(..)
@@ -1251,6 +1252,17 @@ data DataValues
     | Strings [T.Text]
 
 
+{- TODO: not used yet
+
+dataValuesSpecs :: DataValues -> [VLSpec]
+dataValuesSpecs (Booleans bs) = map toJSON bs
+dataValuesSpecs (DateTimes dtss) = map (object . map dateTimeProperty) dtss
+dataValuesSpecs (Numbers xs) = map toJSON xs
+dataValuesSpecs (Strings ss) = map toJSON ss
+
+-}
+
+
 {-|
 
 Create a column of data. A column has a name and a list of values. The final
@@ -1732,7 +1744,9 @@ arrangementLabel Flow = "repeat"  -- NOTE: not "flow"!
 
 
 -- | Describes the type of stacking to apply to a bar chart.
-
+--
+--   TODO update for v3 (Elm VegaLite now has StackOffset and StackProperty)
+--
 data StackProperty
     = StZero
     | StNormalize
@@ -1955,10 +1969,14 @@ cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", 
 
 Allow type of sorting to be customised. For details see the
 <https://vega.github.io/vega-lite/docs/sort.html Vega-Lite documentation>.
+
+TODO: a significant rework?
+
 -}
 data SortProperty
     = Ascending
     | Descending
+    -- | CustomSort DataValues    -- ^ @since 0.4.0.0
     | Op Operation
     | ByField T.Text
     | ByRepeat Arrangement
@@ -1976,10 +1994,13 @@ sortPropertySpec :: [SortProperty] -> VLSpec
 sortPropertySpec [] = A.Null
 sortPropertySpec [Ascending] = fromT "ascending"
 sortPropertySpec [Descending] = fromT "descending"
+-- sortPropertySpec [CustomSort dvs] -> dataValuesSpecs dvs
 sortPropertySpec ops = object (map sortProperty ops)
 
 
 -- | Position channel properties used for creating a position channel encoding.
+--
+--   TODO: update for v3
 
 data PositionChannel
     = PName T.Text
@@ -3470,10 +3491,14 @@ data ConfigurationProperty
     | CircleStyle [MarkProperty]
     | CountTitle T.Text
     | FieldTitle FieldTitleProperty
+    | GeoshapeStyle [MarkProperty]             -- ^ @since 0.4.0.0
     | Legend [LegendConfig]
     | LineStyle [MarkProperty]
+    | FacetStyle [FacetConfig]                 -- ^ @since 0.4.0.0
+    | HeaderStyle [HeaderProperty]             -- ^ @since 0.4.0.0
     | MarkStyle [MarkProperty]
     | NamedStyle T.Text [MarkProperty]
+    | NamedStyles [(T.Text, [MarkProperty])]   -- ^ @since 0.4.0.0
     | NumberFormat T.Text
     | Padding Padding
     | PointStyle [MarkProperty]
@@ -3485,11 +3510,14 @@ data ConfigurationProperty
     | Scale [ScaleConfig]
     | SelectionStyle [(Selection, [SelectionProperty])]
     | SquareStyle [MarkProperty]
-    | Stack StackProperty
+    | Stack StackProperty              -- TODO: change to StackOffset?
     | TextStyle [MarkProperty]
     | TickStyle [MarkProperty]
     | TitleStyle [TitleConfig]
     | TimeFormat T.Text
+      -- Note: Trails appear unusual in having their own top-level config
+      -- (see https://vega.github.io/vega-lite/docs/trail.html#config)
+    | TrailStyle [MarkProperty]                -- ^ @since 0.4.0.0
     | View [ViewConfig]
 
 
@@ -3516,6 +3544,9 @@ configProperty (Projection pps) = "projection" .= object (map projectionProperty
 configProperty (AreaStyle mps) = "area" .= object (map markProperty mps)
 configProperty (BarStyle mps) = "bar" .= object (map markProperty mps)
 configProperty (CircleStyle mps) = "circle" .= object (map markProperty mps)
+configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
+configProperty (GeoshapeStyle mps) = "geoshape" .= object (map markProperty mps)
+configProperty (HeaderStyle hps) = "header" .= object (map headerProperty hps)
 configProperty (LineStyle mps) = "line" .= object (map markProperty mps)
 configProperty (PointStyle mps) = "point" .= object (map markProperty mps)
 configProperty (RectStyle mps) = "rect" .= object (map markProperty mps)
@@ -3525,12 +3556,16 @@ configProperty (TextStyle mps) = "text" .= object (map markProperty mps)
 configProperty (TickStyle mps) = "tick" .= object (map markProperty mps)
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (NamedStyle nme mps) = "style" .= object [nme .= object (map markProperty mps)]
+configProperty (NamedStyles styles) =
+  let toStyle (nme, mps) = nme .= object (map markProperty mps)
+  in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
 configProperty (Stack sp) = stackProperty sp
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
   in "selection" .= object (map selProp selConfig)
+configProperty (TrailStyle mps) = "trail" .= object (map markProperty mps)
 configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 
 
@@ -3891,15 +3926,137 @@ resolveProperty res =
 
 Represents a facet header property. For details, see the
 <https://vega.github.io/vega-lite/docs/facet.html#header Vega-Lite documentation>.
+
+Labels refer to the title of each sub-plot in a faceted view and
+title is the overall title of the collection.
+
 -}
 data HeaderProperty
     = HFormat T.Text
+      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
+      -- facet header (title) values. To distinguish between formatting as numeric values
+      -- and data/time values, additionally use 'HFormatAsNum' or 'HFormatAsTemporal'.
+    | HFormatAsNum
+      -- ^ Facet headers should be formatted as numbers. Use a
+      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
+      --   with 'HFormat'.
+      --
+      -- @since 0.4.0.0
+    | HFormatAsTemporal
+      -- ^ Facet headers should be formatted as dates or times. Use a
+      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
+      --   with 'HFormat'.
+      --
+      -- @since 0.4.0.0
     | HTitle T.Text
+      -- ^ The title for the facets.
+    | HLabelAlign HAlign
+      -- ^ The horizontal alignment of the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelAnchor APosition
+      -- ^ The anchor position for the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelAngle Double
+      -- ^ The angle to draw the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelColor T.Text
+      -- ^ The color of the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelFont T.Text
+      -- ^ The font for the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelFontSize Double
+      -- ^ The font size for the labels.
+      --
+      -- @since 0.4.0.0
+    | HLabelLimit Double
+      -- ^ The maximum length of each label.
+      --
+      -- @since 0.4.0.0
+    | HLabelOrient Side
+      -- ^ The position of the label relative to its sub-plot.
+      --
+      -- @since 0.4.0.0
+    | HLabelPadding Double
+      -- ^ The spacing in pixels between the label and its sub-plot.
+      --
+      -- @since 0.4.0.0
+    | HTitleAlign HAlign
+      -- ^ The horizontal alignment of the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleAnchor APosition
+      -- ^ The anchor position for the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleAngle Double
+      -- ^ The angle to draw the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleBaseline VAlign
+      -- ^ The vertical alignment of the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleColor T.Text
+      -- ^ The color of the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleFont T.Text
+      -- ^ The font for the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleFontWeight T.Text
+      -- ^ The font weight for the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleFontSize Double
+      -- ^ The font size for the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleLimit Double
+      -- ^ The maximum length of the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleOrient Side
+      -- ^ The position of the title relative to the sub-plots.
+      --
+      -- @since 0.4.0.0
+    | HTitlePadding Double
+      -- ^ The spacing in pixels between the title and the labels.
+      --
+      -- @since 0.4.0.0
 
 
 headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
+headerProperty HFormatAsNum = "formatType" .= ("number" :: T.Text)
+headerProperty HFormatAsTemporal = "formatType" .= ("time" :: T.Text)
 headerProperty (HTitle ttl) = "title" .= ttl
+headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
+headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
+headerProperty (HLabelAngle x) = "labelAngle" .= x
+headerProperty (HLabelColor s) = "labelColor" .= s
+headerProperty (HLabelFont s) = "labelFont" .= s
+headerProperty (HLabelFontSize x) = "labelFontSize" .= x
+headerProperty (HLabelLimit x) = "labelLimit" .= x
+headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
+headerProperty (HLabelPadding x) = "labelPadding" .= x
+headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
+headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
+headerProperty (HTitleAngle x) = "titleAngle" .= x
+headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
+headerProperty (HTitleColor s) = "titleColor" .= s
+headerProperty (HTitleFont s) = "titleFont" .= s
+headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
+headerProperty (HTitleFontSize x) = "titleFontSize" .= x
+headerProperty (HTitleLimit x) = "titleLimit" .= x
+headerProperty (HTitleOrient orient) = "titleOrient" .= sideLabel orient
+headerProperty (HTitlePadding x) = "titlePadding" .= x
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
@@ -4032,6 +4189,7 @@ data FacetChannel
     | FBin [BinProperty]
     | FAggregate Operation
     | FTimeUnit TimeUnit
+    | FSort [SortProperty]      -- ^ @since 0.4.0.0
     | FHeader [HeaderProperty]
 
 
@@ -4039,9 +4197,31 @@ facetChannelProperty :: FacetChannel -> LabelledSpec
 facetChannelProperty (FName s) = field_ s
 facetChannelProperty (FmType measure) = type_ measure
 facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 facetChannelProperty (FHeader hProps) = "header" .= object (map headerProperty hProps)
+
+
+{-|
+
+See the
+[Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+
+@since 0.4.0.0
+
+-}
+data FacetConfig
+    = FColumns Int
+    -- ^ The maximum number of columns to use in a faceted-flow layout.
+    | FSpacing Double
+    -- ^ The spacing in pixels between sub-views in a view composition,
+    --   such as a faceted or concatenated view.
+
+
+facetConfigProperty :: FacetConfig -> LabelledSpec
+facetConfigProperty (FColumns n) = "columns" .= n
+facetConfigProperty (FSpacing x) = "spacing" .= x
 
 
 -- | Types of text channel property used for displaying text as part of the visualization.
