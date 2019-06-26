@@ -17,9 +17,9 @@ testSpecs = [ ("columns1", columns1)
             -- , ("columns3", columns3)
             -- , ("columns4", columns4)
             , ("grid1", grid1)
-            -- , ("grid2", grid2)
-            -- , ("grid3", grid3)
-            -- , ("grid4", grid4)
+            , ("grid2", grid2)
+            , ("grid3", grid3)
+            , ("grid4", grid4)
             , ("grid5", grid5)
             ]
 
@@ -134,7 +134,7 @@ cfg =
         . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
         -}
 
--- TODO: add spacingRC, HNoTitle
+-- TODO: add HNoTitle
 
 grid1 :: VegaLite
 grid1 =
@@ -151,7 +151,7 @@ grid1 =
     toVegaLite
         [ cfg []
         , dataVals []
-        -- , spacingRC 20 80
+        , spacingRC 20 80
         , specification specByCatVal
         , facet
             [ RowBy [ FName "row", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
@@ -160,7 +160,7 @@ grid1 =
         ]
 
 
-{- TODO: add facetFlow
+-- TODO: add HNoTitle
 
 grid2 :: VegaLite
 grid2 =
@@ -184,9 +184,11 @@ grid2 =
         , trans []
         , columns (Just 5)
         , specification specByCatVal
-        , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
+        , facetFlow [ FName "index", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
         ]
 
+
+-- TODO: add HNoTitle
 
 grid3 :: VegaLite
 grid3 =
@@ -210,12 +212,11 @@ grid3 =
         , trans []
         , columns Nothing
         , specification specByCatVal
-        , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
+        , facetFlow [ FName "index", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
         ]
 
--}
 
-{- TODO: add repeatFlow
+-- TODO: Add Flow
 
 grid4 :: VegaLite
 grid4 =
@@ -225,7 +226,7 @@ grid4 =
 
         enc =
             encoding
-                . position X [ PRepeat Flow, PmType Quantitative, PBin [] ]
+                . position X [ {- PRepeat Flow, -} PmType Quantitative, PBin [] ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
                 . color [ MName "Origin", MmType Nominal ]
 
@@ -237,7 +238,6 @@ grid4 =
         , repeatFlow [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
         , specification spec
         ]
--}
 
 
 grid5 :: VegaLite

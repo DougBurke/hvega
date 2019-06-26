@@ -1,8 +1,21 @@
 {
+    "transform": [
+        {
+            "as": "index",
+            "calculate": "datum.row * 1000 + datum.col"
+        }
+    ],
     "config": {
+        "header": {
+            "labelFontSize": 0.1
+        },
         "view": {
             "height": 120,
             "stroke": ""
+        },
+        "facet": {
+            "columns": 5,
+            "spacing": 80
         }
     },
     "data": {
@@ -392,20 +405,10 @@
         }
     },
     "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "columns": 5,
     "facet": {
-        "row": {
-            "field": "row",
-            "header": {},
-            "type": "ordinal"
-        },
-        "column": {
-            "field": "col",
-            "header": {},
-            "type": "ordinal"
-        }
-    },
-    "spacing": {
-        "row": 20,
-        "column": 80
+        "field": "index",
+        "header": {},
+        "type": "ordinal"
     }
 }
