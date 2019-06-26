@@ -2807,6 +2807,11 @@ data Projection
       --   for more information.
     | Equirectangular
     | Gnomonic
+    | Identity
+      -- ^ The identiy projection. This can be combined with 'PReflectX' and
+      --   'PReflectY' in the list of projection properties.
+      --
+      --   @since 0.4.0.0
     | Mercator
     | Orthographic
     | Stereographic
@@ -2824,6 +2829,7 @@ projectionLabel ConicEquidistant = "conicEquidistant"
 projectionLabel (Custom pName) = pName
 projectionLabel Equirectangular = "equirectangular"
 projectionLabel Gnomonic = "gnomonic"
+projectionLabel Identity = "identity"
 projectionLabel Mercator = "mercator"
 projectionLabel Orthographic = "orthographic"
 projectionLabel Stereographic = "stereographic"
@@ -2883,13 +2889,13 @@ data ProjectionProperty
     | PReflectX Bool
       -- ^ Reflect the x-coordinates after performing an identity projection. This
       -- creates a left-right mirror image of the geoshape marks when subject to an
-      -- identity projection with 'identityProjection'.
+      -- identity projection with 'Identity'.
       --
       -- @since 0.4.0.0
     | PReflectY Bool
       -- ^ Reflect the y-coordinates after performing an identity projection. This
       -- creates a left-right mirror image of the geoshape marks when subject to an
-      -- identity projection with 'identityProjection'.
+      -- identity projection with 'Identity'.
       --
       -- @since 0.4.0.0
     | PCoefficient Double

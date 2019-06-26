@@ -15,10 +15,10 @@ import Prelude hiding (filter)
 testSpecs :: [(String, VegaLite)]
 testSpecs = standardProjs
             ++ [ configExample
-               -- , reflectExample False False
-               -- , reflectExample True False
-               -- , reflectExample False True
-               -- , reflectExample True True
+               , reflectExample False False
+               , reflectExample True False
+               , reflectExample False True
+               , reflectExample True True
                ]
             ++ d3Projections
 
@@ -49,8 +49,6 @@ worldMapTemplate tText projProps =
         ]
     )
 
--- TODO: add Identity
-
 standardProjs :: [(String, VegaLite)]
 standardProjs =
     [ worldMapTemplate "Albers" [ PType Albers ]
@@ -61,7 +59,7 @@ standardProjs =
     , worldMapTemplate "ConicEquidistant" [ PType ConicEquidistant ]
     , worldMapTemplate "Equirectangular" [ PType Equirectangular ]
     , worldMapTemplate "Gnomonic" [ PType Gnomonic ]
-    -- , worldMapTemplate "Identity" [ PType Identity ]
+    , worldMapTemplate "Identity" [ PType Identity ]
     , worldMapTemplate "Mercator" [ PType Mercator ]
     , worldMapTemplate "Orthographic" [ PType Orthographic ]
     , worldMapTemplate "Stereographic" [ PType Stereographic ]
@@ -116,12 +114,10 @@ configExample =
     )
 
 
-{- TODO: add Identity
-
 reflectExample :: Bool -> Bool -> (String, VegaLite)
 reflectExample rx ry =
     let
-        name =
+        tname =
             if not rx && not ry then
                 "identityExample"
 
@@ -162,5 +158,4 @@ reflectExample rx ry =
                 , projection [ PType Identity, PReflectX rx, PReflectY ry ]
                 ]
     in
-    ( name, toVegaLite [ width 500, height 250, layer [ globeSpec, graticuleSpec, countrySpec ] ] )
--}
+    ( tname, toVegaLite [ width 500, height 250, layer [ globeSpec, graticuleSpec, countrySpec ] ] )
