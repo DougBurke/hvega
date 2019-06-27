@@ -550,6 +550,7 @@ module Graphics.Vega.VegaLite
          --
          -- $generaldatatypes
 
+       , BoolOrNumber(..)
        , DataValue(..)
        , DataValues(..)
 
@@ -3460,6 +3461,20 @@ title :: T.Text -> PropertySpec
 title s = (VLTitle, toJSON s)
 
 
+-- | For properties that accept a boolean or a number.
+--
+--   This is /experimental/ as there must be better ways to do this.
+data BoolOrNumber
+  = BTrue
+  | BFalse
+  | BNumber Double
+
+instance A.ToJSON BoolOrNumber where
+  toJSON BTrue = toJSON True
+  toJSON BFalse = toJSON False
+  toJSON (BNumber x) = toJSON x
+
+
 {-|
 
 Axis customisation properties. These are used for customising individual axes.
@@ -3552,24 +3567,27 @@ data AxisProperty
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | AxLabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | AxLabelBound BoolOrNumber
+      -- ^ Should labels be hidden if they exceed the axis range? If @BFalse@
+      --   then no check is made, @BTrue@ means that labels will be
+      --   hidden if they exceed 1 pixel, otherwise 'BNumber' gives the
+      --   maximum numer of pixels by which the label bounding box can extend
+      --   beyond the axis before being hidden.
       --
       --   @since 0.4.0.0
     | AxLabelColor T.Text
       -- ^ The label color.
       --
       --   @since 0.4.0.0
-    | AxLabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
+    | AxLabelFlush BoolOrNumber
+      -- ^ The label alignment at the start or end of the axis. If @BFalse@
+      --   then no adjustment is made, @BTrue@ means that labels will be
       --   labels will be left- and right- aligned for the first and last
       --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+      --   aligned for a vertical axis, otherwise 'BNumber' gives the
+      --   space added, in pixels, from the center of the axis, which
+      --   can sometimes help the labels better visually group with the
+      --   corresponding tick marks.
       --
       --   @since 0.4.0.0
     | AxLabelFlushOffset Double
@@ -3757,9 +3775,9 @@ axisProperty (AxLabels b) = "labels" .= b
 axisProperty (AxLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisProperty (AxLabelAngle a) = "labelAngle" .= a
 axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisProperty (AxLabelBound mx) = "labelBound" .= mxToValue mx
+axisProperty (AxLabelBound mx) = "labelBound" .= mx
 axisProperty (AxLabelColor s) = "labelColor" .= s
-axisProperty (AxLabelFlush mx) = "labelFlush" .= mxToValue mx
+axisProperty (AxLabelFlush mx) = "labelFlush" .= mx
 axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .= x
 axisProperty (AxLabelFont s) = "labelFont" .= s
 axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
@@ -6268,22 +6286,25 @@ data AxisConfig
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | LabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | LabelBound BoolOrNumber
+      -- ^ Should labels be hidden if they exceed the axis range? If @BFalse@
+      --   then no check is made, @BTrue@ means that labels will be
+      --   hidden if they exceed 1 pixel, otherwise 'BNumber' gives the
+      --   maximum numer of pixels by which the label bounding box can extend
+      --   beyond the axis before being hidden.
       --
       --   @since 0.4.0.0
     | LabelColor T.Text
       -- ^ The label color.
-    | LabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
+    | LabelFlush BoolOrNumber
+      -- ^ The label alignment at the start or end of the axis. If @BFalse@
+      --   then no adjustment is made, @BTrue@ means that labels will be
       --   labels will be left- and right- aligned for the first and last
       --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+      --   aligned for a vertical axis, otherwise 'BNumber' gives the
+      --   space added, in pixels, from the center of the axis, which
+      --   can sometimes help the labels better visually group with the
+      --   corresponding tick marks.
       --
       --   @since 0.4.0.0
     | LabelFlushOffset Double
@@ -6400,14 +6421,6 @@ data AxisConfig
       -- ^ The Y coordinate of the axis title, relative to the axis group.
 
 
--- Using an equality test here isn't ideal, but I am just following the
--- Elm code for now.
---
-mxToValue :: Maybe Double -> Value
-mxToValue (Just x) | x == 1 = toJSON True
-                   | otherwise = toJSON x
-mxToValue Nothing = toJSON False
-
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
@@ -6426,8 +6439,8 @@ axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisConfigProperty (LabelBound mx) = "labelBound" .= mxToValue mx
-axisConfigProperty (LabelFlush mx) = "labelFlush" .= mxToValue mx
+axisConfigProperty (LabelBound mx) = "labelBound" .= mx
+axisConfigProperty (LabelFlush mx) = "labelFlush" .= mx
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
 axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
