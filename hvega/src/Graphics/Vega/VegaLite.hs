@@ -2248,6 +2248,10 @@ Axis customisation properties. These are used for customising individual axes.
 To configure all axes, use 'AxisConfig' with a 'configuration' instead. See the
 <https://vega.github.io/vega-lite/docs/axis.html#axis-properties Vega-Lite documentation>
 for more details.
+
+The @AxTitleMaxLength@ constructor was removed in release 0.4.0.0. The
+@AxTitleLimit@ constructor should be used instead.
+
 -}
 data AxisProperty
     = AxDomain Bool
@@ -2268,8 +2272,8 @@ data AxisProperty
     | AxTitle T.Text
     | AxTitleAlign HAlign
     | AxTitleAngle Double
-    | AxTitleMaxLength Double
     | AxTitlePadding Double
+    | AxTitleLimit Double                 -- ^ @since 0.4.0.0
     | AxValues [Double]
     | AxDates [[DateTime]]
     | AxZIndex Int
@@ -2297,7 +2301,7 @@ axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dt
 axisProperty (AxTitle ttl) = "title" .= ttl
 axisProperty (AxTitleAlign algn) = "titleAlign" .= hAlignLabel algn
 axisProperty (AxTitleAngle angle) = "titleAngle" .= angle
-axisProperty (AxTitleMaxLength len) = "titleMaxLength" .= len
+axisProperty (AxTitleLimit x) = "titleLimit" .= x
 axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
 
 
@@ -3821,6 +3825,10 @@ configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 Axis configuration options for customising all axes. See the
 <https://vega.github.io/vega-lite/docs/axis.html#general-config Vega-Lite documentation>
 for more details.
+
+The @TitleMaxLength@ constructor was removed in release 0.4.0.0. The
+@TitleLimit@ constructor should be used instead.
+
 -}
 data AxisConfig
     = BandPosition Double
@@ -3856,8 +3864,8 @@ data AxisConfig
     | TitleFontSize Double
     | TitleFontWeight FontWeight
     | TitleLimit Double
-    | TitleMaxLength Double
     | TitlePadding Double
+    -- ^ The padding, in pixels, between title and legend.
     | TitleX Double
     | TitleY Double
 
@@ -3896,7 +3904,6 @@ axisConfigProperty (TitleFont f) = "titleFont" .= f
 axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
 axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
 axisConfigProperty (TitleLimit x) = "titleLimit" .= x
-axisConfigProperty (TitleMaxLength x) = "titleMaxLength" .= x
 axisConfigProperty (TitlePadding x) = "titlePadding" .= x
 axisConfigProperty (TitleX x) = "titleX" .= x
 axisConfigProperty (TitleY y) = "titleY" .= y

@@ -23,16 +23,22 @@ and the `Position` type has added `XError`, `XError2`, `YError`, and
 
 This functionality was provided by Adam Conner-Sax (adamConnerSax).
 
-The `dataName`, `dataSequence, `dataSequenceAs`, `sphere`, and `graticule` functions
-have been added, as well as associated properties (`GraticuleProperty`).
-The `Format` type has been extended to support delimeter-separated
-values (`DSV`).
+A large number of functions, data types, and constructors for data
+types have been added, based on version 1.12.0 of the elm-vegalite
+module. Thanks again to Jo Wood for doing all the work! The documentation
+indicates new symbols with the `since 0.4.0.0` label.
 
 The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`
 constructor is used to change the order of an axis.
 
-Added a test suite based on the Elm Vega-Lite tests.
+The `AxTitleMaxLength` and `TitleMaxLength` constructors have been
+removed (from `AxisProperty` and `AxisConfig` respectively) as they
+are invalid. The `AxTitleLimit` (new in this release) and
+`TitleLimit` constructors should be used instead.
+
+Added a test suite based on the Elm Vega-Lite tests (again, thanks to
+Jo Wood).
 
 ## 0.3.0.1
 
