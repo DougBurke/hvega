@@ -2251,59 +2251,342 @@ To configure all axes, use 'AxisConfig' with a 'configuration' instead. See the
 for more details.
 
 The @AxTitleMaxLength@ constructor was removed in release 0.4.0.0. The
-@AxTitleLimit@ constructor should be used instead.
+'AxTitleLimit' constructor should be used instead.
 
 -}
 data AxisProperty
-    = AxDomain Bool
+    = AxBandPosition Double
+      -- ^ An interpolation fraction indicating where, for @band@ scales, axis ticks should
+      --   be position. A value of @0@ places ticks at the left-edge of the band, @0.5@ in
+      --   the middle, and @1@ at the right edge.
+      --
+      --   @since 0.4.0.0
+    | AxDomain Bool
+      -- ^ Should the axis domain (the baseline) be displayed?
+    | AxDomainColor T.Text
+      -- ^ The axis domain color.
+      --
+      --   @since 0.4.0.0
+    | AxDomainDash [Double]
+      -- ^ The dash style of the domain (alternating stroke, space lengths
+      --   in pixels).
+      --
+      --   @since 0.4.0.0
+    | AxDomainDashOffset Double
+      -- ^ The pixel offset at which to start drawing the domain dash array.
+      --
+      --   @since 0.4.0.0
+    | AxDomainOpacity Double
+      -- ^ The axis domain opacity.
+      --
+      --   @since 0.4.0.0
+    | AxDomainWidth Double
+      -- ^ The width of the axis domain.
+      --
+      --   @since 0.4.0.0
     | AxFormat T.Text
+      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
+      --   axis values. To distinguish between formatting as numeric values
+      --   and data/time values, additionally use 'AxFormatAsNum' or 'AxFormatAsTemporal'.
+    | AxFormatAsNum
+      -- ^ Facet headers should be formatted as numbers. Use a
+      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
+      --   with 'AxFormat'.
+      --
+      -- @since 0.4.0.0
+    | AxFormatAsTemporal
+      -- ^ Facet headers should be formatted as dates or times. Use a
+      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
+      --   with 'AxFormat'.
+      --
+      -- @since 0.4.0.0
     | AxGrid Bool
-    | AxLabelAngle Double
-    | AxLabelOverlap OverlapStrategy
-    | AxLabelPadding Double
+      -- ^ Should an axis grid be displayed?
+    | AxGridColor T.Text
+      -- ^ The color for the grid.
+      --
+      --   @since 0.4.0.0
+    | AxGridDash [Double]
+      -- ^ The dash style of the grid (alternating stroke, space lengths
+      --   in pixels).
+      --
+      --   @since 0.4.0.0
+    | AxGridDashOffset Double
+      -- ^ The pixel offset at which to start drawing the grid dash array.
+      --
+      --   @since 0.4.0.0
+    | AxGridOpacity Double
+      -- ^ The opacity of the grid.
+      --
+      --   @since 0.4.0.0
+    | AxGridWidth Double
+      -- ^ The width of the grid lines.
+      --
+      --   @since 0.4.0.0
     | AxLabels Bool
+      -- ^ Should labels be added to an axis?
+    | AxLabelAlign HAlign
+      -- ^ The horizontal alignment for labels.
+      --
+      --   @since 0.4.0.0
+    | AxLabelAngle Double
+      -- ^ The angle at which to draw labels.
+    | AxLabelBaseline VAlign
+      -- ^ The vertical alignment for labels.
+      --
+      --   @since 0.4.0.0
+    | AxLabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
+      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
+      --   then no check is made, otherwise it gives the maximum number of
+      --   pixels by which the label bounding box can extend beyond the axis.
+      --
+      --   @since 0.4.0.0
+    | AxLabelColor T.Text
+      -- ^ The label color.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlush (Maybe Double)   -- XXXXX as with labelbound
+      -- ^ The label alignment at the start or end of the axis. If
+      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
+      --   labels will be left- and right- aligned for the first and last
+      --   label (horizontal axis), or bottom and top text baselines are
+      --   aligned for a vertical axis. Other numeric values indicate additonal
+      --   space added, in pixels, which can someties help the labels better visually
+      --   group with the corresponding tick marks.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlushOffset Double
+      -- ^ The number of pixels to offset flush-adjusted labels.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFont T.Text
+      -- ^ The font for the label.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFontSize Double
+      -- ^ The font size of the label.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFontStyle T.Text
+      -- ^ The font style of the label.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFontWeight FontWeight
+      -- ^ The font weight of the label.
+      --
+      --   @since 0.4.0.0
+    | AxLabelLimit Double
+      -- ^ The maximum width of a label, in pixels.
+      --
+      --   @since 0.4.0.0
+    | AxLabelOpacity Double
+      -- ^ The opacity of the label.
+      --
+      --   @since 0.4.0.0
+    | AxLabelOverlap OverlapStrategy
+      -- ^ How should overlapping labels be displayed?
+    | AxLabelPadding Double
+      -- ^ The padding, in pixels, between the label and the axis.
+    | AxLabelSeparation Double
+      -- ^ The minimum separation, in pixels, between label bounding boxes
+      --   for them to be considered non-overlapping. This is ignored if
+      --   the 'AxLabelOverlap' strategy is 'ONone'.
+      --
+      --   @since 0.4.0.0
     | AxMaxExtent Double
+      -- ^ The maximum extent, in pixels, that axis ticks and labels should use.
+      --   This determines a maxmium offset value for axis titles.
     | AxMinExtent Double
+      -- ^ The minimum extent, in pixels, that axis ticks and labels should use.
+      --   This determines a minmium offset value for axis titles.
     | AxOffset Double
+      -- ^ The offset, in pixels, between the axis and the edge of the
+      --   enclosing group or data rectangle.
     | AxOrient Side
+      -- ^ The orientation of the axis.
     | AxPosition Double
+      -- ^ The anchor position of the axis in pixels.
     | AxTicks Bool
+      -- ^ Should tick marks be drawn on an axis?
+    | AxTickColor T.Text
+      -- ^ The color of the ticks.
+      --
+      --   @since 0.4.0.0
     | AxTickCount Int
+      -- ^ The desired number of ticks for axes visualizing quantitative scales.
+      --   This is a hint to the system, and the actual number used will be
+      --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
+      --   underlying scale's range.
+    | AxTickDash [Double]
+      -- ^ The dash style of the ticks (alternating stroke, space lengths
+      --   in pixels).
+      --
+      --   @since 0.4.0.0
+    | AxTickDashOffset Double
+      -- ^ The pixel offset at which to start drawing the tick dash array.
+      --
+      --   @since 0.4.0.0
+    | AxTickExtra Bool
+      -- ^ Should an extra axis tick mark be added for the initial position of
+      --   the axis?
+      --
+      --   @since 0.4.0.0
+    | AxTickMinStep Double
+      -- ^ The minimum desired step between axis ticks, in terms of the scale
+      --   domain values.
+      --
+      --   @since 0.4.0.0
+    | AxTickOffset Double
+      -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
+      --
+      --   @since 0.4.0.0
+    | AxTickOpacity Double
+      -- ^ The opacity of the ticks.
+      --
+      --   @since 0.4.0.0
+    | AxTickRound Bool
+      -- ^ Should pixel position values be rounded to the nearest integer?
+      --
+      --   @since 0.4.0.0
     | AxTickSize Double
+      -- ^ The size of the tick marks in pixels.
+    | AxTickWidth Double
+      -- ^ The width of the tick marks in pixels.
+      --
+      --   @since 0.4.0.0
     | AxTitle T.Text
+      -- ^ The axis title.
+    | AxNoTitle
+      -- ^ Draw no title for the axis.
+      --
+      --   @since 0.4.0.0
     | AxTitleAlign HAlign
+      -- ^ The horizontal alignment of the axis title.
+    | AxTitleAnchor APosition
+      -- ^ The text anchor ppsition for placing axis titles.
+      --
+      --   @since 0.4.0.0
     | AxTitleAngle Double
+      -- ^ The angle of the axis title.
+    | AxTitleBaseline VAlign
+      -- ^ The vertical alignment of the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleColor T.Text
+      -- ^ The color of the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleFont T.Text
+      -- ^ The font for the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleFontSize Double
+      -- ^ The font size of the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleFontStyle T.Text
+      -- ^ The font style of the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleFontWeight FontWeight
+      -- ^ The font weight of the axis title.
+      --
+      --   @since 0.4.0.0
+    | AxTitleLimit Double
+      -- ^ The maximum allowed width of the axis title, in pixels.
+      --
+      --   @since 0.4.0.0
+    | AxTitleOpacity Double
+      -- ^ The opacity of the axis title.
+      --
+      --   @since 0.4.0.0
     | AxTitlePadding Double
-    | AxTitleLimit Double                 -- ^ @since 0.4.0.0
+      -- ^ The padding, in pixels, between title and axis.
+    | AxTitleX Double
+      -- ^ The X coordinate of the axis title, relative to the axis group.
+      --
+      --   @since 0.4.0.0
+    | AxTitleY Double
+      -- ^ The Y coordinate of the axis title, relative to the axis group.
+      --
+      --   @since 0.4.0.0
     | AxValues [Double]
     | AxDates [[DateTime]]
+    -- TODO: need to extend this I think?
     | AxZIndex Int
+      -- ^ The z-index of the axis.
 
 
 axisProperty :: AxisProperty -> LabelledSpec
-axisProperty (AxFormat fmt) = "format" .= fmt
-axisProperty (AxLabels b) = "labels" .= b
-axisProperty (AxLabelAngle a) = "labelAngle" .= a
-axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
-axisProperty (AxLabelPadding pad) = "labelPadding" .= pad
+axisProperty (AxBandPosition x) = "bandPosition" .= x
 axisProperty (AxDomain b) = "domain" .= b
+axisProperty (AxDomainColor s) = "domainColor" .= s
+axisProperty (AxDomainDash ds) = "domainDash" .= ds
+axisProperty (AxDomainDashOffset x) = "domainDashOffset" .= x
+axisProperty (AxDomainOpacity x) = "domainOpacity" .= x
+axisProperty (AxDomainWidth x) = "domainWidth" .= x
+axisProperty (AxFormat fmt) = "format" .= fmt
+axisProperty AxFormatAsNum = "formatType" .= fromT "number"
+axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
 axisProperty (AxGrid b) = "grid" .= b
+axisProperty (AxGridColor s) = "gridColor" .= s
+axisProperty (AxGridDash ds) = "gridDash" .= ds
+axisProperty (AxGridDashOffset x) = "gridDashOffset" .= x
+axisProperty (AxGridOpacity x) = "gridOpacity" .= x
+axisProperty (AxGridWidth x) = "gridWidth" .= x
+axisProperty (AxLabels b) = "labels" .= b
+axisProperty (AxLabelAlign ha) = "labelAlign" .= hAlignLabel ha
+axisProperty (AxLabelAngle a) = "labelAngle" .= a
+axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
+axisProperty (AxLabelBound mx) = "labelBound" .= mxToValue mx
+axisProperty (AxLabelColor s) = "labelColor" .= s
+axisProperty (AxLabelFlush mx) = "labelFlush" .= mxToValue mx
+axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .= x
+axisProperty (AxLabelFont s) = "labelFont" .= s
+axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
+axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
+axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
+axisProperty (AxLabelLimit x) = "labelLimit" .= x
+axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
+axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
+axisProperty (AxLabelPadding x) = "labelPadding" .= x
+axisProperty (AxLabelSeparation x) = "labelSeparation" .= x
 axisProperty (AxMaxExtent n) = "maxExtent" .= n
 axisProperty (AxMinExtent n) = "minExtent" .= n
-axisProperty (AxOrient side) = "orient" .= sideLabel side
 axisProperty (AxOffset n) = "offset" .= n
+axisProperty (AxOrient side) = "orient" .= sideLabel side
 axisProperty (AxPosition n) = "position" .= n
-axisProperty (AxZIndex n) = "zindex" .= n
 axisProperty (AxTicks b) = "ticks" .= b
+axisProperty (AxTickColor s) = "tickColor" .= s
 axisProperty (AxTickCount n) = "tickCount" .= n
-axisProperty (AxTickSize sz) = "tickSize" .= sz
+axisProperty (AxTickDash ds) = "tickDash" .= ds
+axisProperty (AxTickDashOffset x) = "tickDashOffset" .= x
+axisProperty (AxTickExtra b) = "tickExtra" .= b
+axisProperty (AxTickMinStep x) = "tickMinStep" .= x
+axisProperty (AxTickOffset x) = "tickOffset" .= x
+axisProperty (AxTickOpacity x) = "tickOpacity" .= x
+axisProperty (AxTickRound b) = "tickRound" .= b
+axisProperty (AxTickSize x) = "tickSize" .= x
+axisProperty (AxTickWidth x) = "tickWidth" .= x
+axisProperty (AxTitle ttl) = "title" .= ttl
+axisProperty AxNoTitle = "title" .= A.Null
+axisProperty (AxTitleAlign ha) = "titleAlign" .= hAlignLabel ha
+axisProperty (AxTitleAnchor a) = "titleAnchor" .= anchorLabel a
+axisProperty (AxTitleAngle x) = "titleAngle" .= x
+axisProperty (AxTitleBaseline va) = "titleBaseline" .= vAlignLabel va
+axisProperty (AxTitleColor s) = "titleColor" .= s
+axisProperty (AxTitleFont s) = "titleFont" .= s
+axisProperty (AxTitleFontSize x) = "titleFontSize" .= x
+axisProperty (AxTitleFontStyle s) = "titleFontStyle" .= s
+axisProperty (AxTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
+axisProperty (AxTitleLimit x) = "titleLimit" .= x
+axisProperty (AxTitleOpacity x) = "titleOpacity" .= x
+axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
+axisProperty (AxTitleX x) = "titleX" .= x
+axisProperty (AxTitleY x) = "titleY" .= x
 axisProperty (AxValues vals) = "values" .= map toJSON vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
-axisProperty (AxTitle ttl) = "title" .= ttl
-axisProperty (AxTitleAlign algn) = "titleAlign" .= hAlignLabel algn
-axisProperty (AxTitleAngle angle) = "titleAngle" .= angle
-axisProperty (AxTitleLimit x) = "titleLimit" .= x
-axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
+axisProperty (AxZIndex n) = "zindex" .= n
 
 
 -- | Indicates the horizontal alignment of text such as on an axis or legend.
@@ -3953,15 +4236,6 @@ data AxisConfig
       -- ^ Should tick marks be drawn on an axis?
     | TickColor T.Text
       -- ^ The color of the ticks.
-      {-
-    | TickCount Int
-      -- ^ The desired number of ticks for axes visualizing quantitative scales.
-      --   This is a hint to the system, and the actual number used will be
-      --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
-      --   underlying scale's range.
-      --
-      --   @since 0.4.0.0
-      -}
     | TickDash [Double]
       -- ^ The dash style of the ticks (alternating stroke, space lengths
       --   in pixels).
@@ -3974,13 +4248,6 @@ data AxisConfig
       --   the axis?
       --
       --   @since 0.4.0.0
-      {-
-    | TickMinStep Double
-      -- ^ The minimum desired step between axis ticks, in terms of the scale
-      --   domain values.
-      --
-      -- ^ @since 0.4.0.0
-      -}
     | TickOffset Double
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
       --
@@ -4063,7 +4330,7 @@ axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
 axisConfigProperty (LabelBound mx) = "labelBound" .= mxToValue mx
 axisConfigProperty (LabelFlush mx) = "labelFlush" .= mxToValue mx
-axisConfigProperty (LabelFlushOffset x) = "labelFluxOffset" .= x
+axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
 axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
 axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
@@ -4383,8 +4650,8 @@ title is the overall title of the collection.
 data HeaderProperty
     = HFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
-      -- facet header (title) values. To distinguish between formatting as numeric values
-      -- and data/time values, additionally use 'HFormatAsNum' or 'HFormatAsTemporal'.
+      --   facet header (title) values. To distinguish between formatting as numeric values
+      --   and data/time values, additionally use 'HFormatAsNum' or 'HFormatAsTemporal'.
     | HFormatAsNum
       -- ^ Facet headers should be formatted as numbers. Use a
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)

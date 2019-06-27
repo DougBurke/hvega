@@ -442,7 +442,7 @@ sample1 =
 -}
 
 
--- TODO: add PBinned, AxTickMinStep
+-- TODO: add PBinned
 
 bin1 :: VegaLite
 bin1 =
@@ -456,7 +456,8 @@ bin1 =
         enc =
             encoding
                 . position X [ PName "bin_start", PmType Quantitative
-                             {- , PBinned, PAxis [ AxTickMinStep 2 ] -} ]
+                             {- , PBinned -}
+                             , PAxis [ AxTickMinStep 2 ] ]
                 . position X2 [ PName "bin_end" ]
                 . position Y [ PName "count", PmType Quantitative ]
     in
