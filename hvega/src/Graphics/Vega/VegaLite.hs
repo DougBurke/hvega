@@ -3827,8 +3827,6 @@ data AxisConfig
     | Domain Bool
     | DomainColor T.Text
     | DomainWidth Double
-    | MaxExtent Double
-    | MinExtent Double
     | Grid Bool
     | GridColor T.Text
     | GridDash [Double]
@@ -3842,6 +3840,8 @@ data AxisConfig
     | LabelLimit Double
     | LabelOverlap OverlapStrategy
     | LabelPadding Double
+    | MaxExtent Double
+    | MinExtent Double
     | ShortTimeLabels Bool
     | Ticks Bool
     | TickColor T.Text
@@ -3853,8 +3853,8 @@ data AxisConfig
     | TitleBaseline VAlign
     | TitleColor T.Text
     | TitleFont T.Text
-    | TitleFontWeight FontWeight
     | TitleFontSize Double
+    | TitleFontWeight FontWeight
     | TitleLimit Double
     | TitleMaxLength Double
     | TitlePadding Double
@@ -3863,43 +3863,43 @@ data AxisConfig
 
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
-axisConfigProperty (BandPosition x) = ("bandPosition", toJSON x)
-axisConfigProperty (Domain b) = ("domain", toJSON b)
-axisConfigProperty (DomainColor c) = ("domainColor", fromT c)
-axisConfigProperty (DomainWidth w) = ("domainWidth", toJSON w)
-axisConfigProperty (MaxExtent n) = ("maxExtent", toJSON n)
-axisConfigProperty (MinExtent n) = ("minExtent", toJSON n)
-axisConfigProperty (Grid b) = ("grid", toJSON b)
-axisConfigProperty (GridColor c) = ("gridColor", fromT c)
-axisConfigProperty (GridDash ds) = ("gridDash", toJSON (map toJSON ds))
-axisConfigProperty (GridOpacity o) = ("gridOpacity", toJSON o)
-axisConfigProperty (GridWidth x) = ("gridWidth", toJSON x)
-axisConfigProperty (Labels b) = ("labels", toJSON b)
-axisConfigProperty (LabelAngle angle) = ("labelAngle", toJSON angle)
-axisConfigProperty (LabelColor c) = ("labelColor", fromT c)
-axisConfigProperty (LabelFont f) = ("labelFont", fromT f)
-axisConfigProperty (LabelFontSize x) = ("labelFontSize", toJSON x)
-axisConfigProperty (LabelLimit x) = ("labelLimit", toJSON x)
-axisConfigProperty (LabelOverlap strat) = ("labelOverlap", fromT (overlapStrategyLabel strat))
-axisConfigProperty (LabelPadding pad) = ("labelPadding", toJSON pad)
-axisConfigProperty (ShortTimeLabels b) = ("shortTimeLabels", toJSON b)
-axisConfigProperty (Ticks b) = ("ticks", toJSON b)
-axisConfigProperty (TickColor c) = ("tickColor", fromT c)
-axisConfigProperty (TickRound b) = ("tickRound", toJSON b)
-axisConfigProperty (TickSize x) = ("tickSize", toJSON x)
-axisConfigProperty (TickWidth x) = ("tickWidth", toJSON x)
-axisConfigProperty (TitleAlign algn) = ("titleAlign", fromT (hAlignLabel algn))
-axisConfigProperty (TitleAngle x) = ("titleAngle", toJSON x)
-axisConfigProperty (TitleBaseline va) = ("titleBaseline", fromT (vAlignLabel va))
-axisConfigProperty (TitleColor c) = ("titleColor", fromT c)
-axisConfigProperty (TitleFont f) = ("titleFont", fromT f)
-axisConfigProperty (TitleFontWeight w) = ("titleFontWeight", fontWeightSpec w)
-axisConfigProperty (TitleFontSize x) = ("titleFontSize", toJSON x)
-axisConfigProperty (TitleLimit x) = ("titleLimit", toJSON x)
-axisConfigProperty (TitleMaxLength x) = ("titleMaxLength", toJSON x)
-axisConfigProperty (TitlePadding x) = ("titlePadding", toJSON x)
-axisConfigProperty (TitleX x) = ("titleX", toJSON x)
-axisConfigProperty (TitleY y) = ("titleY", toJSON y)
+axisConfigProperty (BandPosition x) = "bandPosition" .= x
+axisConfigProperty (Domain b) = "domain" .= b
+axisConfigProperty (DomainColor c) = "domainColor" .= c
+axisConfigProperty (DomainWidth w) = "domainWidth" .= w
+axisConfigProperty (Grid b) = "grid" .= b
+axisConfigProperty (GridColor c) = "gridColor" .= c
+axisConfigProperty (GridDash ds) = "gridDash" .= ds
+axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
+axisConfigProperty (GridWidth x) = "gridWidth" .= x
+axisConfigProperty (Labels b) = "labels" .= b
+axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
+axisConfigProperty (LabelColor c) = "labelColor" .= c
+axisConfigProperty (LabelFont f) = "labelFont" .= f
+axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
+axisConfigProperty (LabelLimit x) = "labelLimit" .= x
+axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
+axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
+axisConfigProperty (MaxExtent n) = "maxExtent" .= n
+axisConfigProperty (MinExtent n) = "minExtent" .= n
+axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
+axisConfigProperty (Ticks b) = "ticks" .= b
+axisConfigProperty (TickColor c) = "tickColor" .= c
+axisConfigProperty (TickRound b) = "tickRound" .= b
+axisConfigProperty (TickSize x) = "tickSize" .= x
+axisConfigProperty (TickWidth x) = "tickWidth" .= x
+axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
+axisConfigProperty (TitleAngle x) = "titleAngle" .= x
+axisConfigProperty (TitleBaseline va) = "titleBaseline" .= vAlignLabel va
+axisConfigProperty (TitleColor c) = "titleColor" .= c
+axisConfigProperty (TitleFont f) = "titleFont" .= f
+axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
+axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
+axisConfigProperty (TitleLimit x) = "titleLimit" .= x
+axisConfigProperty (TitleMaxLength x) = "titleMaxLength" .= x
+axisConfigProperty (TitlePadding x) = "titlePadding" .= x
+axisConfigProperty (TitleX x) = "titleX" .= x
+axisConfigProperty (TitleY y) = "titleY" .= y
 
 
 {-|
