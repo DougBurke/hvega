@@ -28,6 +28,11 @@ types have been added, based on version 1.12.0 of the elm-vegalite
 module. Thanks again to Jo Wood for doing all the work! The documentation
 indicates new symbols with the `since 0.4.0.0` label.
 
+Added a test suite based on the Elm Vega-Lite tests (again, thanks to
+Jo Wood).
+
+### Breaking Changes
+
 The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`
 constructor is used to change the order of an axis.
@@ -37,8 +42,8 @@ removed (from `AxisProperty` and `AxisConfig` respectively) as they
 are invalid. The `AxTitleLimit` (new in this release) and
 `TitleLimit` constructors should be used instead.
 
-Added a test suite based on the Elm Vega-Lite tests (again, thanks to
-Jo Wood).
+The `Orient` constructor in `LegendConfig` has been renamed to
+`LeOrient` (as `Orient` has been added to `AxisConfig`).
 
 ## 0.3.0.1
 

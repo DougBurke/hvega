@@ -76,9 +76,10 @@ The produced JSON can then be processed with vega-lite, which renders the follow
 
 <<images/example.png>>
 
-This can be achieved in a JupyterLab session with the `vlShow` function, or
-'toHtmlFile' can be used to write out a page of HTML that includes pointer
-to JavaScript files which will display a Vega-Lite sepcification.
+This can be achieved in a JupyterLab session with the @vlShow@ function,
+provided by @ihaskell-vega@, or 'toHtmlFile' can be used to write out a page of
+HTML that includes pointer to JavaScript files which will display a Vega-Lite
+specification.
 
 -}
 
@@ -2827,12 +2828,19 @@ legendLabel Symbol = "symbol"
 
 Legend configuration options. For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
+
+The @LeOrient@ constructor was called @Orient@ prior to the @0.4.0.0@ release.
 -}
 
 data LegendConfig
     = CornerRadius Double
     | FillColor T.Text
-    | Orient LegendOrientation
+    | LeOrient LegendOrientation
+      -- ^ The orientation of the legend.
+      --
+      --   This was renamed from @Orient@ in the 0.4.0.0 release.
+      --
+      --   @since 0.4.0.0
     | Offset Double
     | StrokeColor T.Text
     | LeStrokeDash [Double]
@@ -2872,7 +2880,7 @@ data LegendConfig
 legendConfigProperty :: LegendConfig -> LabelledSpec
 legendConfigProperty (CornerRadius r) = "cornerRadius" .= r
 legendConfigProperty (FillColor s) = "fillColor" .= s
-legendConfigProperty (Orient orl) = "orient" .= legendOrientLabel orl
+legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
 legendConfigProperty (Offset x) = "offset" .= x
 legendConfigProperty (StrokeColor s) = "strokeColor" .= s
 legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= map toJSON xs
@@ -3832,78 +3840,265 @@ The @TitleMaxLength@ constructor was removed in release 0.4.0.0. The
 -}
 data AxisConfig
     = BandPosition Double
+      -- ^ The default axis band position.
     | Domain Bool
+      -- ^ Should the axis domain be displayed?
     | DomainColor T.Text
+      -- ^ The axis domain color.
+    | DomainDash [Double]
+      -- ^ The dash style of the domain (alternating stroke, space lengths
+      --   in pixels).
+      --
+      --   @since 0.4.0.0
+    | DomainDashOffset Double
+      -- ^ The pixel offset at which to start drawing the domain dash array.
+      --
+      --   @since 0.4.0.0
+    | DomainOpacity Double
+      -- ^ The axis domain opacity.
+      --
+      --   @since 0.4.0.0
     | DomainWidth Double
+      -- ^ The width of the axis domain.
     | Grid Bool
+      -- ^ Should an axis grid be displayed?
     | GridColor T.Text
+      -- ^ The color for the grid.
     | GridDash [Double]
+      -- ^ The dash style of the grid (alternating stroke, space lengths
+      --   in pixels).
+    | GridDashOffset Double
+      -- ^ The pixel offset at which to start drawing the grid dash array.
+      --
+      --   @since 0.4.0.0
     | GridOpacity Double
+      -- ^ The opacity of the grid.
     | GridWidth Double
+      -- ^ The width of the grid lines.
     | Labels Bool
+      -- ^ Should labels be added to an axis?
+    | LabelAlign HAlign
+      -- ^ The horizontal alignment for labels.
+      --
+      --   @since 0.4.0.0
     | LabelAngle Double
+      -- ^ The angle at which to draw labels.
+    | LabelBaseline VAlign
+      -- ^ The vertical alignment for labels.
+      --
+      --   @since 0.4.0.0
+    | LabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
+      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
+      --   then no check is made, otherwise it gives the maximum number of
+      --   pixels by which the label bounding box can extend beyond the axis.
+      --
+      --   @since 0.4.0.0
     | LabelColor T.Text
+      -- ^ The label color.
+    | LabelFlush (Maybe Double)   -- XXXXX as with labelbound
+      -- ^ The label alignment at the start or end of the axis. If
+      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
+      --   labels will be left- and right- aligned for the first and last
+      --   label (horizontal axis), or bottom and top text baselines are
+      --   aligned for a vertical axis. Other numeric values indicate additonal
+      --   space added, in pixels, which can someties help the labels better visually
+      --   group with the corresponding tick marks.
+      --
+      --   @since 0.4.0.0
+    | LabelFlushOffset Double
+      -- ^ The number of pixels to offset flush-adjusted labels.
+      --
+      --   @since 0.4.0.0
     | LabelFont T.Text
+      -- ^ The font for the label.
     | LabelFontSize Double
+      -- ^ The font size of the label.
+    | LabelFontStyle T.Text
+      -- ^ The font style of the label.
+      --
+      --   @since 0.4.0.0
+    | LabelFontWeight FontWeight
+      -- ^ The font weight of the label.
+      --
+      --   @since 0.4.0.0
     | LabelLimit Double
+      -- ^ The maximum width of a label, in pixels.
+    | LabelOpacity Double
+      -- ^ The opacity of the label.
+      --
+      --   @since 0.4.0.0
     | LabelOverlap OverlapStrategy
+      -- ^ How should overlapping labels be displayed?
     | LabelPadding Double
+      -- ^ The padding, in pixels, between the label and the axis.
+    | LabelSeparation Double
+      -- ^ The minimum separation, in pixels, between label bounding boxes
+      --   for them to be considered non-overlapping. This is ignored if
+      --   the 'LabelOverlap' strategy is 'ONone'.
+      --
+      --   @since 0.4.0.0
     | MaxExtent Double
+      -- ^ The maximum extent, in pixels, that axis ticks and labels should use.
+      --   This determines a maxmium offset value for axis titles.
     | MinExtent Double
+      -- ^ The minimum extent, in pixels, that axis ticks and labels should use.
+      --   This determines a minmium offset value for axis titles.
+    | Orient Side
+      -- ^ The orientation of the axis.
+      --
+      --   @since 0.4.0.0
     | ShortTimeLabels Bool
+      -- ^ Should an axis use short time labels (abbreviated month and week-day names)?
     | Ticks Bool
+      -- ^ Should tick marks be drawn on an axis?
     | TickColor T.Text
+      -- ^ The color of the ticks.
+      {-
+    | TickCount Int
+      -- ^ The desired number of ticks for axes visualizing quantitative scales.
+      --   This is a hint to the system, and the actual number used will be
+      --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
+      --   underlying scale's range.
+      --
+      --   @since 0.4.0.0
+      -}
+    | TickDash [Double]
+      -- ^ The dash style of the ticks (alternating stroke, space lengths
+      --   in pixels).
+    | TickDashOffset Double
+      -- ^ The pixel offset at which to start drawing the tick dash array.
+      --
+      --   @since 0.4.0.0
+    | TickExtra Bool
+      -- ^ Should an extra axis tick mark be added for the initial position of
+      --   the axis?
+      --
+      --   @since 0.4.0.0
+      {-
+    | TickMinStep Double
+      -- ^ The minimum desired step between axis ticks, in terms of the scale
+      --   domain values.
+      --
+      -- ^ @since 0.4.0.0
+      -}
+    | TickOffset Double
+      -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
+      --
+      --   @since 0.4.0.0
+    | TickOpacity Double
+      -- ^ The opacity of the ticks.
+      --
+      --   @since 0.4.0.0
     | TickRound Bool
+      -- ^ Should pixel position values be rounded to the nearest integer?
     | TickSize Double
+      -- ^ The size of the tick marks in pixels.
     | TickWidth Double
+      -- ^ The width of the tick marks in pixels.
+      {-
+    | Title Bool
+      -- ^ Should the title be
+      -}
     | TitleAlign HAlign
+      -- ^ The horizontal alignment of the axis title.
+    | TitleAnchor APosition
+      -- ^ The text anchor ppsition for placing axis titles.
+      --
+      --   @since 0.4.0.0
     | TitleAngle Double
+      -- ^ The angle of the axis title.
     | TitleBaseline VAlign
+      -- ^ The vertical alignment of the axis title.
     | TitleColor T.Text
+      -- ^ The color of the axis title.
     | TitleFont T.Text
+      -- ^ The font for the axis title.
     | TitleFontSize Double
+      -- ^ The font size of the axis title.
+    | TitleFontStyle T.Text
+      -- ^ The font style of the axis title.
+      --
+      --   @since 0.4.0.0
     | TitleFontWeight FontWeight
+      -- ^ The font weight of the axis title.
     | TitleLimit Double
+      -- ^ The maximum allowed width of the axis title, in pixels.
+    | TitleOpacity Double
+      -- ^ The opacity of the axis title.
+      --
+      --   @since 0.4.0.0
     | TitlePadding Double
-    -- ^ The padding, in pixels, between title and legend.
+      -- ^ The padding, in pixels, between title and axis.
     | TitleX Double
+      -- ^ The X coordinate of the axis title, relative to the axis group.
     | TitleY Double
+      -- ^ The Y coordinate of the axis title, relative to the axis group.
 
+
+-- Using an equality test here isn't ideal, but I am just following the
+-- Elm code for now.
+--
+mxToValue :: Maybe Double -> Value
+mxToValue (Just x) | x == 1 = toJSON True
+                   | otherwise = toJSON x
+mxToValue Nothing = toJSON False
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
 axisConfigProperty (DomainColor c) = "domainColor" .= c
+axisConfigProperty (DomainDash ds) = "domainDash" .= ds
+axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
+axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
 axisConfigProperty (DomainWidth w) = "domainWidth" .= w
 axisConfigProperty (Grid b) = "grid" .= b
 axisConfigProperty (GridColor c) = "gridColor" .= c
 axisConfigProperty (GridDash ds) = "gridDash" .= ds
+axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
 axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
 axisConfigProperty (GridWidth x) = "gridWidth" .= x
 axisConfigProperty (Labels b) = "labels" .= b
+axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
+axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
+axisConfigProperty (LabelBound mx) = "labelBound" .= mxToValue mx
+axisConfigProperty (LabelFlush mx) = "labelFlush" .= mxToValue mx
+axisConfigProperty (LabelFlushOffset x) = "labelFluxOffset" .= x
 axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
 axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
+axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
+axisConfigProperty (LabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisConfigProperty (LabelLimit x) = "labelLimit" .= x
+axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
 axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
+axisConfigProperty (LabelSeparation x) = "labelSeparation" .= x
 axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
+axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
 axisConfigProperty (Ticks b) = "ticks" .= b
 axisConfigProperty (TickColor c) = "tickColor" .= c
+axisConfigProperty (TickDash ds) = "tickDash" .= ds
+axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
+axisConfigProperty (TickExtra b) = "tickExtra" .= b
+axisConfigProperty (TickOffset x) = "tickOffset" .= x
+axisConfigProperty (TickOpacity x) = "tickOpacity" .= x
 axisConfigProperty (TickRound b) = "tickRound" .= b
 axisConfigProperty (TickSize x) = "tickSize" .= x
 axisConfigProperty (TickWidth x) = "tickWidth" .= x
 axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
+axisConfigProperty (TitleAnchor a) = "titleAnchor" .= anchorLabel a
 axisConfigProperty (TitleAngle x) = "titleAngle" .= x
 axisConfigProperty (TitleBaseline va) = "titleBaseline" .= vAlignLabel va
 axisConfigProperty (TitleColor c) = "titleColor" .= c
 axisConfigProperty (TitleFont f) = "titleFont" .= f
 axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
+axisConfigProperty (TitleFontStyle s) = "titleFontStyle" .= s
 axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
 axisConfigProperty (TitleLimit x) = "titleLimit" .= x
+axisConfigProperty (TitleOpacity x) = "titleOpacity" .= x
 axisConfigProperty (TitlePadding x) = "titlePadding" .= x
 axisConfigProperty (TitleX x) = "titleX" .= x
 axisConfigProperty (TitleY y) = "titleY" .= y
