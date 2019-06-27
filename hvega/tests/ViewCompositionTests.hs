@@ -216,8 +216,6 @@ grid3 =
         ]
 
 
--- TODO: Add Flow
-
 grid4 :: VegaLite
 grid4 =
     let
@@ -226,7 +224,7 @@ grid4 =
 
         enc =
             encoding
-                . position X [ {- PRepeat Flow, -} PmType Quantitative, PBin [] ]
+                . position X [ PRepeat Flow, PmType Quantitative, PBin [] ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
                 . color [ MName "Origin", MmType Nominal ]
 

@@ -17,6 +17,9 @@
                 "type": "nominal"
             },
             "x": {
+                "field": {
+                    "repeat": "repeat"
+                },
                 "bin": true,
                 "type": "quantitative"
             },
