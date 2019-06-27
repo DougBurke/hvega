@@ -378,6 +378,7 @@ module Graphics.Vega.VegaLite
        , ConfigurationProperty(..)
        , Autosize(..)
        , Padding(..)
+       , PointMarker(..)
        , TitleConfig(..)
        , APosition(..)
        , ViewConfig(..)
@@ -1581,6 +1582,7 @@ data MarkProperty
     | MInterpolate MarkInterpolation
     | MOpacity Double
     | MOrient MarkOrientation
+    | MPoint PointMarker           -- ^ @since 0.4.0.0
     | MRadius Double
     | MShape Symbol
     | MShortTimeLabels Bool
@@ -1617,6 +1619,7 @@ markProperty (MStyle styles) = "style" .= styles
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
+markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
 markProperty (MAngle x) = "angle" .= x
@@ -2982,6 +2985,27 @@ paddingSpec (PEdges l t r b) =
          , "right" .= r
          , "bottom" .= b
          ]
+
+
+-- | The properties of a point marker on a line or area mark.
+--
+--   @since 0.4.0.0
+
+data PointMarker
+    = PMTransparent
+    -- ^ A transparent marker is used, which can be useful for
+    --   interactive selections.
+    | PMNone
+    -- ^ No marker to be shown.
+    | PMMarker [MarkProperty]
+    -- ^ The properties of the marks to be shown at the points.
+
+
+pointMarkerSpec :: PointMarker -> VLSpec
+pointMarkerSpec PMTransparent = "transparent"
+pointMarkerSpec PMNone = toJSON False
+pointMarkerSpec (PMMarker mps) = object (map markProperty mps)
+
 
 {-|
 
