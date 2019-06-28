@@ -179,6 +179,14 @@ module Graphics.Vega.VegaLite
        , Filter(..)
        , FilterRange(..)
 
+         -- ** Flattening
+         --
+         -- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
+         -- documentation.
+
+       , flatten
+       , flattenAs
+
          -- ** Relational Joining (lookup)
 
        , lookup
@@ -996,7 +1004,7 @@ data Format
       -- ^ The fields are separated by the given character (which must be a
       --   single 16-bit code unit).
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
       {- This isn't in the current vega-lite v3 schema as far as I can see
     | Arrow
       -- ^ <https://observablehq.com/@theneuralbit/introduction-to-apache-arrow Apache Arrow> format.
@@ -1119,8 +1127,8 @@ let toJS = Data.Aeson.toJSON
     enc = ...
 
 in 'toVegaLite'
-    [ datasets [ ( "myData", data [] ),  ( "myJson", 'dataFromJson' json [] ) ]
-    , 'dataFromSource' "myData" []
+    [ datasets [ ( \"myData\", data [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
+    , 'dataFromSource' \"myData\" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -5599,7 +5607,7 @@ transform transforms =
       assemble :: LabelledSpec -> VLSpec
       assemble (str, val) =
 
-        let dval = decode (encode val)
+        let dval = decode (encode val) :: Maybe A.Value
         in case str of
           "aggregate" ->
             case dval of
@@ -5659,6 +5667,25 @@ transform transforms =
                                                                        , ("key", vs V.! 2) ] )
                                                              , ("as", vs V.! 3) ]
               _ -> A.Null
+
+          "flattenAs" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 2 -> object [ ("flatten", vs V.! 0)
+                                                             , ("as", vs V.! 1) ]
+              _ -> A.Null
+
+{-
+                "foldAs" ->
+                    case JD.decodeString (JD.list JD.value) (JE.encode 0 val) of
+                        Ok [ fields, keyName, valName ] ->
+                            JE.object
+                                [ ( "fold", fields )
+                                , ( "as", toList [ keyName, valName ] )
+                                ]
+
+                        _ ->
+                            JE.null
+-}
 
           "stack" ->
             case dval of
@@ -6200,6 +6227,37 @@ filter f ols =
             in object [field_ field, "oneOf" .= ans]
 
   in ("filter", js) : ols
+
+
+{-|
+
+Map array-valued fields to a set of individual data objects, one per array entry.
+
+See also 'flattenAs'.
+
+@since 0.4.0.0
+
+-}
+
+flatten :: [T.Text] -> BuildLabelledSpecs
+flatten fields ols = ("flatten" .= fields) : ols
+
+
+{-|
+
+Similar to 'flatten' but allows the new output fields to be named.
+
+@since 0.4.0.0
+
+-}
+
+flattenAs ::
+  [T.Text]
+  -> [T.Text]
+  -- ^ The names of the output fields.
+  -> BuildLabelledSpecs
+flattenAs fields names ols =
+  ("flattenAs" .= [fields, names]) : ols
 
 
 {-|

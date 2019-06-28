@@ -28,7 +28,7 @@ testSpecs = [ ("data1", data1)
             , ("namedData3", namedData3)
             , ("geodata1", geodata1)
             , ("geodata2", geodata2)
-            -- , ("flatten1", flatten1)
+            , ("flatten1", flatten1)
             -- , ("fold1", fold1)
             , ("impute1", impute1)
             , ("impute2", impute2)
@@ -243,20 +243,19 @@ geodata2 =
         , mark Geoshape []
         ]
 
-{- TODO: add flattenAs
-
+flatten1 :: VegaLite
 flatten1 =
     let
         dvals =
             dataFromJson
                 (A.toJSON (map A.object
-                    [ [ ( "key" .= "alpha" )
-                      , ( "foo" .= [ 1, 2 ] )
-                      , ( "bar" .= [ "A", "B" ] )
+                    [ [ ( "key" .= ("alpha" :: String) )
+                      , ( "foo" .= [ 1 :: Int, 2 ] )
+                      , ( "bar" .= [ "A" :: String, "B" ] )
                       ]
-                    , [ ( "key" .= "beta" )
-                      , ( "foo" .= [ 3, 4, 5 ] )
-                      , ( "bar" .= [ "C", "D" ] )
+                    , [ ( "key" .= ("beta" :: String) )
+                      , ( "foo" .= [ 3 :: Int, 4, 5 ] )
+                      , ( "bar" .= [ "C" :: String, "D" ] )
                       ]
                     ])
                 )
@@ -272,7 +271,6 @@ flatten1 =
                 . color [ MName "key", MmType Nominal ]
     in
     toVegaLite [ dvals [], trans [], mark Circle [], enc [] ]
--}
 
 {- TODO: add foldAs
 
