@@ -29,7 +29,7 @@ testSpecs = [ ("data1", data1)
             , ("geodata1", geodata1)
             , ("geodata2", geodata2)
             , ("flatten1", flatten1)
-            -- , ("fold1", fold1)
+            , ("fold1", fold1)
             , ("impute1", impute1)
             , ("impute2", impute2)
             , ("impute3", impute3)
@@ -272,8 +272,8 @@ flatten1 =
     in
     toVegaLite [ dvals [], trans [], mark Circle [], enc [] ]
 
-{- TODO: add foldAs
 
+fold1 :: VegaLite
 fold1 =
     let
         dvals =
@@ -294,7 +294,6 @@ fold1 =
                 . color [ MName "country", MmType Nominal ]
     in
     toVegaLite [ dvals [], trans [], mark Bar [], enc [] ]
--}
 
 
 imputeData :: [DataColumn] -> Data

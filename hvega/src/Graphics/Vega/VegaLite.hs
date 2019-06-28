@@ -182,10 +182,13 @@ module Graphics.Vega.VegaLite
          -- ** Flattening
          --
          -- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
+         -- and [fold](https://vega.github.io/vega-lite/docs/fold.html)
          -- documentation.
 
        , flatten
        , flattenAs
+       , fold
+       , foldAs
 
          -- ** Relational Joining (lookup)
 
@@ -5674,18 +5677,11 @@ transform transforms =
                                                              , ("as", vs V.! 1) ]
               _ -> A.Null
 
-{-
-                "foldAs" ->
-                    case JD.decodeString (JD.list JD.value) (JE.encode 0 val) of
-                        Ok [ fields, keyName, valName ] ->
-                            JE.object
-                                [ ( "fold", fields )
-                                , ( "as", toList [ keyName, valName ] )
-                                ]
-
-                        _ ->
-                            JE.null
--}
+          "foldAs" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 3 -> object [ ("fold", vs V.! 0)
+                                                             , ("as", toJSON [vs V.! 1, vs V.! 2]) ]
+              _ -> A.Null
 
           "stack" ->
             case dval of
@@ -6256,8 +6252,44 @@ flattenAs ::
   -> [T.Text]
   -- ^ The names of the output fields.
   -> BuildLabelledSpecs
-flattenAs fields names ols =
-  ("flattenAs" .= [fields, names]) : ols
+flattenAs fields names ols = ("flattenAs" .= [fields, names]) : ols
+
+
+{-|
+
+Perform a /gather/ operation to /tidy/ a table. Collapse multiple data fields
+into two new data fields: @key@ containing the original data field names and @value@
+containing the corresponding data values. This performs the same function as the
+<https://tidyr.tidyverse.org/dev/articles/pivot.html pivot_longer> and
+<https://tidyr.tidyverse.org/reference/gather.html gather>
+operations in the R tidyverse.
+
+See also 'foldAs'.
+
+@since 0.4.0.0
+-}
+
+fold :: [T.Text] -> BuildLabelledSpecs
+fold fields ols = ("fold" .= fields) : ols
+
+
+{-|
+
+A 'fold' where the @key@ and @value@ fields can be renamed.
+
+@since 0.4.0.0
+
+-}
+
+foldAs ::
+  [T.Text]
+  -> T.Text
+  -- ^ The name for the @key@ field.
+  -> T.Text
+  -- ^ The name for the @value@ field.
+  -> BuildLabelledSpecs
+foldAs fields keyName valName ols =
+  ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
 
 
 {-|
