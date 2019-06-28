@@ -30,7 +30,6 @@ testSpecs = [ ("data1", data1)
             , ("geodata2", geodata2)
             -- , ("flatten1", flatten1)
             -- , ("fold1", fold1)
-            {-
             , ("impute1", impute1)
             , ("impute2", impute2)
             , ("impute3", impute3)
@@ -39,7 +38,6 @@ testSpecs = [ ("data1", data1)
             , ("impute6", impute6)
             , ("impute7", impute7)
             , ("impute8", impute8)
-            -}
             -- , ("sample1", sample1)
             , ("bin1", bin1)
             , ("sequence1", sequence1)
@@ -156,7 +154,7 @@ data10 = dataSource "myData3"
 
 
 {-
--- no arrow support
+-- TODO no arrow support
 
 data11 =
     let
@@ -301,8 +299,6 @@ fold1 =
 -}
 
 
-{- TODO: add support for impute
-
 imputeData :: [DataColumn] -> Data
 imputeData =
     dataFromColumns []
@@ -310,6 +306,8 @@ imputeData =
         . dataColumn "b" (Numbers [ 28, 91, 43, 55, 81, 53, 19 ])
         . dataColumn "c" (Numbers [ 0, 1, 0, 1, 0, 1, 0 ])
 
+
+impute1, impute2, impute3, impute4, impute5, impute6, impute7, impute8 :: VegaLite
 
 impute1 =
     let
@@ -345,7 +343,7 @@ impute3 =
     let
         trans =
             transform
-                . impute "b" "a" [ ImNewValue (Num 100), ImGroupBy [ "c" ], ImKeyValSequence 1 4 1 ]
+                . impute "b" "a" [ ImNewValue (Number 100), ImGroupBy [ "c" ], ImKeyValSequence 1 4 1 ]
 
         enc =
             encoding
@@ -411,8 +409,6 @@ impute8 =
                 . color [ MName "c", MmType Nominal ]
     in
     toVegaLite [ imputeData [], mark Line [], enc [] ]
-
--}
 
 
 {- TODO: add sample

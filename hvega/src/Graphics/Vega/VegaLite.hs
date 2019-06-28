@@ -184,6 +184,15 @@ module Graphics.Vega.VegaLite
        , lookup
        , lookupAs
 
+         -- ** Data Imputation
+         --
+         -- Impute missing data. See the
+         -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html#transform).
+
+       , impute
+       , ImputeProperty(..)
+       , ImMethod(..)
+
          -- ** Window Transformations
          --
          -- See the Vega-Lite
@@ -622,6 +631,9 @@ repeat_ arr = "repeat" .= arrangementLabel arr
 
 sort_ :: [SortProperty] -> LabelledSpec
 sort_ ops = "sort" .= sortPropertySpec ops
+
+impute_ :: [ImputeProperty] -> LabelledSpec
+impute_ ips = "impute" .= object (map imputeProperty ips)
 
 timeUnit_ :: TimeUnit -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
@@ -1526,6 +1538,15 @@ data MarkChannel
     | MScale [ScaleProperty]
       -- ^ Use an empty list to remove the scale.
     | MBin [BinProperty]
+    {-
+    | MBinned
+      -- ^ @since 0.4.0.0
+    -}
+    | MImpute [ImputeProperty]
+      -- ^ Set the imputation rules for a mark channel. See the
+      --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
+      --
+      --   @since 0.4.0.0
     | MTimeUnit TimeUnit
     | MAggregate Operation
     | MLegend [LegendProperty]
@@ -1547,6 +1568,7 @@ markChannelProperty (MScale sps) =
 markChannelProperty (MLegend lps) =
   [("legend", if null lps then A.Null else object (map legendProperty lps))]
 markChannelProperty (MBin bps) = [bin bps]
+markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   let h = ("condition", hkey)
       toProps = concatMap markChannelProperty
@@ -2281,10 +2303,15 @@ data PositionChannel
     | PAxis [AxisProperty]
     | PSort [SortProperty]
     | PStack StackOffset
-    -- ^ Type of stacking offset for the field when encoding with a
-    --   position channel.
-    --
-    --   Changed from @StackProperty@ in version 0.4.0.0
+      -- ^ Type of stacking offset for the field when encoding with a
+      --   position channel.
+      --
+      --   Changed from @StackProperty@ in version 0.4.0.0
+    | PImpute [ImputeProperty]
+      -- ^ Set the imputation rules for a position channel. See the
+      --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
+      --
+      --   @since 0.4.0.0
 
 
 positionChannelProperty :: PositionChannel -> LabelledSpec
@@ -2306,6 +2333,7 @@ positionChannelProperty (PAxis aps) =
   in "axis" .= js
 positionChannelProperty (PSort ops) = sort_ ops
 positionChannelProperty (PStack so) = stackOffset so
+positionChannelProperty (PImpute ips) = impute_ ips
 
 
 measurementLabel :: Measurement -> T.Text
@@ -5154,6 +5182,11 @@ data DetailChannel
     = DName T.Text
     | DmType Measurement
     | DBin [BinProperty]
+    | DImpute [ImputeProperty]
+    -- ^ Set the imputation rules for a detail channel. See the
+    -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
+    --
+    --   @since 0.4.0.0
     | DTimeUnit TimeUnit
     | DAggregate Operation
 
@@ -5162,6 +5195,7 @@ detailChannelProperty :: DetailChannel -> LabelledSpec
 detailChannelProperty (DName s) = field_ s
 detailChannelProperty (DmType t) = mtype_ t
 detailChannelProperty (DBin bps) = bin bps
+detailChannelProperty (DImpute ips) = impute_ ips
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
 detailChannelProperty (DAggregate op) = aggregate_ op
 
@@ -5584,6 +5618,27 @@ transform transforms =
             case dval of
               Just (A.Array vs) | V.length vs == 2 -> object [ ("calculate", vs V.! 0)
                                                              , ("as", vs V.! 1) ]
+              _ -> A.Null
+
+
+          "impute" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 8 ->
+                                    let [imp, key, frameObj, keyValsObj, keyValsSequenceObj, methodObj, groupbyObj, valueObj] = V.toList vs
+
+                                        addField _ A.Null = []
+                                        addField f v = [(f, v)]
+
+                                        ols = [ ("impute", imp)
+                                              , ("key", key) ]
+                                              <> addField "frame" frameObj
+                                              <> addField "keyvals" keyValsObj
+                                              <> addField "keyvals" keyValsSequenceObj
+                                              <> addField "method" methodObj
+                                              <> addField "groupby" groupbyObj
+                                              <> addField "value" valueObj
+
+                                    in object ols
               _ -> A.Null
 
           "lookup" ->
@@ -6244,6 +6299,118 @@ lookupAs ::
   -> BuildLabelledSpecs
 lookupAs key1 (_, spec) key2 asName ols =
   ("lookupAs" .= [toJSON key1, spec, toJSON key2, toJSON asName]) : ols
+
+
+-- | @since 0.4.0.0
+
+data ImputeProperty
+    = ImFrame (Maybe Int) (Maybe Int)
+      -- ^ 1d window over which data imputation values are generated. The two
+      --   parameters should either be @Just@ a number indicating the offset from the current
+      --   data object, or @Nothing@ to indicate unbounded rows preceding or following the
+      --   current data object.
+    | ImKeyVals DataValues
+      -- ^ Key values to be considered for imputation.
+    | ImKeyValSequence Double Double Double
+      -- ^ Key values to be considered for imputation as a sequence of numbers between
+      --   a start (first parameter), to less than an end (second parameter) in steps of
+      --   the third parameter.
+    | ImMethod ImMethod
+    | ImGroupBy [T.Text]
+      -- ^ Allow imputing of missing values on a per-group basis. For use with the impute
+      --   transform only and not a channel encoding.
+    | ImNewValue DataValue
+      -- ^ The replacement value (when using 'ImValue').
+
+
+imputeProperty :: ImputeProperty -> LabelledSpec
+imputeProperty (ImFrame m1 m2) = "frame" .= map allowNull [m1, m2]
+imputeProperty (ImKeyVals dVals) = "keyvals" .= dataValuesSpecs dVals
+imputeProperty (ImKeyValSequence start stop step) =
+  "keyvals" .= object ["start" .= start, "stop" .= stop, "step" .= step]
+imputeProperty (ImMethod method) = "method" .= imMethodLabel method
+imputeProperty (ImNewValue dVal) = "value" .= dataValueSpec dVal
+imputeProperty (ImGroupBy _) = "groupby" .= A.Null
+
+
+imputePropertySpecFrame, imputePropertySpecKeyVals,
+  imputePropertySpecKeyValSequence, imputePropertySpecGroupBy,
+  imputePropertySpecMethod, imputePropertySpecValue :: ImputeProperty -> Maybe VLSpec
+
+imputePropertySpecFrame (ImFrame m1 m2) = Just (toJSON (map allowNull [m1, m2]))
+imputePropertySpecFrame _ = Nothing
+
+imputePropertySpecKeyVals (ImKeyVals dVals) = Just (toJSON (dataValuesSpecs dVals))
+imputePropertySpecKeyVals _ = Nothing
+
+imputePropertySpecKeyValSequence (ImKeyValSequence start stop step) =
+  let obj = ["start" .= start, "stop" .= stop, "step" .= step]
+  in Just (object obj)
+imputePropertySpecKeyValSequence _ = Nothing
+
+imputePropertySpecGroupBy (ImGroupBy fields) = Just (toJSON fields)
+imputePropertySpecGroupBy _ = Nothing
+
+imputePropertySpecMethod (ImMethod method) = Just (toJSON (imMethodLabel method))
+imputePropertySpecMethod _ = Nothing
+
+imputePropertySpecValue (ImNewValue dVal) = Just (dataValueSpec dVal)
+imputePropertySpecValue _ = Nothing
+
+
+
+-- | Imputation method to use when replacing values.
+--
+--   @since 0.4.0.0
+
+data ImMethod
+  = ImMin
+    -- ^ Use the minimum value.
+  | ImMax
+    -- ^ Use the maximum value.
+  | ImMean
+    -- ^ Use the mean value.
+  | ImMedian
+    -- ^ Use the median value.
+  | ImValue
+    -- ^ Use a replacement value.
+
+
+imMethodLabel :: ImMethod -> T.Text
+imMethodLabel ImMin = "min"
+imMethodLabel ImMax = "max"
+imMethodLabel ImMean = "mean"
+imMethodLabel ImMedian = "median"
+imMethodLabel ImValue = "value"
+
+{-|
+
+Impute missing data values.
+
+@since 0.4.0.0
+-}
+
+impute ::
+  T.Text
+  -- ^ The data field to process.
+  -> T.Text
+  -- ^ The key field to uniquely identify data objects within a group.
+  -> [ImputeProperty]
+  -- ^ Define how the imputation works
+  -> BuildLabelledSpecs
+impute fields key imProps ols =
+  let ags = [ fromT fields, fromT key
+            , toSpec (mapMaybe imputePropertySpecFrame imProps)
+            , toSpec (mapMaybe imputePropertySpecKeyVals imProps)
+            , toSpec (mapMaybe imputePropertySpecKeyValSequence imProps)
+            , toSpec (mapMaybe imputePropertySpecMethod imProps)
+            , toSpec (mapMaybe imputePropertySpecGroupBy imProps)
+            , toSpec (mapMaybe imputePropertySpecValue imProps) ]
+
+      toSpec [x] = x
+      toSpec _ = A.Null
+
+  in ("impute", toJSON ags) : ols
 
 
 {-|
