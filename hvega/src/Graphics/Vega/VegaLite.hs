@@ -1669,6 +1669,10 @@ data MarkProperty
       -- ^ How should the vertices of an area mark be joined?
       --
       --   @since 0.4.0.0
+    | MMedian [MarkProperty]
+      -- ^ Median-line properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MOpacity Double
     | MOrient MarkOrientation
     | MOutliers [MarkProperty]
@@ -1758,6 +1762,7 @@ markProperty (MStrokeWidth w) = "strokeWidth" .= w
 markProperty (MStrokeDash xs) = "strokeDash" .= xs
 markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
 markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+markProperty (MMedian mps) = mprops_ "median" mps
 markProperty (MOpacity x) = "opacity" .= x
 markProperty (MFillOpacity x) = "fillOpacity" .= x
 markProperty (MStyle styles) = "style" .= styles
