@@ -1674,6 +1674,10 @@ data MarkProperty
     | MPoint PointMarker
       -- ^ @since 0.4.0.0
     | MRadius Double
+    | MRule [MarkProperty]
+      -- ^ Rule (main line) properties for the errorbar and boxplot marks.
+      --
+      --   @since 0.4.0.0
     | MShape Symbol
     | MShortTimeLabels Bool
     | MSize Double
@@ -1767,6 +1771,7 @@ markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
 markProperty (MRadius x) = "radius" .= x
+markProperty (MRule mps) = mprops_ "rule" mps
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x
 markProperty (MBinSpacing x) = "binSpacing" .= x
