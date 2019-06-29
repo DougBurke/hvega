@@ -37,7 +37,7 @@ testSpecs = [ ("defaultSize1", defaultSize1)
             , ("dotMap1", dotMap1)
             , ("scribbleMap1", scribbleMap1)
             , ("scribbleMap2", scribbleMap2)
-            -- , ("map1d", map1d)
+            , ("map1d", map1d)
             ]
 
 
@@ -615,8 +615,6 @@ scribbleMap2 =
         , enc []
         ]
 
-{- TODO: PNumber
-
 map1d :: VegaLite
 map1d =
     let
@@ -657,5 +655,3 @@ map1d =
     toVegaLite
         [ width 500, height 400
         , layer [ backgroundSpec, cSpec, hSpec, vSpec ] ]
-
--}

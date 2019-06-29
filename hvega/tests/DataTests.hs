@@ -432,8 +432,6 @@ sample1 =
     toVegaLite [ dvals, hConcat [ spec1, spec2 ] ]
 
 
--- TODO: add PBinned
-
 bin1 :: VegaLite
 bin1 =
     let
@@ -446,7 +444,7 @@ bin1 =
         enc =
             encoding
                 . position X [ PName "bin_start", PmType Quantitative
-                             {- , PBinned -}
+                             , PBinned
                              , PAxis [ AxTickMinStep 2 ] ]
                 . position X2 [ PName "bin_end" ]
                 . position Y [ PName "count", PmType Quantitative ]
