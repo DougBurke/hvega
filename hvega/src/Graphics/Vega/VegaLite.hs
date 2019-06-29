@@ -1671,6 +1671,10 @@ data MarkProperty
       --   @since 0.4.0.0
     | MOpacity Double
     | MOrient MarkOrientation
+    | MOutliers [MarkProperty]
+      -- ^ Outlier symbol properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MPoint PointMarker
       -- ^ @since 0.4.0.0
     | MRadius Double
@@ -1761,6 +1765,7 @@ markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel int
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
+markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
