@@ -1660,7 +1660,9 @@ data MarkProperty
     | MdX Double
     | MdY Double
     | MExtent MarkErrorExtent
-      -- ^ @since 0.4.0.0
+      -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
+      --
+      --   @since 0.4.0.0
     | MFill T.Text
     | MFilled Bool
     | MFillOpacity Double
@@ -1802,7 +1804,7 @@ markProperty (MAlign algn) = "align" .= hAlignLabel algn
 markProperty (MBaseline va) = "baseline" .= vAlignLabel va
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
-markProperty (MExtent mee) = "extent" .= markErrorExtentLabel mee
+markProperty (MExtent mee) = markErrorExtentLSpec mee
 markProperty (MFont fnt) = "font" .= fnt
 markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
@@ -3346,20 +3348,44 @@ Indicates the extent of the rule used for the error bar.  See
 <https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
 for details.
 
+This is called @SummaryExtent@ in Elm and the constructors also have
+different names.
+
 @since 0.4.0.0
 -}
+
 data MarkErrorExtent
   = ConfidenceInterval
+    -- ^ Band extent between the 95% confidence intervals of a distribution.
   | StdErr
+    -- ^ Band extent as the standard error about the mean of a distribution.
   | StdDev
+    -- ^ Band extent as the standard deviation of a distribution.
   | Iqr
+    -- ^ Band extent between the lower and upper quartiles of a distribution
+    --   (the inter-quartile range).
+    {- these don't appear to be in the Vega-Lite schema as of 3.3.0
+  | ExRange
+    -- ^ Band extent between the minimum and maximum values in a distribution.
+  | IqrScale Double
+    -- ^ A scaling of the interquartile range to be used as whiskers in a
+    --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
+    --   ±1.5x the IQR from the mean.
+    -}
 
+-- This is a little different from the other calls since I wanted to
+-- make sure the scale factor was encoded as a number not a string.
+--
+extent_ :: T.Text -> LabelledSpec
+extent_ v = "extent" .= v
 
-markErrorExtentLabel :: MarkErrorExtent -> T.Text
-markErrorExtentLabel ConfidenceInterval = "ci"
-markErrorExtentLabel StdErr             = "stderr"
-markErrorExtentLabel StdDev             = "stddev"
-markErrorExtentLabel Iqr                = "iqr"
+markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
+markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
+markErrorExtentLSpec StdErr             = extent_ "stderr"
+markErrorExtentLSpec StdDev             = extent_ "stddev"
+markErrorExtentLSpec Iqr                = extent_ "iqr"
+-- markErrorExtentLSpec ExRange            = extent_ "min-max"
+-- markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
 -- | Identifies the type of symbol.
