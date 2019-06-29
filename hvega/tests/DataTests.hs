@@ -222,8 +222,6 @@ geodata1 =
         , encoding $ color [ MName "id", MmType Nominal ] []
         ]
 
--- TODO: add LNoTitle
-
 geodata2 :: VegaLite
 geodata2 =
     let
@@ -239,7 +237,7 @@ geodata2 =
         , configure $ configuration (View [ Stroke Nothing ]) []
         , dataFromJson geojson [ JSON "features" ]
         , projection [ PType Orthographic ]
-        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LTitle "" ] ] [])
+        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LNoTitle ] ] [])
         , mark Geoshape []
         ]
 

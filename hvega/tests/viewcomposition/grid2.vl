@@ -408,7 +408,9 @@
     "columns": 5,
     "facet": {
         "field": "index",
-        "header": {},
+        "header": {
+            "title": null
+        },
         "type": "ordinal"
     }
 }

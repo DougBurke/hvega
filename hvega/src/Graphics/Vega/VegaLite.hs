@@ -2347,6 +2347,10 @@ data PositionChannel
       -- ^ Title of a field when encoding with a position channel.
       --
       --   @since 0.4.0.0
+    | PNoTitle
+      -- ^ Draw no title.
+      --
+      -- @since 0.4.0.0
     | PAggregate Operation
       -- ^ Compute some aggregate summary statistics for a field to be encoded with a
       --   position channel.
@@ -2378,6 +2382,7 @@ positionChannelProperty PBinned = "bin" .= fromT "binned"
 positionChannelProperty (PAggregate op) = aggregate_ op
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= s
+positionChannelProperty PNoTitle = "title" .= A.Null
 positionChannelProperty (PSort ops) = sort_ ops
 positionChannelProperty (PScale sps) =
   let js = if null sps
@@ -3474,6 +3479,10 @@ data LegendProperty
     | LPadding Double
     | LTickCount Double
     | LTitle T.Text
+    | LNoTitle
+      -- ^ Draw no title.
+      --
+      -- @since 0.4.0.0
     | LType Legend
     | LValues LegendValues
     | LZIndex Int
@@ -3488,7 +3497,8 @@ legendProperty (LOffset x) = "offset" .= x
 legendProperty (LOrient orl) = "orient" .= legendOrientLabel orl
 legendProperty (LPadding x) = "padding" .= x
 legendProperty (LTickCount x) = "tickCount" .= x
-legendProperty (LTitle ttl) = "title" .= if T.null ttl then A.Null else fromT ttl
+legendProperty (LTitle s) = "title" .= s
+legendProperty LNoTitle = "title" .= A.Null
 legendProperty (LValues vals) =
   let ls = case vals of
         LNumbers xs    -> map toJSON xs
@@ -4882,6 +4892,7 @@ title is the overall title of the collection.
 -}
 
 -- TODO: should there be a HLabelBaseline, HTitleFontStyle, ...?
+--       However, the following covers the vega-lite 3.3.0 schema
 
 data HeaderProperty
     = HFormat T.Text
@@ -4902,6 +4913,10 @@ data HeaderProperty
       -- @since 0.4.0.0
     | HTitle T.Text
       -- ^ The title for the facets.
+    | HNoTitle
+      -- ^ Draw no title for the facets.
+      --
+      -- @since 0.4.0.0
     | HLabelAlign HAlign
       -- ^ The horizontal alignment of the labels.
       --
@@ -4989,6 +5004,7 @@ headerProperty (HFormat fmt) = "format" .= fmt
 headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
 headerProperty (HTitle ttl) = "title" .= ttl
+headerProperty HNoTitle = "title" .= A.Null
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x

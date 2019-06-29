@@ -115,8 +115,6 @@ cfg =
         . configuration (View [ Stroke Nothing, ViewHeight 120 ])
         . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
 
--- TODO: add HNoTitle
-
 grid1 :: VegaLite
 grid1 =
     let
@@ -135,13 +133,11 @@ grid1 =
         , spacingRC 20 80
         , specification specByCatVal
         , facet
-            [ RowBy [ FName "row", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
-            , ColumnBy [ FName "col", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
+            [ RowBy [ FName "row", FmType Ordinal, FHeader [ HNoTitle ] ]
+            , ColumnBy [ FName "col", FmType Ordinal, FHeader [ HNoTitle ] ]
             ]
         ]
 
-
--- TODO: add HNoTitle
 
 grid2 :: VegaLite
 grid2 =
@@ -165,11 +161,12 @@ grid2 =
         , trans []
         , columns (Just 5)
         , specification specByCatVal
-        , facetFlow [ FName "index", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
+        , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
 
 
--- TODO: add HNoTitle
+-- TODO: columns Nothing maps to "columns": null, which is not to spec;
+--       should it be "columns": 0?
 
 grid3 :: VegaLite
 grid3 =
@@ -193,7 +190,7 @@ grid3 =
         , trans []
         , columns Nothing
         , specification specByCatVal
-        , facetFlow [ FName "index", FmType Ordinal, FHeader [ {- HNoTitle -} ] ]
+        , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
 
 

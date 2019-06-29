@@ -130,8 +130,6 @@ tubeLines1 =
         ]
 
 
-{- TODO: add LNoTitle -}
-
 tubeLines2 :: VegaLite
 tubeLines2 =
     let
@@ -140,7 +138,7 @@ tubeLines2 =
                 . color
                     [ MName "id"
                     , MmType Nominal
-                    , MLegend [ LTitle "", LOrient LOBottomRight ]
+                    , MLegend [ LNoTitle, LOrient LOBottomRight ]
                     , MScale tubeLineColors
                     ]
     in
@@ -152,8 +150,6 @@ tubeLines2 =
         , mark Geoshape [ MFilled False, MStrokeWidth 2 ]
         , enc []
         ]
-
--- TODO: add LNoTitle
 
 tubeLines3 :: VegaLite
 tubeLines3 =
@@ -185,7 +181,7 @@ tubeLines3 =
                 . color
                     [ MName "id"
                     , MmType Nominal
-                    , MLegend [ LTitle "", LOrient LOBottomRight, LOffset 0 ]
+                    , MLegend [ LNoTitle, LOrient LOBottomRight, LOffset 0 ]
                     , MScale tubeLineColors
                     ]
 
