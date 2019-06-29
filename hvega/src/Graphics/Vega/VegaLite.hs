@@ -1638,6 +1638,10 @@ Properties for customising the appearance of a mark. For details see the
 
 Not all properties are valid for each mark type.
 
+The Vega-Lite specification supports setting those properties that take
+@['MarkProperty']@ also to a boolean value. This is currently not
+supported in @hvega@.
+
 -}
 
 data MarkProperty
@@ -1646,8 +1650,10 @@ data MarkProperty
     | MBandSize Double
     | MBaseline VAlign
     | MBinSpacing Double
-    | MBorders Bool
-      -- ^ @since 0.4.0.0
+    | MBorders [MarkProperty]
+      -- ^ Border properties for an errorband mark.
+      --
+      --   @since 0.4.0.0
     | MBox [MarkProperty]
       -- ^ Box-symbol properties for the boxplot mark.
       --
@@ -1772,7 +1778,7 @@ data MarkProperty
 
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = "filled" .= b
-markProperty (MBorders b) = "borders" .= b
+markProperty (MBorders mps) = mprops_ "borders" mps
 markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
