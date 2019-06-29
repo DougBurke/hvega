@@ -939,12 +939,12 @@ data VLProperty
     | VLFacet
     | VLSpec
     | VLResolve
-    | VLSpacing         -- ^ @ since 0.4.0.0
-    | VLAlign           -- ^ @ since 0.4.0.0
-    | VLCenter          -- ^ @ since 0.4.0.0
+    | VLSpacing         -- ^ @since 0.4.0.0
+    | VLAlign           -- ^ @since 0.4.0.0
+    | VLCenter          -- ^ @since 0.4.0.0
     | VLConfig
     | VLSelection
-    | VLViewBackground  -- ^ @ since 0.4.0.0
+    | VLViewBackground  -- ^ @since 0.4.0.0
 
 
 vlPropertyLabel :: VLProperty -> T.Text
@@ -4880,6 +4880,9 @@ Labels refer to the title of each sub-plot in a faceted view and
 title is the overall title of the collection.
 
 -}
+
+-- TODO: should there be a HLabelBaseline, HTitleFontStyle, ...?
+
 data HeaderProperty
     = HFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
@@ -4959,12 +4962,12 @@ data HeaderProperty
       -- ^ The font for the title.
       --
       -- @since 0.4.0.0
-    | HTitleFontWeight T.Text
-      -- ^ The font weight for the title.
-      --
-      -- @since 0.4.0.0
     | HTitleFontSize Double
       -- ^ The font size for the title.
+      --
+      -- @since 0.4.0.0
+    | HTitleFontWeight T.Text
+      -- ^ The font weight for the title.
       --
       -- @since 0.4.0.0
     | HTitleLimit Double
