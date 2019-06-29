@@ -1,8 +1,7 @@
 {
     "mark": {
-        "size": 200,
         "x": 150,
-        "type": "circle",
+        "type": "bar",
         "y": 150
     },
     "data": {

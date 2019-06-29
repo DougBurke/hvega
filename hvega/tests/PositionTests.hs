@@ -12,10 +12,10 @@ import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("position1", position1)
-            -- , ("position2", position2)
-            -- , ("position3", position3)
-            -- , ("position4", position4)
-            -- , ("position5", position5)
+            , ("position2", position2)
+            , ("position3", position3)
+            , ("position4", position4)
+            , ("position5", position5)
             ]
 
 
@@ -24,14 +24,11 @@ dataVals =
     dataFromColumns []
         . dataColumn "empty" (Numbers [ 0 ])
 
-{- TODO: add MX/MY MX2/MY2 -}
-
 position1 :: VegaLite
 position1 =
     toVegaLite [ dataVals []
-               , mark Circle [ {- MX 150, MY 150, -} MSize 200 ] ]
+               , mark Circle [ MX 150, MY 150, MSize 200 ] ]
 
-{-
 position2 :: VegaLite
 position2 =
     toVegaLite [ dataVals []
@@ -54,4 +51,3 @@ position5 :: VegaLite
 position5 =
     toVegaLite [ dataVals []
                , mark Bar [ MX 150, MY 150, MX2 200, MY2 200 ] ]
--}

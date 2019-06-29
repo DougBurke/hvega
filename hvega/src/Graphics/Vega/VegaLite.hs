@@ -1637,7 +1637,9 @@ Properties for customising the appearance of a mark. For details see the
 <https://vega.github.io/vega-lite/docs/mark.html#config Vega-Lite documentation>.
 
 Not all properties are valid for each mark type.
+
 -}
+
 data MarkProperty
     = MAlign HAlign
     | MAngle Double
@@ -1690,9 +1692,45 @@ data MarkProperty
     | MTheta Double
     | MThickness Double
     | MTooltip TooltipContent
-    -- ^ The tooltip content for a mark.
-    --
-    --   @since 0.4.0.0
+      -- ^ The tooltip content for a mark.
+      --
+      --   @since 0.4.0.0
+    | MX Double
+      -- ^ X position of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY Double
+      -- ^ Y position of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2 Double
+      -- ^ X2 position of a mark. This is the secondary position for
+      --   lines and area marks).
+      --
+      --   @since 0.4.0.0
+    | MY2 Double
+      -- ^ Y2 position of a mark. This is the secondary position for
+      --   lines and area marks).
+      --
+      --   @since 0.4.0.0
+    | MXOffset Double
+      -- ^ X position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MYOffset Double
+      -- ^ Y position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2Offset Double
+      -- ^ X2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY2Offset Double
+      -- ^ Y2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+
+
 
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = "filled" .= b
@@ -1739,6 +1777,14 @@ markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+markProperty (MX x) = "x" .= x
+markProperty (MY x) = "y" .= x
+markProperty (MX2 x) = "x2" .= x
+markProperty (MY2 x) = "y2" .= x
+markProperty (MXOffset x) = "xOffset" .= x
+markProperty (MYOffset x) = "yOffset" .= x
+markProperty (MX2Offset x) = "x2Offset" .= x
+markProperty (MY2Offset x) = "y2Offset" .= x
 
 
 -- | @since 0.4.0.0
@@ -4044,6 +4090,7 @@ selectionResolutionLabel Intersection = "intersect"
 Properties for customising the appearance of an interval selection mark (dragged
 rectangle). For details see the
 <https://vega.github.io/vega-lite/docs/selection.html#interval-mark Vega-Lite documentation>.
+
 -}
 data SelectionMarkProperty
     = SMFill T.Text
@@ -4061,7 +4108,7 @@ selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
 selectionMarkProperty (SMStroke colour) = "stroke" .= colour
 selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
 selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
-selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= map toJSON xs
+selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= xs
 selectionMarkProperty (SMStrokeDashOffset x) = "strokeDashOffset" .= x
 
 
