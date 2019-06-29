@@ -1648,6 +1648,10 @@ data MarkProperty
     | MBinSpacing Double
     | MBorders Bool
       -- ^ @since 0.4.0.0
+    | MBox [MarkProperty]
+      -- ^ Box-symbol properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MClip Bool
     | MColor T.Text
     | MCursor Cursor
@@ -1751,6 +1755,7 @@ data MarkProperty
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = "filled" .= b
 markProperty (MBorders b) = "borders" .= b
+markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
