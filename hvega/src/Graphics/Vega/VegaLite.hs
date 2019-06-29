@@ -275,6 +275,7 @@ module Graphics.Vega.VegaLite
        , Legend(..)
        , LegendOrientation(..)
        , LegendValues(..)
+       , LineMarker(..)
 
          -- ** Text Channels
          --
@@ -1612,6 +1613,26 @@ markChannelProperty (MBoolean b) = ["value" .= b]
 
 {-|
 
+Appearance of a line marker that is overlaid on an area mark.
+
+@since 0.4.0.0
+
+-}
+
+data LineMarker
+  = LMNone
+    -- ^ No line marker.
+  | LMMarker [MarkProperty]
+    -- ^ The properties of a line marker overlain on an area mark.
+
+
+lineMarkerSpec :: LineMarker -> VLSpec
+lineMarkerSpec LMNone = toJSON False
+lineMarkerSpec (LMMarker mps) = object (map markProperty mps)
+
+
+{-|
+
 Properties for customising the appearance of a mark. For details see the
 <https://vega.github.io/vega-lite/docs/mark.html#config Vega-Lite documentation>.
 
@@ -1642,6 +1663,10 @@ data MarkProperty
     | MFontStyle T.Text
     | MFontWeight FontWeight
     | MInterpolate MarkInterpolation
+    | MLine LineMarker
+      -- ^ How should the vertices of an area mark be joined?
+      --
+      --   @since 0.4.0.0
     | MOpacity Double
     | MOrient MarkOrientation
     | MPoint PointMarker
@@ -1687,6 +1712,7 @@ markProperty (MOpacity x) = "opacity" .= x
 markProperty (MFillOpacity x) = "fillOpacity" .= x
 markProperty (MStyle styles) = "style" .= styles
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
+markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
@@ -4268,9 +4294,11 @@ viewConfigProperty (StrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
 
 
 {-|
+
 Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
+
 -}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
@@ -4288,14 +4316,18 @@ data ConfigurationProperty
     | CircleStyle [MarkProperty]
     | CountTitle T.Text
     | FieldTitle FieldTitleProperty
-    | GeoshapeStyle [MarkProperty]             -- ^ @since 0.4.0.0
+    | GeoshapeStyle [MarkProperty]
+      -- ^ @since 0.4.0.0
     | Legend [LegendConfig]
     | LineStyle [MarkProperty]
-    | FacetStyle [FacetConfig]                 -- ^ @since 0.4.0.0
-    | HeaderStyle [HeaderProperty]             -- ^ @since 0.4.0.0
+    | FacetStyle [FacetConfig]
+      -- ^ @since 0.4.0.0
+    | HeaderStyle [HeaderProperty]
+      -- ^ @since 0.4.0.0
     | MarkStyle [MarkProperty]
     | NamedStyle T.Text [MarkProperty]
-    | NamedStyles [(T.Text, [MarkProperty])]   -- ^ @since 0.4.0.0
+    | NamedStyles [(T.Text, [MarkProperty])]
+      -- ^ @since 0.4.0.0
     | NumberFormat T.Text
     | Padding Padding
     | PointStyle [MarkProperty]
