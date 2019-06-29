@@ -1678,6 +1678,12 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MOpacity Double
+    | MOrder Bool
+      -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
+      --   the order is determined by measurement type or order channel. If
+      --   @False@, the original data order is used.
+      --
+      --   @since 0.4.0.0
     | MOrient MarkOrientation
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the boxplot mark.
@@ -1780,6 +1786,7 @@ markProperty (MStyle styles) = "style" .= styles
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
+markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
