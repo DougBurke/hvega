@@ -49,6 +49,9 @@ The `StackProperty` type has been renamed to `StackOffset` and its
 constructors have changed, and a new `StackProperty`
 type has been added (that references the `StackOffset` type).
 
+The `Average` constructor of `Operation` was removed, and `Mean`
+should be used instead.
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which

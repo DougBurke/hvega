@@ -625,7 +625,9 @@ import Data.Monoid ((<>))
 -- The @StackProperty@ type has been renamed to 'StackOffset' and its
 -- constructors have changed, and a new 'StackProperty'
 -- type has been added (that references the 'StackOffset' type).
-
+--
+-- The @Average@ constructor of 'Operation' was removed, and 'Mean'
+-- should be used instead.
 
 --- helpers not in VegaLite.elm
 
@@ -2027,35 +2029,59 @@ binned_ = "bin" .= fromT "binned"
 Type of aggregation operation. See the
 <https://vega.github.io/vega-lite/docs/aggregate.html#ops Vega-Lite documentation>
 for more details.
+
+The @Average@ constructor was removed in version @0.4.0.0@; use 'Mean' instead.
+
 -}
 data Operation
     = ArgMax
+      -- ^ An input data object containing the maximum field value to be used in an
+      -- aggregation operation.
     | ArgMin
-    | Average
+      -- ^ An input data object containing the minimum field value to be used in an
+      -- aggregation operation.
     | CI0
+      -- ^ Lower 95% confidence interval to be used in an aggregation operation.
     | CI1
+      -- ^ Upper 95% confidence interval to be used in an aggregation operation.
     | Count
+      -- ^ Total count of data objects to be used in an aggregation operation.
     | Distinct
+      -- ^ Count of distinct data objects to be used in an aggregation operation.
     | Max
+      -- ^ Maximum field value to be used in an aggregation operation.
     | Mean
+      -- ^ Mean field value to be used in an aggregation operation.
     | Median
+      -- ^ Median field value to be used in an aggregation operation.
     | Min
+      -- ^ Minimum field value to be used in an aggregation operation.
     | Missing
+      -- ^ Count of @null@ or @undefined@ field value to be used in an aggregation operation.
     | Q1
+      -- ^ Lower quartile boundary of field values to be used in an aggregation operation.
     | Q3
+      -- ^ Upper quartile boundary of field values to be used in an aggregation operation.
     | Stderr
+      -- ^ Standard error of field values to be used in an aggregate operation.
     | Stdev
+      -- ^ Sample standard deviation of field values to be used in an aggregate operation.
     | StdevP
+      -- ^ Population standard deviation of field values to be used in an aggregate operation.
     | Sum
+      -- ^ Sum of field values to be used in an aggregate operation.
     | Valid
+      -- ^ Count of values that are not @null@, @undefined@, or @NaN@ to be used in an
+      -- aggregation operation.
     | Variance
+      -- ^ Sample variance of field values to be used in an aggregate operation.
     | VarianceP
+      -- ^ Population variance of field values to be used in an aggregate operation.
 
 
 operationLabel :: Operation -> T.Text
 operationLabel ArgMax = "argmax"
 operationLabel ArgMin = "argmin"
-operationLabel Average = "average"
 operationLabel CI0 = "ci0"
 operationLabel CI1 = "ci1"
 operationLabel Count = "count"
