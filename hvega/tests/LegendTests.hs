@@ -93,8 +93,6 @@ legend8 = legendCore [ LOrient LOLeft ]
 legend9 :: VegaLite
 legend9 = legendCore [ LOrient LOTopLeft ]
 
-{- TODO: add LeX/LeY -}
-
 legend10 :: VegaLite
 legend10 =
     let
@@ -106,7 +104,7 @@ legend10 =
                 . position X [ PName "Horsepower", PmType Quantitative ]
                 . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
                 . color [ MName "Origin", MmType Nominal,
-                          MLegend [ LOrient LONone {- , LeX 232, LeY 5 -} ] ]
+                          MLegend [ LOrient LONone, LeX 232, LeY 5 ] ]
     in
     toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
 
@@ -118,8 +116,8 @@ legend11 =
         {-
         , LeSymbolStrokeColor "black"
         , LeRowPadding 15
-        , LeTitlePadding 20
         -}
+        , LeTitlePadding 20
         , StrokeColor "lightgrey"
         , LeStrokeWidth 5
         , LePadding 30

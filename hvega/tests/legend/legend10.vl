@@ -11,7 +11,9 @@
             "field": "Origin",
             "type": "nominal",
             "legend": {
-                "orient": "none"
+                "orient": "none",
+                "legendY": 5,
+                "legendX": 232
             }
         },
         "x": {

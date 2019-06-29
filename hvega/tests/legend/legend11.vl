@@ -3,6 +3,7 @@
     "config": {
         "legend": {
             "strokeWidth": 5,
+            "titlePadding": 20,
             "symbolStrokeWidth": 3,
             "strokeDash": [
                 4,

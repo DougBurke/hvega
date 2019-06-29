@@ -115,7 +115,8 @@
                     "field": "a",
                     "type": "temporal",
                     "legend": {
-                        "format": "%b %Y"
+                        "format": "%b %Y",
+                        "formatType": "time"
                     }
                 },
                 "text": {
@@ -127,7 +128,8 @@
                     "field": "a",
                     "type": "temporal",
                     "axis": {
-                        "format": "%y"
+                        "format": "%y",
+                        "formatType": "time"
                     }
                 },
                 "y": {
@@ -137,7 +139,8 @@
                     },
                     "type": "quantitative",
                     "axis": {
-                        "format": ".2f"
+                        "format": ".2f",
+                        "formatType": "number"
                     }
                 }
             }
