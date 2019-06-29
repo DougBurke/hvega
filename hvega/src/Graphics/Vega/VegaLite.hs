@@ -1695,6 +1695,10 @@ data MarkProperty
     | MText T.Text
     | MTheta Double
     | MThickness Double
+    | MTicks [MarkProperty]
+      -- ^ Tick properties for the errorbar or boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MTooltip TooltipContent
       -- ^ The tooltip content for a mark.
       --
@@ -1774,6 +1778,7 @@ markProperty (MRadius x) = "radius" .= x
 markProperty (MRule mps) = mprops_ "rule" mps
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x
+markProperty (MTicks mps) = mprops_ "ticks" mps
 markProperty (MBinSpacing x) = "binSpacing" .= x
 markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
 markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
