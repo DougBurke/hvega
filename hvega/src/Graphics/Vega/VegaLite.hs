@@ -1492,25 +1492,71 @@ dataFromUrl url fmts =
 
 
 -- | Type of visual mark used to represent data in the visualization.
+
 data Mark
     = Area
+      -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
+      --   for representing a series of data elements, such as in a stacked
+      --   area chart or streamgraph.
     | Bar
+      -- ^ [Bar mark](https://vega.github.io/vega-lite/docs/bar.html)
+      --   for histograms, bar charts etc.
+    | Boxplot
+      -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
+      -- for showing summaries of statistical distributions.
+      --
+      --   @since 0.4.0.0
     | Circle
-    | ErrorBar   -- ^ @since 0.4.0.0
-    | ErrorBand  -- ^ @since 0.4.0.0
+      -- ^ [Circle mark](https://vega.github.io/vega-lite/docs/circle.html)
+      --   for symbolising points.
+    | ErrorBar
+      -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
+      --   for showing summaries of variation along a signal. By default
+      --   no ticks are drawn. To add ticks with default properties use
+      --   @'MTicks []@.
+      --
+      --   @since 0.4.0.0
+    | ErrorBand
+      -- ^ [Errorband composite mark](https://vega.github.io/vega-lite/docs/errorband.html)
+      --   for showing summaries of variation along a signal. By default
+      --   no border is drawn. To add a border with default properties use
+      --   @'MBorders' [].
+      --
+      --   @since 0.4.0.0
     | Geoshape
+      -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
+      -- determined by geographically referenced coordinates.
     | Line
+      -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
+      --   for symbolising a sequence of values.
     | Point
+      -- ^ [Point mark](https://vega.github.io/vega-lite/docs/point.html)
+      --   for symbolising a data point with a symbol.
     | Rect
+      -- ^ [Rectangle mark](https://vega.github.io/vega-lite/docs/rect.html).
     | Rule
+      -- ^ [Rule line](https://vega.github.io/vega-lite/docs/rule.html)
+      --   connecting two vertices.
     | Square
+      -- ^ [Square mark](https://vega.github.io/vega-lite/docs/square.html)
+      --   for symbolising points.
     | Text
+      -- ^ [Text mark](https://vega.github.io/vega-lite/docs/text.html)
+      --   to be displayed at some point location.
     | Tick
+      -- ^ Short line ([tick](https://vega.github.io/vega-lite/docs/tick.html))
+      -- mark for symbolising point locations.
+    | Trail
+      -- ^ [Trail mark](https://vega.github.io/vega-lite/docs/trail.html)
+      --   (line with variable width along its length).
+      --
+      --   @since 0.4.0.0
 
 
 markLabel :: Mark -> T.Text
 markLabel Area = "area"
 markLabel Bar = "bar"
+markLabel Boxplot = "boxplot"
 markLabel Circle = "circle"
 markLabel ErrorBar = "errorbar"
 markLabel ErrorBand = "errorband"
@@ -1522,6 +1568,7 @@ markLabel Rule = "rule"
 markLabel Square = "square"
 markLabel Text = "text"
 markLabel Tick = "tick"
+markLabel Trail = "trail"
 
 
 {-|
@@ -3388,7 +3435,7 @@ extent_ v = "extent" .= v
 markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
 markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
 markErrorExtentLSpec StdErr             = extent_ "stderr"
-markErrorExtentLSpec StdDev             = extent_ "stddev"
+markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
 -- markErrorExtentLSpec ExRange            = extent_ "min-max"
 -- markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc

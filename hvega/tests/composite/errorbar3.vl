@@ -1,0 +1,49 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/barley.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": {
+                "type": "errorbar",
+                "ticks": {}
+            },
+            "encoding": {
+                "color": {
+                    "value": "#4682b4"
+                },
+                "x": {
+                    "field": "yield",
+                    "scale": {
+                        "zero": false
+                    },
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "variety",
+                    "type": "ordinal"
+                }
+            }
+        },
+        {
+            "mark": {
+                "color": "black",
+                "type": "point",
+                "filled": true
+            },
+            "encoding": {
+                "x": {
+                    "field": "yield",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "variety",
+                    "type": "ordinal"
+                }
+            }
+        }
+    ],
+    "description": "Error bars with color encoding"
+}
