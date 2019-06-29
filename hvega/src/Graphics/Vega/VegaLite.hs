@@ -1668,6 +1668,11 @@ data MarkProperty
     | MFontSize Double
     | MFontStyle T.Text
     | MFontWeight FontWeight
+    | MHRef T.Text
+      -- ^ Hyperlink to be associated with a mark making it a clickable
+      --   hyperlink.
+      --
+      --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
     | MLine LineMarker
       -- ^ How should the vertices of an area mark be joined?
@@ -1802,6 +1807,7 @@ markProperty (MFont fnt) = "font" .= fnt
 markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
+markProperty (MHRef s) = "href" .= s
 markProperty (MRadius x) = "radius" .= x
 markProperty (MRule mps) = mprops_ "rule" mps
 markProperty (MText txt) = "text" .= txt
