@@ -23,11 +23,9 @@ testSpecs = [ ("data1", data1)
             , ("data9", data9)
             , ("data10", data10)
             -- , ("data11", data11)
-            {-
             , ("namedData1", namedData1)
             , ("namedData2", namedData2)
             , ("namedData3", namedData3)
-            -}
             , ("geodata1", geodata1)
             , ("geodata2", geodata2)
             -- , ("flatten1", flatten1)
@@ -176,8 +174,8 @@ data11 =
 
 -}
 
-{- TODO: add dataName
 
+namedData1, namedData2, namedData3 :: VegaLite
 namedData1 =
     let
         dvals =
@@ -213,7 +211,7 @@ namedData3 =
                 . position Y [ PName "val", PmType Quantitative ]
     in
     toVegaLite [ dataName "source" (dataFromColumns [] []), enc [], mark Bar [] ]
--}
+
 
 geodata1 :: VegaLite
 geodata1 =

@@ -105,6 +105,7 @@ module Graphics.Vega.VegaLite
        , dataFromRows
        , dataFromJson
        , dataFromSource
+       , dataName
        , datasets
        , dataColumn
        , dataRow
@@ -369,6 +370,7 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Text as A
+import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
@@ -990,20 +992,70 @@ in 'toVegaLite'
 datasets :: [(T.Text, Data)] -> Data
 datasets namedData =
   -- follow Elm in parsing the structure to get what we want, but the code is
-  -- written rather differently
+  -- written rather differently. I am also not convinced it's generating
+  -- what it should be generating.
   --
   -- The input is expected to be a singleton list containing a pair.
-  let convert = extract . snd
-      specs = map (second convert) namedData
+  let converted = extract . snd
+      specs = map (second converted) namedData
+
+      convert :: Value -> Maybe [(T.Text, Value)]
+      convert = decode . encode
 
       extract din =
-        let extract' :: [(T.Text, Value)] -> Value
-            extract' [(_, v)] = v
+        let extract' [(_, v)] = v
             extract' _ = din
 
-        in maybe din extract' (decode (encode din))
+        in maybe din extract' (convert din)
 
   in (VLDatasets, object specs)
+
+
+{-|
+
+Name to give a data source. Useful when a specification needs to reference a
+data source, such as one generated via an API call.
+
+@
+data =
+    dataName \"myName\" ('dataFromUrl' \"myData.json\" [])
+@
+
+@since 0.4.0.0
+
+-}
+
+-- TODO: can we restrict this to only those with a VLProperty of VLData?
+
+dataName ::
+  T.Text
+  -- ^ The name to give the data source
+  -> Data
+  -- ^ The data source to be named.
+  -> Data
+  -- ^ If the input @Data@ argument is not a data source then
+  --   this is just the input value.
+dataName s odata@(_, dataSpec) =
+  -- follow Elm in parsing the structure to get what we want, but the code is
+  -- written rather differently. This is based on the code used in datasets.
+  --
+  -- The input is expected to be a singleton list containing a pair.
+  --
+  let converted = convert >>= extract
+
+      -- Aeson's objects are wrappers around a hash map, so this should be
+      -- a relatively easy conversion. The type annotation isn't needed
+      -- but left in for reference.
+      --
+      convert :: Maybe [(T.Text, Value)]
+      convert = HM.toList <$> decode (encode dataSpec)
+
+      extract [v] = Just v
+      extract _ = Nothing
+
+  in case converted of
+       Just v -> (VLData, object [ "name" .= s, v ])
+       _ -> odata
 
 
 {-|

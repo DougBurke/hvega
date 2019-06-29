@@ -1,13 +1,17 @@
-{ mkDerivation, aeson, aeson-pretty, base, bytestring, stdenv
-, tasty, tasty-golden, text, vector
+{ mkDerivation, aeson, aeson-pretty, base, bytestring, containers
+, filepath, stdenv, tasty, tasty-golden, text, unordered-containers
+, vector
 }:
 mkDerivation {
   pname = "hvega";
   version = "0.4.0.0";
   src = ./.;
-  libraryHaskellDepends = [ aeson base text vector ];
+  libraryHaskellDepends = [
+    aeson base text unordered-containers vector
+  ];
   testHaskellDepends = [
-    aeson-pretty base bytestring tasty tasty-golden
+    aeson aeson-pretty base bytestring containers filepath tasty
+    tasty-golden text
   ];
   homepage = "https://github.com/DougBurke/hvega";
   description = "Create Vega-Lite visualizations (version 3) in Haskell";
