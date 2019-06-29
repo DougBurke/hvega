@@ -216,6 +216,12 @@ module Graphics.Vega.VegaLite
        , Window(..)
        , WOperation(..)
 
+         -- ** Data sampling
+         --
+         -- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html)
+
+       , sample
+
          -- * Creating the Mark Specification
          --
          -- Types and functions for declaring the type of visual
@@ -6001,6 +6007,18 @@ window wss wProps ols =
       wargs = map winFieldDef wss
       winFieldDef (ws, out) = object ("as" .= out : map windowFieldProperty ws)
   in ("window" .= toJSON args) : ols
+
+
+{-|
+
+Randomly sample rows from a data source up to a given maximum.
+
+@since 0.4.0.0
+
+-}
+
+sample :: Int -> BuildLabelledSpecs
+sample maxSize ols = ("sample" .= maxSize) : ols
 
 
 {-|

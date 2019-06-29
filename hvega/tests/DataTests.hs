@@ -38,7 +38,7 @@ testSpecs = [ ("data1", data1)
             , ("impute6", impute6)
             , ("impute7", impute7)
             , ("impute8", impute8)
-            -- , ("sample1", sample1)
+            , ("sample1", sample1)
             , ("bin1", bin1)
             , ("sequence1", sequence1)
             , ("sequence2", sequence2)
@@ -408,8 +408,7 @@ impute8 =
     toVegaLite [ imputeData [], mark Line [], enc [] ]
 
 
-{- TODO: add sample
-
+sample1 :: VegaLite
 sample1 =
     let
         dvals =
@@ -431,8 +430,6 @@ sample1 =
             asSpec [ mark Point [], trans [], enc [] ]
     in
     toVegaLite [ dvals, hConcat [ spec1, spec2 ] ]
-
--}
 
 
 -- TODO: add PBinned
