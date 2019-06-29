@@ -652,6 +652,9 @@ sort_ ops = "sort" .= sortPropertySpec ops
 impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
+mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
+mprops_ f mps = f .= object (map markProperty mps)
+
 timeUnit_ :: TimeUnit -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 
@@ -4324,25 +4327,25 @@ configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
 configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
 configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
-configProperty (MarkStyle mps) = "mark" .= object (map markProperty mps)
+configProperty (MarkStyle mps) = mprops_ "mark" mps
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
-configProperty (AreaStyle mps) = "area" .= object (map markProperty mps)
-configProperty (BarStyle mps) = "bar" .= object (map markProperty mps)
-configProperty (CircleStyle mps) = "circle" .= object (map markProperty mps)
+configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (BarStyle mps) = mprops_ "bar" mps
+configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
-configProperty (GeoshapeStyle mps) = "geoshape" .= object (map markProperty mps)
+configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = "header" .= object (map headerProperty hps)
-configProperty (LineStyle mps) = "line" .= object (map markProperty mps)
-configProperty (PointStyle mps) = "point" .= object (map markProperty mps)
-configProperty (RectStyle mps) = "rect" .= object (map markProperty mps)
-configProperty (RuleStyle mps) = "rule" .= object (map markProperty mps)
-configProperty (SquareStyle mps) = "square" .= object (map markProperty mps)
-configProperty (TextStyle mps) = "text" .= object (map markProperty mps)
-configProperty (TickStyle mps) = "tick" .= object (map markProperty mps)
+configProperty (LineStyle mps) = mprops_ "line" mps
+configProperty (PointStyle mps) = mprops_ "point" mps
+configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RuleStyle mps) = mprops_ "rule" mps
+configProperty (SquareStyle mps) = mprops_ "square" mps
+configProperty (TextStyle mps) = mprops_ "text" mps
+configProperty (TickStyle mps) = mprops_ "tick" mps
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
-configProperty (NamedStyle nme mps) = "style" .= object [nme .= object (map markProperty mps)]
+configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
-  let toStyle (nme, mps) = nme .= object (map markProperty mps)
+  let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
 configProperty (Stack so) = stackOffset so
@@ -4350,7 +4353,7 @@ configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
   in "selection" .= object (map selProp selConfig)
-configProperty (TrailStyle mps) = "trail" .= object (map markProperty mps)
+configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 
 
