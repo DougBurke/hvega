@@ -1700,6 +1700,11 @@ data MarkProperty
     | MStrokeDashOffset Double
     | MStrokeJoin StrokeJoin
       -- ^ @since 0.4.0.0
+    | MStrokeMiterLimit Double
+      -- ^ Mitre limit at which to bevel a join between line segments of a
+      --   mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeOpacity Double
     | MStrokeWidth Double
     | MStyle [T.Text]
@@ -1767,6 +1772,7 @@ markProperty (MStrokeWidth w) = "strokeWidth" .= w
 markProperty (MStrokeDash xs) = "strokeDash" .= xs
 markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
 markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
 markProperty (MMedian mps) = mprops_ "median" mps
 markProperty (MOpacity x) = "opacity" .= x
 markProperty (MFillOpacity x) = "fillOpacity" .= x
