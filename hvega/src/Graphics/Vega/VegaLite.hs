@@ -863,6 +863,23 @@ timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
 
+-- The assumption at the moment is that it's always correct to
+-- replace the empty list by null.
+--
+scaleProp_ :: [ScaleProperty] -> LabelledSpec
+scaleProp_ [] = "scale" .= A.Null
+scaleProp_ sps = "scale" .= object (map scaleProperty sps)
+
+scaleConfig_ :: [ScaleConfig] -> LabelledSpec
+-- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
+scaleConfig_ scs = "scale" .= object (map scaleConfigProperty scs)
+
+
+legendProp_ :: [LegendProperty] -> LabelledSpec
+legendProp_ [] = "legend" .= A.Null
+legendProp_ lps = "legend" .= object (map legendProperty lps)
+
+
 value_ :: T.Text -> LabelledSpec
 value_ v = "value" .= v
 
@@ -1860,10 +1877,8 @@ markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
 markChannelProperty (MmType t) = [mtype_ t]
-markChannelProperty (MScale sps) =
-  [("scale", if null sps then A.Null else object (map scaleProperty sps))]
-markChannelProperty (MLegend lps) =
-  [("legend", if null lps then A.Null else object (map legendProperty lps))]
+markChannelProperty (MScale sps) = [scaleProp_ sps]
+markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
 markChannelProperty (MImpute ips) = [impute_ ips]
@@ -2171,10 +2186,14 @@ data Position
     | Y
     | X2
     | Y2
-    | XError    -- ^ @since 0.4.0.0
-    | YError    -- ^ @since 0.4.0.0
-    | XError2   -- ^ @since 0.4.0.0
-    | YError2   -- ^ @since 0.4.0.0
+    | XError
+      -- ^ @since 0.4.0.0
+    | YError
+      -- ^ @since 0.4.0.0
+    | XError2
+      -- ^ @since 0.4.0.0
+    | YError2
+      -- ^ @since 0.4.0.0
     | Longitude
     | Latitude
     | Longitude2
@@ -2831,11 +2850,7 @@ positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= s
 positionChannelProperty PNoTitle = "title" .= A.Null
 positionChannelProperty (PSort ops) = sort_ ops
-positionChannelProperty (PScale sps) =
-  let js = if null sps
-           then A.Null
-           else object (map scaleProperty sps)
-  in "scale" .= js
+positionChannelProperty (PScale sps) = scaleProp_ sps
 positionChannelProperty (PAxis aps) =
   let js = if null aps
            then A.Null
@@ -5103,7 +5118,7 @@ configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
-configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
+configProperty (Scale scs) = scaleConfig_ scs
 configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
