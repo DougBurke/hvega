@@ -866,6 +866,26 @@ mtype_ m = "type" .= measurementLabel m
 value_ :: T.Text -> LabelledSpec
 value_ v = "value" .= v
 
+
+selCond_ :: (a -> [LabelledSpec]) -> BooleanOp -> [a] -> [a] -> [LabelledSpec]
+selCond_ getProps selName ifClause elseClause =
+  let h = ("condition", hkey)
+      toProps = concatMap getProps
+      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
+
+dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
+dataCond_ getProps tests elseClause =
+  let h = "condition" .= map testClause tests
+      testClause (predicate, ifClause) =
+        object (("test", booleanOpSpec predicate) : toProps ifClause)
+      toProps = concatMap getProps
+      hs = toProps elseClause
+  in h : hs
+
+
+
 fromT :: T.Text -> VLSpec
 fromT = toJSON
 
@@ -1848,18 +1868,9 @@ markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap markChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ markChannelProperty selName ifClause elseClause
 markChannelProperty (MDataCondition tests elseClause) =
-  let h = ("condition" .= map testClause tests)
-      testClause (predicate, ifClause) =
-        object (("test", booleanOpSpec predicate) : toProps ifClause)
-      toProps = concatMap markChannelProperty
-      hs = toProps elseClause
-  in h : hs
+  dataCond_ markChannelProperty tests elseClause
 markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]
 markChannelProperty (MAggregate op) = [aggregate_ op]
 markChannelProperty (MPath s) = ["value" .= s]
@@ -5835,21 +5846,13 @@ hyperlinkChannelProperty (HmType t) = [mtype_ t]
 hyperlinkChannelProperty (HBin bps) = [bin bps]
 hyperlinkChannelProperty HBinned = [binned_]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap hyperlinkChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ hyperlinkChannelProperty selName ifClause elseClause
 hyperlinkChannelProperty (HDataCondition tests elseClause) =
-  let h = ("condition" .= map testClause tests)
-      testClause (predicate, ifClause) =
-        object (("test", booleanOpSpec predicate) : toProps ifClause)
-      toProps = concatMap hyperlinkChannelProperty
-      hs = toProps elseClause
-  in h : hs
+  dataCond_ hyperlinkChannelProperty tests elseClause
 hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
 hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
 hyperlinkChannelProperty (HString s) = [value_ s]
+
 
 ----
 
@@ -6053,18 +6056,9 @@ textChannelProperty (TTitle s) = ["title" .= s]
 textChannelProperty TNoTitle = ["title" .= A.Null]
 textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
 textChannelProperty (TDataCondition tests elseClause) =
-  let h = ("condition" .= map testClause tests)
-      testClause (predicate, ifClause) =
-        object (("test", booleanOpSpec predicate) : toProps ifClause)
-      toProps = concatMap textChannelProperty
-      hs = toProps elseClause
-  in h : hs
+  dataCond_ textChannelProperty tests elseClause
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap textChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ textChannelProperty selName ifClause elseClause
 
 
 -- | Properties of an ordering channel used for sorting data fields.
