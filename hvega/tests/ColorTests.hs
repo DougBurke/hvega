@@ -9,7 +9,7 @@
 --    interp3
 --    interp4
 --    interp5
---    scale2           -- this is because it uses SType ScSequential
+--    scale2           -- removed because it used SType ScSequential
 --
 
 module ColorTests (testSpecs) where
@@ -31,7 +31,7 @@ testSpecs = [ ("defContinuous", defContinuous)
             , ("customContinuous", customContinuous)
             , ("customDiscrete", customDiscrete)
             , ("scale1", scale1)
-            , ("scale2", scale2)
+            -- , ("scale2", scale2)
             , ("scale3", scale3)
             -- , ("scale4", scale4)
             , ("scale5", scale5)
@@ -137,11 +137,13 @@ scale1 =
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScLinear, SRange (RStrings [ "yellow", "red" ]) ] ])
 
 
+{- ScSequential has been removed from hvega, with the suggstion to use ScLinear instead,
+   which is tested in scale1
 scale2 :: VegaLite
 scale2 =
     chart "Sequential (deprecated) colour scale."
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScSequential, SRange (RStrings [ "yellow", "red" ]) ] ])
-
+-}
 
 scale3 :: VegaLite
 scale3 =

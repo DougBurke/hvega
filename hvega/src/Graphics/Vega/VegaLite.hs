@@ -802,6 +802,9 @@ import Data.Monoid ((<>))
 -- represented a Vega, rather than Vega-Lite, property. The 'PSort'
 -- constructor is used to change the order of an axis.
 --
+-- The @ScSequential@ constructor was removed from @Scale@ as
+-- @ScLinear@ should be used.
+--
 -- The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
 -- removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
 -- are invalid. The 'AxTitleLimit' (new in this release) and
@@ -2540,6 +2543,9 @@ schemeProperty nme extent =
 
 
 -- | Used to indicate the type of scale transformation to apply.
+--
+--   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
+--   'ScLinear' should be used instead.
 
 data Scale
     = ScLinear
@@ -2556,8 +2562,6 @@ data Scale
       -- ^ A temporal scale.
     | ScUtc
       -- ^ A temporal scale, in UTC.
-    | ScSequential
-      -- ^ Use 'ScLinear' instead (to be removed).
     | ScOrdinal
       -- ^ An ordinal scale.
     | ScBand
@@ -2577,7 +2581,6 @@ scaleLabel ScSqrt = "sqrt"
 scaleLabel ScLog = "log"
 scaleLabel ScTime = "time"
 scaleLabel ScUtc = "utc"
-scaleLabel ScSequential = "sequential"
 scaleLabel ScOrdinal = "ordinal"
 scaleLabel ScBand = "band"
 scaleLabel ScPoint = "point"
