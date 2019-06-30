@@ -2595,13 +2595,28 @@ scaleNiceSpec (NTickCount n) = toJSON n
 
 Describes a scale range of scale output values. For full details see the
 <https://vega.github.io/vega-lite/docs/scale.html#range Vega-Lite documentation>.
+
+For color scales you can also specify a color [scheme](https://vega.github.io/vega-lite/docs/scale.html#scheme)
+instead of range.
+
+Any directly specified range for @x@ and @y@ channels will be ignored. Range can be customized
+via the view's corresponding [size](https://vega.github.io/vega-lite/docs/size.html)
+('width' and 'height') or via range steps and paddings properties (e.g. 'SCRangeStep')
+for band and point scales.
+
 -}
 
 data ScaleRange
     = RNumbers [Double]
+      -- ^ For [continuous scales](https://vega.github.io/vega-lite/docs/scale.html#continuous),
+      --   a two-element array indicating minimum and maximum values, or an array with more than
+      --   two entries for specifying a
+      --   [piecewise scale](https://vega.github.io/vega-lite/docs/scale.html#piecewise).
     | RStrings [T.Text]
+      -- ^ Text scale range for discrete scales.
     | RName T.Text
-
+      -- ^ Name of a [pre-defined named scale range](https://vega.github.io/vega-lite/docs/scale.html#range-config)
+      --   (e.g. \"symbol\" or \"diverging\").
 
 {-|
 
@@ -3310,9 +3325,14 @@ for more details.
 
 data OverlapStrategy
     = ONone
+      -- ^ No overlap strategy to be applied when there is not space to show all items
+      --   on an axis.
     | OParity
+      -- ^ Give all items equal weight in overlap strategy to be applied when there is
+      --   not space to show them all on an axis.
     | OGreedy
-
+      -- ^ Greedy overlap strategy to be applied when there is not space to show all
+      --   items on an axis.
 
 overlapStrategyLabel :: OverlapStrategy -> T.Text
 overlapStrategyLabel ONone = "false"
@@ -3632,6 +3652,7 @@ markInterpolationLabel Monotone = "monotone"
 
 Indicates desired orientation of a mark (e.g. horizontally or vertically
 oriented bars).
+
 -}
 data MarkOrientation
     = Horizontal
@@ -3835,7 +3856,8 @@ data LegendConfig
     | GradientStrokeWidth Double
     | GradientHeight Double
     | GradientWidth Double
-    | LeGridAlign CompositionAlignment    -- ^ @since 0.4.0.0
+    | LeGridAlign CompositionAlignment
+      -- ^ @since 0.4.0.0
     | LeLabelAlign HAlign
     | LeLabelBaseline VAlign
     | LeLabelColor T.Text
@@ -4511,26 +4533,53 @@ rangeConfigProperty rangeCfg =
 Scale configuration property. These are used to configure all scales.
 For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
+
 -}
 data ScaleConfig
     = SCBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales.
     | SCBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales.
     | SCClamp Bool
+      -- ^ Whether or not by default values that exceed the data domain are clamped to
+      --   the min/max range value.
     | SCMaxBandSize Double
+      -- ^ Default maximum value for mapping quantitative fields to a bar's
+      --   size/bandSize.
     | SCMinBandSize Double
+      -- ^ Default minimum value for mapping quantitative fields to a bar's
+      --   size/bandSize.
     | SCMaxFontSize Double
+      -- ^ Default maximum value for mapping a quantitative field to a text
+      --   mark's size.
     | SCMinFontSize Double
+      -- ^ Default minimum value for mapping a quantitative field to a text
+      --   mark's size.
     | SCMaxOpacity Double
+      -- ^ Default maximum opacity (in the range [0, 1]) for mapping a field
+      --   to opacity.
     | SCMinOpacity Double
+      -- ^ Default minimum opacity (in the range [0, 1]) for mapping a field
+      --   to opacity.
     | SCMaxSize Double
+      -- ^ Default maximum size for point-based scales.
     | SCMinSize Double
+      -- ^ Default minimum size for point-based scales.
     | SCMaxStrokeWidth Double
+      -- ^ Default maximum stroke width for rule, line and trail marks.
     | SCMinStrokeWidth Double
+      -- ^ Default minimum stroke width for rule, line and trail marks.
     | SCPointPadding Double
+      -- ^ Default padding for point-ordinal scales.
     | SCRangeStep (Maybe Double)
+      -- ^ Default range step for band and point scales when the mark is not text.
     | SCRound Bool
+      -- ^ Are numeric values are rounded to integers when scaling? Useful
+      --   for snapping to the pixel grid.
     | SCTextXRangeStep Double
+      -- ^ Default range step for x band and point scales of text marks.
     | SCUseUnaggregatedDomain Bool
+      -- ^ Whether or not to use the source data range before aggregation.
 
 
 scaleConfigProperty :: ScaleConfig -> LabelledSpec
@@ -6766,7 +6815,7 @@ data Window
       -- ^ Window-specific operation to be used in a window transformation.
     | WParam Int
       -- ^ Numeric parameter for window-only operations that can be parameterised
-      -- (woPercentile, woLag, woLead and woNthValue).
+      --   ('Ntile', 'Lag', 'Lead' and 'NthValue').
     | WField T.Text
       -- ^ Field for which to compute a window operation. Not needed for operations
       --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
@@ -6785,16 +6834,27 @@ windowFieldProperty (WField f) = field_ f
 
 data WOperation
     = RowNumber
+      -- ^ Assign consecutive row number to values in a data object to be applied in a window transform.
     | Rank
+      -- ^ Rank function to be applied in a window transform.
     | DenseRank
+      -- ^ Dense rank function to be applied in a window transform.
     | PercentRank
+      -- ^ Percentile of values in a sliding window to be applied in a window transform.
     | CumeDist
+      -- ^ Cumulative distribution function to be applied in a window transform.
     | Ntile
+      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
     | Lag
+      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
     | Lead
+      -- ^ Value following the current object in a sliding window to be applied in a window transform.
     | FirstValue
+      -- ^ First value in a sliding window to be applied in a window transform.
     | LastValue
+      -- ^ Last value in a sliding window to be applied in a window transform.
     | NthValue
+      -- ^ Nth value in a sliding window to be applied in a window transform.
 
 
 wOperationLabel :: WOperation -> T.Text
