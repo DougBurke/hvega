@@ -819,7 +819,8 @@ import Data.Monoid ((<>))
 --
 -- The @LEntryPadding@ constructor of 'LegendProperty' was removed.
 --
--- The arguments to the `TDataCondition` constructor of `TextChannel`
+-- The arguments to the `MDataCondition` and `TDataCondition`
+-- constructors (of `MarkChannel` and `TextChannel` respectively)
 -- have changed to support accepting multiple expressions.
 
 --- helpers not in VegaLite.elm
@@ -1820,8 +1821,14 @@ data MarkChannel
     | MLegend [LegendProperty]
       -- ^ Use an empty list to remove the legend.
     | MSelectionCondition BooleanOp [MarkChannel] [MarkChannel]
-    | MDataCondition BooleanOp [MarkChannel] [MarkChannel]
-      -- TODO: change to list
+    | MDataCondition [(BooleanOp, [MarkChannel])] [MarkChannel]
+      -- ^ Make a text channel conditional on one or more predicate expressions. The first
+      --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
+      --   if that expression is @True@. The second is the encoding if none of the expressions
+      --   evaluate as @True@.
+      --
+      --   The arguments to this constructor have changed in @0.4.0.0 to support
+      --   multiple expressions.
     | MPath T.Text
     | MNumber Double
     | MString T.Text
@@ -1845,10 +1852,11 @@ markChannelProperty (MSelectionCondition selName ifClause elseClause) =
       hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
       hs = toProps elseClause
   in h : hs
-markChannelProperty (MDataCondition predicate ifClause elseClause) =
-  let h = ("condition", hkey)
+markChannelProperty (MDataCondition tests elseClause) =
+  let h = ("condition" .= map testClause tests)
+      testClause (predicate, ifClause) =
+        object (("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap markChannelProperty
-      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
       hs = toProps elseClause
   in h : hs
 markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]

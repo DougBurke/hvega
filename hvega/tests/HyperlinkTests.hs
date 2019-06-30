@@ -70,8 +70,9 @@ hyperlink3 =
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
                 . color
                     [ MDataCondition
-                        (Expr "datum.IMDB_Rating*10 > datum.Rotten_Tomatoes_Rating")
-                        [ MString "steelblue" ]
+                        [ (Expr "datum.IMDB_Rating*10 > datum.Rotten_Tomatoes_Rating"
+                          , [ MString "steelblue" ])
+                        ]
                         [ MString "red" ]
                     ]
                 . hyperlink

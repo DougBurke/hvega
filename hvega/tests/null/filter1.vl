@@ -10,10 +10,12 @@
     "encoding": {
         "color": {
             "value": "rgb(76,120,168)",
-            "condition": {
-                "value": "#ddd",
-                "test": "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
-            }
+            "condition": [
+                {
+                    "value": "#ddd",
+                    "test": "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
+                }
+            ]
         },
         "x": {
             "field": "IMDB_Rating",

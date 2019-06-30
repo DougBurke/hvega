@@ -146,8 +146,9 @@ filter1 =
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
                 . color
                     [ MDataCondition
-                        (Expr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null")
-                        [ MString "#ddd" ]
+                        [ (Expr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
+                          , [ MString "#ddd" ] )
+                        ]
                         [ MString "rgb(76,120,168)" ]
                     ]
     in
@@ -176,8 +177,9 @@ filter2 =
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
                 . color
                     [ MDataCondition
-                        (Expr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null")
-                        [ MString "#ddd" ]
+                        [ (Expr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
+                          , [ MString "#ddd" ])
+                        ]
                         [ MString "rgb(76,120,168)" ]
                     ]
     in
