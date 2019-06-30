@@ -2477,19 +2477,36 @@ a scale can be changed with the 'PSort' constructor.
 
 data ScaleProperty
     = SType Scale
+      -- ^ Type of scaling to apply.
     | SDomain ScaleDomain
+      -- ^ Custom scaling domain.
     | SRange ScaleRange
+      -- ^ Range of a scaling. The type of range depends on the encoding channel.
     | SScheme T.Text [Double]
+      -- ^  Color scheme used by a color scaling. The first parameter is the name of the
+      --    scheme (e.g. \"viridis\") and the second an optional specification of the number of
+      --    colors to use (list of one number), or the extent of the color range to use (list
+      --    of two numbers between 0 and 1).
     | SPadding Double
+      -- ^ Padding in pixels to apply to a scaling.
     | SPaddingInner Double
+      -- ^ Inner padding to apply to a band scaling.
     | SPaddingOuter Double
+      -- ^ Outer padding to apply to a band scaling.
     | SRangeStep (Maybe Double)
+      -- ^ Distance between the starts of adjacent bands in a band scaling. If
+      --   @Nothing@, the distance is determined automatically.
     | SRound Bool
+      -- ^ Are numeric values in a scaling are rounded to integers?
     | SClamp Bool
-      -- TODO:  Need to restrict set of valid scale types that work with color interpolation.
+      -- ^ Should values outside the data domain be clamped (to the minimum or
+      --   maximum value)?
     | SInterpolate CInterpolate
+      -- ^ Interpolation method for scaling range values.
     | SNice ScaleNice
+      -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SZero Bool
+      -- ^ Should a numeric scaling be forced to include a zero value?
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
@@ -2526,17 +2543,31 @@ schemeProperty nme extent =
 
 data Scale
     = ScLinear
+      -- ^ A linear scale.
     | ScPow
+      -- ^ A power scale. The exponent to use for scaling is specified with
+      --   'SExponent'.
     | ScSqrt
+      -- ^ A square-root scale.
     | ScLog
+      -- ^ A log scale. Defaults to log of base 10, but can be customised with
+      --   'SBase'.
     | ScTime
+      -- ^ A temporal scale.
     | ScUtc
+      -- ^ A temporal scale, in UTC.
     | ScSequential
+      -- ^ Use 'ScLinear' instead (to be removed).
     | ScOrdinal
+      -- ^ An ordinal scale.
     | ScBand
+      -- ^ A band scale.
     | ScPoint
+      -- ^ A point scale.
     | ScBinLinear
+      -- ^ A linear band scale.
     | ScBinOrdinal
+      -- ^ An ordinal band scale.
 
 
 scaleLabel :: Scale -> T.Text
@@ -2562,11 +2593,15 @@ Describes the scale domain (type of data in scale). For full details see the
 
 data ScaleDomain
     = DNumbers [Double]
+      -- ^ Numeric values that define a scale domain.
     | DStrings [T.Text]
+      -- ^ String values that define a scale domain.
     | DDateTimes [[DateTime]]
+      -- ^ Date-time values that define a scale domain.
     | DSelection T.Text
+      -- ^ Scale domain based on a named interactive selection.
     | Unaggregated
-
+    -- ^ Specify an unaggregated scale domain (type of data in scale).
 
 scaleDomainSpec :: ScaleDomain -> VLSpec
 scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
@@ -2583,16 +2618,27 @@ Describes the way a scale can be rounded to \"nice\" numbers. For full details s
 -}
 data ScaleNice
     = NMillisecond
+      -- ^ Nice time intervals that try to align with rounded milliseconds.
     | NSecond
+      -- ^ Nice time intervals that try to align with whole or rounded seconds.
     | NMinute
+      -- ^ Nice time intervals that try to align with whole or rounded minutes.
     | NHour
+      -- ^ Nice time intervals that try to align with whole or rounded hours.
     | NDay
+      -- ^ Nice time intervals that try to align with whole or rounded days.
     | NWeek
+    -- ^ Nice time intervals that try to align with whole or rounded weeks.
     | NMonth
+      -- ^ Nice time intervals that try to align with whole or rounded months.
     | NYear
+      -- ^ Nice time intervals that try to align with whole or rounded years.
     | NInterval TimeUnit Int
+      -- ^ 'Nice' temporal interval values when scaling.
     | IsNice Bool
+      -- ^ Enable or disable nice scaling.
     | NTickCount Int
+      -- ^ Desired number of tick marks in a 'nice' scaling.
 
 
 scaleNiceSpec :: ScaleNice -> VLSpec
@@ -2640,28 +2686,32 @@ data ScaleRange
 {-|
 
 Indicates the type of color interpolation to apply, when mapping a data field
-onto a color scale. Note that color interpolation cannot be applied with the default
-\"sequential\" color scale ('ScSequential'), so additionally, you should set the
-'SType' to another continuous scale such as 'ScLinear' and 'ScPow'.
+onto a color scale.
 
 For details see the
 <https://vega.github.io/vega-lite/docs/scale.html#continuous Vega-Lite documentation>.
+
 -}
 data CInterpolate
     = CubeHelix Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ Cube helix color interpolation for continuous color scales using the given
+      --   gamma value (anchored at 1).
     | CubeHelixLong Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ Long-path cube helix color interpolation for continuous color scales using
+      --   the given gamma value (anchored at 1).
     | Hcl
+      -- ^ HCL color interpolation for continuous color scales.
     | HclLong
+      -- ^ HCL color interpolation in polar coordinate space for continuous color scales.
     | Hsl
+      -- ^ HSL color interpolation for continuous color scales.
     | HslLong
+      -- ^ HSL color interpolation in polar coordinate space for continuous color scales.
     | Lab
+      -- ^ Lab color interpolation for continuous color scales.
     | Rgb Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ RGB color interpolation for continuous color scales using the given gamma
+      --   value (anchored at 1).
 
 
 -- Need to tie down some types as things are too polymorphic,
