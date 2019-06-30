@@ -4600,11 +4600,28 @@ For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
 
 -}
+
 data ScaleConfig
     = SCBandPaddingInner Double
       -- ^ Default inner padding for x and y band-ordinal scales.
     | SCBandPaddingOuter Double
       -- ^ Default outer padding for x and y band-ordinal scales.
+    | SCBarBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales of 'Bar' marks.
+      --
+      --   @since 0.4.0.0
+    | SCBarBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales of 'Bar' marks.
+      --
+      --   @since 0.4.0.0
+    | SCRectBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales of 'Rect' marks.
+      --
+      --   @since 0.4.0.0
+    | SCRectBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales of 'Rect' marks.
+      --
+      --   @since 0.4.0.0
     | SCClamp Bool
       -- ^ Whether or not by default values that exceed the data domain are clamped to
       --   the min/max range value.
@@ -4650,6 +4667,10 @@ data ScaleConfig
 scaleConfigProperty :: ScaleConfig -> LabelledSpec
 scaleConfigProperty (SCBandPaddingInner x) = "bandPaddingInner" .= x
 scaleConfigProperty (SCBandPaddingOuter x) = "bandPaddingOuter" .= x
+scaleConfigProperty (SCBarBandPaddingInner x) = "barBandPaddingInner" .= x
+scaleConfigProperty (SCBarBandPaddingOuter x) = "barBandPaddingOuter" .= x
+scaleConfigProperty (SCRectBandPaddingInner x) = "rectBandPaddingInner" .= x
+scaleConfigProperty (SCRectBandPaddingOuter x) = "rectBandPaddingOuter" .= x
 scaleConfigProperty (SCClamp b) = "clamp" .= b
 scaleConfigProperty (SCMaxBandSize x) = "maxBandSize" .= x
 scaleConfigProperty (SCMinBandSize x) = "minBandSize" .= x
