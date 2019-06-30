@@ -2526,24 +2526,24 @@ data ScaleProperty
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
-scaleProperty (SType sType) = ("type", toJSON (scaleLabel sType))
-scaleProperty (SDomain sdType) = ("domain", scaleDomainSpec sdType)
+scaleProperty (SType sType) = "type" .= scaleLabel sType
+scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
 scaleProperty (SRange range) =
   let js = case range of
-        RNumbers xs -> toJSON (map toJSON xs)
-        RStrings ss -> toJSON (map toJSON ss)
+        RNumbers xs -> toJSON xs
+        RStrings ss -> toJSON ss
         RName s -> toJSON s
-  in ("range", js)
+  in "range" .= js
 scaleProperty (SScheme nme extent) = schemeProperty nme extent
-scaleProperty (SPadding x) = ("padding", toJSON x)
-scaleProperty (SPaddingInner x) = ("paddingInner", toJSON x)
-scaleProperty (SPaddingOuter x) = ("paddingOuter", toJSON x)
-scaleProperty (SRangeStep numOrNull) = ("rangeStep", maybe A.Null toJSON numOrNull)
-scaleProperty (SRound b) = ("round", toJSON b)
-scaleProperty (SClamp b) = ("clamp", toJSON b)
-scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
-scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
-scaleProperty (SZero b) = ("zero", toJSON b)
+scaleProperty (SPadding x) = "padding" .= x
+scaleProperty (SPaddingInner x) = "paddingInner" .= x
+scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
+scaleProperty (SRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
+scaleProperty (SRound b) = "round" .= b
+scaleProperty (SClamp b) = "clamp" .= b
+scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
+scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
+scaleProperty (SZero b) = "zero" .= b
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SBase x) = "base" .= x
