@@ -1589,6 +1589,7 @@ dataFromJson vlspec fmts =
 
 A single data value. This is used when a function can accept values of different
 types (e.g. either a number or a string).
+
 -}
 data DataValue
     = Boolean Bool
@@ -2675,11 +2676,11 @@ data ScaleNice
     | NYear
       -- ^ Nice time intervals that try to align with whole or rounded years.
     | NInterval TimeUnit Int
-      -- ^ 'Nice' temporal interval values when scaling.
+      -- ^ \"Nice\" temporal interval values when scaling.
     | IsNice Bool
       -- ^ Enable or disable nice scaling.
     | NTickCount Int
-      -- ^ Desired number of tick marks in a 'nice' scaling.
+      -- ^ Desired number of tick marks in a \"nice\" scaling.
 
 
 scaleNiceSpec :: ScaleNice -> VLSpec
@@ -4756,26 +4757,36 @@ Properties for customising the nature of the selection. See the
 for details.
 -}
 data SelectionProperty
-    = On T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Translate T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Zoom T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Fields [T.Text]
-    | Encodings [Channel]
-    | Empty
-    | ResolveSelections SelectionResolution
-    | SelectionMark [SelectionMarkProperty]
+    = Empty
+      -- ^ Make a selection empty by default when nothing selected.
     | BindScales
+      -- ^ Enable two-way binding between a selection and the scales used in the same view.
+    | On T.Text
+      -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
+      --   that triggers a selection, or the empty string (which sets the property to @false@).
+    | Translate T.Text
+      -- ^ Translation selection transformation used for panning a view. See the
+      --   [Vega-Lite translate documentation](https://vega.github.io/vega-lite/docs/translate.html).
+    | Zoom T.Text
+      -- ^ Zooming selection transformation used for zooming a view. See the
+      --   [Vega-Lite zoom documentation](https://vega.github.io/vega-lite/docs/zoom.html).
+    | Fields [T.Text]
+      -- ^ Field names for projecting a selection.
+    | Encodings [Channel]
+      -- ^ Encoding channels that form a named selection.
+    | ResolveSelections SelectionResolution
+      -- ^ Strategy that determines how selections' data queries are resolved when applied
+      --   in a filter transform, conditional encoding rule, or scale domain.
+    | SelectionMark [SelectionMarkProperty]
+      -- ^ Appearance of an interval selection mark (dragged rectangle).
     | Bind [Binding]
+      -- ^ Binding to some input elements as part of a named selection.
     | Nearest Bool
+      -- ^ Whether or not a selection should capture nearest marks to a pointer
+      --   rather than an exact position match.
     | Toggle T.Text
-      -- ^ A <https://vega.github.io/vega/docs/expressions Vega expression> that evaluates
-      --   to @true@ or @false@.
+      -- ^ Predicate expression that determines a toggled selection. See the
+      --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
 
 
 selectionProperty :: SelectionProperty -> LabelledSpec
@@ -4866,8 +4877,13 @@ for details
 -}
 data SelectionResolution
     = Global
+      -- ^ One selection available across all subviews (default).
     | Union
+      -- ^ Each subview contains its own brush and marks are selected if they lie
+      --   within /any/ of these individual selections.
     | Intersection
+      -- ^  Each subview contains its own brush and marks are selected if they lie
+      --    within /all/ of these individual selections.
 
 
 selectionResolutionLabel :: SelectionResolution -> T.Text
