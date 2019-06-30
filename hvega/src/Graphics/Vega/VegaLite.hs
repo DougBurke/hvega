@@ -819,9 +819,10 @@ import Data.Monoid ((<>))
 --
 -- The @LEntryPadding@ constructor of 'LegendProperty' was removed.
 --
--- The arguments to the `MDataCondition` and `TDataCondition`
--- constructors (of `MarkChannel` and `TextChannel` respectively)
--- have changed to support accepting multiple expressions.
+-- The arguments to the `MDataCondition`, `TDataCondition`, and
+-- `HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
+-- and `HyperlinkChannel` respectively) have changed to support
+-- accepting multiple expressions.
 
 --- helpers not in VegaLite.elm
 
@@ -5793,8 +5794,6 @@ headerProperty (HTitlePadding x) = "titlePadding" .= x
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
 
--- TODO: should HDataCondition accept multiple tests like TDataCondition?
-
 data HyperlinkChannel
     = HName T.Text
       -- ^ Field used for encoding with a hyperlink channel.
@@ -5818,10 +5817,14 @@ data HyperlinkChannel
       -- ^ Make a hyperlink channel conditional on interactive selection. The first parameter
       --   provides the selection to evaluate, the second the encoding to apply if the hyperlink
       --   has been selected, the third the encoding if it is not selected.
-    | HDataCondition BooleanOp [HyperlinkChannel] [HyperlinkChannel]
-      -- ^ Make a hyperlink channel conditional on some predicate expression. The first
-      --   parameter provides the expression to evaluate, the second the encoding to apply
-      --   if the expression is @True@, the third the encoding if the expression is @False@.
+    | HDataCondition [(BooleanOp, [HyperlinkChannel])] [HyperlinkChannel]
+      -- ^ Make a hyperlink channel conditional on one or more predicate expressions. The first
+      --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
+      --   if that expression is @True@. The second is the encoding if none of the expressions
+      --   evaluate as @True@.
+      --
+      --   The arguments to this constructor have changed in @0.4.0.0 to support
+      --   multiple expressions.
     | HString T.Text
       -- ^ Literal string value when encoding with a hyperlink channel.
 
@@ -5837,10 +5840,11 @@ hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
       hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
       hs = toProps elseClause
   in h : hs
-hyperlinkChannelProperty (HDataCondition predicate ifClause elseClause) =
-  let h = ("condition", hkey)
+hyperlinkChannelProperty (HDataCondition tests elseClause) =
+  let h = ("condition" .= map testClause tests)
+      testClause (predicate, ifClause) =
+        object (("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap hyperlinkChannelProperty
-      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
       hs = toProps elseClause
   in h : hs
 hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]

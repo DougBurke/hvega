@@ -54,9 +54,10 @@ should be used instead.
 
 The `LEntryPadding` constructor of `LegendProperty` was removed.
 
-The arguments to the `MDataCondition` and `TDataCondition`
-constructors (of `MarkChannel` and `TextChannel` respectively)
-have changed to support accepting multiple expressions.
+The arguments to the `MDataCondition`, `TDataCondition`, and
+`HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
+and `HyperlinkChannel` respectively) have changed to support
+accepting multiple expressions.
 
 ## 0.3.0.1
 
