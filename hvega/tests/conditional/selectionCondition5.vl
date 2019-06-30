@@ -10,6 +10,7 @@
     "selection": {
         "mySelection": {
             "empty": "none",
+            "clear": "mouseup",
             "type": "interval",
             "translate": "[mousedown[!event.shiftKey], mouseup] > mousemove",
             "on": "[mousedown[!event.shiftKey], mouseup] > mousemove"
