@@ -2510,6 +2510,19 @@ data ScaleProperty
       -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SZero Bool
       -- ^ Should a numeric scaling be forced to include a zero value?
+    | SExponent Double
+      -- ^ The exponent to use for power scaling ('ScPow').
+      --
+      --   @since 0.4.0.0
+    | SConstant Double
+      -- ^ The desired slope of the 'ScSymLog' function at zero. If
+      --   unspecified, the default is 1.
+      --
+      --   @since 0.4.0.0
+    | SBase Double
+      -- ^ The base to use for log scaling ('ScLog').
+      --
+      --   @since 0.4.0.0
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
@@ -2531,6 +2544,9 @@ scaleProperty (SClamp b) = ("clamp", toJSON b)
 scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
 scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
 scaleProperty (SZero b) = ("zero", toJSON b)
+scaleProperty (SExponent x) = "exponent" .= x
+scaleProperty (SConstant x) = "constant" .= x
+scaleProperty (SBase x) = "base" .= x
 
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
@@ -2558,6 +2574,12 @@ data Scale
     | ScLog
       -- ^ A log scale. Defaults to log of base 10, but can be customised with
       --   'SBase'.
+    | ScSymLog
+      -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
+      --   scale. Similar to a log scale but supports zero and negative values. The slope
+      --   of the function at zero can be set with 'SConstant'.
+      --
+      --   @since 0.4.0.0
     | ScTime
       -- ^ A temporal scale.
     | ScUtc
@@ -2572,6 +2594,18 @@ data Scale
       -- ^ A linear band scale.
     | ScBinOrdinal
       -- ^ An ordinal band scale.
+    | ScQuantile
+      -- ^ A quantile scale.
+      --
+      --   @since 0.4.0.0
+    | ScQuantize
+      -- ^ A quantizing scale.
+      --
+      --   @since 0.4.0.0
+    | ScThreshold
+      -- ^ A threshold scale.
+      --
+      --   @since 0.4.0.0
 
 
 scaleLabel :: Scale -> T.Text
@@ -2579,6 +2613,7 @@ scaleLabel ScLinear = "linear"
 scaleLabel ScPow = "pow"
 scaleLabel ScSqrt = "sqrt"
 scaleLabel ScLog = "log"
+scaleLabel ScSymLog = "symlog"
 scaleLabel ScTime = "time"
 scaleLabel ScUtc = "utc"
 scaleLabel ScOrdinal = "ordinal"
@@ -2586,6 +2621,9 @@ scaleLabel ScBand = "band"
 scaleLabel ScPoint = "point"
 scaleLabel ScBinLinear = "bin-linear"
 scaleLabel ScBinOrdinal = "bin-ordinal"
+scaleLabel ScQuantile = "quantile"
+scaleLabel ScQuantize = "quantize"
+scaleLabel ScThreshold = "threshold"
 
 
 {-|
