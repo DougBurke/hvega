@@ -17,8 +17,6 @@ testSpecs = [ ("textFormat1", textFormat1)
             , ("textFormat2", textFormat2)
             ]
 
--- TODO: TFormatAsTemporal
-
 textFormat1 :: VegaLite
 textFormat1 =
     let
@@ -48,7 +46,7 @@ textFormat1 =
                              , PAxis [ AxFormatAsNum
                                      , AxFormat ".2f" ] ]
                 . text [ TName "a", TmType Temporal
-                       {- , TFormatAsTemporal -}
+                       , TFormatAsTemporal
                        , TFormat "%b `%y" ]
                 . color [ MName "a", MmType Temporal
                         , MLegend [ LFormatAsTemporal
