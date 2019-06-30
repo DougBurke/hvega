@@ -7,7 +7,7 @@
             "filter": {
                 "field": "Release_Date",
                 "range": [
-                    {},
+                    null,
                     {
                         "year": 2019
                     }

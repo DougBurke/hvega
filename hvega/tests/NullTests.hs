@@ -20,7 +20,7 @@ testSpecs = [ ("axis1", axis1)
             , ("scale4", scale4)
             , ("scale5", scale5)
             , ("filter1", filter1)
-            -- , ("filter2", filter2)
+            , ("filter2", filter2)
             ]
 
 
@@ -158,7 +158,6 @@ filter1 =
         , enc []
         ]
 
-{- TODO missing FValid
 filter2 :: VegaLite
 filter2 =
     let
@@ -177,8 +176,8 @@ filter2 =
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
                 . color
                     [ MDataCondition
-                        (FExpr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
-                        , [ MString "#ddd" ])
+                        (Expr "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null")
+                        [ MString "#ddd" ]
                         [ MString "rgb(76,120,168)" ]
                     ]
     in
@@ -189,4 +188,3 @@ filter2 =
         , mark Point[]
         , enc []
         ]
--}

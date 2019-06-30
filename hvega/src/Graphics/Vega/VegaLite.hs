@@ -4794,7 +4794,8 @@ data ConfigurationProperty
     | TimeFormat T.Text
       -- Note: Trails appear unusual in having their own top-level config
       -- (see https://vega.github.io/vega-lite/docs/trail.html#config)
-    | TrailStyle [MarkProperty]                -- ^ @since 0.4.0.0
+    | TrailStyle [MarkProperty]
+    -- ^ @since 0.4.0.0
     | View [ViewConfig]
 
 
@@ -5147,14 +5148,51 @@ booleanOpSpec (Not operand) = object ["not" .= booleanOpSpec operand]
 Type of filtering operation. See the
 <https://vega.github.io/vega-lite/docs/filter.html Vega-Lite documentation>
 for details.
+
 -}
 data Filter
     = FEqual T.Text DataValue
+      -- ^ Filter a data stream so that only data in a given field equal to the given
+      --   value are used.
+    | FLessThan T.Text DataValue
+      -- ^ Filter a data stream so that only data in a given field less than the given
+      --   value are used.
+      --
+      --   @since 0.4.0.0
+    | FLessThanEq T.Text DataValue
+      -- ^ Filter a data stream so that only data in a given field less than,
+      --   or equal to, the given value are used.
+      --
+      --   @since 0.4.0.0
+    | FGreaterThan T.Text DataValue
+      -- ^ Filter a data stream so that only data in a given field greater than the given
+      --   value are used.
+      --
+      --   @since 0.4.0.0
+    | FGreaterThanEq T.Text DataValue
+      -- ^ Filter a data stream so that only data in a given field greater than,
+      --   or equal to, the given value are used.
+      --
+      --   @since 0.4.0.0
     | FExpr T.Text
+      -- ^ Filter a data stream so that only data that satisfy the given predicate
+      --   expression are used.
     | FCompose BooleanOp
+      -- ^ Build up a filtering predicate through logical composition ('And', 'Or' etc.).
     | FSelection T.Text
+      -- ^ Filter a data stream so that only data in a given field that are within the
+      --   given interactive selection are used.
     | FOneOf T.Text DataValues
+      -- ^ Filter a data stream so that only data in a given field contained in the given
+      --   list of values are used.
     | FRange T.Text FilterRange
+      -- ^ Filter a data stream so that only data in a given field that are within the
+      --   given range are used.
+    | FValid T.Text
+      -- ^ Filter a data stream so that only valid data (i.e. not null or NaN) in a given
+      --   field are used.
+      --
+      --   @since 0.4.0.0
 
 
 {-|
@@ -6802,16 +6840,21 @@ filter f ols =
         FCompose boolExpr -> booleanOpSpec boolExpr
 
         FEqual field val -> object [field_ field, "equal" .= dataValueSpec val]
+        FLessThan field val -> object [field_ field, "lt" .= dataValueSpec val]
+        FLessThanEq field val -> object [field_ field, "lte" .= dataValueSpec val]
+        FGreaterThan field val -> object [field_ field, "gt" .= dataValueSpec val]
+        FGreaterThanEq field val -> object [field_ field, "gte" .= dataValueSpec val]
 
         FSelection selName -> object ["selection" .= selName]
 
         FRange field vals ->
             let ans = case vals of
                         NumberRange mn mx -> map toJSON [mn, mx]
-                        DateRange dMin dMax ->
-                          [ object (map dateTimeProperty dMin)
-                          , object (map dateTimeProperty dMax)
-                          ]
+                        DateRange dMin dMax -> [process dMin, process dMax]
+
+                process [] = A.Null
+                process dts = object (map dateTimeProperty dts)
+
             in object [field_ field, "range" .= ans]
 
         FOneOf field vals ->
@@ -6822,6 +6865,8 @@ filter f ols =
                         Booleans bs -> map toJSON bs
 
             in object [field_ field, "oneOf" .= ans]
+
+        FValid field -> object [field_ field, "valid" .= True]
 
   in ("filter", js) : ols
 
