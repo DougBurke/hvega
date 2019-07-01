@@ -1236,9 +1236,15 @@ parse dates differently. Being explicit about the date format is usually safer.
 -}
 data DataType
     = FoNumber
+      -- ^ Indicate numeric data type to be parsed when reading input data.
     | FoBoolean
+      -- ^ Indicate Boolean data type to be parsed when reading input data.
     | FoDate T.Text
+      -- ^ Date format for parsing input data using
+      --   [D3's formatting specifiers](https://vega.github.io/vega-lite/docs/data.html#format)
+      --   or left as an empty string for default formatting.
     | FoUtc T.Text
+      -- ^ Similar to 'FoDate' but for UTC format dates.
 
 
 {-|
@@ -1253,8 +1259,13 @@ property field containing the attribute data to extract. For details see the
 -}
 data Format
     = JSON T.Text
+      -- ^ Property to be extracted from some JSON when it has some surrounding structure.
+      --   e.g., specifying the property @values.features@ is equivalent to retrieving
+      --   @json.values.features@ from a JSON object with a custom delimiter.
     | CSV
+      -- ^ Comma-separated (CSV) data file format.
     | TSV
+      -- ^ Tab-separated (TSV) data file format
     | DSV Char
       -- ^ The fields are separated by the given character (which must be a
       --   single 16-bit code unit).
@@ -1267,8 +1278,25 @@ data Format
       -- @since 0.4.0.0
       -}
     | TopojsonFeature T.Text
+      -- ^ A topoJSON feature format containing an object with the given name. For example:
+      --
+      -- @
+      -- 'dataFromUrl' \"https:\/\/gicentre.github.io\/data\/geoTutorials\/londonBoroughs.json\"
+      --    [ TopojsonFeature \"boroughs\" ]
+      -- @
     | TopojsonMesh T.Text
+      -- ^ A topoJSON mesh format containing an object with the given name. Unlike
+      --   'TopojsonFeature', the corresponding geo data are returned as a single unified mesh,
+      --   not as individual GeoJSON features.
     | Parse [(T.Text, DataType)]
+      -- ^ Parsing rules when processing some data text, specified as a list of tuples
+      --   in the form @(fieldname, datatype)@. Useful when automatic type inference needs
+      --   to be overridden, for example when converting strings to numbers:
+      --
+      -- @
+      -- 'dataFromUrl' \"myDataFile.csv\"
+      --    [ Parse [ ( \"x\", 'FoNumber' ), ( "\y\", FoNumber ) ] ]
+      -- @
 
 
 {-|
@@ -1968,10 +1996,15 @@ supported in @hvega@.
 
 data MarkProperty
     = MAlign HAlign
+      -- ^ Horizontal alignment of a text mark.
     | MAngle Double
+      -- ^ Rotation angle, in degrees, of a text mark.
     | MBandSize Double
+      -- ^ Band size of a bar mark.
     | MBaseline VAlign
+      -- ^ Vertical alignment of a text mark.
     | MBinSpacing Double
+      -- ^ Offset between bars for a binned field using a bar mark.
     | MBorders [MarkProperty]
       -- ^ Border properties for an errorband mark.
       --
@@ -1981,29 +2014,47 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MClip Bool
+      -- ^ Should a mark be clipped to the enclosing group's dimensions.
     | MColor T.Text
+      -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
+      -- precedence and will override this if specified.
     | MCursor Cursor
+      -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
+      -- ^ Continuous band size of a bar mark.
     | MDiscreteBandSize Double
+      -- ^ Discrete band size of a bar mark.
     | MdX Double
+      -- ^ Horizontal offset between a text mark and its anchor.
     | MdY Double
+      -- ^ Vertical offset between a text mark and its anchor.
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
       --
       --   @since 0.4.0.0
     | MFill T.Text
+      -- ^ Default fill color of a mark.
     | MFilled Bool
+      -- ^ Should a mark's color should be used as the fill color instead of
+      --   stroke color.
     | MFillOpacity Double
+      -- ^ Fill opacity of a mark.
     | MFont T.Text
+      -- ^ Font of a text mark. Can be any font name made accessible via
+      -- a css file (or a generic font like \"serif\", \"monospace\" etc.).
     | MFontSize Double
+      -- ^ Font size, in pixels, used by a text mark.
     | MFontStyle T.Text
+      -- ^ Font style (e.g. \"italic\") used by a text mark.
     | MFontWeight FontWeight
+      -- ^ Font weight used by a text mark.
     | MHRef T.Text
       -- ^ Hyperlink to be associated with a mark making it a clickable
       --   hyperlink.
       --
       --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
+      -- ^ Interpolation method used by line and area marks.
     | MLine LineMarker
       -- ^ How should the vertices of an area mark be joined?
       --
@@ -2013,6 +2064,7 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MOpacity Double
+      -- ^ Overall opacity of a mark in the range 0 to 1.
     | MOrder Bool
       -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
       --   the order is determined by measurement type or order channel. If
@@ -2020,39 +2072,63 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MOrient MarkOrientation
+      -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the boxplot mark.
       --
       --   @since 0.4.0.0
     | MPoint PointMarker
-      -- ^ @since 0.4.0.0
+      -- ^ Appearance of a point marker joining the vertices of a line or area mark.
+      --
+      --   @since 0.4.0.0
     | MRadius Double
+      -- ^ Polar coordinate radial offset of a text mark from its origin.
     | MRule [MarkProperty]
       -- ^ Rule (main line) properties for the errorbar and boxplot marks.
       --
       --   @since 0.4.0.0
     | MShape Symbol
+      -- ^ Shape of a point mark.
     | MShortTimeLabels Bool
+      -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
+      -- ^ SIze of a mark.
     | MStroke T.Text
+      -- ^ Default stroke color of a mark.
     | MStrokeCap StrokeCap
-      -- ^ @since 0.4.0.0
+      -- ^ Cap style of a mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeDash [Double]
+      -- ^ Stroke dash style used by a mark. Determined by an alternating 'on-off'
+      --   sequence of line lengths, in pixels.
     | MStrokeDashOffset Double
+      -- ^ Number of pixels before the first line dash is drawn.
     | MStrokeJoin StrokeJoin
-      -- ^ @since 0.4.0.0
+      -- ^ Line segment join style of a mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeMiterLimit Double
       -- ^ Mitre limit at which to bevel a join between line segments of a
       --   mark's stroke.
       --
       --   @since 0.4.0.0
     | MStrokeOpacity Double
+      -- ^ Stroke opacity of a mark in the range 0 to 1.
     | MStrokeWidth Double
+      -- ^ Stroke width of a mark in pixels.
     | MStyle [T.Text]
+      -- ^ Names of custom styles to apply to a mark. Each should refer to a named style
+      --   defined in a separate style configuration.
     | MTension Double
+      -- ^ Interpolation tension used when interpolating line and area marks.
     | MText T.Text
+      -- ^ Placeholder text for a text mark for when a text channel is not specified.
     | MTheta Double
+      -- ^ Polar coordinate angle (clockwise from north in radians) of a text mark from
+      --   the origin determined by its x and y properties.
     | MThickness Double
+      -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
       -- ^ Tick properties for the errorbar or boxplot mark.
       --
@@ -2179,8 +2255,11 @@ strokeCapLabel CSquare = "square"
 
 data StrokeJoin
     = JMiter
+      -- ^ Mitred stroke join.
     | JRound
+      -- ^ Rounded stroke join.
     | JBevel
+      -- ^ Bevelled stroke join.
 
 
 strokeJoinLabel :: StrokeJoin -> T.Text
@@ -5000,19 +5079,31 @@ and the
 -}
 data Binding
     = IRange T.Text [InputProperty]
+      -- ^ Range slider input element that can bound to a named field value.
     | ICheckbox T.Text [InputProperty]
+      -- ^ Checkbox input element that can bound to a named field value.
     | IRadio T.Text [InputProperty]
+      -- ^ Radio box input element that can bound to a named field value.
     | ISelect T.Text [InputProperty]
-      -- TODO: Check validity: The following input types can generate a warning if options are included even if options appear to have an effect (e.g. placeholder)
+      -- ^ Select input element that can bound to a named field value.
     | IText T.Text [InputProperty]
+      -- ^ Text input element that can bound to a named field value.
     | INumber T.Text [InputProperty]
+      -- ^ Number input element that can bound to a named field value.
     | IDate T.Text [InputProperty]
+      -- ^ Date input element that can bound to a named field value.
     | ITime T.Text [InputProperty]
+      -- ^ Time input element that can bound to a named field value.
     | IMonth T.Text [InputProperty]
+      -- ^ Month input element that can bound to a named field value.
     | IWeek T.Text [InputProperty]
+      -- ^ Week input element that can bound to a named field value.
     | IDateTimeLocal T.Text [InputProperty]
+      -- ^ Local time input element that can bound to a named field value.
     | ITel T.Text [InputProperty]
+      -- ^ Telephone number input element that can bound to a named field value.
     | IColor T.Text [InputProperty]
+      -- ^ Color input element that can bound to a named field value.
 
 
 bindingSpec :: Binding -> LabelledSpec
@@ -5039,8 +5130,11 @@ bindingSpec bnd =
 
 data APosition
     = AStart
+      -- ^ The start of the text.
     | AMiddle
+      -- ^ The middle of the text.
     | AEnd
+      -- ^ The end of the text.
 
 
 anchorLabel :: APosition -> T.Text
@@ -5058,15 +5152,25 @@ For further details see the
 -}
 data TitleConfig
     = TAnchor APosition
+      -- ^ Default anchor position when placing titles.
     | TAngle Double
+      -- ^ Default angle when orientating titles.
     | TBaseline VAlign
+      -- ^ Default vertical alignment when placing titles.
     | TColor T.Text
+      -- ^ Default color when showing titles.
     | TFont T.Text
+      -- ^ Default font when showing titles.
     | TFontSize Double
+      -- ^ Default font size when showing titles.
     | TFontWeight FontWeight
+      -- ^ Default font weight when showing titles.
     | TLimit Double
+      -- ^ Default maximum length, in pixels, of titles.
     | TOffset Double
+      -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
+      -- ^ Default placement of titles relative to the chart body.
 
 
 titleConfigSpec :: TitleConfig -> LabelledSpec
@@ -5191,57 +5295,101 @@ for details.
 -}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
+      -- ^ The default appearance of area marks.
     | Autosize [Autosize]
+      -- ^ The default sizing of visualizations.
     | Axis [AxisConfig]
+      -- ^ The default appearance of axes.
     | AxisX [AxisConfig]
+      -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
+      -- ^ The default appearance of the Y axes.
     | AxisLeft [AxisConfig]
+      -- ^ The default appearance of the left-side axes.
     | AxisRight [AxisConfig]
+      -- ^ The default appearance of the right-side axes.
     | AxisTop [AxisConfig]
+      -- ^ The default appearance of the top-side axes.
     | AxisBottom [AxisConfig]
+      -- ^ The default appearance of the bottom-side axes.
     | AxisBand [AxisConfig]
+      -- ^ The default appearance of axes with band scaling.
     | Background T.Text
+      -- ^ The default background color of visualizations.
     | BarStyle [MarkProperty]
+      -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
+      -- ^ The default appearance of circle marks.
     | CountTitle T.Text
+      -- ^ The default title style for count fields.
     | FieldTitle FieldTitleProperty
+      -- ^ The default title-generation style for fields.
     | GeoshapeStyle [MarkProperty]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of geoshape marks.
+      --
+      --   @since 0.4.0.0
     | Legend [LegendConfig]
+      -- ^ The default appearance of legends.
     | LineStyle [MarkProperty]
+      -- ^ The default appearance of line marks.
     | FacetStyle [FacetConfig]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of facet layouts.
+      --
+      --   @since 0.4.0.0
     | HeaderStyle [HeaderProperty]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of facet headers.
+      --
+      --   @since 0.4.0.0
     | MarkStyle [MarkProperty]
+      -- ^ The default mark appearance.
     | NamedStyle T.Text [MarkProperty]
+      -- ^ The default appearance of a single named style.
     | NamedStyles [(T.Text, [MarkProperty])]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of a list of named styles.
+      --
+      --   @since 0.4.0.0
     | NumberFormat T.Text
+      -- ^ The default number formatting for axis and text labels.
     | Padding Padding
+      -- ^ The default padding in pixels from the edge of the of visualization
+      --   to the data rectangle.
     | PointStyle [MarkProperty]
+      -- ^ The default appearance of point marks.
     | Projection [ProjectionProperty]
+      -- ^ The default style of map projections.
     | Range [RangeConfig]
+      -- ^ The default range properties used when scaling.
     | RectStyle [MarkProperty]
+      -- ^ The default appearance of rectangle marks.
     | RemoveInvalid Bool
+      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
+      --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
+      -- ^ The default appearance of rule marks.
     | Scale [ScaleConfig]
+      -- ^ The default properties used when scaling.
     | SelectionStyle [(Selection, [SelectionProperty])]
+      -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
+      -- ^  the default appearance of square marks
     | Stack StackOffset
-    -- ^ The default stack offset style for stackable marks.
-    --
-    --   Changed from @StackProperty@ in version 0.4.0.0
+      -- ^ The default stack offset style for stackable marks.
+      --
+      --   Changed from @StackProperty@ in version 0.4.0.0
     | TextStyle [MarkProperty]
+      -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
+      -- ^ The default appearance of tick marks.
     | TitleStyle [TitleConfig]
+      -- ^ The default appearance of visualization titles.
     | TimeFormat T.Text
-      -- Note: Trails appear unusual in having their own top-level config
-      -- (see https://vega.github.io/vega-lite/docs/trail.html#config)
+      -- ^ The default time format for axis and legend labels.
     | TrailStyle [MarkProperty]
-    -- ^ @since 0.4.0.0
+      -- ^ The default style of trail marks.
+      --
+      --   @since 0.4.0.0
     | View [ViewConfig]
-
+      -- ^ The default single view style.
 
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
@@ -7795,6 +7943,7 @@ sel =
         . select "myBrush" Interval []
         . select "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
+
 -}
 select ::
   T.Text
@@ -7929,12 +8078,12 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = 'transform' . timeUnitAs 'Month' "date" "monthly"
+trans = 'transform' . timeUnitAs 'Month' \"date\" \"monthly\"
 
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
+        . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
         . position 'Y' [ 'PAggregate' 'Sum', PmType 'Quantitative' ]
-        . 'detail' [ 'DName' "monthly", 'DmType' 'Temporal' ]
+        . 'detail' [ 'DName' \"monthly\", 'DmType' 'Temporal' ]
 @
 -}
 timeUnitAs ::
