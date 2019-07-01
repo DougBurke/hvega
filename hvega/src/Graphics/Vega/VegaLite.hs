@@ -1970,6 +1970,10 @@ data MarkChannel
       --   @since 0.4.0.0
     | MTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a mark property channel.
+    | MTitle T.Text
+      -- ^ Title of a field when encoding with a mark property channel.
+      --
+      --   @since 0.4.0.0
     | MAggregate Operation
       -- ^ Compute aggregate summary statistics for a field to be encoded with a
       --   mark property channel.
@@ -2033,6 +2037,7 @@ markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
+markChannelProperty (MTitle s) = ["title" .= s]
 
 
 {-|
