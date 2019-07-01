@@ -3414,10 +3414,12 @@ data AxisProperty
       --
       --   @since 0.4.0.0
     | AxValues [Double]
+      -- ^ Numeric values to appear along the axis.
     | AxDates [[DateTime]]
-    -- TODO: need to extend this I think?
+      -- ^ The dates or times to appear along the axis.
     | AxZIndex Int
-      -- ^ The z-index of the axis.
+      -- ^ The z-index of the axis. A 1 means the axis is in front of the
+      --   chart marks, 0 means it is drawn behind them.
 
 
 axisProperty :: AxisProperty -> LabelledSpec
