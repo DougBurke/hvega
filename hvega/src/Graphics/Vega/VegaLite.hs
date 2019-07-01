@@ -230,6 +230,7 @@ module Graphics.Vega.VegaLite
        , window
        , Window(..)
        , WOperation(..)
+       , WindowProperty(..)
 
          -- * Creating the Mark Specification
          --
@@ -243,10 +244,18 @@ module Graphics.Vega.VegaLite
          -- $markproperties
 
        , MarkProperty(..)
+       , StrokeCap(..)
+       , StrokeJoin(..)
+
+         -- *** Used by Mark Properties
+
        , MarkOrientation(..)
        , MarkInterpolation(..)
-       , MarkErrorExtent(..)
        , Symbol(..)
+       , PointMarker(..)
+       , LineMarker(..)
+       , MarkErrorExtent(..)
+       , TooltipContent(..)
 
          -- ** Cursors
          --
@@ -277,6 +286,7 @@ module Graphics.Vega.VegaLite
          -- $sortprops
 
        , SortProperty(..)
+       , SortField(..)
 
          -- ** Axis properties
          --
@@ -312,12 +322,19 @@ module Graphics.Vega.VegaLite
        , fillOpacity
        , strokeOpacity
        , shape
+
+         -- *** Mark Channel properties
+
        , MarkChannel(..)
-       , LegendProperty(..)
+
+         -- *** Mark Legends
+         --
+         -- $marklegends
+
        , Legend(..)
+       , LegendProperty(..)
        , LegendOrientation(..)
        , LegendValues(..)
-       , LineMarker(..)
 
          -- ** Text Channels
          --
@@ -326,7 +343,6 @@ module Graphics.Vega.VegaLite
        , text
        , tooltip
        , tooltips
-       , TooltipContent(..)
        , TextChannel(..)
        , FontWeight(..)
 
@@ -369,6 +385,11 @@ module Graphics.Vega.VegaLite
        , ScaleDomain(..)
        , ScaleRange(..)
        , ScaleNice(..)
+
+         -- *** Color scaling
+         --
+         -- $color
+
        , CInterpolate(..)
 
          -- * Creating view compositions
@@ -386,6 +407,7 @@ module Graphics.Vega.VegaLite
        , spacingRC
        , center
        , centerRC
+       , CompositionAlignment(..)
 
          -- ** Resolution
          --
@@ -409,7 +431,6 @@ module Graphics.Vega.VegaLite
        , facetFlow
        , FacetMapping(..)
        , FacetChannel(..)
-       , FacetConfig(..)
        , asSpec
        , specification
        , Arrangement(..)
@@ -430,8 +451,13 @@ module Graphics.Vega.VegaLite
        , SelectionProperty(..)
        , Binding(..)
        , InputProperty(..)
-       , SelectionResolution(..)
        , SelectionMarkProperty(..)
+
+       -- ** Selection Resolution
+       --
+       -- $selectionresolution
+
+       , SelectionResolution(..)
 
          -- ** Making conditional channel encodings
          --
@@ -451,20 +477,8 @@ module Graphics.Vega.VegaLite
        , padding
        , autosize
        , background
-       , CompositionAlignment(..)
-       , ConfigurationProperty(..)
-       , Autosize(..)
        , Padding(..)
-       , PointMarker(..)
-       , TitleConfig(..)
-       , APosition(..)
-       , ViewConfig(..)
-       , RangeConfig(..)
-       , FieldTitleProperty(..)
-       , WindowProperty(..)
-       , SortField(..)
-       , StrokeCap(..)
-       , StrokeJoin(..)
+       , Autosize(..)
 
          -- ** View Backgroud
          --
@@ -477,6 +491,7 @@ module Graphics.Vega.VegaLite
 
        , configure
        , configuration
+       , ConfigurationProperty(..)
 
          -- ** Axis Configuration Options
          --
@@ -494,6 +509,32 @@ module Graphics.Vega.VegaLite
          -- $scaleconfig
 
        , ScaleConfig(..)
+
+         -- ** Scale Range Configuration Options
+         --
+         -- $scalerangeconfig
+
+       , RangeConfig(..)
+
+         -- ** Title Configuration Options
+         --
+         -- $titleconfig
+
+       , TitleConfig(..)
+
+         -- ** View Configuration Options
+         --
+         -- $viewconfig
+
+       , ViewConfig(..)
+       , APosition(..)
+       , FieldTitleProperty(..)
+
+         -- ** Facet Configuration Options
+         --
+         -- $facetconfig
+
+       , FacetConfig(..)
 
          -- * General Data types
          --
@@ -651,6 +692,10 @@ import Data.Monoid ((<>))
 -- Control the appearance of the visual marks in the visualization
 -- (e.g. 'color' and 'size').
 
+-- $marklegends
+-- See the
+-- [Vega-Lite legend property documentation](https://vega.github.io/vega-lite/docs/legend.html#legend-properties).
+
 -- $textchannels
 -- Control the appearance of the text and tooltip elements in the visualization.
 
@@ -685,7 +730,12 @@ import Data.Monoid ((<>))
 -- for more information.
 
 -- $scaling
--- How the encoding of a data field is applied.
+-- Used to specify how the encoding of a data field should be applied. See the
+-- [Vega-Lite scale documentation](https://vega.github.io/vega-lite/docs/scale.html).
+
+-- $color
+-- For color interpolation types, see the
+-- [Vega-Lite continuous scale documentation](https://vega.github.io/vega-lite/docs/scale.html#continuous).
 
 -- $view
 -- Views can be combined to create more complex multiview displays. This may involve
@@ -716,6 +766,10 @@ import Data.Monoid ((<>))
 -- responded to in a visualization. They transform interactions into data queries.
 -- For details, see the
 -- <https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
+
+-- $selectionresolution
+-- Determines how selections are made across multiple views.
+-- See the [Vega-lite resolve selection documentation](https://vega.github.io/vega-lite/docs/selection.html#resolve).
 
 -- $conditional
 -- To make channel encoding conditional on the result of some interaction, use
@@ -784,6 +838,22 @@ import Data.Monoid ((<>))
 -- $scaleconfig
 -- See the
 -- [Vega-Lite scale configuration documentation](https://vega.github.io/vega-lite/docs/scale.html#scale-config).
+
+-- $scalerangeconfig
+-- See the
+-- [Vega-Lite scheme configuration documentation](https://vega.github.io/vega/docs/schemes/#scheme-properties).
+
+-- $titleconfig
+-- See the
+-- [Vega-Lite title configuration documentation](https://vega.github.io/vega-lite/docs/title.html#config).
+
+-- $viewconfig
+-- See the
+-- [Vega-Lite view configuration documentation](https://vega.github.io/vega-lite/docs/spec.html#config).
+
+-- $facetconfig
+-- See the
+-- [Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -2241,8 +2311,11 @@ markProperty (MY2Offset x) = "y2Offset" .= x
 
 data StrokeCap
     = CButt
+      -- ^ Butt stroke cap.
     | CRound
+      -- ^ Rounded stroke cap.
     | CSquare
+      -- ^ Square stroke cap.
 
 
 strokeCapLabel :: StrokeCap -> T.Text
