@@ -991,22 +991,21 @@ in 'toVegaLite'
 -}
 datasets :: [(T.Text, Data)] -> Data
 datasets namedData =
-  -- follow Elm in parsing the structure to get what we want, but the code is
-  -- written rather differently. I am also not convinced it's generating
-  -- what it should be generating.
+  -- Follow Elm in parsing the structure to get what we want, but the code is
+  -- written rather differently.
   --
   -- The input is expected to be a singleton list containing a pair.
   let converted = extract . snd
       specs = map (second converted) namedData
 
       convert :: Value -> Maybe [(T.Text, Value)]
-      convert = decode . encode
+      convert v = HM.toList <$> decode (encode v)
 
       extract din =
-        let extract' [(_, v)] = v
-            extract' _ = din
+        let extract' [(_, v)] = Just v
+            extract' _ = Nothing
 
-        in maybe din extract' (convert din)
+        in fromMaybe din (convert din >>= extract')
 
   in (VLDatasets, object specs)
 

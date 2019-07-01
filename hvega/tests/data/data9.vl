@@ -15,53 +15,47 @@
         }
     },
     "datasets": {
-        "myData1": {
-            "values": [
-                {
-                    "cat": "a",
-                    "val": 10
-                },
-                {
-                    "cat": "b",
-                    "val": 18
-                },
-                {
-                    "cat": "c",
-                    "val": 12
-                }
-            ]
-        },
-        "myData2": {
-            "values": [
-                {
-                    "cat": "a",
-                    "val": 10
-                },
-                {
-                    "cat": "b",
-                    "val": 18
-                },
-                {
-                    "cat": "c",
-                    "val": 12
-                }
-            ]
-        },
-        "myData3": {
-            "values": [
-                {
-                    "cat": "a",
-                    "val": 10
-                },
-                {
-                    "cat": "b",
-                    "val": 18
-                },
-                {
-                    "cat": "c",
-                    "val": 12
-                }
-            ]
-        }
+        "myData1": [
+            {
+                "cat": "a",
+                "val": 10
+            },
+            {
+                "cat": "b",
+                "val": 18
+            },
+            {
+                "cat": "c",
+                "val": 12
+            }
+        ],
+        "myData2": [
+            {
+                "cat": "a",
+                "val": 10
+            },
+            {
+                "cat": "b",
+                "val": 18
+            },
+            {
+                "cat": "c",
+                "val": 12
+            }
+        ],
+        "myData3": [
+            {
+                "cat": "a",
+                "val": 10
+            },
+            {
+                "cat": "b",
+                "val": 18
+            },
+            {
+                "cat": "c",
+                "val": 12
+            }
+        ]
     }
 }
