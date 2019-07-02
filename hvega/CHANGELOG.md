@@ -37,8 +37,8 @@ The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`
 constructor is used to change the order of an axis.
 
-The @ScSequential@ constructor was removed from @Scale@ as
-@ScLinear@ should be used.
+The `ScSequential` constructor was removed from `Scale` as
+`ScLinear` should be used.
 
 The `AxTitleMaxLength` and `TitleMaxLength` constructors have been
 removed (from `AxisProperty` and `AxisConfig` respectively) as they
@@ -46,12 +46,11 @@ are invalid. The `AxTitleLimit` (new in this release) and
 `TitleLimit` constructors should be used instead.
 
 There have been a number of changes to the `LegendConfig` type: the
-`GradientLabelBaseline`, `EntryPadding`, and `SymbolColor`
-constructors have been removed; and the `Orient` constructor has been
-renamed to `LeOrient` (as `Orient` has been added to `AxisConfig`).
-
-The `GradientHeight` and `GradientWidth` constructors have been
-removed from the `LegendConfig` type.
+`EntryPadding`, `GradientHeight`, `GradientLabelBaseline`,
+`GradientWIdth`, and `SymbolColor` constructors have been removed;
+the renaming constructors have been renamed so they all begin with
+`Le` (e.g. `Orient` is now `LeOrient`, and `Orient` has been added
+to `AxisConfig`); and new constructors have been added.
 
 The `StackProperty` type has been renamed to `StackOffset` and its
 constructors have changed, and a new `StackProperty`

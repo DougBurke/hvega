@@ -883,12 +883,11 @@ import Data.Monoid ((<>))
 -- 'TitleLimit' constructors should be used instead.
 --
 -- There have been a number of changes to the 'LegendConfig' type: the
--- @GradientLabelBaseline@, @EntryPadding@, and @SymbolColor@
--- constructors have been removed; and the @Orient@ constructor has been
--- renamed to 'LeOrient' (as 'Orient' has been added to 'AxisConfig').
---
--- The @GradientHeight@ and @GradientWidth@ constructors have been
--- removed from 'LegendConfig'.
+-- @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
+-- @GradientWidth@, and @SymbolColor@ constructors have been removed;
+-- the renaming constructors have been renamed so they all begin with
+-- @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
+-- to 'AxisConfig'); and new constructors have been added.
 --
 -- The @StackProperty@ type has been renamed to 'StackOffset' and its
 -- constructors have changed, and a new 'StackProperty'
@@ -4165,34 +4164,34 @@ legendLabel Symbol = "symbol"
 Legend configuration options. For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
-The @LeOrient@ constructor was called @Orient@ prior to the @0.4.0.0@ release.
+This data type has seen significant changes in the @0.4.0.0@ release:
 
-The @EntryPadding@, @GradientLabelBaseline@, and @SymbolColor@ constructors
-were removed in the @0.4.0.0@ release.
+- the @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@, @GradientWidth@
+  and @SymbolColor@ constructors were removed;
 
-The @GradientHeight@ and @GradientWidth@ constructors were removed in the @0.4.0.0@
-release.
+- the constructors were removed;
+
+- the remaining constructors that did not begin with @Le@ were renamed (for
+  example @Orient@ was changed to 'LeOrient');
+
+- and new constructors were added.
 
 -}
 
 data LegendConfig
-    = CornerRadius Double
-    | FillColor T.Text
+    = LeCornerRadius Double
+    | LeFillColor T.Text
     | LeOrient LegendOrientation
       -- ^ The orientation of the legend.
-      --
-      --   This was renamed from @Orient@ in the 0.4.0.0 release.
-      --
-      --   @since 0.4.0.0
-    | Offset Double
-    | StrokeColor T.Text
+    | LeOffset Double
+    | LeStrokeColor T.Text
     | LeStrokeDash [Double]
     | LeStrokeWidth Double
     | LePadding Double
-    | GradientLabelLimit Double
-    | GradientLabelOffset Double
-    | GradientStrokeColor T.Text
-    | GradientStrokeWidth Double
+    | LeGradientLabelLimit Double
+    | LeGradientLabelOffset Double
+    | LeGradientStrokeColor T.Text
+    | LeGradientStrokeWidth Double
     | LeGridAlign CompositionAlignment
       -- ^ @since 0.4.0.0
     | LeLabelAlign HAlign
@@ -4203,9 +4202,9 @@ data LegendConfig
     | LeLabelLimit Double
     | LeLabelOffset Double
     | LeShortTimeLabels Bool
-    | SymbolType Symbol
-    | SymbolSize Double
-    | SymbolStrokeWidth Double
+    | LeSymbolType Symbol
+    | LeSymbolSize Double
+    | LeSymbolStrokeWidth Double
     | LeTitleAlign HAlign
     | LeTitleBaseline VAlign
     | LeTitleColor T.Text
@@ -4217,18 +4216,18 @@ data LegendConfig
 
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
-legendConfigProperty (CornerRadius r) = "cornerRadius" .= r
-legendConfigProperty (FillColor s) = "fillColor" .= s
+legendConfigProperty (LeCornerRadius r) = "cornerRadius" .= r
+legendConfigProperty (LeFillColor s) = "fillColor" .= s
 legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
-legendConfigProperty (Offset x) = "offset" .= x
-legendConfigProperty (StrokeColor s) = "strokeColor" .= s
+legendConfigProperty (LeOffset x) = "offset" .= x
+legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
 legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= map toJSON xs
 legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
 legendConfigProperty (LePadding x) = "padding" .= x
-legendConfigProperty (GradientLabelLimit x) = "gradientLabelLimit" .= x
-legendConfigProperty (GradientLabelOffset x) = "gradientLabelOffset" .= x
-legendConfigProperty (GradientStrokeColor s) = "gradientStrokeColor" .= s
-legendConfigProperty (GradientStrokeWidth x) = "gradientStrokeWidth" .= x
+legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
+legendConfigProperty (LeGradientLabelOffset x) = "gradientLabelOffset" .= x
+legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= s
+legendConfigProperty (LeGradientStrokeWidth x) = "gradientStrokeWidth" .= x
 legendConfigProperty (LeGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
@@ -4238,9 +4237,9 @@ legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
 legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
 legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
 legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
-legendConfigProperty (SymbolType s) = "symbolType" .= symbolLabel s
-legendConfigProperty (SymbolSize x) = "symbolSize" .= x
-legendConfigProperty (SymbolStrokeWidth x) = "symbolStrokeWidth" .= x
+legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
+legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
+legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
 legendConfigProperty (LeTitleColor s) = "titleColor" .= s
