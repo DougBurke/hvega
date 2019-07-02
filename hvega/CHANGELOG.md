@@ -45,8 +45,13 @@ removed (from `AxisProperty` and `AxisConfig` respectively) as they
 are invalid. The `AxTitleLimit` (new in this release) and
 `TitleLimit` constructors should be used instead.
 
-The `Orient` constructor in `LegendConfig` has been renamed to
-`LeOrient` (as `Orient` has been added to `AxisConfig`).
+There have been a number of changes to the `LegendConfig` type: the
+`GradientLabelBaseline`, `EntryPadding`, and `SymbolColor`
+constructors have been removed; and the `Orient` constructor has been
+renamed to `LeOrient` (as `Orient` has been added to `AxisConfig`).
+
+The `GradientHeight` and `GradientWidth` constructors have been
+removed from the `LegendConfig` type.
 
 The `StackProperty` type has been renamed to `StackOffset` and its
 constructors have changed, and a new `StackProperty`
