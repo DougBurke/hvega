@@ -4484,30 +4484,35 @@ legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 Indicates the legend orientation. See the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>
 for more details.
+
 -}
 
--- TODO: Is this based on schema 3.3.0 #/definitions/LegendLayout ?
---
---       If so missing a number of options
+-- based on schema 3.3.0 #/definitions/LegendOrient
 
 data LegendOrientation
-    = LOBottomLeft
-    | LOBottomRight
-    | LOLeft
-    | LONone
-    | LORight
-    | LOTopLeft
-    | LOTopRight
+  = LONone
+  | LOLeft
+  | LORight
+  | LOTop
+  -- ^ @since 0.4.0.0
+  | LOBottom
+  -- ^ @since 0.4.0.0
+  | LOTopLeft
+  | LOTopRight
+  | LOBottomLeft
+  | LOBottomRight
 
 
 legendOrientLabel :: LegendOrientation -> T.Text
+legendOrientLabel LONone = "none"
 legendOrientLabel LOLeft = "left"
-legendOrientLabel LOBottomLeft = "bottom-left"
-legendOrientLabel LOBottomRight = "bottom-right"
 legendOrientLabel LORight = "right"
+legendOrientLabel LOTop = "top"
+legendOrientLabel LOBottom = "bottom"
 legendOrientLabel LOTopLeft = "top-left"
 legendOrientLabel LOTopRight = "top-right"
-legendOrientLabel LONone = "none"
+legendOrientLabel LOBottomLeft = "bottom-left"
+legendOrientLabel LOBottomRight = "bottom-right"
 
 
 {-|
