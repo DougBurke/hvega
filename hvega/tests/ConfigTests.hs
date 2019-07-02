@@ -6,6 +6,10 @@
 --  - Padding has been removed as the resulting spec does not validate
 --    against v3.3.0
 --
+--  - the vbTest output is not valid since the spec description says that
+--    style can be a string or array-of-strings, but the type is only
+--    string.
+--
 
 module ConfigTests (testSpecs) where
 
@@ -177,14 +181,13 @@ defaultCfg =
     configure
         & compositeVis
 
-{- TODO: add LeSymbolFillColor -}
 darkCfg :: VegaLite
 darkCfg =
     configure
         . configuration (Background "black")
         . configuration (TitleStyle [ TFont "Roboto", TColor "#fff" ])
         . configuration (Axis [ DomainColor "yellow", GridColor "rgb(255,255,200)", GridOpacity 0.2, LabelColor "#fcf", TickColor "white", TitleColor "rgb(200,255,200)", LabelFont "Roboto", TitleFont "Roboto" ])
-        . configuration (Legend [ LeFillColor "#333", LeStrokeColor "#444", LeTitleColor "rgb(200,200,200)", LeLabelColor "white", {- LeSymbolFillColor "red", -} LeGradientStrokeColor "yellow", LeLabelFont "Roboto", LeTitleFont "Roboto" ])
+        . configuration (Legend [ LeFillColor "#333", LeStrokeColor "#444", LeTitleColor "rgb(200,200,200)", LeLabelColor "white", LeSymbolFillColor "red", LeGradientStrokeColor "yellow", LeLabelFont "Roboto", LeTitleFont "Roboto" ])
         & compositeVis
 
 

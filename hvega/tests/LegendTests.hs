@@ -108,15 +108,12 @@ legend10 =
     in
     toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
 
--- TODO: add LeSymbolStrokeColor and LeRowPadding
 legend11 :: VegaLite
 legend11 =
     legendCoreCfg
         [ LeSymbolStrokeWidth 3
-        {-
         , LeSymbolStrokeColor "black"
         , LeRowPadding 15
-        -}
         , LeTitlePadding 20
         , LeStrokeColor "lightgrey"
         , LeStrokeWidth 5

@@ -92,6 +92,7 @@
             "fillColor": "#333",
             "labelColor": "white",
             "titleFont": "Roboto",
+            "symbolFillColor": "red",
             "titleColor": "rgb(200,200,200)",
             "labelFont": "Roboto",
             "strokeColor": "#444"

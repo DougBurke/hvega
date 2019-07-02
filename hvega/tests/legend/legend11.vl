@@ -2,7 +2,9 @@
     "height": 300,
     "config": {
         "legend": {
+            "symbolStrokeColor": "black",
             "strokeWidth": 5,
+            "rowPadding": 15,
             "titlePadding": 20,
             "symbolStrokeWidth": 3,
             "strokeDash": [
