@@ -505,6 +505,8 @@ module Graphics.Vega.VegaLite
          --
 
        , LegendConfig(..)
+       , LegendLayout(..)
+       , BaseLegendLayout(..)
 
          -- ** Scale Configuration Options
          --
@@ -3981,6 +3983,8 @@ oriented bars).
 
 -}
 
+-- TODO: rename Orientation?
+
 data MarkOrientation
     = Horizontal
     | Vertical
@@ -4284,12 +4288,10 @@ data LegendConfig
       --   chosen overlap strategy).
       --
       --   @since 0.4.0.0
-{- TODO work out LegendLayout
-    | LeLayout LegendLayout
+    | LeLayout [LegendLayout]
       -- ^ Layout parameters for the legend orient group.
       --
       --   @since 0.4.0.0
--}
      | LeLeX Double
       -- ^ Custom x position for a legend with orientation 'LONone'.
       --
@@ -4438,9 +4440,7 @@ legendConfigProperty (LeLabelOpacity x) = "labelOapcity" .= x
 legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
 legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
 legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
-{-
-legendConfigProperty (LeLayout ll) = "layout" .= ? legendLayoutLabel ll
--}
+legendConfigProperty (LeLayout ll) = "layout" .= object (map legendLayoutSpec ll)
 legendConfigProperty (LeLeX x) = "legendX" .= x
 legendConfigProperty (LeLeY x) = "legendY" .= x
 legendConfigProperty (LeOffset x) = "offset" .= x
@@ -4513,6 +4513,95 @@ legendOrientLabel LOTopLeft = "top-left"
 legendOrientLabel LOTopRight = "top-right"
 legendOrientLabel LOBottomLeft = "bottom-left"
 legendOrientLabel LOBottomRight = "bottom-right"
+
+
+{- |
+
+/Highly experimental/
+
+@since 0.4.0.0
+
+-}
+
+-- based on schema 3.3.0 #/definitions/LegendLayout
+
+-- TODO: support SignalRef?
+
+data LegendLayout
+  = LeLAnchor APosition
+    -- ^ The anchor point for legend orient group layout.
+  | LeLBottom [BaseLegendLayout]
+  | LeLBottomLeft [BaseLegendLayout]
+  | LeLBottomRight [BaseLegendLayout]
+  | LeLBounds Bounds
+    -- ^ The bounds calculation to ude for legend orient group layout.
+  | LeLCenter Bool
+    -- ^ A flag to center legends within a shared orient group.
+  | LeLDirection MarkOrientation
+    -- ^ The layout firection for legend orient group layout.
+  | LeLLeft [BaseLegendLayout]
+  | LeLMargin Double
+    -- ^ The margin, in pixels, between legends within an orient group.
+  | LeLOffset Double
+    -- ^ The offset, in pixels, from the chart body for a legend orient group.
+  | LeLRight [BaseLegendLayout]
+  | LeLTop [BaseLegendLayout]
+  | LeLTopLeft [BaseLegendLayout]
+  | LeLTopRight [BaseLegendLayout]
+
+
+legendLayoutSpec :: LegendLayout -> LabelledSpec
+legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
+legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
+legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
+legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
+legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
+legendLayoutSpec (LeLCenter b) = "center" .= b
+legendLayoutSpec (LeLDirection mo) = "direction" .= markOrientationLabel mo
+legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
+legendLayoutSpec (LeLMargin x) = "margin" .= x
+legendLayoutSpec (LeLOffset x) = "offset" .= x
+legendLayoutSpec (LeLRight bl) = "right" .= toBLSpec bl
+legendLayoutSpec (LeLTop bl) = "top" .= toBLSpec bl
+legendLayoutSpec (LeLTopLeft bl) = "top-left" .= toBLSpec bl
+legendLayoutSpec (LeLTopRight bl) = "top-right" .= toBLSpec bl
+
+
+toBLSpec :: [BaseLegendLayout] -> VLSpec
+toBLSpec = object . map baseLegendLayoutSpec
+
+{- |
+
+/Highly experimental/
+
+@since 0.4.0.0
+
+-}
+
+-- based on schema 3.3.0 #/definitions/BaseLegendLayout
+
+data BaseLegendLayout
+  = BLeLAnchor APosition
+    -- ^ The anchor point for legend orient group layout.
+  | BLeLBounds Bounds
+    -- ^ The bounds calculation to use for legend orient group layout.
+  | BLeLCenter Bool
+    -- ^ A flag to center legends within a shared orient group.
+  | BLeLDirection MarkOrientation
+    -- ^ The layout direction for legend orient group layout.
+  | BLeLMargin Double
+    -- ^ The margin, in pixels, between legends within an orient group.
+  | BLeLOffset Double
+    -- ^ The offset, in pixels, from the chart body for a legend orient group.
+
+
+baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
+baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
+baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
+baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
+baseLegendLayoutSpec (BLeLDirection mo) = "direction" .= markOrientationLabel mo
+baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
+baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 
 {-|
@@ -7035,6 +7124,7 @@ data Bounds
     -- ^ Bounds calculation should take only the specified width and height values for
     --   a sub-view. Useful when attempting to place sub-plots without axes or legends into
     --   a uniform grid structure.
+
 
 boundsSpec :: Bounds -> VLSpec
 boundsSpec Full = "full"
