@@ -249,7 +249,7 @@ module Graphics.Vega.VegaLite
 
          -- *** Used by Mark Properties
 
-       , MarkOrientation(..)
+       , Orientation(..)
        , MarkInterpolation(..)
        , Symbol(..)
        , PointMarker(..)
@@ -556,9 +556,14 @@ module Graphics.Vega.VegaLite
        , DayName(..)
        , TimeUnit(..)
 
-         -- * Breaking changes
+         -- * Update notes
          --
-         -- $breaking
+         -- $update
+
+         -- ** Version 0.4
+         --
+         -- $update0400
+
         )
     where
 
@@ -868,42 +873,48 @@ import Data.Monoid ((<>))
 -- [Vega-Lite dateTime documentation](https://vega.github.io/vega-lite/docs/types.html#datetime)
 -- and the [Vega-Lite time unit documentation](https://vega.github.io/vega-lite/docs/timeunit.html).
 
--- $breaking
+-- $update
+-- The following section describes how to update code that used
+-- an older version of @hvega@.
+
+-- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
--- constructors. It also removed and renamed the following symbols:
+-- constructors. It also removed or renamed the following symbols:
 --
--- The @SReverse@ construtor was removed from 'ScaleProperty' as it
--- represented a Vega, rather than Vega-Lite, property. The 'PSort'
--- constructor is used to change the order of an axis.
+-- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
+--   represented a Vega, rather than Vega-Lite, property. The 'PSort'
+--   constructor is used to change the order of an axis.
 --
--- The @ScSequential@ constructor was removed from @Scale@ as
--- @ScLinear@ should be used.
+-- * The @ScSequential@ constructor was removed from 'Scale' as
+--   'ScLinear' should be used.
 --
--- The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
--- removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
--- are invalid. The 'AxTitleLimit' (new in this release) and
--- 'TitleLimit' constructors should be used instead.
+-- * The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
+--   removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
+--   are invalid. The 'AxTitleLimit' (new in this release) and
+--   'TitleLimit' constructors should be used instead.
 --
--- There have been a number of changes to the 'LegendConfig' type: the
--- @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
--- @GradientWidth@, and @SymbolColor@ constructors have been removed;
--- the renaming constructors have been renamed so they all begin with
--- @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
--- to 'AxisConfig'); and new constructors have been added.
+-- * There have been significant changes to the 'LegendConfig' type: the
+--   @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
+--   @GradientWidth@, and @SymbolColor@ constructors have been removed;
+--   the renaming constructors have been renamed so they all begin with
+--   @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
+--   to 'AxisConfig'); and new constructors have been added.
 --
--- The @StackProperty@ type has been renamed to 'StackOffset' and its
--- constructors have changed, and a new 'StackProperty'
--- type has been added (that references the 'StackOffset' type).
+-- * The @StackProperty@ type has been renamed to 'StackOffset' and its
+--   constructors have changed, and a new 'StackProperty'
+--   type has been added (that references the 'StackOffset' type).
 --
--- The @Average@ constructor of 'Operation' was removed, and 'Mean'
--- should be used instead.
+-- * The @Average@ constructor of 'Operation' was removed, and 'Mean'
+--   should be used instead.
 --
--- The @LEntryPadding@ constructor of 'LegendProperty' was removed.
+-- * The @LEntryPadding@ constructor of 'LegendProperty' was removed.
 --
--- The arguments to the `MDataCondition`, `TDataCondition`, and
--- `HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
--- and `HyperlinkChannel` respectively) have changed to support
--- accepting multiple expressions.
+-- * The arguments to the `MDataCondition`, `TDataCondition`, and
+--   `HDataCondition` constructors - of `MarkChannel`, `TextChannel`,
+--   and `HyperlinkChannel` respectively - have changed to support
+--   accepting multiple expressions.
+--
+-- * The @MarkOrientation@ type has been renamed 'Orientation'.
 
 --- helpers not in VegaLite.elm
 
@@ -2173,7 +2184,7 @@ data MarkProperty
       --   @False@, the original data order is used.
       --
       --   @since 0.4.0.0
-    | MOrient MarkOrientation
+    | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the boxplot mark.
@@ -2300,7 +2311,7 @@ markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel int
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
+markProperty (MOrient orient) = "orient" .= orientationSpec orient
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
@@ -3978,21 +3989,25 @@ markInterpolationLabel Monotone = "monotone"
 
 {-|
 
-Indicates desired orientation of a mark (e.g. horizontally or vertically
-oriented bars).
+The orientation of an item.
+
+In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.
 
 -}
 
--- TODO: rename Orientation?
+-- based on schema 3.3.0 #/definitions/Orientation
 
-data MarkOrientation
+data Orientation
     = Horizontal
+      -- ^ Display horizontally.
     | Vertical
+      -- ^ Display vertically.
 
 
-markOrientationLabel :: MarkOrientation -> T.Text
-markOrientationLabel Horizontal = "horizontal"
-markOrientationLabel Vertical = "vertical"
+orientationSpec :: Orientation -> VLSpec
+orientationSpec Horizontal = "horizontal"
+orientationSpec Vertical = "vertical"
+
 
 {-|
 
@@ -4203,7 +4218,7 @@ data LegendConfig
       -- ^ The corner radius for the full legend.
     | LeFillColor T.Text
       -- ^ The background fill color for the full legend.
-    | LeGradientDirection MarkOrientation
+    | LeGradientDirection Orientation
       -- ^ The default direction for gradient legends.
       --
       --   @since 0.4.0.0
@@ -4340,7 +4355,7 @@ data LegendConfig
       --   in pixels.
       --
       --   @since 0.4.0.0
-    | LeSymbolDirection MarkOrientation
+    | LeSymbolDirection Orientation
       -- ^ The default direction for symbol legends.
       --
       --   @since 0.4.0.0
@@ -4414,7 +4429,7 @@ legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
 legendConfigProperty (LeFillColor s) = "fillColor" .= s
-legendConfigProperty (LeGradientDirection mo) = "gradientDirection" .= markOrientationLabel mo
+legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
 legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
 legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
@@ -4455,7 +4470,7 @@ legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
 legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
 legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
-legendConfigProperty (LeSymbolDirection mo) = "symbolDirection" .= markOrientationLabel mo
+legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
 legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
 legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
 legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
@@ -4537,7 +4552,7 @@ data LegendLayout
     -- ^ The bounds calculation to ude for legend orient group layout.
   | LeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
-  | LeLDirection MarkOrientation
+  | LeLDirection Orientation
     -- ^ The layout firection for legend orient group layout.
   | LeLLeft [BaseLegendLayout]
   | LeLMargin Double
@@ -4557,7 +4572,7 @@ legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
 legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
 legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
 legendLayoutSpec (LeLCenter b) = "center" .= b
-legendLayoutSpec (LeLDirection mo) = "direction" .= markOrientationLabel mo
+legendLayoutSpec (LeLDirection o) = "direction" .= orientationSpec o
 legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
 legendLayoutSpec (LeLMargin x) = "margin" .= x
 legendLayoutSpec (LeLOffset x) = "offset" .= x
@@ -4587,7 +4602,7 @@ data BaseLegendLayout
     -- ^ The bounds calculation to use for legend orient group layout.
   | BLeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
-  | BLeLDirection MarkOrientation
+  | BLeLDirection Orientation
     -- ^ The layout direction for legend orient group layout.
   | BLeLMargin Double
     -- ^ The margin, in pixels, between legends within an orient group.
@@ -4599,7 +4614,7 @@ baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
 baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
 baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
 baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
-baseLegendLayoutSpec (BLeLDirection mo) = "direction" .= markOrientationLabel mo
+baseLegendLayoutSpec (BLeLDirection o) = "direction" .= orientationSpec o
 baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
 baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
@@ -4631,7 +4646,7 @@ data LegendProperty
       -- ^ The corner radius for the full legend.
       --
       --   @since 0.4.0.0
-    | LDirection MarkOrientation
+    | LDirection Orientation
       -- ^ The direction of the legend.
       --
       --   @since 0.4.0.0
@@ -4821,7 +4836,7 @@ legendProperty (LClipHeight x) = "clipHeight" .= x
 legendProperty (LColumnPadding x) = "columnPadding" .= x
 legendProperty (LColumns n) = "columns" .= n
 legendProperty (LCornerRadius x) = "cornerRadius" .= x
-legendProperty (LDirection mo) = "direction" .= markOrientationLabel mo
+legendProperty (LDirection o) = "direction" .= orientationSpec o
 legendProperty (LFillColor s) = "fillColor" .= s
 legendProperty (LFormat s) = "format" .= s
 legendProperty LFormatAsNum = "formatType" .= fromT "number"
