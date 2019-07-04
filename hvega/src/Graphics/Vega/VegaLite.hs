@@ -21,9 +21,9 @@ visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
 Although this is based on the Elm module, there are differences, such as using
-type constructors rather than functions for many properties (e.g. @PName \"HorsePower\"
-rather than @pName \"HorsePower\"@), and the return value of 'toVegaLite'.
-than this is). The intention is to keep close to the Elm module, but it is more
+type constructors rather than functions for many properties - such as
+@PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ - and the return
+value of 'toVegaLite'. The intention is to keep close to the Elm module, but it is more
 a guide than an absolute requirement!
 
 Note that this module exports several symbols that are exported
@@ -38,7 +38,7 @@ import qualified Graphics.Vega.VegaLite as VL
 or to hide the clashing names explicitly:
 
 @
-import Prelude hiding (filter, lookup)
+import Prelude hiding (filter, lookup, repeat)
 @
 
 In the following example, we'll assume the latter.
@@ -50,19 +50,21 @@ Let's say we have the following plot declaration in a module:
 @
 \{\-\# language OverloadedStrings \#\-\}
 
-vl1 = 'toVegaLite' ['description' desc, 'background' "white", dat [], 'mark' 'Bar' barOpts, enc []] where
-    desc = "A very exciting bar chart"
+vl1 =
+  let desc = "A very exciting bar chart"
 
-    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
-          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
-          . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
-          . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
+      dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
+            . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
+            . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
+            . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
 
-    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
+      barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
 
-    enc = 'encoding'
-          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
-          . position Y [PName "count", PmType Quantitative]
+      enc = 'encoding'
+            . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
+            . position Y [PName "count", PmType Quantitative]
+
+  in 'toVegaLite' ['description' desc, 'background' "white", dat [], 'mark' 'Bar' barOpts, enc []]
 @
 
 We can inspect how the encoded JSON looks like in an GHCi session:
@@ -1024,7 +1026,7 @@ newtype VegaLite =
   -- field).
   }
 
--- | The specification is represented as JSON.
+-- | The Vega-Lite specification is represented as JSON.
 type VLSpec = Value
 
 vlSchemaName :: T.Text
@@ -1133,7 +1135,7 @@ the exception of the data specification which is usually defined outside of any 
 layer. Whereas for repeated and faceted specs, the entire specification is provided.
 
 @
-spec1 = asSpec [ enc1 [], mark Line [] ]
+spec1 = asSpec [ enc1 [], `mark` `Line` [] ]
 @
 -}
 asSpec :: [(VLProperty, VLSpec)] -> VLSpec
@@ -1424,7 +1426,7 @@ type DataRow = VLSpec
 
 {-|
 
-Convenience type annotation label for use with data generation functions.
+Convenience type-annotation label for use with data generation functions.
 
 @
 myRegion : ['DataColumn'] -> Data
@@ -1876,7 +1878,7 @@ data Mark
       -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
       --   for showing summaries of variation along a signal. By default
       --   no ticks are drawn. To add ticks with default properties use
-      --   @'MTicks []@.
+      --   @`MTicks` []@.
       --
       --   @since 0.4.0.0
     | ErrorBand
@@ -1888,7 +1890,7 @@ data Mark
       --   @since 0.4.0.0
     | Geoshape
       -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
-      -- determined by geographically referenced coordinates.
+      --   determined by geographically referenced coordinates.
     | Line
       -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
       --   for symbolising a sequence of values.
@@ -1907,8 +1909,8 @@ data Mark
       -- ^ [Text mark](https://vega.github.io/vega-lite/docs/text.html)
       --   to be displayed at some point location.
     | Tick
-      -- ^ Short line ([tick](https://vega.github.io/vega-lite/docs/tick.html))
-      -- mark for symbolising point locations.
+      -- ^ Short line - [tick](https://vega.github.io/vega-lite/docs/tick.html) -
+      --   mark for symbolising point locations.
     | Trail
       -- ^ [Trail mark](https://vega.github.io/vega-lite/docs/trail.html)
       --   (line with variable width along its length).
@@ -2213,10 +2215,10 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MStrokeDash [Double]
-      -- ^ Stroke dash style used by a mark. Determined by an alternating 'on-off'
+      -- ^ The stroke dash style used by a mark, defined by an alternating 'on-off'
       --   sequence of line lengths, in pixels.
     | MStrokeDashOffset Double
-      -- ^ Number of pixels before the first line dash is drawn.
+      -- ^ The number of pixels before the first line dash is drawn.
     | MStrokeJoin StrokeJoin
       -- ^ Line segment join style of a mark's stroke.
       --
@@ -3095,7 +3097,7 @@ data PositionChannel
       --      . 'position' 'X' [ PWidth ]
       -- @
       --
-      -- ^ @since 0.4.0.0
+      --   @since 0.4.0.0
     | PNumber Double
       -- ^ Set a position to an arbitrary value. Useful for placing items at the top of
       --   a plot area (@PNumber 0@) or a fixed number of pixels from the top.
@@ -5535,6 +5537,16 @@ property is an optional CSS selector indicating the parent element to which the
 input element should be added. This allows the option of the input element to be
 outside the visualization container.
 -}
+
+-- based on schema 3.3.0 #/definitions/BindRange
+--       or              #/definitions/InputBinding
+
+-- placeholder is in InputBinding
+-- debounce is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
+-- element is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
+
+-- but InputBinding doesn't have min/max/others
+
 data InputProperty
     = Debounce Double
     | Element T.Text
@@ -5547,14 +5559,14 @@ data InputProperty
 
 
 inputProperty :: InputProperty -> LabelledSpec
+inputProperty (Debounce x) = "debounce" .= x
+inputProperty (Element el) = "element" .= el -- #/definitions/Element
+inputProperty (InOptions opts) = "options" .= map toJSON opts
 inputProperty (InMin x) = "min" .= x
 inputProperty (InMax x) = "max" .= x
-inputProperty (InStep x) = "step" .= x
-inputProperty (Debounce x) = "debounce" .= x
 inputProperty (InName s) = "name" .= s
-inputProperty (InOptions opts) = "options" .= map toJSON opts
+inputProperty (InStep x) = "step" .= x
 inputProperty (InPlaceholder el) = "placeholder" .= toJSON el
-inputProperty (Element el) = "element" .= toJSON el
 
 
 {-|
@@ -5744,19 +5756,43 @@ view within a visualization such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/ViewConfig
+
 data ViewConfig
     = ViewWidth Double
+      -- ^ The default width of the single plot or each plot in a trellis plot when the
+      --   visualization has a continuous (non-ordinal) scale or when the
+      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (x axis).
     | ViewHeight Double
+      -- ^ The default height of the single plot or each plot in a trellis plot when the
+      --   visualization has a continuous (non-ordinal) scale or when the
+      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
     | Clip Bool
+      -- ^ Should the view be clipped?
     | Fill (Maybe T.Text)
+      -- ^ The fill color.
     | FillOpacity Double
+      -- ^ The fill opacity.
     | Stroke (Maybe T.Text)
+      -- ^ The stroke color.
     | StrokeOpacity Double
+      -- ^ The stroke opacity.
     | StrokeWidth Double
-    | StrokeCap StrokeCap          -- ^ @since 0.4.0.0
+      -- ^ The stroke width, in pixels.
+    | StrokeCap StrokeCap
+      -- ^ The stroke cap for line-ending style.
+      --
+      --   @since 0.4.0.0
     | StrokeDash [Double]
+      -- ^ The stroke dash style. It is defined by an alternating 'on-off'
+      --   sequence of line lengths, in pixels.
     | StrokeDashOffset Double
-    | StrokeJoin StrokeJoin        -- ^ @since 0.4.0.0
+      -- ^ Number of pixels before the first line dash is drawn.
+    | StrokeJoin StrokeJoin
+      -- ^ The stroke line-join method.
+      --
+      --   @since 0.4.0.0
 
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
@@ -6865,7 +6901,7 @@ facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 {-|
 
 See the
-[Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+<https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
 
 @since 0.4.0.0
 
