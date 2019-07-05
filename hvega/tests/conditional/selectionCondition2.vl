@@ -1,0 +1,51 @@
+{
+    "mark": {
+        "cursor": "grab",
+        "type": "rect"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "selection": {
+        "alex": {
+            "type": "interval",
+            "translate": "[mousedown[!event.shiftKey], mouseup] > mousemove",
+            "on": "[mousedown[!event.shiftKey], mouseup] > mousemove"
+        },
+        "morgan": {
+            "mark": {
+                "stroke": "#e34a33",
+                "fill": "#fdbb84",
+                "fillOpacity": 0.5
+            },
+            "type": "interval",
+            "translate": "[mousedown[event.shiftKey], mouseup] > mousemove",
+            "on": "[mousedown[event.shiftKey], mouseup] > mousemove"
+        }
+    },
+    "encoding": {
+        "color": {
+            "value": "gray",
+            "condition": {
+                "field": "*",
+                "aggregate": "count",
+                "selection": {
+                    "and": [
+                        "alex",
+                        "morgan"
+                    ]
+                },
+                "type": "quantitative"
+            }
+        },
+        "x": {
+            "field": "Cylinders",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "Origin",
+            "type": "ordinal"
+        }
+    }
+}

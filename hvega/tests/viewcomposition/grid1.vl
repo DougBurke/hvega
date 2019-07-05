@@ -1,0 +1,407 @@
+{
+    "config": {
+        "view": {
+            "height": 120,
+            "stroke": ""
+        }
+    },
+    "data": {
+        "values": [
+            {
+                "cat": 1,
+                "row": 1,
+                "col": 1,
+                "val": 30
+            },
+            {
+                "cat": 2,
+                "row": 1,
+                "col": 1,
+                "val": 15
+            },
+            {
+                "cat": 3,
+                "row": 1,
+                "col": 1,
+                "val": 12
+            },
+            {
+                "cat": 1,
+                "row": 1,
+                "col": 2,
+                "val": 25
+            },
+            {
+                "cat": 2,
+                "row": 1,
+                "col": 2,
+                "val": 30
+            },
+            {
+                "cat": 3,
+                "row": 1,
+                "col": 2,
+                "val": 25
+            },
+            {
+                "cat": 1,
+                "row": 1,
+                "col": 3,
+                "val": 10
+            },
+            {
+                "cat": 2,
+                "row": 1,
+                "col": 3,
+                "val": 28
+            },
+            {
+                "cat": 3,
+                "row": 1,
+                "col": 3,
+                "val": 11
+            },
+            {
+                "cat": 1,
+                "row": 1,
+                "col": 4,
+                "val": 18
+            },
+            {
+                "cat": 2,
+                "row": 1,
+                "col": 4,
+                "val": 24
+            },
+            {
+                "cat": 3,
+                "row": 1,
+                "col": 4,
+                "val": 16
+            },
+            {
+                "cat": 1,
+                "row": 1,
+                "col": 5,
+                "val": 10
+            },
+            {
+                "cat": 2,
+                "row": 1,
+                "col": 5,
+                "val": 10
+            },
+            {
+                "cat": 3,
+                "row": 1,
+                "col": 5,
+                "val": 10
+            },
+            {
+                "cat": 1,
+                "row": 2,
+                "col": 1,
+                "val": 8
+            },
+            {
+                "cat": 2,
+                "row": 2,
+                "col": 1,
+                "val": 8
+            },
+            {
+                "cat": 3,
+                "row": 2,
+                "col": 1,
+                "val": 29
+            },
+            {
+                "cat": 1,
+                "row": 2,
+                "col": 2,
+                "val": 11
+            },
+            {
+                "cat": 2,
+                "row": 2,
+                "col": 2,
+                "val": 24
+            },
+            {
+                "cat": 3,
+                "row": 2,
+                "col": 2,
+                "val": 12
+            },
+            {
+                "cat": 1,
+                "row": 2,
+                "col": 3,
+                "val": 26
+            },
+            {
+                "cat": 2,
+                "row": 2,
+                "col": 3,
+                "val": 32
+            },
+            {
+                "cat": 3,
+                "row": 2,
+                "col": 3,
+                "val": 9
+            },
+            {
+                "cat": 1,
+                "row": 2,
+                "col": 4,
+                "val": 8
+            },
+            {
+                "cat": 2,
+                "row": 2,
+                "col": 4,
+                "val": 18
+            },
+            {
+                "cat": 3,
+                "row": 2,
+                "col": 4,
+                "val": 28
+            },
+            {
+                "cat": 1,
+                "row": 2,
+                "col": 5,
+                "val": 8
+            },
+            {
+                "cat": 2,
+                "row": 2,
+                "col": 5,
+                "val": 20
+            },
+            {
+                "cat": 3,
+                "row": 2,
+                "col": 5,
+                "val": 24
+            },
+            {
+                "cat": 1,
+                "row": 3,
+                "col": 1,
+                "val": 21
+            },
+            {
+                "cat": 2,
+                "row": 3,
+                "col": 1,
+                "val": 15
+            },
+            {
+                "cat": 3,
+                "row": 3,
+                "col": 1,
+                "val": 20
+            },
+            {
+                "cat": 1,
+                "row": 3,
+                "col": 2,
+                "val": 4
+            },
+            {
+                "cat": 2,
+                "row": 3,
+                "col": 2,
+                "val": 13
+            },
+            {
+                "cat": 3,
+                "row": 3,
+                "col": 2,
+                "val": 12
+            },
+            {
+                "cat": 1,
+                "row": 3,
+                "col": 3,
+                "val": 27
+            },
+            {
+                "cat": 2,
+                "row": 3,
+                "col": 3,
+                "val": 21
+            },
+            {
+                "cat": 3,
+                "row": 3,
+                "col": 3,
+                "val": 14
+            },
+            {
+                "cat": 1,
+                "row": 3,
+                "col": 4,
+                "val": 5
+            },
+            {
+                "cat": 2,
+                "row": 3,
+                "col": 4,
+                "val": 1
+            },
+            {
+                "cat": 3,
+                "row": 3,
+                "col": 4,
+                "val": 2
+            },
+            {
+                "cat": 1,
+                "row": 3,
+                "col": 5,
+                "val": 11
+            },
+            {
+                "cat": 2,
+                "row": 3,
+                "col": 5,
+                "val": 2
+            },
+            {
+                "cat": 3,
+                "row": 3,
+                "col": 5,
+                "val": 5
+            },
+            {
+                "cat": 1,
+                "row": 4,
+                "col": 1,
+                "val": 14
+            },
+            {
+                "cat": 2,
+                "row": 4,
+                "col": 1,
+                "val": 20
+            },
+            {
+                "cat": 3,
+                "row": 4,
+                "col": 1,
+                "val": 24
+            },
+            {
+                "cat": 1,
+                "row": 4,
+                "col": 2,
+                "val": 20
+            },
+            {
+                "cat": 2,
+                "row": 4,
+                "col": 2,
+                "val": 2
+            },
+            {
+                "cat": 3,
+                "row": 4,
+                "col": 2,
+                "val": 9
+            },
+            {
+                "cat": 1,
+                "row": 4,
+                "col": 3,
+                "val": 15
+            },
+            {
+                "cat": 2,
+                "row": 4,
+                "col": 3,
+                "val": 14
+            },
+            {
+                "cat": 3,
+                "row": 4,
+                "col": 3,
+                "val": 13
+            },
+            {
+                "cat": 1,
+                "row": 4,
+                "col": 4,
+                "val": 22
+            },
+            {
+                "cat": 2,
+                "row": 4,
+                "col": 4,
+                "val": 30
+            },
+            {
+                "cat": 3,
+                "row": 4,
+                "col": 4,
+                "val": 30
+            },
+            {
+                "cat": 1,
+                "row": 4,
+                "col": 5,
+                "val": 10
+            },
+            {
+                "cat": 2,
+                "row": 4,
+                "col": 5,
+                "val": 8
+            },
+            {
+                "cat": 3,
+                "row": 4,
+                "col": 5,
+                "val": 12
+            }
+        ]
+    },
+    "spec": {
+        "height": 120,
+        "mark": "bar",
+        "width": 120,
+        "encoding": {
+            "color": {
+                "field": "cat",
+                "type": "nominal",
+                "legend": null
+            },
+            "x": {
+                "field": "cat",
+                "type": "ordinal",
+                "axis": null
+            },
+            "y": {
+                "field": "val",
+                "type": "quantitative",
+                "axis": null
+            }
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "facet": {
+        "row": {
+            "field": "row",
+            "header": {},
+            "type": "ordinal"
+        },
+        "column": {
+            "field": "col",
+            "header": {},
+            "type": "ordinal"
+        }
+    }
+}

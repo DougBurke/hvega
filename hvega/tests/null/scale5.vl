@@ -1,0 +1,93 @@
+{
+    "height": 400,
+    "mark": "point",
+    "data": {
+        "values": [
+            {
+                "cat": "a",
+                "x": 10,
+                "val": 1,
+                "y": 1
+            },
+            {
+                "cat": "b",
+                "x": 20,
+                "val": 2,
+                "y": 2
+            },
+            {
+                "cat": "c",
+                "x": 30,
+                "val": 3,
+                "y": 3
+            },
+            {
+                "cat": "d",
+                "x": 40,
+                "val": 4,
+                "y": 4
+            },
+            {
+                "cat": "e",
+                "x": 50,
+                "val": 5,
+                "y": 5
+            },
+            {
+                "cat": "f",
+                "x": 60,
+                "val": 6,
+                "y": 6
+            },
+            {
+                "cat": "g",
+                "x": 70,
+                "val": 7,
+                "y": 7
+            },
+            {
+                "cat": "h",
+                "x": 80,
+                "val": 8,
+                "y": 8
+            },
+            {
+                "cat": "i",
+                "x": 90,
+                "val": 9,
+                "y": 9
+            },
+            {
+                "cat": "j",
+                "x": 100,
+                "val": 10,
+                "y": 10
+            }
+        ]
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "val",
+            "type": "ordinal"
+        },
+        "size": {
+            "field": "val",
+            "type": "quantitative"
+        },
+        "shape": {
+            "field": "cat",
+            "scale": null,
+            "type": "nominal"
+        },
+        "x": {
+            "field": "x",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "y",
+            "type": "quantitative"
+        }
+    }
+}
