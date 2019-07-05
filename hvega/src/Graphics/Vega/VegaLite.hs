@@ -96,6 +96,7 @@ module Graphics.Vega.VegaLite
        , VegaLite
        , LabelledSpec
        , BuildLabelledSpecs
+       , Opacity
        , combineSpecs
        , toHtml
        , toHtmlFile
@@ -1442,6 +1443,18 @@ myRegion =
 type Data = (VLProperty, VLSpec)
 
 
+{-|
+
+Convenience type-annotation label to indicate an opacity value, which
+lies in the range 0 to 1 inclusive. There is __no__ attempt to validate
+that the user-supplied value falls in this range.
+
+@since 0.4.0.0
+-}
+
+type Opacity = Double
+
+
 formatProperty :: Format -> [LabelledSpec]
 formatProperty (JSON js) =
   let ps = [("type", "json")]
@@ -2155,7 +2168,7 @@ data MarkProperty
     | MFilled Bool
       -- ^ Should a mark's color should be used as the fill color instead of
       --   stroke color.
-    | MFillOpacity Double
+    | MFillOpacity Opacity
       -- ^ Fill opacity of a mark.
     | MFont T.Text
       -- ^ Font of a text mark. Can be any font name made accessible via
@@ -2181,7 +2194,7 @@ data MarkProperty
       -- ^ Median-line properties for the boxplot mark.
       --
       --   @since 0.4.0.0
-    | MOpacity Double
+    | MOpacity Opacity
       -- ^ Overall opacity of a mark in the range 0 to 1.
     | MOrder Bool
       -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
@@ -2231,7 +2244,7 @@ data MarkProperty
       --   mark's stroke.
       --
       --   @since 0.4.0.0
-    | MStrokeOpacity Double
+    | MStrokeOpacity Opacity
       -- ^ Stroke opacity of a mark in the range 0 to 1.
     | MStrokeWidth Double
       -- ^ Stroke width of a mark in pixels.
@@ -3300,7 +3313,7 @@ data AxisProperty
       -- ^ The pixel offset at which to start drawing the domain dash array.
       --
       --   @since 0.4.0.0
-    | AxDomainOpacity Double
+    | AxDomainOpacity Opacity
       -- ^ The axis domain opacity.
       --
       --   @since 0.4.0.0
@@ -3339,7 +3352,7 @@ data AxisProperty
       -- ^ The pixel offset at which to start drawing the grid dash array.
       --
       --   @since 0.4.0.0
-    | AxGridOpacity Double
+    | AxGridOpacity Opacity
       -- ^ The opacity of the grid.
       --
       --   @since 0.4.0.0
@@ -3403,7 +3416,7 @@ data AxisProperty
       -- ^ The maximum width of a label, in pixels.
       --
       --   @since 0.4.0.0
-    | AxLabelOpacity Double
+    | AxLabelOpacity Opacity
       -- ^ The opacity of the label.
       --
       --   @since 0.4.0.0
@@ -3464,7 +3477,7 @@ data AxisProperty
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
       --
       --   @since 0.4.0.0
-    | AxTickOpacity Double
+    | AxTickOpacity Opacity
       -- ^ The opacity of the ticks.
       --
       --   @since 0.4.0.0
@@ -3520,7 +3533,7 @@ data AxisProperty
       -- ^ The maximum allowed width of the axis title, in pixels.
       --
       --   @since 0.4.0.0
-    | AxTitleOpacity Double
+    | AxTitleOpacity Opacity
       -- ^ The opacity of the axis title.
       --
       --   @since 0.4.0.0
@@ -4244,7 +4257,7 @@ data LegendConfig
       --   See also 'LeGradientThickness'.
       --
       --   @since 0.4.0.0
-    | LeGradientOpacity Double
+    | LeGradientOpacity Opacity
       -- ^ The opacity of the color gradient.
       --
       --   @since 0.4.0.0
@@ -4290,7 +4303,7 @@ data LegendConfig
       -- ^ The maxumum allowed pixel width of the legend label.
     | LeLabelOffset Double
       -- ^ The offset of the legend label.
-    | LeLabelOpacity Double
+    | LeLabelOpacity Opacity
       -- ^ The opacity of the legend label.
       --
       --   @since 0.4.0.0
@@ -4372,7 +4385,7 @@ data LegendConfig
       -- ^ The horizontal pixel offset for legend symbols.
       --
       --   @since 0.4.0.0
-    | LeSymbolOpacity Double
+    | LeSymbolOpacity Opacity
       -- ^ The opacity of the legend symbols.
       --
       --   @since 0.4.0.0
@@ -4416,7 +4429,7 @@ data LegendConfig
       -- ^ The font weight of the legend title.
     | LeTitleLimit Double
       -- ^ The maxmimum pixel width of the legend title.
-    | LeTitleOpacity Double
+    | LeTitleOpacity Opacity
       -- ^ The opacity of the legend title.
       --
       --   @since 0.4.0.0
@@ -4679,7 +4692,7 @@ data LegendProperty
       -- ^ The length in pixels of the primary axis of the color gradient.
       --
       --   @since 0.4.0.0
-    | LGradientOpacity Double
+    | LGradientOpacity Opacity
       -- ^ The opacity of the color gradient.
       --
       --   @since 0.4.0.0
@@ -4718,7 +4731,7 @@ data LegendProperty
       -- ^ @since 0.4.0.0
     | LLabelOffset Double
       -- ^ @since 0.4.0.0
-    | LLabelOpacity Double
+    | LLabelOpacity Opacity
       -- ^ @since 0.4.0.0
     | LLabelOverlap OverlapStrategy
       -- ^ @since 0.4.0.0
@@ -4759,7 +4772,7 @@ data LegendProperty
       -- ^ The horizontal pixel offset for legend symbols.
       --
       --   @since 0.4.0.0
-    | LSymbolOpacity Double
+    | LSymbolOpacity Opacity
       -- ^ The opacity of the legend symbols.
       --
       --   @since 0.4.0.0
@@ -4809,7 +4822,7 @@ data LegendProperty
       -- ^ The maximum allowed pixel width of the legend title.
       --
       --   @since 0.4.0.0
-    | LTitleOpacity Double
+    | LTitleOpacity Opacity
       -- ^ Opacity of the legend title.
       --
       --   @since 0.4.0.0
@@ -5248,12 +5261,10 @@ data ScaleConfig
     | SCMinFontSize Double
       -- ^ Default minimum value for mapping a quantitative field to a text
       --   mark's size.
-    | SCMaxOpacity Double
-      -- ^ Default maximum opacity (in the range [0, 1]) for mapping a field
-      --   to opacity.
-    | SCMinOpacity Double
-      -- ^ Default minimum opacity (in the range [0, 1]) for mapping a field
-      --   to opacity.
+    | SCMaxOpacity Opacity
+      -- ^ Default maximum opacity for mapping a field to opacity.
+    | SCMinOpacity Opacity
+      -- ^ Default minimum opacity for mapping a field to opacity.
     | SCMaxSize Double
       -- ^ Default maximum size for point-based scales.
     | SCMinSize Double
@@ -5508,9 +5519,9 @@ rectangle). For details see the
 -}
 data SelectionMarkProperty
     = SMFill T.Text
-    | SMFillOpacity Double
+    | SMFillOpacity Opacity
     | SMStroke T.Text
-    | SMStrokeOpacity Double
+    | SMStrokeOpacity Opacity
     | SMStrokeWidth Double
     | SMStrokeDash [Double]
     | SMStrokeDashOffset Double
@@ -5703,14 +5714,14 @@ data ViewBackground
     -- ^ The radius in pixels of rounded corners.
     | VBFill (Maybe T.Text)
     -- ^ Fill color.
-    | VBFillOpacity Double
+    | VBFillOpacity Opacity
     -- ^ Fill opacity.
-    | VBOpacity Double
+    | VBOpacity Opacity
     -- ^ Overall opacity.
     | VBStroke (Maybe T.Text)
     -- ^ The stroke color for a line around the background. If @Nothing@ then
     --   no line is drawn.
-    | VBStrokeOpacity Double
+    | VBStrokeOpacity Opacity
     -- ^ The opacity of the line around the background, if drawn.
     | VBStrokeWidth Double
     -- ^ The width of the line around the background, if drawn.
@@ -5787,9 +5798,9 @@ data ViewConfig
       --   @since 0.4.0.0
     | ViewFill (Maybe T.Text)
       -- ^ The fill color.
-    | ViewFillOpacity Double
+    | ViewFillOpacity Opacity
       -- ^ The fill opacity.
-    | ViewOpacity Double
+    | ViewOpacity Opacity
       -- ^ The overall opacity.
       --
       --   The default is @0.7@ for non-aggregate plots with 'Point', 'Tick',
@@ -5816,7 +5827,7 @@ data ViewConfig
       -- ^ The miter limit at which to bevel a line join.
       --
       --   @since 0.4.0.0
-    | ViewStrokeOpacity Double
+    | ViewStrokeOpacity Opacity
       -- ^ The stroke opacity.
     | ViewStrokeWidth Double
       -- ^ The stroke width, in pixels.
@@ -6038,7 +6049,7 @@ data AxisConfig
       -- ^ The pixel offset at which to start drawing the domain dash array.
       --
       --   @since 0.4.0.0
-    | DomainOpacity Double
+    | DomainOpacity Opacity
       -- ^ The axis domain opacity.
       --
       --   @since 0.4.0.0
@@ -6055,7 +6066,7 @@ data AxisConfig
       -- ^ The pixel offset at which to start drawing the grid dash array.
       --
       --   @since 0.4.0.0
-    | GridOpacity Double
+    | GridOpacity Opacity
       -- ^ The opacity of the grid.
     | GridWidth Double
       -- ^ The width of the grid lines.
@@ -6107,7 +6118,7 @@ data AxisConfig
       --   @since 0.4.0.0
     | LabelLimit Double
       -- ^ The maximum width of a label, in pixels.
-    | LabelOpacity Double
+    | LabelOpacity Opacity
       -- ^ The opacity of the label.
       --
       --   @since 0.4.0.0
@@ -6153,7 +6164,7 @@ data AxisConfig
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
       --
       --   @since 0.4.0.0
-    | TickOpacity Double
+    | TickOpacity Opacity
       -- ^ The opacity of the ticks.
       --
       --   @since 0.4.0.0
@@ -6191,7 +6202,7 @@ data AxisConfig
       -- ^ The font weight of the axis title.
     | TitleLimit Double
       -- ^ The maximum allowed width of the axis title, in pixels.
-    | TitleOpacity Double
+    | TitleOpacity Opacity
       -- ^ The opacity of the axis title.
       --
       --   @since 0.4.0.0
