@@ -5776,10 +5776,6 @@ data ViewConfig
       -- ^ The fill opacity.
     | Stroke (Maybe T.Text)
       -- ^ The stroke color.
-    | StrokeOpacity Double
-      -- ^ The stroke opacity.
-    | StrokeWidth Double
-      -- ^ The stroke width, in pixels.
     | StrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --
@@ -5793,6 +5789,10 @@ data ViewConfig
       -- ^ The stroke line-join method.
       --
       --   @since 0.4.0.0
+    | StrokeOpacity Double
+      -- ^ The stroke opacity.
+    | StrokeWidth Double
+      -- ^ The stroke width, in pixels.
 
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
@@ -5802,12 +5802,12 @@ viewConfigProperty (Clip b) = "clip" .= b
 viewConfigProperty (Fill ms) = "fill" .= fromMaybe "" ms
 viewConfigProperty (FillOpacity x) = "fillOpacity" .= x
 viewConfigProperty (Stroke ms) = "stroke" .= fromMaybe "" ms
-viewConfigProperty (StrokeOpacity x) = "strokeOpacity" .= x
-viewConfigProperty (StrokeWidth x) = "strokeWidth" .= x
 viewConfigProperty (StrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 viewConfigProperty (StrokeDash xs) = "strokeDash" .= map toJSON xs
 viewConfigProperty (StrokeDashOffset x) = "strokeDashOffset" .= x
 viewConfigProperty (StrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+viewConfigProperty (StrokeOpacity x) = "strokeOpacity" .= x
+viewConfigProperty (StrokeWidth x) = "strokeWidth" .= x
 
 
 {-|
