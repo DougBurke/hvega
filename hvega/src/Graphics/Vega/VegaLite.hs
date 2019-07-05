@@ -2774,9 +2774,15 @@ data ScaleProperty
       --   The default is @False@.
     | SScheme T.Text [Double]
       -- ^  Color scheme used by a color scaling. The first parameter is the name of the
-      --    scheme (e.g. \"viridis\") and the second an optional specification of the number of
-      --    colors to use (list of one number), or the extent of the color range to use (list
-      --    of two numbers between 0 and 1).
+      --    scheme (e.g. \"viridis\") and the second an optional specification, which can
+      --    contain 1, 2, or 3 numbers:
+      --
+      --    * the number of colors to use (list of one number);
+      --    * the extent of the color range to use (list of two numbers between 0 and 1);
+      --    * the number of colors and extent (three numbers, first is the number of colors).
+      --
+      --    The number of colors was broken prior to @0.4.0.0@ and the option to
+      --    define both the count and extent was added in @0.4.0.0@.
     | SZero Bool
       -- ^ Should a numeric scaling be forced to include a zero value?
       --
@@ -2805,13 +2811,15 @@ scaleProperty (SScheme nme extent) = schemeProperty nme extent
 scaleProperty (SZero b) = "zero" .= b
 
 
-schemeProperty :: T.Text -> [Double] -> LabelledSpec
-schemeProperty nme extent =
-  let js = case extent of
-        [mn, mx] -> object ["name" .= nme, "extent" .= [mn, mx]]
-        _ -> toJSON nme
+-- TODO: there should probably be a more-structured way to specify this
+--
+-- based on schema 3.3.0 #/definitions/SchemeParams
 
-  in ("scheme", js)
+schemeProperty :: T.Text -> [Double] -> LabelledSpec
+schemeProperty nme [n] = "scheme" .= object ["name" .= nme, "count" .= n]
+schemeProperty nme [mn, mx] = "scheme" .= object ["name" .= nme, "extent" .= [mn, mx]]
+schemeProperty nme [n, mn, mx] = "scheme" .= object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
+schemeProperty nme _ = "scheme" .= nme
 
 
 -- | Used to indicate the type of scale transformation to apply.
