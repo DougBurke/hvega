@@ -2727,6 +2727,8 @@ represented a Vega, rather than Vega-Lite, property. The order of
 a scale can be changed with the 'PSort' constructor.
 -}
 
+-- based on schema 3.3.0 #/definitions/Scale
+
 data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
@@ -2750,6 +2752,8 @@ data ScaleProperty
       --   @Nothing@, the distance is determined automatically.
     | SRound Bool
       -- ^ Are numeric values in a scaling are rounded to integers?
+      --
+      --   The default is @False@.
     | SClamp Bool
       -- ^ Should values outside the data domain be clamped (to the minimum or
       --   maximum value)?
@@ -2759,6 +2763,9 @@ data ScaleProperty
       -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SZero Bool
       -- ^ Should a numeric scaling be forced to include a zero value?
+      --
+      --   Not all scales support @SZero@ and the default depends on the type of
+      --   channel.
     | SExponent Double
       -- ^ The exponent to use for power scaling ('ScPow').
       --
@@ -2770,6 +2777,8 @@ data ScaleProperty
       --   @since 0.4.0.0
     | SBase Double
       -- ^ The base to use for log scaling ('ScLog').
+      --
+      --   Default is @10@.
       --
       --   @since 0.4.0.0
 
