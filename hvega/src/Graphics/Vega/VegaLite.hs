@@ -2738,6 +2738,11 @@ data ScaleProperty
       --   Default is @10@.
       --
       --   @since 0.4.0.0
+    | SBins [Double]
+      -- ^ An array of bin boundaries over the scale domain. If give, axes and legends will use
+      --   these boundaries to inform the choice of tick marks and text labels.
+      --
+      --   @since 0.4.0.0
     | SClamp Bool
       -- ^ Should values outside the data domain be clamped (to the minimum or
       --   maximum value)?
@@ -2777,9 +2782,9 @@ data ScaleProperty
       --    scheme (e.g. \"viridis\") and the second an optional specification, which can
       --    contain 1, 2, or 3 numbers:
       --
-      --    * the number of colors to use (list of one number);
-      --    * the extent of the color range to use (list of two numbers between 0 and 1);
-      --    * the number of colors and extent (three numbers, first is the number of colors).
+      --      - the number of colors to use (list of one number);
+      --      - the extent of the color range to use (list of two numbers between 0 and 1);
+      --      - the number of colors and extent (three numbers, first is the number of colors).
       --
       --    The number of colors was broken prior to @0.4.0.0@ and the option to
       --    define both the count and extent was added in @0.4.0.0@.
@@ -2793,6 +2798,7 @@ data ScaleProperty
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
 scaleProperty (SBase x) = "base" .= x
+scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
