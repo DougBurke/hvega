@@ -216,7 +216,7 @@ geodata1 =
     toVegaLite
         [ width 700
         , height 500
-        , configure $ configuration (View [ Stroke Nothing ]) []
+        , configure $ configuration (View [ ViewStroke Nothing ]) []
         , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ TopojsonFeature "boroughs" ]
         , mark Geoshape []
         , encoding $ color [ MName "id", MmType Nominal ] []
@@ -234,7 +234,7 @@ geodata2 =
     toVegaLite
         [ width 300
         , height 400
-        , configure $ configuration (View [ Stroke Nothing ]) []
+        , configure $ configuration (View [ ViewStroke Nothing ]) []
         , dataFromJson geojson [ JSON "features" ]
         , projection [ PType Orthographic ]
         , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LNoTitle ] ] [])

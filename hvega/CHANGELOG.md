@@ -68,6 +68,9 @@ accepting multiple expressions.
 
 The `MarkOrientation` type has been renamed `Orientation`.
 
+The constructors of the `ViewConfig` type have been renamed so they
+all begin with `View` (to match `ViewWidth` and `ViewHeight`).
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which

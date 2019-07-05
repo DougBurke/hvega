@@ -87,7 +87,7 @@ configExample =
             configure
                 . configuration (Background "rgb(251,247,238)")
                 . configuration (TitleStyle [ TFont "Roboto", TFontWeight W600, TFontSize 18 ])
-                . configuration (View [ ViewWidth 500, ViewHeight 300, Stroke Nothing ])
+                . configuration (View [ ViewWidth 500, ViewHeight 300, ViewStroke Nothing ])
                 . configuration (Autosize [ AFit ])
                 . configuration (Projection [ PType Orthographic, PRotate 0 0 0 ])
 
