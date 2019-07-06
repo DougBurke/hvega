@@ -1,0 +1,62 @@
+{
+    "mark": "circle",
+    "data": {
+        "values": [
+            {
+                "value": 1,
+                "date": "28 Oct 2017 22:00"
+            },
+            {
+                "value": 2,
+                "date": "28 Oct 2017 23:00"
+            },
+            {
+                "value": 3,
+                "date": "29 Oct 2017 00:00"
+            },
+            {
+                "value": 4,
+                "date": "29 Oct 2017 01:00"
+            },
+            {
+                "value": 5,
+                "date": "29 Oct 2017 02:00"
+            },
+            {
+                "value": 6,
+                "date": "29 Oct 2017 03:00"
+            },
+            {
+                "value": 7,
+                "date": "29 Oct 2017 04:00"
+            }
+        ],
+        "format": {
+            "parse": {
+                "date": "date:'%d %b %Y %H:%M'"
+            }
+        }
+    },
+    "width": 800,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "size": {
+            "value": 500
+        },
+        "x": {
+            "field": "date",
+            "scale": {
+                "type": "time"
+            },
+            "timeUnit": "yearmonthdatehours",
+            "type": "temporal",
+            "axis": {
+                "format": "%d %b %H:%M"
+            }
+        },
+        "y": {
+            "field": "value",
+            "type": "quantitative"
+        }
+    }
+}

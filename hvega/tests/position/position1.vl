@@ -1,0 +1,14 @@
+{
+    "mark": {
+        "size": 200,
+        "type": "circle"
+    },
+    "data": {
+        "values": [
+            {
+                "empty": 0
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
+}
