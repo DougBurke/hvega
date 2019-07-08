@@ -3,6 +3,9 @@ For the latest version of this document, please see
 
 ## 0.4.0.0
 
+Corrected the serialization of `Function` to match the Vega Lite 3.3.0
+specification.
+
 Added the `MarkErrorExtent` type, to indicate the extent of the rule
 used for error bars and added the `ErrorBar` and `ErrorBand` marks.
 The `MarkProperty` type has gained `MBorders` and `MExtent` constructors,
