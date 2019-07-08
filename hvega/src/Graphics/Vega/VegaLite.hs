@@ -1607,10 +1607,11 @@ data MarkChannel
     | MScale [ScaleProperty]
       -- ^ Use an empty list to remove the scale.
     | MBin [BinProperty]
-    {-
+      -- ^ Discretize numeric values into bins when encoding with a mark property channel.
     | MBinned
-      -- ^ @since 0.4.0.0
-    -}
+      -- ^ Indicate that data encoding with a mark are already binned.
+      --
+      --   @since 0.4.0.0
     | MImpute [ImputeProperty]
       -- ^ Set the imputation rules for a mark channel. See the
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
@@ -1622,6 +1623,7 @@ data MarkChannel
       -- ^ Use an empty list to remove the legend.
     | MSelectionCondition BooleanOp [MarkChannel] [MarkChannel]
     | MDataCondition BooleanOp [MarkChannel] [MarkChannel]
+      -- TODO: change to list
     | MPath T.Text
     | MNumber Double
     | MString T.Text
@@ -1637,6 +1639,7 @@ markChannelProperty (MScale sps) =
 markChannelProperty (MLegend lps) =
   [("legend", if null lps then A.Null else object (map legendProperty lps))]
 markChannelProperty (MBin bps) = [bin bps]
+markChannelProperty MBinned = [binned_]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   let h = ("condition", hkey)
