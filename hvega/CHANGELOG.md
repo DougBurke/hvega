@@ -71,6 +71,9 @@ The `MarkOrientation` type has been renamed `Orientation`.
 The constructors of the `ViewConfig` type have been renamed so they
 all begin with `View` (to match `ViewWidth` and `ViewHeight`).
 
+The `Divide` constructor of `BinProperty` now takes a list of
+Doubles rather than two.
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which
