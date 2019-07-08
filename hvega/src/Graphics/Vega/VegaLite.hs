@@ -268,7 +268,10 @@ module Graphics.Vega.VegaLite
        , color
        , fill
        , stroke
+       , strokeWidth
        , opacity
+       , fillOpacity
+       , strokeOpacity
        , shape
        , MarkChannel(..)
        , LegendProperty(..)
@@ -658,6 +661,9 @@ impute_ ips = "impute" .= object (map imputeProperty ips)
 
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
 mprops_ f mps = f .= object (map markProperty mps)
+
+mchan_ :: T.Text -> [MarkChannel] -> LabelledSpec
+mchan_ f ms = f .= object (concatMap markChannelProperty ms)
 
 timeUnit_ :: TimeUnit -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
@@ -6397,9 +6403,7 @@ color ::
   [MarkChannel]
   -- ^ Control how the data field is encoded by color.
   -> BuildLabelledSpecs
-color markProps ols =
-  let cs = object (concatMap markChannelProperty markProps)
-  in ("color", cs) : ols
+color markProps ols = mchan_ "color" markProps : ols
 
 
 {-|
@@ -6494,9 +6498,24 @@ fill [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 Note that if both @fill@ and 'color' encodings are specified, @fill@ takes precedence.
 
 -}
+
 fill :: [MarkChannel] -> BuildLabelledSpecs
-fill markProps ols =
-  ("fill" .= object (concatMap markChannelProperty markProps)) : ols
+fill markProps ols = mchan_ "fill" markProps : ols
+
+
+{-|
+
+Encode a fill opacity channel. This acts in a similar way to encoding by 'opacity'
+but only affects the interior of closed shapes. If both @fillOpacity@ and 'opacity'
+encodings are specified, @fillOpacity@ takes precedence.
+
+See also 'fill'.
+
+@since 0.4.0.0
+-}
+
+fillOpacity :: [MarkChannel] -> BuildLabelledSpecs
+fillOpacity markProps ols = mchan_ "fillOpacity" markProps : ols
 
 
 {-|
@@ -6839,10 +6858,13 @@ is a list of any previous channels to which this opacity channel should be added
 @
 opacity [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
+
+See also 'fillOpacity'.
+
 -}
+
 opacity :: [MarkChannel] -> BuildLabelledSpecs
-opacity markProps ols =
-  ("opacity" .= object (concatMap markChannelProperty markProps)) : ols
+opacity markProps ols = mchan_ "opacity" markProps : ols
 
 
 {-|
@@ -6970,7 +6992,7 @@ shape ::
   [MarkChannel]
   -- ^ What data values are used to control the shape parameters of the mark.
   -> BuildLabelledSpecs
-shape markProps ols = ("shape" .= object (concatMap markChannelProperty markProps)) : ols
+shape markProps ols = mchan_ "shape" markProps : ols
 
 
 {-|
@@ -6985,7 +7007,7 @@ size ::
   [MarkChannel]
   -- ^ What data values are used to control the size parameters of the mark.
   -> BuildLabelledSpecs
-size markProps ols = ("size" .= object (concatMap markChannelProperty markProps)) : ols
+size markProps ols = mchan_ "size" markProps : ols
 
 
 {-|
@@ -7005,8 +7027,39 @@ stroke ::
   [MarkChannel]
   -- ^ What data values are used to control the stoke parameters of the mark.
   -> BuildLabelledSpecs
-stroke markProps ols =
-  ("stroke" .= object (concatMap markChannelProperty markProps)) : ols
+stroke markProps ols = mchan_ "stroke" markProps : ols
+
+
+{-|
+
+Encode a stroke opacity channel. This acts in a similar way to encoding by
+'opacity' but only affects the exterior boundary of marks. If both 'opacity' and
+@strokeOpacity@ are specified, @strokeOpacity@ takes precedence for stroke encoding.
+
+@since 0.4.0.0
+
+-}
+
+strokeOpacity ::
+  [MarkChannel]
+  -- ^ What data values are used to control the stoke opacity parameters of the mark.
+  -> BuildLabelledSpecs
+strokeOpacity markProps ols = mchan_ "strokeOpacity" markProps : ols
+
+
+{-|
+
+Encode a stroke width channel.
+
+@since 0.4.0.0
+
+-}
+
+strokeWidth ::
+  [MarkChannel]
+  -- ^ What data values are used to control the stoke width parameters of the mark.
+  -> BuildLabelledSpecs
+strokeWidth markProps ols = mchan_ "strokeWidth" markProps : ols
 
 
 {-|
