@@ -47,7 +47,7 @@ import qualified ConditionalTests as CondT
 import qualified ConfigTests as ConfT
 import qualified DataTests as DT
 import qualified FillStrokeTests as FST
--- import qualified GeoTests as GT
+import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
 import qualified LegendTests as LT
 import qualified NullTests as NT
@@ -86,7 +86,7 @@ goldenTests = testGroup "tests"
   , toTests "Config" "config" ConfT.testSpecs
   , toTests "Data" "data" DT.testSpecs
   , toTests "FillStroke" "fillstroke" FST.testSpecs
-  -- , toTests "Geo" "geo" GT.testSpecs
+  , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs
   , toTests "Legend" "legend" LT.testSpecs
   , toTests "Null" "null" NT.testSpecs

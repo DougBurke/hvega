@@ -1,0 +1,63 @@
+{
+    "transform": [
+        {
+            "filter": "datum.latitude != '' && datum.county != 'Honolulu' && datum.state !='AS'&& datum.state !='FM'&& datum.state !='PW'&& datum.state !='MH'&& datum.state !='GU'&& datum.state !='MP'&& datum.state !='VI'&& datum.state !='PR'"
+        },
+        {
+            "as": "digit3",
+            "calculate": "substring(datum.zip_code, 0, 3)"
+        },
+        {
+            "as": "ziplen",
+            "calculate": "length(datum.zip_code+' ')"
+        }
+    ],
+    "height": 600,
+    "config": {
+        "view": {
+            "stroke": ""
+        },
+        "title": {
+            "fontSize": 28,
+            "font": "Roboto",
+            "fontWeight": 300
+        }
+    },
+    "mark": {
+        "strokeWidth": 0.2,
+        "interpolate": "monotone",
+        "type": "line"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/zipcodes.csv"
+    },
+    "width": 1000,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "title": "US connected zip codes, coloured by first three digits",
+    "encoding": {
+        "color": {
+            "field": "digit3",
+            "type": "nominal",
+            "legend": null
+        },
+        "latitude": {
+            "field": "latitude",
+            "type": "quantitative"
+        },
+        "longitude": {
+            "field": "longitude",
+            "type": "quantitative"
+        },
+        "order": {
+            "field": "zip_code",
+            "type": "quantitative"
+        },
+        "detail": {
+            "field": "ziplen",
+            "type": "nominal"
+        }
+    }
+}

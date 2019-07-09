@@ -17,19 +17,17 @@ testSpecs = [ ("data1", data1)
             , ("data3", data3)
             , ("data4", data4)
             , ("data5", data5)
-            -- , ("data6", data6)
+            , ("data6", data6)
             , ("data7", data7)
             , ("data8", data8)
             , ("data9", data9)
             , ("data10", data10)
             -- , ("data11", data11)
-            {-
             , ("namedData1", namedData1)
             , ("namedData2", namedData2)
             , ("namedData3", namedData3)
-            -}
-            -- , ("geodata1", geodata1)
-            -- , ("geodata2", geodata2)
+            , ("geodata1", geodata1)
+            , ("geodata2", geodata2)
             -- , ("flatten1", flatten1)
             -- , ("fold1", fold1)
             {-
@@ -44,8 +42,8 @@ testSpecs = [ ("data1", data1)
             -}
             -- , ("sample1", sample1)
             , ("bin1", bin1)
-            -- , ("sequence1", sequence1)
-            -- , ("sequence2", sequence2)
+            , ("sequence1", sequence1)
+            , ("sequence2", sequence2)
             ]
 
 showData :: (VLProperty, VLSpec) -> VegaLite
@@ -105,10 +103,10 @@ data5 =
     showData (dataFromUrl "data/dataTest.tsv" [])
 
 
-{- TODO add DSV
+data6 :: VegaLite
 data6 =
     showData (dataFromUrl "data/dataTest.csv" [ DSV ',' ])
--}
+
 
 data7 :: VegaLite
 data7 =
@@ -176,8 +174,8 @@ data11 =
 
 -}
 
-{- TODO: add dataName
 
+namedData1, namedData2, namedData3 :: VegaLite
 namedData1 =
     let
         dvals =
@@ -213,40 +211,39 @@ namedData3 =
                 . position Y [ PName "val", PmType Quantitative ]
     in
     toVegaLite [ dataName "source" (dataFromColumns [] []), enc [], mark Bar [] ]
--}
 
-{-
 
+geodata1 :: VegaLite
 geodata1 =
     toVegaLite
         [ width 700
         , height 500
-        , configure <| configuration (coView [ vicoStroke Nothing ]) []
-        , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ topojsonFeature "boroughs" ]
-        , geoshape []
-        , encoding <| color [ mName "id", MmType Nominal ] []
+        , configure $ configuration (View [ Stroke Nothing ]) []
+        , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ TopojsonFeature "boroughs" ]
+        , mark Geoshape []
+        , encoding $ color [ MName "id", MmType Nominal ] []
         ]
 
+-- TODO: add LNoTitle
 
+geodata2 :: VegaLite
 geodata2 =
     let
         geojson =
             geoFeatureCollection
-                [ geometry (geoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 45 ), ( -3, 52 ) ] ]) [ ( "Region", str "Southsville" ) ]
-                , geometry (geoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 52 ), ( -3, 59 ) ] ]) [ ( "Region", str "Northerton" ) ]
+                [ geometry (GeoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 45 ), ( -3, 52 ) ] ]) [ ( "Region", Str "Southsville" ) ]
+                , geometry (GeoPolygon [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 52 ), ( -3, 59 ) ] ]) [ ( "Region", Str "Northerton" ) ]
                 ]
     in
     toVegaLite
         [ width 300
         , height 400
-        , configure <| configuration (coView [ vicoStroke Nothing ]) []
-        , dataFromJson geojson [ jsonProperty "features" ]
-        , projection [ prType orthographic ]
-        , encoding (color [ mName "properties.Region", MmType Nominal, mLegend [ leTitle "" ] ] [])
-        , geoshape []
+        , configure $ configuration (View [ Stroke Nothing ]) []
+        , dataFromJson geojson [ JSON "features" ]
+        , projection [ PType Orthographic ]
+        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LTitle "" ] ] [])
+        , mark Geoshape []
         ]
-
--}
 
 {- TODO: add flattenAs
 
@@ -465,10 +462,7 @@ bin1 =
     in
     toVegaLite [ dvals [], enc [], mark Bar [] ]
 
-{-
-
-TODO: add dataSequence
-
+sequence1 :: VegaLite
 sequence1 =
     let
         dvals =
@@ -486,6 +480,7 @@ sequence1 =
     toVegaLite [ dvals, trans [], enc [], mark Line [] ]
 
 
+sequence2 :: VegaLite
 sequence2 =
     let
         dvals =
@@ -501,6 +496,3 @@ sequence2 =
                 . position Y [ PName "v", PmType Quantitative ]
     in
     toVegaLite [ dvals, trans [], enc [], mark Line [] ]
-
--}
-
