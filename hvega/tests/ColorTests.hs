@@ -103,18 +103,24 @@ namedContinuous2 =
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SScheme "plasma" [ 0.5, 1 ] ] ])
 
 
--- TODO: use of SReverse is not to spec; need an MSort constructor
 namedContinuous3 :: VegaLite
 namedContinuous3 =
     chart "Continuous colour scale based on named vega schame. Should use the flipped plasma colour scheme (i.e. red to orange)."
-        (color [ MName "Acceleration", MmType Quantitative, MScale [ SScheme "plasma" [] {- , SReverse True -} ] ])
+        (color [ MName "Acceleration"
+               , MmType Quantitative
+               , MScale [ SScheme "plasma" [] ]
+               , MSort [ Descending ]
+               ])
 
 
--- TODO: use of SReverse is not to spec; need an MSort constructor
 namedContinuous4 :: VegaLite
 namedContinuous4 =
     chart "Continuous colour scale based on named vega schame. Should use the first half of the flipped plasma colour scheme (i.e. red to orange)."
-        (color [ MName "Acceleration", MmType Quantitative, MScale [ SScheme "plasma" [ 0, 0.5 ] {- , SReverse True -} ] ])
+        (color [ MName "Acceleration"
+               , MmType Quantitative
+               , MScale [ SScheme "plasma" [ 0, 0.5 ] ]
+               , MSort [ Descending ]
+               ])
 
 
 customContinuous :: VegaLite

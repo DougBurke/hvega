@@ -1963,6 +1963,10 @@ data MarkChannel
       -- ^ Indicate that data encoding with a mark are already binned.
       --
       --   @since 0.4.0.0
+    | MSort [SortProperty]
+      -- ^ Sort order.
+      --
+      --   @since 0.4.0.0
     | MImpute [ImputeProperty]
       -- ^ Set the imputation rules for a mark channel. See the
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
@@ -2030,6 +2034,7 @@ markChannelProperty (MScale sps) = [scaleProp_ sps]
 markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
+markChannelProperty (MSort ops) = [sort_ ops]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   selCond_ markChannelProperty selName ifClause elseClause
@@ -2077,6 +2082,10 @@ The Vega-Lite specification supports setting those properties that take
 supported in @hvega@.
 
 -}
+
+-- based on schema 3.3.0 #/definitions/MarkConfig
+--
+-- but it also contains a number of other properties
 
 data MarkProperty
     = MAlign HAlign

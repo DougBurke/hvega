@@ -16,6 +16,7 @@
             "scale": {
                 "scheme": "plasma"
             },
+            "sort": "descending",
             "type": "quantitative"
         },
         "size": {
