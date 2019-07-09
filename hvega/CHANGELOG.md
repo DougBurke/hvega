@@ -3,6 +3,9 @@ For the latest version of this document, please see
 
 ## 0.4.0.0
 
+Corrected the serialization of the `datasets` function (#20), reported
+by Matthew Pickering (mpickering).
+
 Corrected the serialization of `Function` to match the Vega Lite 3.3.0
 specification.
 
@@ -14,7 +17,7 @@ and the `Position` type has added `XError`, `XError2`, `YError`, and
 
 This functionality was provided by Adam Conner-Sax (adamConnerSax).
 
-The `dataSequence, `dataSequenceAs`, `sphere`, and `graticule` functions
+The `dataName`, `dataSequence, `dataSequenceAs`, `sphere`, and `graticule` functions
 have been added, as well as associated properties (`GraticuleProperty`).
 The `Format` type has been extended to support delimeter-separated
 values (`DSV`).
