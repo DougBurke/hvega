@@ -2462,7 +2462,7 @@ data FieldTitleProperty
 
 fieldTitleLabel :: FieldTitleProperty -> T.Text
 fieldTitleLabel Verbal = "verbal"
-fieldTitleLabel Function = "function"
+fieldTitleLabel Function = "functional"
 fieldTitleLabel Plain = "plain"
 
 
