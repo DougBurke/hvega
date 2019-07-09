@@ -923,6 +923,9 @@ repeat_ arr = "repeat" .= arrangementLabel arr
 sort_ :: [SortProperty] -> LabelledSpec
 sort_ ops = "sort" .= sortPropertySpec ops
 
+header_ :: [HeaderProperty] -> LabelledSpec
+header_ hps = "header" .= object (map headerProperty hps)
+
 impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
@@ -5552,7 +5555,7 @@ configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
-configProperty (HeaderStyle hps) = "header" .= object (map headerProperty hps)
+configProperty (HeaderStyle hps) = header_ hps
 configProperty (LineStyle mps) = mprops_ "line" mps
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (RectStyle mps) = mprops_ "rect" mps
@@ -6447,25 +6450,48 @@ repeatFieldsProperty rfs =
 
 Types of facet channel property used for creating a composed facet view of small
 multiples.
+
 -}
+
+-- based on schema 3.3.0 #/definitions/FacetFieldDef
+
 data FacetChannel
     = FName T.Text
+      -- ^ The name of the field from which to pull a data value.
     | FmType Measurement
-    | FBin [BinProperty]
+      -- ^ The encoded field's type of measurement.
     | FAggregate Operation
-    | FTimeUnit TimeUnit
-    | FSort [SortProperty]      -- ^ @since 0.4.0.0
+      -- ^ Aggregation function for the field.
+    | FBin [BinProperty]
+      -- ^ Describe how to bin quantitative fields, or whether the
+      --   channels are already binned.
     | FHeader [HeaderProperty]
-
+      -- ^ The properties of a facet's header.
+    | FSort [SortProperty]
+      -- ^ Sort order for the encoded field.
+      --
+      --   @since 0.4.0.0
+    | FTimeUnit TimeUnit
+      -- ^ The time-unit for a temporal field.
+    | FTitle T.Text
+      -- ^ The title for the field.
+      --
+      --   @since 0.4.0.0
+    | FNoTitle
+      -- ^ Draw no title.
+      --
+      -- @since 0.4.0.0
 
 facetChannelProperty :: FacetChannel -> LabelledSpec
 facetChannelProperty (FName s) = field_ s
 facetChannelProperty (FmType measure) = mtype_ measure
-facetChannelProperty (FBin bps) = bin bps
-facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FAggregate op) = aggregate_ op
+facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FHeader hps) = header_ hps
+facetChannelProperty (FSort sps) = sort_ sps
+facetChannelProperty (FTitle s) = "title" .= s
+facetChannelProperty FNoTitle = "title" .= A.Null
 facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
-facetChannelProperty (FHeader hProps) = "header" .= object (map headerProperty hProps)
 
 
 {-|

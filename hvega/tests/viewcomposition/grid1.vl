@@ -402,9 +402,7 @@
     "facet": {
         "row": {
             "field": "row",
-            "header": {
-                "title": null
-            },
+            "title": null,
             "type": "ordinal"
         },
         "column": {

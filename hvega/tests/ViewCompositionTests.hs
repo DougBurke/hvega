@@ -133,7 +133,7 @@ grid1 =
         , spacingRC 20 80
         , specification specByCatVal
         , facet
-            [ RowBy [ FName "row", FmType Ordinal, FHeader [ HNoTitle ] ]
+            [ RowBy [ FName "row", FmType Ordinal, FNoTitle ]
             , ColumnBy [ FName "col", FmType Ordinal, FHeader [ HNoTitle ] ]
             ]
         ]
