@@ -2954,7 +2954,7 @@ projectionProperty (PCenter lon lat) = "center" .= [lon, lat]
 projectionProperty (PrScale sc) = "scale" .= sc
 projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
 projectionProperty (PRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
-projectionProperty (PPrecision pr) = "precision" .= show pr  -- this is a string, not a number, in v3.3.0 of the spec!
+projectionProperty (PPrecision pr) = "precision" .= show pr  -- this is a string, not a number, in v3.3.0 of the spec! See https://github.com/vega/vega-lite/issues/5190
 projectionProperty (PReflectX b) = "reflectX" .= b
 projectionProperty (PReflectY b) = "reflectY" .= b
 projectionProperty (PCoefficient x) = "coefficient" .= x
