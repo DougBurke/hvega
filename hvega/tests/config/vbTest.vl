@@ -76,6 +76,11 @@
             "mySecondStyle": {
                 "stroke": "blue",
                 "fill": "black"
+            },
+            "myStyle": {
+                "fill": "red",
+                "strokeOpacity": 1,
+                "fillOpacity": 0.1
             }
         }
     },

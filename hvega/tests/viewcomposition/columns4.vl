@@ -36,7 +36,12 @@
         },
         "column": {
             "field": "gender",
-            "header": {},
+            "header": {
+                "titlePadding": -27,
+                "labelPadding": 40,
+                "labelFontSize": 15,
+                "titleFontSize": 20
+            },
             "type": "nominal"
         },
         "y": {

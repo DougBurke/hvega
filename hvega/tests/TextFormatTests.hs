@@ -60,8 +60,6 @@ textFormat1 =
     toVegaLite [ width 600, height 400, dataVals []
                , layer [ specSym, specLabel ] ]
 
-{- TODO HFormatAsTemporal -}
-
 textFormat2 :: VegaLite
 textFormat2 =
     let
@@ -80,8 +78,8 @@ textFormat2 =
                              , PAggregate Sum ]
                 . color [ MName "crimeType", MmType Nominal, MLegend [] ]
                 . column [ FName "month", FmType Temporal
-                         , FHeader [ {- HFormatAsTemporal
-                                   , -} HFormat "%b %y" ] ]
+                         , FHeader [ HFormatAsTemporal
+                                   , HFormat "%b %y" ] ]
     in
     toVegaLite [ width 100, dataVals [], trans []
                , mark Bar [], enc [] ]
