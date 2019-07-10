@@ -148,6 +148,7 @@ module Graphics.Vega.VegaLite
          -- ** Aggregation
 
        , aggregate
+       , joinAggregate
        , Operation(..)
        , opAs
        , timeUnitAs
@@ -171,6 +172,18 @@ module Graphics.Vega.VegaLite
 
        , lookup
        , lookupAs
+
+         -- ** Window Transformations
+         --
+         -- See the Vega-Lite
+         -- [window transform field](https://vega.github.io/vega-lite/docs/window.html#field-def)
+         -- and
+         -- [window transform](https://vega.github.io/vega-lite/docs/window.html#window-transform-definition)
+         -- documentation.
+
+       , window
+       , Window(..)
+       , WOperation(..)
 
          -- * Creating the Mark Specification
          --
@@ -375,6 +388,8 @@ module Graphics.Vega.VegaLite
        , ViewConfig(..)
        , RangeConfig(..)
        , FieldTitleProperty(..)
+       , WindowProperty(..)
+       , SortField(..)
 
          -- * General Data types
          --
@@ -541,6 +556,10 @@ type_ t = "type" .= t
 
 field_ :: T.Text -> LabelledSpec
 field_ f = "field" .= f
+
+-- could restrict to ascending/descending
+order_ :: T.Text -> LabelledSpec
+order_ o = "order" .= o
 
 op_ :: Operation -> LabelledSpec
 op_ op = "op" .= operationLabel op
@@ -4773,6 +4792,40 @@ transform transforms =
                                                              , ("as", vs V.! 2) ]
               _ -> A.Null
 
+          "window" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 5 ->
+                                    let [winObj, frameObj, peersObj, groupbyObj, sortObj] = V.toList vs
+
+                                        addField _ A.Null = []
+                                        addField f v = [(f, v)]
+
+                                        ols = [("window", winObj)]
+                                              <> addField "frame" frameObj
+                                              <> addField "ignorePeers" peersObj
+                                              <> addField "groupby" groupbyObj
+                                              <> addField "sort" sortObj
+
+                                    in object ols
+              _ -> A.Null
+
+          "joinaggregate" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 5 ->
+                                    let [joinObjs, frameObj, peersObj, groupbyObj, sortObj] = V.toList vs
+
+                                        addField _ A.Null = []
+                                        addField f v = [(f, v)]
+
+                                        ols = [("joinaggregate", joinObjs)]
+                                              <> addField "frame" frameObj
+                                              <> addField "ignorePeers" peersObj
+                                              <> addField "groupby" groupbyObj
+                                              <> addField "sort" sortObj
+
+                                    in object ols
+              _ -> A.Null
+
           _ -> object [(str, val)]
 
     in (VLTransform, js)
@@ -4811,6 +4864,133 @@ width :: Double -> (VLProperty, VLSpec)
 width w = (VLWidth, toJSON w)
 
 
+-- | Properties for a window transform.
+--
+--   @since 0.4.0.0
+
+data WindowProperty
+    = WFrame (Maybe Int) (Maybe Int)
+      -- ^ Moving window for use by a window transform. When a number is
+      --   given, via @Just@, then it indicates the offset from the current
+      --   data object. A @Nothing@ indicates an ubbounded number of rows
+      --   preceding or following the current data object.
+    | WIgnorePeers Bool
+      -- ^ Should the sliding window in a window transform ignore peer
+      --   values (those considered identical by the sort criteria).
+    | WGroupBy [T.Text]
+      -- ^ The fields for partitioning data objects in a window transform
+      --   into separate windows. If not specified, all points will be in a
+      --   single group.
+    | WSort [SortField]
+      -- ^ Comparator for sorting data objects within a window transform.
+
+
+-- This is different to how Elm's VegaLite handles this (as of version 1.12.0)
+-- Helpers for windowPropertySpec
+
+-- allowNull :: A.ToJSON a => Maybe a -> VLSpec
+allowNull :: Maybe Int -> VLSpec
+allowNull (Just a) = toJSON a
+allowNull Nothing = A.Null
+
+wpFrame , wpIgnorePeers, wpGroupBy, wpSort :: WindowProperty -> Maybe VLSpec
+wpFrame (WFrame m1 m2) = Just (toJSON [allowNull m1, allowNull m2])
+wpFrame _ = Nothing
+
+wpIgnorePeers (WIgnorePeers b) = Just (toJSON b)
+wpIgnorePeers _ = Nothing
+
+wpGroupBy (WGroupBy fs) = Just (toJSON fs)
+wpGroupBy _ = Nothing
+
+wpSort (WSort sfs) = Just (toJSON (map sortFieldSpec sfs))
+wpSort _ = Nothing
+
+windowPropertySpec :: [WindowProperty] -> [VLSpec]
+windowPropertySpec wps =
+  let frms = mapMaybe wpFrame wps
+      ips = mapMaybe wpIgnorePeers wps
+      gps = mapMaybe wpGroupBy wps
+      sts = mapMaybe wpSort wps
+
+      fromSpecs [spec] = spec
+      fromSpecs _ = A.Null
+
+  in map fromSpecs [frms, ips, gps, sts]
+
+
+-- | How should the field be sorted when performing a window transform.
+--
+--   @since 0.4.00
+
+data SortField
+    = WAscending T.Text
+    -- ^ Sort the field into ascending order.
+    | WDescending T.Text
+    -- ^ Sort the field into descending order.
+
+
+sortFieldSpec :: SortField -> VLSpec
+sortFieldSpec (WAscending f) = object [field_ f, order_ "ascending"]
+sortFieldSpec (WDescending f) = object [field_ f, order_ "descending"]
+
+
+-- | Window transformations.
+--
+--   @since 0.4.0.0
+
+data Window
+    = WAggregateOp Operation
+      -- ^ An aggregrate operation to be used in a window transformation.
+    | WOp WOperation
+      -- ^ Window-specific operation to be used in a window transformation.
+    | WParam Int
+      -- ^ Numeric parameter for window-only operations that can be parameterised
+      -- (woPercentile, woLag, woLead and woNthValue).
+    | WField T.Text
+      -- ^ Field for which to compute a window operation. Not needed for operations
+      --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
+
+
+windowFieldProperty :: Window -> LabelledSpec
+windowFieldProperty (WAggregateOp op) = "op" .= operationLabel op
+windowFieldProperty (WOp op) = "op" .= wOperationLabel op
+windowFieldProperty (WParam n) = "param" .= n
+windowFieldProperty (WField f) = field_ f
+
+
+-- | Window-specific operation for transformations.
+--
+--   @since 0.4.0.0
+
+data WOperation
+    = RowNumber
+    | Rank
+    | DenseRank
+    | PercentRank
+    | CumeDist
+    | Ntile
+    | Lag
+    | Lead
+    | FirstValue
+    | LastValue
+    | NthValue
+
+
+wOperationLabel :: WOperation -> T.Text
+wOperationLabel RowNumber = "row_number"
+wOperationLabel Rank = "rank"
+wOperationLabel DenseRank = "dense_rank"
+wOperationLabel PercentRank = "percent_rank"
+wOperationLabel CumeDist = "cume_dist"
+wOperationLabel Ntile = "ntile"
+wOperationLabel Lag = "lag"
+wOperationLabel Lead = "lead"
+wOperationLabel FirstValue = "first_value"
+wOperationLabel LastValue = "last_value"
+wOperationLabel NthValue = "nth_value"
+
+
 {-|
 
 Defines a set of named aggregation transformations to be used when encoding
@@ -4826,6 +5006,9 @@ trans =
             [ 'opAs' 'Min' "people" "lowerBound", opAs 'Max' "people" "upperBound" ]
             [ "age" ]
 @
+
+See also 'joinAggregate'.
+
 -}
 aggregate ::
   [VLSpec]
@@ -4836,6 +5019,73 @@ aggregate ::
 aggregate ops groups ols =
   let ags = toJSON [toJSON ops, toJSON (map toJSON groups)]
   in ("aggregate", ags) : ols
+
+
+{-|
+
+Aggregation transformations to be used when encoding channels. Unlike
+'aggregate', this transformation joins the results to the input data.
+Can be helpful for creating derived values that combine raw data with some aggregate
+measure, such as percentages of group totals. The first parameter is a list
+of the named aggregation operations to apply. The second is a list of possible
+window aggregate field properties, such as a field to group by when aggregating.
+The third parameter is a list of transformations to which this is added.
+
+@
+trans =
+    'transform'
+        . joinAggregate
+            [ 'opAs' 'Mean' "rating" "avYearRating" ]
+            [ 'WGroupBy' [ "year" ] ]
+        . 'filter' ('FExpr' "(datum.rating - datum.avYearRating) > 3"))
+@
+
+For details, see the
+[Vega-Lite joinaggregate documentation](https://vega.github.io/vega-lite/docs/joinaggregate.html)
+
+See also 'aggregate'.
+
+@since 0.4.0.0
+-}
+
+joinAggregate ::
+  [VLSpec]
+  -> [WindowProperty]
+  -> BuildLabelledSpecs
+joinAggregate ops wProps ols =
+  let ags = toJSON ops : windowPropertySpec wProps
+  in ("joinaggregate", toJSON ags) : ols
+
+
+{-|
+
+Window transform for performing calculations over sorted groups of
+data objects such as ranking, lead/lag analysis, running sums and averages.
+
+The first parameter is a list of tuples each comprising a window transform field
+definition and an output name. The second is the window transform definition.
+
+@
+trans =
+    'transform'
+        . window [ ( [ 'WAggregateOp' 'Sum', 'WField' "Time" ], "TotalTime" ) ]
+                 [ 'WFrame' Nothing Nothing ]
+@
+
+@since 0.4.0.0
+
+-}
+window ::
+  [([Window], T.Text)]
+  -- ^ The window-transform definition and associated output name.
+  -> [WindowProperty]
+  -- ^ The window transform.
+  -> BuildLabelledSpecs
+window wss wProps ols =
+  let args = toJSON wargs : windowPropertySpec wProps
+      wargs = map winFieldDef wss
+      winFieldDef (ws, out) = object ("as" .= out : map windowFieldProperty ws)
+  in ("window" .= toJSON args) : ols
 
 
 {-|

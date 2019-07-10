@@ -1,0 +1,59 @@
+{
+    "transform": [
+        {
+            "joinaggregate": [
+                {
+                    "op": "sum",
+                    "as": "TotalTime",
+                    "field": "Time"
+                }
+            ]
+        },
+        {
+            "as": "PercentOfTotal",
+            "calculate": "datum.Time/datum.TotalTime * 100"
+        }
+    ],
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "Time": 8,
+                "Activity": "Sleeping"
+            },
+            {
+                "Time": 2,
+                "Activity": "Eating"
+            },
+            {
+                "Time": 4,
+                "Activity": "TV"
+            },
+            {
+                "Time": 8,
+                "Activity": "Work"
+            },
+            {
+                "Time": 2,
+                "Activity": "Exercise"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "PercentOfTotal",
+            "type": "quantitative",
+            "axis": {
+                "title": "% of total Time"
+            }
+        },
+        "y": {
+            "field": "Activity",
+            "scale": {
+                "rangeStep": 12
+            },
+            "type": "nominal"
+        }
+    }
+}

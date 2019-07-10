@@ -9,22 +9,18 @@ import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter)
 
--- TODO: note, unable to run any of these tests at present
-
 testSpecs :: [(String, VegaLite)]
-testSpecs = [ -- ("window1", window1)
-            -- , ("window2", window2)
-            -- , ("window3", window3)
-            -- , ("window4", window4)
-            -- , ("window5", window5)
+testSpecs = [ ("window1", window1)
+            , ("window2", window2)
+            , ("window3", window3)
+            , ("window4", window4)
+            , ("window5", window5)
             -- , ("window6", window6)
-            -- , ("window7", window7)
-            -- ("joinAggregate1", joinAggregate1)
-            -- ("joinAggregate2", joinAggregate2)
-            -- ("joinAggregate3", joinAggregate3)
+            , ("window7", window7)
+            , ("joinAggregate1", joinAggregate1)
+            -- , ("joinAggregate2", joinAggregate2)
+            -- , ("joinAggregate3", joinAggregate3)
             ]
-
-{- TODO: add window
 
 window1 :: VegaLite
 window1 =
@@ -163,7 +159,7 @@ window5 =
     in toVegaLite [ width 400, height 400, dataVals [], trans [], enc [], mark Line [ MOrient Vertical ] ]
 
 
--- This currently doesn't work with 0.4.0.0 as SortProperty has not been updated
+{- TODO: add ByField/PSort
 
 window6 :: VegaLite
 window6 =
@@ -187,7 +183,7 @@ window6 =
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
-
+-}
 
 window7 :: VegaLite
 window7 =
@@ -219,10 +215,6 @@ window7 =
             
     in toVegaLite [ width 500, height 400, dataVals, trans [], layer [ circleSpec, lineSpec ] ]
 
--}
-
-
-{- TODO: add joinAggregate
 
 joinAggregate1 :: VegaLite
 joinAggregate1 =
@@ -243,7 +235,7 @@ joinAggregate1 =
                 
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
 
-
+{- TODO: add ByChannel
 joinAggregate2 :: VegaLite
 joinAggregate2 =
     let dataVals =
@@ -266,8 +258,9 @@ joinAggregate2 =
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
+-}
 
-
+{- TODO: add ByChannel
 joinAggregate3 :: VegaLite
 joinAggregate3 =
     let dataVals =
@@ -292,5 +285,4 @@ joinAggregate3 =
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
-
 -}
