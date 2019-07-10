@@ -387,6 +387,9 @@ module Graphics.Vega.VegaLite
        , MonthName(..)
        , DayName(..)
 
+         -- * Breaking changes
+         --
+         -- $breaking
         )
     where
 
@@ -518,6 +521,15 @@ import Data.Monoid ((<>))
 --
 -- For details, see the
 -- <https://vega.github.io/vega-lite/docs/condition.html Vega-Lite documentation>.
+
+-- $breaking
+-- The @0.4.0.0@ release added a large number of functions, types, and
+-- constructors. It also removed and renamed the following symbols:
+--
+-- The @SReverse@ construtor was removed from 'ScaleProperty' as it
+-- represented a Vega, rather than Vega-Lite, property. The 'PSort'
+-- constructor is used to change the order of an axis.
+
 
 --- helpers not in VegaLite.elm
 
@@ -1587,6 +1599,11 @@ enc = encoding
 encoding :: [LabelledSpec] -> (VLProperty, VLSpec)
 encoding channels = (VLEncoding, object channels)
 
+-- TODO:
+--
+--  encoding of X2/... shouldn't include the PmType in the output, apparently
+--  so we could try and filter that out, or just rely on the user to not
+--  add the PmType fields in this case.
 
 {-|
 
@@ -1596,6 +1613,7 @@ two scales are overlaid in the same space. Geographic positions represented by
 longitude and latiutude values are identified with @Longitude@, @Latitude@ and
 their respective secondary equivalents. Such geographic position channels are
 subject to a map projection (set using 'projection') before being placed graphically.
+
 -}
 data Position
     = X
