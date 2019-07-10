@@ -1,0 +1,120 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "rank",
+                    "as": "rank"
+                }
+            ],
+            "groupby": [
+                "matchday"
+            ],
+            "sort": [
+                {
+                    "field": "point",
+                    "order": "descending"
+                }
+            ]
+        }
+    ],
+    "height": 400,
+    "mark": {
+        "orient": "vertical",
+        "type": "line"
+    },
+    "data": {
+        "values": [
+            {
+                "point": 3,
+                "matchday": 1,
+                "team": "Man Utd"
+            },
+            {
+                "point": 1,
+                "matchday": 1,
+                "team": "Chelsea"
+            },
+            {
+                "point": 1,
+                "matchday": 1,
+                "team": "Man City"
+            },
+            {
+                "point": 0,
+                "matchday": 1,
+                "team": "Spurs"
+            },
+            {
+                "point": 6,
+                "matchday": 2,
+                "team": "Man Utd"
+            },
+            {
+                "point": 1,
+                "matchday": 2,
+                "team": "Chelsea"
+            },
+            {
+                "point": 0,
+                "matchday": 2,
+                "team": "Man City"
+            },
+            {
+                "point": 3,
+                "matchday": 2,
+                "team": "Spurs"
+            },
+            {
+                "point": 9,
+                "matchday": 3,
+                "team": "Man Utd"
+            },
+            {
+                "point": 1,
+                "matchday": 3,
+                "team": "Chelsea"
+            },
+            {
+                "point": 0,
+                "matchday": 3,
+                "team": "Man City"
+            },
+            {
+                "point": 6,
+                "matchday": 3,
+                "team": "Spurs"
+            }
+        ]
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "team",
+            "scale": {
+                "domain": [
+                    "Man Utd",
+                    "Chelsea",
+                    "Man City",
+                    "Spurs"
+                ],
+                "range": [
+                    "#cc2613",
+                    "#125dc7",
+                    "#8bcdfc",
+                    "#d1d1d1"
+                ]
+            },
+            "type": "nominal"
+        },
+        "x": {
+            "field": "matchday",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "rank",
+            "type": "ordinal"
+        }
+    }
+}
