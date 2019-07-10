@@ -15,11 +15,11 @@ testSpecs = [ ("window1", window1)
             , ("window3", window3)
             , ("window4", window4)
             , ("window5", window5)
-            -- , ("window6", window6)
+            , ("window6", window6)
             , ("window7", window7)
             , ("joinAggregate1", joinAggregate1)
-            -- , ("joinAggregate2", joinAggregate2)
-            -- , ("joinAggregate3", joinAggregate3)
+            , ("joinAggregate2", joinAggregate2)
+            , ("joinAggregate3", joinAggregate3)
             ]
 
 window1 :: VegaLite
@@ -159,8 +159,6 @@ window5 =
     in toVegaLite [ width 400, height 400, dataVals [], trans [], enc [], mark Line [ MOrient Vertical ] ]
 
 
-{- TODO: add ByField/PSort
-
 window6 :: VegaLite
 window6 =
     let dataVals =
@@ -179,11 +177,10 @@ window6 =
                 . position Y
                     [ PName "student"
                     , PmType Nominal
-                    , PSort [ ByField "score" Mean, Descending ]
+                    , PSort [ ByFieldOp "score" Mean, Descending ]
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
--}
 
 window7 :: VegaLite
 window7 =
@@ -235,7 +232,6 @@ joinAggregate1 =
                 
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
 
-{- TODO: add ByChannel
 joinAggregate2 :: VegaLite
 joinAggregate2 =
     let dataVals =
@@ -258,9 +254,7 @@ joinAggregate2 =
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
--}
 
-{- TODO: add ByChannel
 joinAggregate3 :: VegaLite
 joinAggregate3 =
     let dataVals =
@@ -285,4 +279,3 @@ joinAggregate3 =
                     ]
                     
     in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
--}

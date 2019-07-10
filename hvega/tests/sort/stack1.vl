@@ -1,0 +1,112 @@
+{
+    "transform": [
+        {
+            "groupby": [
+                "Origin",
+                "Cylinders"
+            ],
+            "aggregate": [
+                {
+                    "op": "count",
+                    "as": "count_*",
+                    "field": ""
+                }
+            ]
+        },
+        {
+            "groupby": [],
+            "as": [
+                "stack_count_Origin1",
+                "stack_count_Origin2"
+            ],
+            "offset": "normalize",
+            "sort": [
+                {
+                    "field": "Origin",
+                    "order": "ascending"
+                }
+            ],
+            "stack": "count_*"
+        },
+        {
+            "window": [
+                {
+                    "op": "min",
+                    "as": "x",
+                    "field": "stack_count_Origin1"
+                },
+                {
+                    "op": "max",
+                    "as": "x2",
+                    "field": "stack_count_Origin2"
+                }
+            ],
+            "groupby": [
+                "Origin"
+            ],
+            "frame": [
+                null,
+                null
+            ]
+        },
+        {
+            "groupby": [
+                "Origin"
+            ],
+            "as": [
+                "y",
+                "y2"
+            ],
+            "offset": "normalize",
+            "sort": [
+                {
+                    "field": "Cylinders",
+                    "order": "ascending"
+                }
+            ],
+            "stack": "count_*"
+        }
+    ],
+    "mark": "rect",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x2": {
+            "field": "x2"
+        },
+        "color": {
+            "field": "Origin",
+            "type": "nominal"
+        },
+        "opacity": {
+            "field": "Cylinders",
+            "type": "quantitative",
+            "legend": null
+        },
+        "tooltip": [
+            {
+                "field": "Origin",
+                "type": "nominal"
+            },
+            {
+                "field": "Cylinders",
+                "type": "quantitative"
+            }
+        ],
+        "x": {
+            "field": "x",
+            "type": "quantitative",
+            "axis": null
+        },
+        "y2": {
+            "field": "y2"
+        },
+        "y": {
+            "field": "y",
+            "type": "quantitative",
+            "axis": null
+        }
+    }
+}

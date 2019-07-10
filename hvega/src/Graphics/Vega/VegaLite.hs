@@ -161,6 +161,14 @@ module Graphics.Vega.VegaLite
        , binAs
        , BinProperty(..)
 
+         -- ** Stacking
+         --
+         -- See the [Vega-Lite stack documentation](https://vega.github.io/vega-lite/docs/stack.html).
+
+       , stack
+       , StackProperty(..)
+       , StackOffset(..)
+
          -- ** Data Calculation
 
        , calculateAs
@@ -217,7 +225,6 @@ module Graphics.Vega.VegaLite
        , PositionChannel(..)
        , Position(..)
        , SortProperty(..)
-       , StackProperty(..)
        , AxisProperty(..)
        , OverlapStrategy(..)
        , Side(..)
@@ -586,6 +593,10 @@ import Data.Monoid ((<>))
 --
 -- The @Orient@ constructor in 'LegendConfig' has been renamed to
 -- 'LeOrient' (as 'Orient' has been added to `AxisConfig`).
+--
+-- The @StackProperty@ type has been renamed to 'StackOffset' and its
+-- constructors have changed, and a new 'StackProperty'
+-- type has been added (that references the 'StackOffset' type).
 
 
 --- helpers not in VegaLite.elm
@@ -1331,16 +1342,11 @@ data DataValues
     | Strings [T.Text]
 
 
-{- TODO: not used yet
-
 dataValuesSpecs :: DataValues -> [VLSpec]
 dataValuesSpecs (Booleans bs) = map toJSON bs
 dataValuesSpecs (DateTimes dtss) = map (object . map dateTimeProperty) dtss
 dataValuesSpecs (Numbers xs) = map toJSON xs
 dataValuesSpecs (Strings ss) = map toJSON ss
-
--}
-
 
 {-|
 
@@ -1863,22 +1869,108 @@ arrangementLabel Row = "row"
 arrangementLabel Flow = "repeat"  -- NOTE: not "flow"!
 
 
+-- | How are stacks applied within a transform?
+--
+--   Prior to version @0.4.0.0@ the @StackProperty@ type was
+--   what is now @StackOffset@.
+
+data StackProperty
+    = StOffset StackOffset
+      -- ^ Stack offset.
+      --
+      --   @since 0.4.0.0
+    | StSort [SortField]
+      -- ^ Ordering within a stack.
+      --
+      --   @since 0.4.0.0
+
+
 -- | Describes the type of stacking to apply to a bar chart.
 --
---   TODO update for v3 (Elm VegaLite now has StackOffset and StackProperty)
+--   In @0.4.0.0@ this was renamed from @StackProperty@ to @StackOffset@,
+--   but the constructor names have not changed.
 --
-data StackProperty
+data StackOffset
     = StZero
+      -- ^ Offset a stacked layout using a baseline at the foot of
+      --   the stack.
     | StNormalize
+      -- ^ Rescale a stacked layout to use a common height while
+      --   preserving the relative size of stacked quantities.
     | StCenter
+      -- ^ Offset a stacked layout using a central stack baseline.
     | NoStack
+      -- ^ Do not stack marks, but create a layered plot.
+
+stackOffsetSpec :: StackOffset -> VLSpec
+stackOffsetSpec StZero = "zero"
+stackOffsetSpec StNormalize = "normalize"
+stackOffsetSpec StCenter = "center"
+stackOffsetSpec NoStack = A.Null
+
+stackOffset :: StackOffset -> LabelledSpec
+stackOffset so = "stack" .= stackOffsetSpec so
 
 
-stackProperty :: StackProperty -> LabelledSpec
-stackProperty StZero = ("stack", "zero")
-stackProperty StNormalize = ("stack", "normalize")
-stackProperty StCenter = ("stack", "center")
-stackProperty NoStack = ("stack", A.Null)
+stackPropertySpecOffset , stackPropertySpecSort:: StackProperty -> Maybe VLSpec
+stackPropertySpecOffset (StOffset op) = Just (stackOffsetSpec op)
+stackPropertySpecOffset _ = Nothing
+
+stackPropertySpecSort (StSort sfs) = Just (toJSON (map sortFieldSpec sfs))
+stackPropertySpecSort _ = Nothing
+
+
+{-|
+
+Apply a stack transform for positioning multiple values. This is an alternative
+to specifying stacking directly when encoding position.
+
+@
+'transform'
+    . 'aggregate' [ 'opAs' 'Count' \"\" \"count_*\" ] [ \"Origin\", \"Cylinders\" ]
+    . stack "count_*"
+        []
+        \"stack_count_Origin1\"
+        \"stack_count_Origin2\"
+        [ 'StOffset' 'StNormalize', 'StSort' [ 'WAscending' \"Origin\" ] ]
+    . 'window'
+        [ ( [ 'WAggregateOp' 'Min', 'WField' \"stack_count_Origin1\" ], \"x\" )
+        , ( [ WAggregateOp 'Max', WField \"stack_count_Origin2\" ], \"x2\" )
+        ]
+        [ 'WFrame' Nothing Nothing, 'WGroupBy' [ \"Origin\" ] ]
+    . stack \"count_*\"
+        [ \"Origin\" ]
+        \"y\"
+        \"y2\"
+        [ StOffset StNormalize, StSort [ WAscending \"Cylinders\" ] ]
+@
+
+@since 0.4.0.0
+
+-}
+
+stack ::
+  T.Text
+  -- ^ The field to be stacked.
+  -> [T.Text]
+  -- ^ The fields to group by.
+  -> T.Text
+  -- ^ The output field name (start).
+  -> T.Text
+  -- ^ The output field name (end).
+  -> [StackProperty]
+  -- ^ Offset and sort properties.
+  -> BuildLabelledSpecs
+stack f grp start end sProps ols =
+  let ags = [ toJSON f, toJSON grp, toJSON start, toJSON end
+            , toSpec (mapMaybe stackPropertySpecOffset sProps)
+            , toSpec (mapMaybe stackPropertySpecSort sProps)
+            ]
+
+      toSpec [x] = x
+      toSpec _ = A.Null
+
+  in ("stack", toJSON ags) : ols
 
 
 {-|
@@ -2090,32 +2182,69 @@ cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", 
 Allow type of sorting to be customised. For details see the
 <https://vega.github.io/vega-lite/docs/sort.html Vega-Lite documentation>.
 
-TODO: a significant rework?
+The constructors have been changed in version @0.4.0.0@, with
+@Op@, @ByField@, and @ByRepeat@ removed, and their functionality
+replaced with 'ByRepeatOp', 'ByFieldOp', and 'ByChannel'.
 
 -}
 data SortProperty
     = Ascending
+      -- ^ Sorting is from low to high.
     | Descending
-    -- | CustomSort DataValues    -- ^ @since 0.4.0.0
-    | Op Operation
-    | ByField T.Text
-    | ByRepeat Arrangement
+      -- ^ Sorting is from high to low.
+    | CustomSort DataValues
+      -- ^ Custom sort order listing data values explicitly.
+      --
+      --   @since 0.4.0.0
+    | ByRepeatOp Arrangement Operation
+      -- ^ Sort by the aggregated summaries of the given fields
+      --   (referenced by a repeat iterator) using an aggregation
+      --   operation.
+      --
+      --   @since 0.4.0.0
+    | ByFieldOp T.Text Operation
+      -- ^ Sort by the aggregated summary of a field using an aggregation
+      --   operation. The following example sorts the categorical data field
+      --   @variety@ by the mean age of the data in each variety category:
+      --
+      -- @
+      -- 'position' 'Y'
+      --   [ 'PName' "variety"
+      --   , 'PmType' 'Ordinal'
+      --   , 'PSort' [ ByField "age" 'Mean', 'Descending' ]
+      --   ]
+      -- @
+      --
+      --   @since 0.4.0.0
+    | ByChannel Channel
+      -- ^ Sorting is by another channel.
+      --
+      -- @
+      -- 'position' 'Y'
+      --  [ 'PName' "age"
+      --  , 'PmType' 'Ordinal'
+      --  , 'PSort' [ ByChannel 'ChX' ]
+      --  ]
+      -- @
+      --
+      --   @since 0.4.0.0
 
 
-sortProperty :: SortProperty -> LabelledSpec
-sortProperty Ascending = "order" .= fromT "ascending"
-sortProperty Descending = "order" .= fromT "descending"
-sortProperty (ByField field) = field_ field
-sortProperty (Op op) = op_ op
-sortProperty (ByRepeat arr) = "field" .= object [repeat_ arr]
+sortProperty :: SortProperty -> [LabelledSpec]
+sortProperty Ascending = [order_ "ascending"]
+sortProperty Descending = [order_ "descending"]
+sortProperty (ByChannel ch) = ["encoding" .= channelLabel ch]
+sortProperty (ByFieldOp field op) = [field_ field, op_ op]
+sortProperty (ByRepeatOp arr op) = ["field" .= object [repeat_ arr], op_ op]
+sortProperty (CustomSort _) = []
 
 
 sortPropertySpec :: [SortProperty] -> VLSpec
 sortPropertySpec [] = A.Null
 sortPropertySpec [Ascending] = fromT "ascending"
 sortPropertySpec [Descending] = fromT "descending"
--- sortPropertySpec [CustomSort dvs] -> dataValuesSpecs dvs
-sortPropertySpec ops = object (map sortProperty ops)
+sortPropertySpec [CustomSort dvs] = toJSON (dataValuesSpecs dvs)
+sortPropertySpec sps = object (concatMap sortProperty sps)
 
 
 -- | Position channel properties used for creating a position channel encoding.
@@ -2151,7 +2280,11 @@ data PositionChannel
     | PScale [ScaleProperty]
     | PAxis [AxisProperty]
     | PSort [SortProperty]
-    | PStack StackProperty
+    | PStack StackOffset
+    -- ^ Type of stacking offset for the field when encoding with a
+    --   position channel.
+    --
+    --   Changed from @StackProperty@ in version 0.4.0.0
 
 
 positionChannelProperty :: PositionChannel -> LabelledSpec
@@ -2172,7 +2305,7 @@ positionChannelProperty (PAxis aps) =
            else object (map axisProperty aps)
   in "axis" .= js
 positionChannelProperty (PSort ops) = sort_ ops
-positionChannelProperty (PStack sp) = stackProperty sp
+positionChannelProperty (PStack so) = stackOffset so
 
 
 measurementLabel :: Measurement -> T.Text
@@ -4060,7 +4193,10 @@ data ConfigurationProperty
     | Scale [ScaleConfig]
     | SelectionStyle [(Selection, [SelectionProperty])]
     | SquareStyle [MarkProperty]
-    | Stack StackProperty              -- TODO: change to StackOffset?
+    | Stack StackOffset
+    -- ^ The default stack offset style for stackable marks.
+    --
+    --   Changed from @StackProperty@ in version 0.4.0.0
     | TextStyle [MarkProperty]
     | TickStyle [MarkProperty]
     | TitleStyle [TitleConfig]
@@ -4110,7 +4246,7 @@ configProperty (NamedStyles styles) =
   let toStyle (nme, mps) = nme .= object (map markProperty mps)
   in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
-configProperty (Stack sp) = stackProperty sp
+configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
@@ -5467,6 +5603,23 @@ transform transforms =
                                                                 object [ ("data", vs V.! 1)
                                                                        , ("key", vs V.! 2) ] )
                                                              , ("as", vs V.! 3) ]
+              _ -> A.Null
+
+          "stack" ->
+            case dval of
+              Just (A.Array vs) | V.length vs == 6 ->
+                                    let [field, grp, start, end, offsetObj, sortObj] = V.toList vs
+
+                                        addField _ A.Null = []
+                                        addField f v = [(f, v)]
+
+                                        ols = [ ("stack", field)
+                                              , ("groupby", grp)
+                                              , ("as", toJSON [start, end]) ]
+                                              <> addField "offset" offsetObj
+                                              <> addField "sort" sortObj
+
+                                    in object ols
               _ -> A.Null
 
           "timeUnit" ->
