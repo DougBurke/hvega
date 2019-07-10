@@ -51,6 +51,7 @@
         },
         "x": {
             "field": "bin_start",
+            "bin": "binned",
             "type": "quantitative",
             "axis": {
                 "tickMinStep": 2

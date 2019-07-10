@@ -402,12 +402,16 @@
     "facet": {
         "row": {
             "field": "row",
-            "header": {},
+            "header": {
+                "title": null
+            },
             "type": "ordinal"
         },
         "column": {
             "field": "col",
-            "header": {},
+            "header": {
+                "title": null
+            },
             "type": "ordinal"
         }
     },

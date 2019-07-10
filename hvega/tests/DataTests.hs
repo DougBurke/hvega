@@ -38,7 +38,7 @@ testSpecs = [ ("data1", data1)
             , ("impute6", impute6)
             , ("impute7", impute7)
             , ("impute8", impute8)
-            -- , ("sample1", sample1)
+            , ("sample1", sample1)
             , ("bin1", bin1)
             , ("sequence1", sequence1)
             , ("sequence2", sequence2)
@@ -222,8 +222,6 @@ geodata1 =
         , encoding $ color [ MName "id", MmType Nominal ] []
         ]
 
--- TODO: add LNoTitle
-
 geodata2 :: VegaLite
 geodata2 =
     let
@@ -239,7 +237,7 @@ geodata2 =
         , configure $ configuration (View [ Stroke Nothing ]) []
         , dataFromJson geojson [ JSON "features" ]
         , projection [ PType Orthographic ]
-        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LTitle "" ] ] [])
+        , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LNoTitle ] ] [])
         , mark Geoshape []
         ]
 
@@ -408,8 +406,7 @@ impute8 =
     toVegaLite [ imputeData [], mark Line [], enc [] ]
 
 
-{- TODO: add sample
-
+sample1 :: VegaLite
 sample1 =
     let
         dvals =
@@ -432,10 +429,6 @@ sample1 =
     in
     toVegaLite [ dvals, hConcat [ spec1, spec2 ] ]
 
--}
-
-
--- TODO: add PBinned
 
 bin1 :: VegaLite
 bin1 =
@@ -449,7 +442,7 @@ bin1 =
         enc =
             encoding
                 . position X [ PName "bin_start", PmType Quantitative
-                             {- , PBinned -}
+                             , PBinned
                              , PAxis [ AxTickMinStep 2 ] ]
                 . position X2 [ PName "bin_end" ]
                 . position Y [ PName "count", PmType Quantitative ]
