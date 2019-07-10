@@ -524,6 +524,9 @@ import Data.Monoid ((<>))
 aggregate_ :: Operation -> LabelledSpec
 aggregate_ op = "aggregate" .= operationLabel op
 
+type_ :: T.Text -> LabelledSpec
+type_ t = "type" .= t
+
 field_ :: T.Text -> LabelledSpec
 field_ f = "field" .= f
 
@@ -539,8 +542,8 @@ sort_ ops = "sort" .= sortPropertySpec ops
 timeUnit_ :: TimeUnit -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 
-type_ :: Measurement -> LabelledSpec
-type_ m = "type" .= measurementLabel m
+mtype_ :: Measurement -> LabelledSpec
+mtype_ m = "type" .= measurementLabel m
 
 value_ :: T.Text -> LabelledSpec
 value_ v = "value" .= v
@@ -705,7 +708,7 @@ geojson =
 -}
 geoFeatureCollection :: [VLSpec] -> VLSpec
 geoFeatureCollection geoms =
-  object [ "type" .= ("FeatureCollection" :: T.Text)
+  object [ type_ "FeatureCollection"
          , "features" .=  geoms
          ]
 
@@ -726,7 +729,7 @@ geojson =
 -}
 geometryCollection :: [VLSpec] -> VLSpec
 geometryCollection geoms =
-  object [ "type" .= ("GeometryCollection" :: T.Text)
+  object [ type_ "GeometryCollection"
          , "geometries" .= geoms
          ]
 
@@ -1456,7 +1459,7 @@ data MarkChannel
 markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
-markChannelProperty (MmType t) = [type_ t]
+markChannelProperty (MmType t) = [mtype_ t]
 markChannelProperty (MScale sps) =
   [("scale", if null sps then A.Null else object (map scaleProperty sps))]
 markChannelProperty (MLegend lps) =
@@ -2037,7 +2040,7 @@ data PositionChannel
 positionChannelProperty :: PositionChannel -> LabelledSpec
 positionChannelProperty (PName s) = field_ s
 positionChannelProperty (PRepeat arr) = "field" .= object [repeat_ arr]
-positionChannelProperty (PmType m) = type_ m
+positionChannelProperty (PmType m) = mtype_ m
 positionChannelProperty (PBin b) = bin b
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PAggregate op) = aggregate_ op
@@ -3226,10 +3229,10 @@ selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
 selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
 selectionProperty (On e) = "on" .= e
-selectionProperty Empty = "empty" .= ("none" :: T.Text)
+selectionProperty Empty = "empty" .= fromT "none"
 selectionProperty (ResolveSelections res) = "resolve" .= selectionResolutionLabel res
 selectionProperty (SelectionMark markProps) = "mark" .= object (map selectionMarkProperty markProps)
-selectionProperty BindScales = "bind" .= ("scales" :: T.Text)
+selectionProperty BindScales = "bind" .= fromT "scales"
 selectionProperty (Bind binds) = "bind" .= object (map bindingSpec binds)
 selectionProperty (Nearest b) = "nearest" .= b
 selectionProperty (Toggle expr) = "toggle" .= expr
@@ -3373,7 +3376,7 @@ data Binding
 bindingSpec :: Binding -> LabelledSpec
 bindingSpec bnd =
   let (lbl, input, ps) = case bnd of
-        IRange label props -> (label, "range" :: T.Text, props)
+        IRange label props -> (label, fromT "range", props)
         ICheckbox label props -> (label, "checkbox", props)
         IRadio label props -> (label, "radio", props)
         ISelect label props -> (label, "select", props)
@@ -4034,8 +4037,8 @@ data HeaderProperty
 
 headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
-headerProperty HFormatAsNum = "formatType" .= ("number" :: T.Text)
-headerProperty HFormatAsTemporal = "formatType" .= ("time" :: T.Text)
+headerProperty HFormatAsNum = "formatType" .= fromT "number"
+headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
 headerProperty (HTitle ttl) = "title" .= ttl
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
@@ -4082,7 +4085,7 @@ data HyperlinkChannel
 hyperlinkChannelProperty :: HyperlinkChannel -> [LabelledSpec]
 hyperlinkChannelProperty (HName s) = [field_ s]
 hyperlinkChannelProperty (HRepeat arr) = ["field" .= object [repeat_ arr]]
-hyperlinkChannelProperty (HmType t) = [type_ t]
+hyperlinkChannelProperty (HmType t) = [mtype_ t]
 hyperlinkChannelProperty (HBin bps) = [bin bps]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
   let h = ("condition", hkey)
@@ -4195,7 +4198,7 @@ data FacetChannel
 
 facetChannelProperty :: FacetChannel -> LabelledSpec
 facetChannelProperty (FName s) = field_ s
-facetChannelProperty (FmType measure) = type_ measure
+facetChannelProperty (FmType measure) = mtype_ measure
 facetChannelProperty (FBin bps) = bin bps
 facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FAggregate op) = aggregate_ op
@@ -4244,7 +4247,7 @@ data TextChannel
 textChannelProperty :: TextChannel -> [LabelledSpec]
 textChannelProperty (TName s) = [field_  s]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
-textChannelProperty (TmType measure) = [type_ measure]
+textChannelProperty (TmType measure) = [mtype_ measure]
 textChannelProperty (TBin bps) = [bin bps]
 textChannelProperty (TAggregate op) = [aggregate_ op]
 textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
@@ -4281,7 +4284,7 @@ data OrderChannel
 orderChannelProperty :: OrderChannel -> LabelledSpec
 orderChannelProperty (OName s) = field_ s
 orderChannelProperty (ORepeat arr) = "field" .= object [repeat_ arr]
-orderChannelProperty (OmType measure) = type_ measure
+orderChannelProperty (OmType measure) = mtype_ measure
 orderChannelProperty (OBin bps) = bin bps
 orderChannelProperty (OAggregate op) = aggregate_ op
 orderChannelProperty (OTimeUnit tu) = timeUnit_ tu
@@ -4300,7 +4303,7 @@ data DetailChannel
 
 detailChannelProperty :: DetailChannel -> LabelledSpec
 detailChannelProperty (DName s) = field_ s
-detailChannelProperty (DmType t) = type_ t
+detailChannelProperty (DmType t) = mtype_ t
 detailChannelProperty (DBin bps) = bin bps
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
 detailChannelProperty (DAggregate op) = aggregate_ op
