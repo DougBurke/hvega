@@ -583,6 +583,9 @@ import Data.Monoid ((<>))
 -- removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
 -- are invalid. The 'AxTitleLimit' (new in this release) and
 -- 'TitleLimit' constructors should be used instead.
+--
+-- The @Orient@ constructor in 'LegendConfig' has been renamed to
+-- 'LeOrient' (as 'Orient' has been added to `AxisConfig`).
 
 
 --- helpers not in VegaLite.elm
