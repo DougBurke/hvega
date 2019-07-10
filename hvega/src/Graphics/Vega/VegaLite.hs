@@ -2790,24 +2790,54 @@ by the <https://github.com/d3/d3-geo d3-geo library>. For details of available
 projections see the
 <https://vega.github.io/vega-lite/docs/projection.html#projection-types Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/ProjectionType
+
 data Projection
     = Albers
+      -- ^ An Albers equal-area conic map projection.
     | AlbersUsa
+      -- ^ An Albers USA map projection that combines continental USA with
+      --   Alaska and Hawaii. Unlike other projection types, this remains
+      --   unaffected by 'PRotate'.
     | AzimuthalEqualArea
+      -- ^ An azimuthal equal area map projection.
     | AzimuthalEquidistant
+      -- ^ An azimuthal equidistant map projection.
     | ConicConformal
+      -- ^ A conformal conic map projection.
     | ConicEqualArea
+      -- ^ An equal area conic map projection.
     | ConicEquidistant
+      -- ^ An equidistant conic map projection.
     | Custom T.Text
       -- ^ Specify the name of the custom D3 prohection to use. See the
       --   <https://vega.github.io/vega/docs/projections/#register Vega API>
       --   for more information.
+      --
+      --   An example: @Custom "winkle3"@
     | Equirectangular
+      -- ^ An equirectangular map projection that maps longitude to x and latitude to y.
+      --   While showing less area distortion towards the poles than the default 'Mercator'
+      --   projection, it is neither equal-area nor conformal.
     | Gnomonic
+      -- ^ A gnomonic map projection.
+    | Identity
+      -- ^ The identiy projection. This can be combined with 'PReflectX' and
+      --   'PReflectY' in the list of projection properties.
+      --
+      --   @since 0.4.0.0
     | Mercator
+      -- ^ A Mercator map projection. This is the default projection of longitude, latitude
+      --   values if no projection is set explicitly. It preserves shape (local angle) and
+      --   lines of equal angular bearing remain parallel straight lines. The area is
+      --   /significantly/ enlarged towards the poles.
     | Orthographic
+      -- ^ An orthographic map projection.
     | Stereographic
+      -- ^ A stereographic map projection.
     | TransverseMercator
+      -- ^ A transverse Mercator map projection.
 
 
 projectionLabel :: Projection -> T.Text
@@ -2821,19 +2851,22 @@ projectionLabel ConicEquidistant = "conicEquidistant"
 projectionLabel (Custom pName) = pName
 projectionLabel Equirectangular = "equirectangular"
 projectionLabel Gnomonic = "gnomonic"
+projectionLabel Identity = "identity"
 projectionLabel Mercator = "mercator"
 projectionLabel Orthographic = "orthographic"
 projectionLabel Stereographic = "stereographic"
 projectionLabel TransverseMercator = "transverseMercator"
 
 
--- | Specifies a clipping rectangle in pixel units for defining
+-- | Specifies a clipping rectangle for defining
 --   the clip extent of a map projection.
 
 data ClipRect
     = NoClip
+      -- ^ No clipping it to be applied.
     | LTRB Double Double Double Double
-      -- ^ The left, top, right, and bottom extents.
+      -- ^ The left, top, right, and bottom extents, in pixels,
+      --   of a rectangular clip.
 
 
 {-|
@@ -2842,22 +2875,71 @@ Properties for customising a geospatial projection that converts longitude,latit
 pairs into planar @(x,y)@ coordinate pairs for rendering and query. For details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/Projection
+
 data ProjectionProperty
     = PType Projection
+      -- ^ The type of the map projection.
     | PClipAngle (Maybe Double)
+      -- ^ The clipping circle angle in degrees. A value of @Nothing@ will switch to
+      --   antimeridian cutting rather than small-circle clipping.
     | PClipExtent ClipRect
+      -- ^ Projection’s viewport clip extent to the specified bounds in pixels.
     | PCenter Double Double
+      -- ^ Projection’s center as longitude and latitude in degrees.
+    | PrScale Double
+      -- ^ The projection's zoom scale, which if set, overrides automatic scaling of a
+      --   geo feature to fit within the viewing area.
+      --
+      --   Note that the prefix is @Pr@ and not @P@, so that is does not conflict with
+      --   'PScale'.
+      --
+      --   @since 0.4.0.0
+    | PrTranslate Double Double
+      -- ^ A projection’s panning translation, which if set, overrides automatic positioning
+      --   of a geo feature to fit within the viewing area
+      --
+      --   Note that the prefix is @Pr@ and not @P@, to match the Elm API.
+      --
+      --   @since 0.4.0.0
     | PRotate Double Double Double
+      -- ^ A projection’s three-axis rotation angle. The order is @lambda@ @phi@ @gamma@,
+      --   and specifies the rotation angles in degrees about each spherical axis.
     | PPrecision Double
+      -- ^ Threshold for the projection’s adaptive resampling in pixels, and corresponds to the
+      --   Douglas–Peucker distance. If precision is not specified, the projection’s current
+      --   resampling precision of 0.707 is used.
+    | PReflectX Bool
+      -- ^ Reflect the x-coordinates after performing an identity projection. This
+      -- creates a left-right mirror image of the geoshape marks when subject to an
+      -- identity projection with 'Identity'.
+      --
+      -- @since 0.4.0.0
+    | PReflectY Bool
+      -- ^ Reflect the y-coordinates after performing an identity projection. This
+      -- creates a left-right mirror image of the geoshape marks when subject to an
+      -- identity projection with 'Identity'.
+      --
+      -- @since 0.4.0.0
     | PCoefficient Double
+      -- ^ The @Hammer@ map projection coefficient.
     | PDistance Double
+      -- ^ The @Satellite@ map projection distance.
     | PFraction Double
+      -- ^ The @Bottomley@ map projection fraction.
     | PLobes Int
+      -- ^ Number of lobes in lobed map projections such as the @Berghaus star@.
     | PParallel Double
+      -- ^ Parallel for map projections such as the @Armadillo@.
     | PRadius Double
+      -- ^ Radius value for map projections such as the @Gingery@.
     | PRatio Double
+      -- ^ Ratio value for map projections such as the @Hill@.
     | PSpacing Double
+      -- ^ Spacing value for map projections such as the @Lagrange@.
     | PTilt Double
+      -- ^ @Satellite@ map projection tilt.
 
 
 projectionProperty :: ProjectionProperty -> LabelledSpec
@@ -2868,9 +2950,13 @@ projectionProperty (PClipExtent rClip) =
     NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
-projectionProperty (PCenter lon lat) = "center" .= map toJSON [lon, lat]
-projectionProperty (PRotate lambda phi gamma) = "rotate" .= map toJSON [lambda, phi, gamma]
-projectionProperty (PPrecision pr) = "precision" .= pr
+projectionProperty (PCenter lon lat) = "center" .= [lon, lat]
+projectionProperty (PrScale sc) = "scale" .= sc
+projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
+projectionProperty (PRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
+projectionProperty (PPrecision pr) = "precision" .= show pr  -- this is a string, not a number, in v3.3.0 of the spec! See https://github.com/vega/vega-lite/issues/5190
+projectionProperty (PReflectX b) = "reflectX" .= b
+projectionProperty (PReflectY b) = "reflectY" .= b
 projectionProperty (PCoefficient x) = "coefficient" .= x
 projectionProperty (PDistance x) = "distance" .= x
 projectionProperty (PFraction x) = "fraction" .= x
@@ -3511,11 +3597,17 @@ GeoJSON specification.
 -}
 data Geometry
     = GeoPoint Double Double
+    -- ^ The GeoJson geometry @point@ type.
     | GeoPoints [(Double, Double)]
+    -- ^ The GeoJson geometry @multi-point@ type.
     | GeoLine [(Double, Double)]
+    -- ^ The GeoJson geometry @line@ type.
     | GeoLines [[(Double, Double)]]
+    -- ^ The GeoJson geometry @multi-line@ type.
     | GeoPolygon [[(Double, Double)]]
+    -- ^ The GeoJson geometry @polygon@ type.
     | GeoPolygons [[[(Double, Double)]]]
+    -- ^ The GeoJson geometry @multi-polygon@ type.
 
 
 {-|

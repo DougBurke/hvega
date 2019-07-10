@@ -9,6 +9,12 @@ by Matthew Pickering (mpickering).
 Corrected the serialization of `Function` to match the Vega Lite 3.3.0
 specification.
 
+The serialization of the `precision` field created by the `PPrecision`
+constructor now uses a string rather than number, to match the
+Vega Lite 3.3.0 specification. I hope this is an error in the schema
+and we can go back to a numberic encoding soon
+(see https://github.com/vega/vega-lite/issues/5190).
+
 Added the `MarkErrorExtent` type, to indicate the extent of the rule
 used for error bars and added the `ErrorBar` and `ErrorBand` marks.
 The `MarkProperty` type has gained `MBorders` and `MExtent` constructors,

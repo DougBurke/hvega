@@ -28,8 +28,8 @@ testSpecs = [ ("defaultSize1", defaultSize1)
             , ("graticule2", graticule2)
             , ("graticule3", graticule3)
             , ("graticule4", graticule4)
-            -- , ("scale1", scale1)
-            -- , ("translate1", translate1)
+            , ("scale1", scale1)
+            , ("translate1", translate1)
             , ("mapComp1", mapComp1)
             , ("mapComp2", mapComp2)
             , ("mapComp3", mapComp3)
@@ -367,8 +367,6 @@ graticule4 =
     in
     toVegaLite [ width 300, height 300, proj, layer [ sphereSpec, gratSpec ] ]
 
-{- TODO add PScale / PrScale
-
 scale1 :: VegaLite
 scale1 =
     let
@@ -377,7 +375,7 @@ scale1 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic, PScale 470 ]
+            projection [ PType Orthographic, PrScale 470 ]
 
         countrySpec =
             asSpec [ dataVals, mark Geoshape [ MFill "rgb(149,181,146)" ] ]
@@ -389,10 +387,7 @@ scale1 =
                 ]
     in
     toVegaLite [ width 300, height 300, proj, layer [ countrySpec, gratSpec ] ]
--}
 
-
-{- TODO add PTranslate or PrTranslate
 
 translate1 :: VegaLite
 translate1 =
@@ -402,7 +397,7 @@ translate1 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic, PTranslate 0 100 ]
+            projection [ PType Orthographic, PrTranslate 0 100 ]
 
         countrySpec =
             asSpec [ dataVals, mark Geoshape [ MFill "rgb(149,181,146)" ] ]
@@ -415,7 +410,6 @@ translate1 =
     in
     toVegaLite [ width 300, height 300, proj, layer [ countrySpec, gratSpec ] ]
 
--}
 
 mapComp1 :: VegaLite
 mapComp1 =

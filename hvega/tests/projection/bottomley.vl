@@ -1,0 +1,30 @@
+{
+    "height": 300,
+    "mark": {
+        "strokeWidth": 0.5,
+        "stroke": "#411",
+        "type": "geoshape",
+        "fillOpacity": 1.0e-2
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/graticule.json",
+        "format": {
+            "feature": "graticule",
+            "type": "topojson"
+        }
+    },
+    "width": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "clipAngle": 179.999,
+        "precision": "0.1",
+        "type": "bottomley",
+        "rotate": [
+            20,
+            -90,
+            0
+        ]
+    },
+    "title": "bottomley",
+    "background": "#c1e7f5"
+}
