@@ -593,6 +593,10 @@ import Data.Monoid ((<>))
 --
 -- The @Orient@ constructor in 'LegendConfig' has been renamed to
 -- 'LeOrient' (as 'Orient' has been added to `AxisConfig`).
+--
+-- The @StackProperty@ type has been renamed to 'StackOffset' and its
+-- constructors have changed, and a new 'StackProperty'
+-- type has been added (that references the 'StackOffset' type).
 
 
 --- helpers not in VegaLite.elm
