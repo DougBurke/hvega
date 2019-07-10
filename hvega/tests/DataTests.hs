@@ -28,9 +28,8 @@ testSpecs = [ ("data1", data1)
             , ("namedData3", namedData3)
             , ("geodata1", geodata1)
             , ("geodata2", geodata2)
-            -- , ("flatten1", flatten1)
-            -- , ("fold1", fold1)
-            {-
+            , ("flatten1", flatten1)
+            , ("fold1", fold1)
             , ("impute1", impute1)
             , ("impute2", impute2)
             , ("impute3", impute3)
@@ -39,7 +38,6 @@ testSpecs = [ ("data1", data1)
             , ("impute6", impute6)
             , ("impute7", impute7)
             , ("impute8", impute8)
-            -}
             -- , ("sample1", sample1)
             , ("bin1", bin1)
             , ("sequence1", sequence1)
@@ -156,7 +154,7 @@ data10 = dataSource "myData3"
 
 
 {-
--- no arrow support
+-- TODO no arrow support
 
 data11 =
     let
@@ -245,20 +243,19 @@ geodata2 =
         , mark Geoshape []
         ]
 
-{- TODO: add flattenAs
-
+flatten1 :: VegaLite
 flatten1 =
     let
         dvals =
             dataFromJson
                 (A.toJSON (map A.object
-                    [ [ ( "key" .= "alpha" )
-                      , ( "foo" .= [ 1, 2 ] )
-                      , ( "bar" .= [ "A", "B" ] )
+                    [ [ ( "key" .= ("alpha" :: String) )
+                      , ( "foo" .= [ 1 :: Int, 2 ] )
+                      , ( "bar" .= [ "A" :: String, "B" ] )
                       ]
-                    , [ ( "key" .= "beta" )
-                      , ( "foo" .= [ 3, 4, 5 ] )
-                      , ( "bar" .= [ "C", "D" ] )
+                    , [ ( "key" .= ("beta" :: String) )
+                      , ( "foo" .= [ 3 :: Int, 4, 5 ] )
+                      , ( "bar" .= [ "C" :: String, "D" ] )
                       ]
                     ])
                 )
@@ -274,10 +271,9 @@ flatten1 =
                 . color [ MName "key", MmType Nominal ]
     in
     toVegaLite [ dvals [], trans [], mark Circle [], enc [] ]
--}
 
-{- TODO: add foldAs
 
+fold1 :: VegaLite
 fold1 =
     let
         dvals =
@@ -298,10 +294,7 @@ fold1 =
                 . color [ MName "country", MmType Nominal ]
     in
     toVegaLite [ dvals [], trans [], mark Bar [], enc [] ]
--}
 
-
-{- TODO: add support for impute
 
 imputeData :: [DataColumn] -> Data
 imputeData =
@@ -310,6 +303,8 @@ imputeData =
         . dataColumn "b" (Numbers [ 28, 91, 43, 55, 81, 53, 19 ])
         . dataColumn "c" (Numbers [ 0, 1, 0, 1, 0, 1, 0 ])
 
+
+impute1, impute2, impute3, impute4, impute5, impute6, impute7, impute8 :: VegaLite
 
 impute1 =
     let
@@ -345,7 +340,7 @@ impute3 =
     let
         trans =
             transform
-                . impute "b" "a" [ ImNewValue (Num 100), ImGroupBy [ "c" ], ImKeyValSequence 1 4 1 ]
+                . impute "b" "a" [ ImNewValue (Number 100), ImGroupBy [ "c" ], ImKeyValSequence 1 4 1 ]
 
         enc =
             encoding
@@ -411,8 +406,6 @@ impute8 =
                 . color [ MName "c", MmType Nominal ]
     in
     toVegaLite [ imputeData [], mark Line [], enc [] ]
-
--}
 
 
 {- TODO: add sample
