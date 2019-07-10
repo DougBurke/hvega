@@ -12,9 +12,9 @@ import Graphics.Vega.VegaLite hiding (filter, repeat)
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("ascending", sortAsc)
             , ("descending", sortDesc)
-            -- , ("weighted", sortWeight)
-            -- , ("custom", sortCustom)
-            -- , ("stack1", stack1)
+            , ("weighted", sortWeight)
+            , ("custom", sortCustom)
+            , ("stack1", stack1)
             ]
 
 
@@ -39,15 +39,9 @@ sortAsc, sortDesc :: VegaLite
 sortAsc = sortQuant "Horsepower" [ Ascending ]
 sortDesc = sortQuant "Horsepower" [ Descending ]
 
-{- TODO: add ByFieldOp
-
 sortWeight :: VegaLite
 sortWeight =
     sortQuant "Weight_in_lbs" [ ByFieldOp "Weight_in_lbs" Mean ]
-
--}
-
-{- TODO: add CustomSort
 
 sortCustom :: VegaLite
 sortCustom =
@@ -67,10 +61,6 @@ sortCustom =
                 . position Y [ PName "b", PmType Quantitative ]
     in
     toVegaLite [ datavals [], enc [], mark Bar [] ]
-
--}
-
-{- TODO: add a bunch of things ...
 
 stack1 :: VegaLite
 stack1 =
@@ -111,6 +101,3 @@ stack1 =
                     ]
     in
     toVegaLite [ cars, trans [], enc [], mark Rect [] ]
-
-
--}
