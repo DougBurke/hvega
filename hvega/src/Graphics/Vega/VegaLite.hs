@@ -1829,11 +1829,11 @@ binProperty (Nice b) = ("nice", toJSON b)
 
 
 bin :: [BinProperty] -> LabelledSpec
-bin bProps =
-  let ans = if null bProps
-            then toJSON True
-            else object (map binProperty bProps)
-  in ("bin", ans)
+bin [] = "bin" .= True
+bin xs = "bin" .= object (map binProperty xs)
+
+binned_ :: LabelledSpec
+binned_ = "bin" .= fromT "binned"
 
 
 {-|
@@ -2381,7 +2381,7 @@ positionChannelProperty :: PositionChannel -> LabelledSpec
 positionChannelProperty (PName s) = field_ s
 positionChannelProperty (PmType m) = mtype_ m
 positionChannelProperty (PBin b) = bin b
-positionChannelProperty PBinned = "bin" .= fromT "binned"
+positionChannelProperty PBinned = binned_
 positionChannelProperty (PAggregate op) = aggregate_ op
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= s
