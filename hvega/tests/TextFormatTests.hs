@@ -17,7 +17,7 @@ testSpecs = [ ("textFormat1", textFormat1)
             , ("textFormat2", textFormat2)
             ]
 
-{- TODO xxxFormatAsTemporal / xxx FormatAsNum -}
+-- TODO: TFormatAsTemporal
 
 textFormat1 :: VegaLite
 textFormat1 =
@@ -41,18 +41,18 @@ textFormat1 =
         encLabel =
             encoding
                 . position X [ PName "a", PmType Temporal
-                             , PAxis [ {- AxFormatAsTemporal
-                                     , -} AxFormat "%y" ] ]
+                             , PAxis [ AxFormatAsTemporal
+                                     , AxFormat "%y" ] ]
                 . position Y [ PName "b", PmType Quantitative
                              , PScale [ SZero False ]
-                             , PAxis [ {- AxFormatAsNum
-                                     , -} AxFormat ".2f" ] ]
+                             , PAxis [ AxFormatAsNum
+                                     , AxFormat ".2f" ] ]
                 . text [ TName "a", TmType Temporal
                        {- , TFormatAsTemporal -}
                        , TFormat "%b `%y" ]
                 . color [ MName "a", MmType Temporal
-                        , MLegend [ {- LFormatAsTemporal
-                                  , -} LFormat "%b %Y" ] ]
+                        , MLegend [ LFormatAsTemporal
+                                  , LFormat "%b %Y" ] ]
 
         specLabel =
             asSpec [ mark Text [ MdY 4, MdX 22 ], encLabel [] ]

@@ -52,6 +52,8 @@ type has been added (that references the `StackOffset` type).
 The `Average` constructor of `Operation` was removed, and `Mean`
 should be used instead.
 
+The `LEntryPadding` constructor of `LegendProperty` was removed.
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which
