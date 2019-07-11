@@ -1963,6 +1963,10 @@ data MarkChannel
       -- ^ Indicate that data encoding with a mark are already binned.
       --
       --   @since 0.4.0.0
+    | MSort [SortProperty]
+      -- ^ Sort order.
+      --
+      --   @since 0.4.0.0
     | MImpute [ImputeProperty]
       -- ^ Set the imputation rules for a mark channel. See the
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
@@ -1970,6 +1974,14 @@ data MarkChannel
       --   @since 0.4.0.0
     | MTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a mark property channel.
+    | MTitle T.Text
+      -- ^ Title of a field when encoding with a mark property channel.
+      --
+      --   @since 0.4.0.0
+    | MNoTitle
+      -- ^ Draw no title.
+      --
+      --   @since 0.4.0.0
     | MAggregate Operation
       -- ^ Compute aggregate summary statistics for a field to be encoded with a
       --   mark property channel.
@@ -2022,6 +2034,7 @@ markChannelProperty (MScale sps) = [scaleProp_ sps]
 markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
+markChannelProperty (MSort ops) = [sort_ ops]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   selCond_ markChannelProperty selName ifClause elseClause
@@ -2033,6 +2046,8 @@ markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
+markChannelProperty (MTitle s) = ["title" .= s]
+markChannelProperty MNoTitle = ["title" .= A.Null]
 
 
 {-|
@@ -2067,6 +2082,10 @@ The Vega-Lite specification supports setting those properties that take
 supported in @hvega@.
 
 -}
+
+-- based on schema 3.3.0 #/definitions/MarkConfig
+--
+-- but it also contains a number of other properties
 
 data MarkProperty
     = MAlign HAlign
