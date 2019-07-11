@@ -505,6 +505,8 @@ module Graphics.Vega.VegaLite
          --
 
        , LegendConfig(..)
+       , LegendLayout(..)
+       , BaseLegendLayout(..)
 
          -- ** Scale Configuration Options
          --
@@ -882,8 +884,12 @@ import Data.Monoid ((<>))
 -- are invalid. The 'AxTitleLimit' (new in this release) and
 -- 'TitleLimit' constructors should be used instead.
 --
--- The @Orient@ constructor in 'LegendConfig' has been renamed to
--- 'LeOrient' (as 'Orient' has been added to `AxisConfig`).
+-- There have been a number of changes to the 'LegendConfig' type: the
+-- @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
+-- @GradientWidth@, and @SymbolColor@ constructors have been removed;
+-- the renaming constructors have been renamed so they all begin with
+-- @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
+-- to 'AxisConfig'); and new constructors have been added.
 --
 -- The @StackProperty@ type has been renamed to 'StackOffset' and its
 -- constructors have changed, and a new 'StackProperty'
@@ -2188,7 +2194,7 @@ data MarkProperty
     | MShortTimeLabels Bool
       -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
-      -- ^ SIze of a mark.
+      -- ^ Size of a mark.
     | MStroke T.Text
       -- ^ Default stroke color of a mark.
     | MStrokeCap StrokeCap
@@ -3976,6 +3982,9 @@ Indicates desired orientation of a mark (e.g. horizontally or vertically
 oriented bars).
 
 -}
+
+-- TODO: rename Orientation?
+
 data MarkOrientation
     = Horizontal
     | Vertical
@@ -4160,92 +4169,313 @@ legendLabel Symbol = "symbol"
 Legend configuration options. For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
-The @LeOrient@ constructor was called @Orient@ prior to the @0.4.0.0@ release.
+This data type has seen significant changes in the @0.4.0.0@ release:
+
+- the @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@, @GradientWidth@
+  and @SymbolColor@ constructors were removed;
+
+- the constructors were removed;
+
+- the remaining constructors that did not begin with @Le@ were renamed (for
+  example @Orient@ was changed to 'LeOrient');
+Breaking change: r
+- and new constructors were added.
+
 -}
 
+-- based on schema 3.3.0 #/definitions/LegendConfig
+
 data LegendConfig
-    = CornerRadius Double
-    | FillColor T.Text
-    | LeOrient LegendOrientation
-      -- ^ The orientation of the legend.
-      --
-      --   This was renamed from @Orient@ in the 0.4.0.0 release.
+    = LeClipHeight Double
+      -- ^ The height in pixels at which to clip symbol legend entries.
       --
       --   @since 0.4.0.0
-    | Offset Double
-    | StrokeColor T.Text
-    | LeStrokeDash [Double]
-    | LeStrokeWidth Double
-    | LePadding Double
-    | GradientLabelBaseline VAlign
-    | GradientLabelLimit Double
-    | GradientLabelOffset Double
-    | GradientStrokeColor T.Text
-    | GradientStrokeWidth Double
-    | GradientHeight Double
-    | GradientWidth Double
+    | LeColumnPadding Double
+      -- ^ The horizontal padding, in pixels, between symbol legend entries.
+      --
+      --   @since 0.4.0.0
+    | LeColumns Int
+      -- ^ The number of columns in which to arrange symbol legend entries. A value
+      --   of @0@ or lower indicates a single row with one column per entry.
+      --
+      --   @since 0.4.0.0
+    | LeCornerRadius Double
+      -- ^ The corner radius for the full legend.
+    | LeFillColor T.Text
+      -- ^ The background fill color for the full legend.
+    | LeGradientDirection MarkOrientation
+      -- ^ The default direction for gradient legends.
+      --
+      --   @since 0.4.0.0
+    | LeGradientHorizontalMaxLength Double
+      -- ^ The maximum legend length for a horizontal gradient.
+      --
+      --   @since 0.4.0.0
+    | LeGradientHorizontalMinLength Double
+      -- ^ The minimum legend length for a horizontal gradient.
+      --
+      --   @since 0.4.0.0
+    | LeGradientLabelLimit Double
+      -- ^ The maximum allowed length, in pixels, of color-ramp gradient labels.
+    | LeGradientLabelOffset Double
+      -- ^ The vertical offset in pixels for color-ramp gradient labels.
+    | LeGradientLength Double
+      -- ^ The length in pixels of the primary axis of a color gradient.
+      --   See also 'LeGradientThickness'.
+      --
+      --   @since 0.4.0.0
+    | LeGradientOpacity Double
+      -- ^ The opacity of the color gradient.
+      --
+      --   @since 0.4.0.0
+    | LeGradientStrokeColor T.Text
+      -- ^ The color of the gradient stroke.
+    | LeGradientStrokeWidth Double
+      -- ^ The width of the gradient stroke, in pixels.
+    | LeGradientThickness Double
+      -- ^ The thickness in pixels of the color gradient. See also 'LeGradientLength'.
+      --
+      --   @since 0.4.0.0
+    | LeGradientVerticalMaxLength Double
+      -- ^ The maximum legend length for a vertical gradient.
+      --
+      --   @since 0.4.0.0
+    | LeGradientVerticalMinLength Double
+      -- ^ The minimum legend length for a vertical gradient.
+      --
+      --   @since 0.4.0.0
     | LeGridAlign CompositionAlignment
-      -- ^ @since 0.4.0.0
+      -- ^ The alignment to apply to symbol legends rows and columns.
+      --
+      --    @since 0.4.0.0
     | LeLabelAlign HAlign
+      -- ^ The alignment of the legend label.
     | LeLabelBaseline VAlign
+      -- ^ The position of the baseline of the legend label.
     | LeLabelColor T.Text
+      -- ^ The color of the legend label.
     | LeLabelFont T.Text
+      -- ^ The font of the legend label.
     | LeLabelFontSize Double
+      -- ^ The font of the legend label.
+    | LeLabelFontStyle T.Text
+      -- ^ The font style of the legend label.
+      --
+      --   @since 0.4.0.0
+    | LeLabelFontWeight FontWeight
+      -- ^ The font weight of the legend label.
+      --
+      --   @since 0.4.0.0
     | LeLabelLimit Double
+      -- ^ The maxumum allowed pixel width of the legend label.
     | LeLabelOffset Double
+      -- ^ The offset of the legend label.
+    | LeLabelOpacity Double
+      -- ^ The opacity of the legend label.
+      --
+      --   @since 0.4.0.0
+    | LeLabelOverlap OverlapStrategy
+      -- ^ How to resolve overlap of labels in gradient legends.
+      --
+      --   @since 0.4.0.0
+    | LeLabelPadding Double
+      -- ^ The passing in pixels between the legend and legend labels.
+      --
+      --   @since 0.4.0.0
+    | LeLabelSeparation Double
+      -- ^ The minimum separation between label bounding boxes for them
+      --   to be considered non-overlapping (ignored if 'ONone' is the
+      --   chosen overlap strategy).
+      --
+      --   @since 0.4.0.0
+    | LeLayout [LegendLayout]
+      -- ^ Layout parameters for the legend orient group.
+      --
+      --   @since 0.4.0.0
+     | LeLeX Double
+      -- ^ Custom x position for a legend with orientation 'LONone'.
+      --
+      --   @since 0.4.0.0
+     | LeLeY Double
+      -- ^ Custom y position for a legend with orientation 'LONone'.
+      --
+      --   @since 0.4.0.0
+    | LeOffset Double
+      -- ^ The offset in pixels between the legend and the data rectangle
+      --   and axes.
+    | LeOrient LegendOrientation
+      -- ^ The orientation of the legend.
+    | LePadding Double
+      -- ^ The padding between the border and content of the legend group.
+    | LeRowPadding Double
+      -- ^ The vertical padding in pixels between symbol legend entries.
+      --
+      --   @since 0.4.0.0
     | LeShortTimeLabels Bool
-    | EntryPadding Double
-    | SymbolColor T.Text
-    | SymbolType Symbol
-    | SymbolSize Double
-    | SymbolStrokeWidth Double
+      -- ^ Should month and weekday names be abbreviated?
+    | LeStrokeColor T.Text
+      -- ^ The border stoke color for the full legend.
+    | LeStrokeDash [Double]
+      -- ^ The border stroke dash pattern for the full legend (alternating
+      --   stroke, space lengths in pixels).
+    | LeStrokeWidth Double
+      -- ^ The border stroke width for the full legend.
+    | LeSymbolBaseFillColor T.Text
+      -- ^ The fill color for legend symbols. This is only applied if
+      --   there is no \"fill\" scale color encoding for the legend.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolBaseStrokeColor T.Text
+      -- ^ The stroke color for legend symbols. This is only applied if
+      --   there is no \"fill\" scale color encoding for the legend.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolDash [Double]
+      -- ^ The pattern for dashed symbol strokes (alternating
+      --   stroke, space lengths in pixels).
+      --
+      --   @since 0.4.0.0
+    | LeSymbolDashOffset Double
+      -- ^ The offset at which to start deawing the symbol dash pattern,
+      --   in pixels.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolDirection MarkOrientation
+      -- ^ The default direction for symbol legends.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolFillColor T.Text
+      -- ^ The color of the legend symbol.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolOffset Double
+      -- ^ The horizontal pixel offset for legend symbols.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolOpacity Double
+      -- ^ The opacity of the legend symbols.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolSize Double
+      -- ^ The size of the legend symbol, in pixels.
+    | LeSymbolStrokeColor T.Text
+      -- ^ The stroke color for legend symbols.
+      --
+      --   @since 0.4.0.0
+    | LeSymbolStrokeWidth Double
+      -- ^ The width of the symbol's stroke.
+    | LeSymbolType Symbol
+      -- ^ The default shape type for legend symbols.
+    | LeTitle T.Text
+      -- ^ The legend title.
+      --
+      --   @since 0.4.0.0
+    | LeNoTitle
+      -- ^ Draw no title for the legend.
+      --
+      --   @since 0.4.0.0
     | LeTitleAlign HAlign
+      -- ^ The horizontal text alignment for legend titles.
+    | LeTitleAnchor APosition
+      -- ^ The text anchor position for legend titles.
+      --
+      --   @since 0.4.0.0
     | LeTitleBaseline VAlign
+      -- ^ The vertical text alignment for legend titles.
     | LeTitleColor T.Text
+      -- ^ The color of the legend title.
     | LeTitleFont T.Text
+      -- ^ The font of the legend title.
     | LeTitleFontSize Double
+      -- ^ The font size of the legend title.
+    | LeTitleFontStyle T.Text
+      -- ^ The font style for the legend title.
+      --
+      --   @since 0.4.0.0
     | LeTitleFontWeight FontWeight
+      -- ^ The font weight of the legend title.
     | LeTitleLimit Double
+      -- ^ The maxmimum pixel width of the legend title.
+    | LeTitleOpacity Double
+      -- ^ The opacity of the legend title.
+      --
+      --   @since 0.4.0.0
+    | LeTitleOrient Side
+      -- ^ The orientation of the legend title.
+      --
+      --   @since 0.4.0.0
     | LeTitlePadding Double
+      -- ^ The padding, in pixels, between title and legend.
 
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
-legendConfigProperty (CornerRadius r) = "cornerRadius" .= r
-legendConfigProperty (FillColor s) = "fillColor" .= s
-legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
-legendConfigProperty (Offset x) = "offset" .= x
-legendConfigProperty (StrokeColor s) = "strokeColor" .= s
-legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= map toJSON xs
-legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
-legendConfigProperty (LePadding x) = "padding" .= x
-legendConfigProperty (GradientLabelBaseline va) = "gradientLabelBaseline" .= vAlignLabel va
-legendConfigProperty (GradientLabelLimit x) = "gradientLabelLimit" .= x
-legendConfigProperty (GradientLabelOffset x) = "gradientLabelOffset" .= x
-legendConfigProperty (GradientStrokeColor s) = "gradientStrokeColor" .= s
-legendConfigProperty (GradientStrokeWidth x) = "gradientStrokeWidth" .= x
-legendConfigProperty (GradientHeight x) = "gradientHeight" .= x
-legendConfigProperty (GradientWidth x) = "gradientWidth" .= x
+legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
+legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
+legendConfigProperty (LeColumns n) = "columns" .= n
+legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
+legendConfigProperty (LeFillColor s) = "fillColor" .= s
+legendConfigProperty (LeGradientDirection mo) = "gradientDirection" .= markOrientationLabel mo
+legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
+legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
+legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
+legendConfigProperty (LeGradientLabelOffset x) = "gradientLabelOffset" .= x
+legendConfigProperty (LeGradientLength x) = "gradientLength" .= x
+legendConfigProperty (LeGradientOpacity x) = "gradientOpacity" .= x
+legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= s
+legendConfigProperty (LeGradientStrokeWidth x) = "gradientStrokeWidth" .= x
+legendConfigProperty (LeGradientThickness x) = "gradientThickness" .= x
+legendConfigProperty (LeGradientVerticalMaxLength x) = "gradientVerticalMaxLength" .= x
+legendConfigProperty (LeGradientVerticalMinLength x) = "gradientVerticalMinLength" .= x
 legendConfigProperty (LeGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
 legendConfigProperty (LeLabelColor s) = "labelColor" .= s
 legendConfigProperty (LeLabelFont s) = "labelFont" .= s
 legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
+legendConfigProperty (LeLabelFontStyle s) = "labelFontStyle" .= s
+legendConfigProperty (LeLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
 legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
+legendConfigProperty (LeLabelOpacity x) = "labelOapcity" .= x
+legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
+legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
+legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
+legendConfigProperty (LeLayout ll) = "layout" .= object (map legendLayoutSpec ll)
+legendConfigProperty (LeLeX x) = "legendX" .= x
+legendConfigProperty (LeLeY x) = "legendY" .= x
+legendConfigProperty (LeOffset x) = "offset" .= x
+legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
+legendConfigProperty (LePadding x) = "padding" .= x
+legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
 legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
-legendConfigProperty (EntryPadding x) = "entryPadding" .= x
-legendConfigProperty (SymbolColor s) = "symbolColor" .= s
-legendConfigProperty (SymbolType s) = "symbolType" .= symbolLabel s
-legendConfigProperty (SymbolSize x) = "symbolSize" .= x
-legendConfigProperty (SymbolStrokeWidth x) = "symbolStrokeWidth" .= x
+legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
+legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= xs
+legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
+legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
+legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
+legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
+legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
+legendConfigProperty (LeSymbolDirection mo) = "symbolDirection" .= markOrientationLabel mo
+legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
+legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
+legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
+legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
+legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= s
+legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
+legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
+legendConfigProperty (LeTitle s) = "title" .= s
+legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
+legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
 legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
 legendConfigProperty (LeTitleColor s) = "titleColor" .= s
 legendConfigProperty (LeTitleFont s) = "titleFont" .= s
 legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
+legendConfigProperty (LeTitleFontStyle s) = "titleFontStyle" .= s
 legendConfigProperty (LeTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 legendConfigProperty (LeTitleLimit x) = "titleLimit" .= x
+legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
+legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 
 
@@ -4254,26 +4484,124 @@ legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 Indicates the legend orientation. See the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>
 for more details.
+
 -}
 
+-- based on schema 3.3.0 #/definitions/LegendOrient
+
 data LegendOrientation
-    = LOBottomLeft
-    | LOBottomRight
-    | LOLeft
-    | LONone
-    | LORight
-    | LOTopLeft
-    | LOTopRight
+  = LONone
+  | LOLeft
+  | LORight
+  | LOTop
+  -- ^ @since 0.4.0.0
+  | LOBottom
+  -- ^ @since 0.4.0.0
+  | LOTopLeft
+  | LOTopRight
+  | LOBottomLeft
+  | LOBottomRight
 
 
 legendOrientLabel :: LegendOrientation -> T.Text
+legendOrientLabel LONone = "none"
 legendOrientLabel LOLeft = "left"
-legendOrientLabel LOBottomLeft = "bottom-left"
-legendOrientLabel LOBottomRight = "bottom-right"
 legendOrientLabel LORight = "right"
+legendOrientLabel LOTop = "top"
+legendOrientLabel LOBottom = "bottom"
 legendOrientLabel LOTopLeft = "top-left"
 legendOrientLabel LOTopRight = "top-right"
-legendOrientLabel LONone = "none"
+legendOrientLabel LOBottomLeft = "bottom-left"
+legendOrientLabel LOBottomRight = "bottom-right"
+
+
+{- |
+
+/Highly experimental/
+
+@since 0.4.0.0
+
+-}
+
+-- based on schema 3.3.0 #/definitions/LegendLayout
+
+-- TODO: support SignalRef?
+
+data LegendLayout
+  = LeLAnchor APosition
+    -- ^ The anchor point for legend orient group layout.
+  | LeLBottom [BaseLegendLayout]
+  | LeLBottomLeft [BaseLegendLayout]
+  | LeLBottomRight [BaseLegendLayout]
+  | LeLBounds Bounds
+    -- ^ The bounds calculation to ude for legend orient group layout.
+  | LeLCenter Bool
+    -- ^ A flag to center legends within a shared orient group.
+  | LeLDirection MarkOrientation
+    -- ^ The layout firection for legend orient group layout.
+  | LeLLeft [BaseLegendLayout]
+  | LeLMargin Double
+    -- ^ The margin, in pixels, between legends within an orient group.
+  | LeLOffset Double
+    -- ^ The offset, in pixels, from the chart body for a legend orient group.
+  | LeLRight [BaseLegendLayout]
+  | LeLTop [BaseLegendLayout]
+  | LeLTopLeft [BaseLegendLayout]
+  | LeLTopRight [BaseLegendLayout]
+
+
+legendLayoutSpec :: LegendLayout -> LabelledSpec
+legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
+legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
+legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
+legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
+legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
+legendLayoutSpec (LeLCenter b) = "center" .= b
+legendLayoutSpec (LeLDirection mo) = "direction" .= markOrientationLabel mo
+legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
+legendLayoutSpec (LeLMargin x) = "margin" .= x
+legendLayoutSpec (LeLOffset x) = "offset" .= x
+legendLayoutSpec (LeLRight bl) = "right" .= toBLSpec bl
+legendLayoutSpec (LeLTop bl) = "top" .= toBLSpec bl
+legendLayoutSpec (LeLTopLeft bl) = "top-left" .= toBLSpec bl
+legendLayoutSpec (LeLTopRight bl) = "top-right" .= toBLSpec bl
+
+
+toBLSpec :: [BaseLegendLayout] -> VLSpec
+toBLSpec = object . map baseLegendLayoutSpec
+
+{- |
+
+/Highly experimental/
+
+@since 0.4.0.0
+
+-}
+
+-- based on schema 3.3.0 #/definitions/BaseLegendLayout
+
+data BaseLegendLayout
+  = BLeLAnchor APosition
+    -- ^ The anchor point for legend orient group layout.
+  | BLeLBounds Bounds
+    -- ^ The bounds calculation to use for legend orient group layout.
+  | BLeLCenter Bool
+    -- ^ A flag to center legends within a shared orient group.
+  | BLeLDirection MarkOrientation
+    -- ^ The layout direction for legend orient group layout.
+  | BLeLMargin Double
+    -- ^ The margin, in pixels, between legends within an orient group.
+  | BLeLOffset Double
+    -- ^ The offset, in pixels, from the chart body for a legend orient group.
+
+
+baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
+baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
+baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
+baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
+baseLegendLayoutSpec (BLeLDirection mo) = "direction" .= markOrientationLabel mo
+baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
+baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 
 {-|
@@ -4470,7 +4798,7 @@ data LegendProperty
       --
       --   @since 0.4.0.0
     | LTitlePadding Double
-      -- ^ Thepadding, in pixels, between title and legend.
+      -- ^ The padding, in pixels, between title and legend.
       --
       --   @since 0.4.0.0
     | LType Legend
@@ -6796,6 +7124,7 @@ data Bounds
     -- ^ Bounds calculation should take only the specified width and height values for
     --   a sub-view. Useful when attempting to place sub-plots without axes or legends into
     --   a uniform grid structure.
+
 
 boundsSpec :: Bounds -> VLSpec
 boundsSpec Full = "full"

@@ -11,11 +11,11 @@ import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("legend1", legend1)
-            -- , ("legend2", legend2)
+            , ("legend2", legend2)
             , ("legend3", legend3)
             , ("legend4", legend4)
             , ("legend5", legend5)
-            -- , ("legend6", legend6)
+            , ("legend6", legend6)
             , ("legend7", legend7)
             , ("legend8", legend8)
             , ("legend9", legend9)
@@ -65,10 +65,8 @@ legendCoreCfg cfg =
 legend1 :: VegaLite
 legend1 = legendCoreCfg []
 
-{- TODO: add LOTop
 legend2 :: VegaLite
 legend2 = legendCore [ LOrient LOTop ]
--}
 
 legend3 :: VegaLite
 legend3 = legendCore [ LOrient LOTopRight ]
@@ -79,10 +77,8 @@ legend4 = legendCore [ LOrient LORight ]
 legend5 :: VegaLite
 legend5 = legendCore [ LOrient LOBottomRight ]
 
-{- TODO: add LOBottom
 legend6 :: VegaLite
 legend6 = legendCore [ LOrient LOBottom ]
--}
 
 legend7 :: VegaLite
 legend7 = legendCore [ LOrient LOBottomLeft ]
@@ -108,17 +104,14 @@ legend10 =
     in
     toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
 
--- TODO: add missing constructors
 legend11 :: VegaLite
 legend11 =
     legendCoreCfg
-        [ SymbolStrokeWidth 3
-        {-
+        [ LeSymbolStrokeWidth 3
         , LeSymbolStrokeColor "black"
         , LeRowPadding 15
-        -}
         , LeTitlePadding 20
-        , StrokeColor "lightgrey"
+        , LeStrokeColor "lightgrey"
         , LeStrokeWidth 5
         , LePadding 30
         , LeStrokeDash [ 4, 2, 6, 1 ]

@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.2.0.3
+
+Updated the supported `hvega` range to include version 0.4.
+
 ## 0.2.0.2
 
 Updated the upper bounds of `ihaskell` to allow version 0.10.
