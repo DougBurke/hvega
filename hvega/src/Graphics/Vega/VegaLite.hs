@@ -3997,6 +3997,8 @@ different names.
 @since 0.4.0.0
 -}
 
+-- based on schema 3.3.0 #/definitions/ErrorBarExtent
+
 data MarkErrorExtent
   = ConfidenceInterval
     -- ^ Band extent between the 95% confidence intervals of a distribution.
@@ -4008,6 +4010,10 @@ data MarkErrorExtent
     -- ^ Band extent between the lower and upper quartiles of a distribution
     --   (the inter-quartile range).
     {- these don't appear to be in the Vega-Lite schema as of 3.3.0
+
+        well, you can use them with 'extent', just not with the settings
+        above
+
   | ExRange
     -- ^ Band extent between the minimum and maximum values in a distribution.
   | IqrScale Double
@@ -5432,6 +5438,25 @@ Type of configuration property to customise. See the
 for details.
 
 -}
+
+-- based on schema 3.3.0 #/definitions/Config
+--
+-- TODO:
+--   Bar - change to BarConfig rather than MarkProperty?
+--     BoxplotStyle BoxPlotConfig
+--     Concat CompositionConfig
+--     ErrorBand ErrorBandCOnfig
+--     ErrorBar ErrorBarCOnfig
+--   Facet takes CompositionConfig not FacetConfig
+--     HeaderColumn takes HeaderConfig, just as HeaderStyle does
+--     HeaderFacet ditto
+--     HeaderRow ditto
+--   LineStyle takes LineConfig not MarkConfig
+--   TextStyle takes TextConfig not MarkConfig
+--   TickStyle takes TickConfig not MarkConfig
+--   TrailStyle takes LineConfig not MarkConfig
+--
+
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -5439,20 +5464,20 @@ data ConfigurationProperty
       -- ^ The default sizing of visualizations.
     | Axis [AxisConfig]
       -- ^ The default appearance of axes.
-    | AxisX [AxisConfig]
-      -- ^ The default appearance of the X axes.
-    | AxisY [AxisConfig]
-      -- ^ The default appearance of the Y axes.
+    | AxisBand [AxisConfig]
+      -- ^ The default appearance of axes with band scaling.
+    | AxisBottom [AxisConfig]
+      -- ^ The default appearance of the bottom-side axes.
     | AxisLeft [AxisConfig]
       -- ^ The default appearance of the left-side axes.
     | AxisRight [AxisConfig]
       -- ^ The default appearance of the right-side axes.
     | AxisTop [AxisConfig]
       -- ^ The default appearance of the top-side axes.
-    | AxisBottom [AxisConfig]
-      -- ^ The default appearance of the bottom-side axes.
-    | AxisBand [AxisConfig]
-      -- ^ The default appearance of axes with band scaling.
+    | AxisX [AxisConfig]
+      -- ^ The default appearance of the X axes.
+    | AxisY [AxisConfig]
+      -- ^ The default appearance of the Y axes.
     | Background T.Text
       -- ^ The default background color of visualizations.
     | BarStyle [MarkProperty]
@@ -5461,24 +5486,24 @@ data ConfigurationProperty
       -- ^ The default appearance of circle marks.
     | CountTitle T.Text
       -- ^ The default title style for count fields.
+    | FacetStyle [FacetConfig]
+      -- ^ The default appearance of facet layouts.
+      --
+      --   @since 0.4.0.0
     | FieldTitle FieldTitleProperty
       -- ^ The default title-generation style for fields.
     | GeoshapeStyle [MarkProperty]
       -- ^ The default appearance of geoshape marks.
       --
       --   @since 0.4.0.0
-    | Legend [LegendConfig]
-      -- ^ The default appearance of legends.
-    | LineStyle [MarkProperty]
-      -- ^ The default appearance of line marks.
-    | FacetStyle [FacetConfig]
-      -- ^ The default appearance of facet layouts.
-      --
-      --   @since 0.4.0.0
     | HeaderStyle [HeaderProperty]
       -- ^ The default appearance of facet headers.
       --
       --   @since 0.4.0.0
+    | Legend [LegendConfig]
+      -- ^ The default appearance of legends.
+    | LineStyle [MarkProperty]
+      -- ^ The default appearance of line marks.
     | MarkStyle [MarkProperty]
       -- ^ The default mark appearance.
     | NamedStyle T.Text [MarkProperty]
@@ -5519,10 +5544,10 @@ data ConfigurationProperty
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
       -- ^ The default appearance of tick marks.
-    | TitleStyle [TitleConfig]
-      -- ^ The default appearance of visualization titles.
     | TimeFormat T.Text
       -- ^ The default time format for axis and legend labels.
+    | TitleStyle [TitleConfig]
+      -- ^ The default appearance of visualization titles.
     | TrailStyle [MarkProperty]
       -- ^ The default style of trail marks.
       --
