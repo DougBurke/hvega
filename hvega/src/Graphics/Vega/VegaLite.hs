@@ -100,8 +100,7 @@ module Graphics.Vega.VegaLite
 
          -- * Creating the Data Specification
          --
-         -- Functions and types for declaring the input data to the
-         -- visualization.
+         -- $dataspec
 
        , dataFromUrl
        , dataFromColumns
@@ -124,6 +123,8 @@ module Graphics.Vega.VegaLite
        , Geometry(..)
 
        -- ** Data Generators
+       --
+       -- $datagen
 
        , dataSequence
        , dataSequenceAs
@@ -132,48 +133,61 @@ module Graphics.Vega.VegaLite
        , GraticuleProperty(..)
 
        -- ** Formatting Input Data
+       --
+       -- $dataformat
 
        , Format(..)
        , DataType(..)
 
          -- * Creating the Transform Specification
          --
-         -- Functions and types for declaring the transformation rules that
-         -- are applied to data fields or geospatial coordinates before they
-         -- are encoded visually.
+         -- $transform
 
        , transform
+
+         -- ** Map Projections
+         --
+         -- $projections
+
        , projection
        , ProjectionProperty(..)
        , Projection(..)
        , ClipRect(..)
 
          -- ** Aggregation
+         --
+         -- $aggregation
 
        , aggregate
        , joinAggregate
-       , Operation(..)
        , opAs
        , timeUnitAs
+       , Operation(..)
 
          -- ** Binning
+         --
+         -- $binning
 
        , binAs
        , BinProperty(..)
 
          -- ** Stacking
          --
-         -- See the [Vega-Lite stack documentation](https://vega.github.io/vega-lite/docs/stack.html).
+         -- $stacking
 
        , stack
        , StackProperty(..)
        , StackOffset(..)
 
          -- ** Data Calculation
+         --
+         -- $calculate
 
        , calculateAs
 
          -- ** Filtering
+         --
+         -- $filtering
 
        , filter
        , Filter(..)
@@ -181,9 +195,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Flattening
          --
-         -- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
-         -- and [fold](https://vega.github.io/vega-lite/docs/fold.html)
-         -- documentation.
+         -- $flattening
 
        , flatten
        , flattenAs
@@ -191,49 +203,55 @@ module Graphics.Vega.VegaLite
        , foldAs
 
          -- ** Relational Joining (lookup)
+         --
+         -- $joining
 
        , lookup
        , lookupAs
 
          -- ** Data Imputation
          --
-         -- Impute missing data. See the
-         -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html#transform).
+         -- $imputation
 
        , impute
        , ImputeProperty(..)
        , ImMethod(..)
 
+         -- ** Data sampling
+         --
+         -- $sampling
+
+       , sample
+
          -- ** Window Transformations
          --
-         -- See the Vega-Lite
-         -- [window transform field](https://vega.github.io/vega-lite/docs/window.html#field-def)
-         -- and
-         -- [window transform](https://vega.github.io/vega-lite/docs/window.html#window-transform-definition)
-         -- documentation.
+         -- $window
 
        , window
        , Window(..)
        , WOperation(..)
 
-         -- ** Data sampling
-         --
-         -- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html)
-
-       , sample
-
          -- * Creating the Mark Specification
          --
-         -- Types and functions for declaring the type of visual
-         -- marks used in the visualization.
+         -- $markspec
 
        , mark
        , Mark(..)
+
+         -- ** Mark properties
+         --
+         -- $markproperties
+
        , MarkProperty(..)
        , MarkOrientation(..)
        , MarkInterpolation(..)
        , MarkErrorExtent(..)
        , Symbol(..)
+
+         -- ** Cursors
+         --
+         -- $cursors
+
        , Cursor(..)
 
          -- * Creating the Encoding Specification
@@ -245,24 +263,45 @@ module Graphics.Vega.VegaLite
 
          -- ** Position Channels
          --
-         -- Control where items appear in the visualization.
+         -- $position
 
        , position
-       , PositionChannel(..)
        , Position(..)
+
+         -- *** Position channel properties
+
+       , PositionChannel(..)
+
+         -- ** Sorting properties
+         --
+         -- $sortprops
+
        , SortProperty(..)
+
+         -- ** Axis properties
+         --
+         -- $axisprops
+
        , AxisProperty(..)
-       , OverlapStrategy(..)
-       , Side(..)
+
+         -- ** Positioning Constants
+         --
+         -- *** Text
+
        , HAlign(..)
        , VAlign(..)
-       , FontWeight(..)
-       , TimeUnit(..)
+
+         -- *** Overlapping text
+
+       , OverlapStrategy(..)
+
+         -- *** Legends
+
+       , Side(..)
 
          -- ** Mark channels
          --
-         -- Control the appearance of the visual marks in the visualization
-         -- (e.g. 'color' and 'size').
+         -- $markprops
 
        , size
        , color
@@ -282,13 +321,14 @@ module Graphics.Vega.VegaLite
 
          -- ** Text Channels
          --
-         -- Control the appearance of the text and tooltip elements in the visualization.
+         -- $textchannels
 
        , text
        , tooltip
        , tooltips
        , TooltipContent(..)
        , TextChannel(..)
+       , FontWeight(..)
 
          -- ** Hyperlink Channels
          --
@@ -320,7 +360,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Scaling
          --
-         -- How the encoding of a data field is applied.
+         -- $scaling
 
        , ScaleProperty(..)
        , Scale(..)
@@ -349,9 +389,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Resolution
          --
-         -- Control the independence between composed views.
-         --
-         -- See the [Vega-Lite resolve documentation](https://vega.github.io/vega-lite/docs/resolve.html).
+         -- $resolution
 
        , resolve
        , resolution
@@ -378,8 +416,7 @@ module Graphics.Vega.VegaLite
 
          -- *** Facet Headers
          --
-         -- See the
-         -- [Vega-Lite header documentation](https://vega.github.io/vega-lite/docs/header.html).
+         -- $facetheaders
 
        , HeaderProperty(..)
 
@@ -404,8 +441,7 @@ module Graphics.Vega.VegaLite
 
          -- * Global Configuration
          --
-         -- Configuration options that affect the entire visualization. These are in addition
-         -- to the data and transform options described above.
+         -- $global
 
        , name
        , title
@@ -432,9 +468,7 @@ module Graphics.Vega.VegaLite
 
          -- ** View Backgroud
          --
-         -- The background of a single view in a view composition can be styled independently
-         -- of other views. For more details see the
-         -- [Vega-Lite view background documentation](https://vega.github.io/vega-lite/docs/spec.html#view-background).
+         -- $viewbackground
 
        , viewBackground
        , ViewBackground(..)
@@ -446,8 +480,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Axis Configuration Options
          --
-         -- See the
-         -- [Vega-Lite axis config documentation](https://vega.github.io/vega-lite/docs/axis.html#general-config).
+         -- $axisconfig
 
        , AxisConfig(..)
 
@@ -458,21 +491,25 @@ module Graphics.Vega.VegaLite
 
          -- ** Scale Configuration Options
          --
-         -- See the
-         -- [Vega-Lite scale configuration documentation](https://vega.github.io/vega-lite/docs/scale.html#scale-config).
+         -- $scaleconfig
 
        , ScaleConfig(..)
 
          -- * General Data types
          --
-         -- In addition to more general data types like integers and string, the following types
-         -- can carry data used in specifications.
+         -- $generaldatatypes
 
        , DataValue(..)
        , DataValues(..)
+
+         -- ** Temporal data
+         --
+         -- $temporaldata
+
        , DateTime(..)
        , MonthName(..)
        , DayName(..)
+       , TimeUnit(..)
 
          -- * Breaking changes
          --
@@ -500,6 +537,95 @@ import Data.Monoid ((<>))
 
 -- Documentation
 
+-- $dataspec
+-- Functions and types for declaring the input data to the
+-- visualization. See the
+-- [Vega-Lite documentation](https://vega.github.io/vega-lite/docs/data.html#format).
+
+-- $datagen
+-- Functions that create new data sources.
+
+-- $dataformat
+-- See the Vega-Lite
+-- [format](https://vega.github.io/vega-lite/docs/data.html#format) and
+-- [JSON](https://vega.github.io/vega-lite/docs/data.html#json) documentation.
+
+-- $transform
+-- Functions and types for declaring the transformation rules that
+-- are applied to data fields or geospatial coordinates before they
+-- are encoded visually.
+
+-- $projections
+-- See the
+-- [Vega-Lite map projection documentation](https://vega.github.io/vega-lite/docs/projection.html).
+
+-- $aggregation
+-- See the
+-- [Vega-Lite aggregate documentation](https://vega.github.io/vega-lite/docs/aggregate.html).
+
+-- $binning
+-- See the
+-- [Vega-Lite binning documentation](https://vega.github.io/vega-lite/docs/bin.html).
+
+-- $stacking
+-- See the [Vega-Lite stack documentation](https://vega.github.io/vega-lite/docs/stack.html).
+
+-- $calculate
+-- See the
+-- [Vega-Lite calculate documentation](https://vega.github.io/vega-lite/docs/calculate.html).
+
+-- $filtering
+-- See the
+-- [Vega-Lite filter documentation](https://vega.github.io/vega-lite/docs/filter.html).
+
+-- $flattening
+-- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
+-- and [fold](https://vega.github.io/vega-lite/docs/fold.html)
+-- documentation.
+
+-- $joining
+-- See the
+-- [Vega-Lite lookup documentation](https://vega.github.io/vega-lite/docs/lookup.html).
+
+-- $imputation
+-- Impute missing data. See the
+-- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html#transform).
+
+-- $sampling
+-- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html)
+
+-- $window
+-- See the Vega-Lite
+-- [window transform field](https://vega.github.io/vega-lite/docs/window.html#field-def)
+-- and
+-- [window transform](https://vega.github.io/vega-lite/docs/window.html#window-transform-definition)
+-- documentation.
+
+-- $markspec
+-- Types and functions for declaring the type of visual
+-- marks used in the visualization.
+
+-- $markproperties
+-- See the Vega-Lite
+-- [general mark](https://vega.github.io/vega-lite/docs/mark.html#general-mark-properties),
+-- [area mark](https://vega.github.io/vega-lite/docs/area.html#properties),
+-- [bar mark](https://vega.github.io/vega-lite/docs/bar.html#properties),
+-- [boxplot](https://vega.github.io/vega-lite/docs/boxplot.html#properties),
+-- [circle mark](https://vega.github.io/vega-lite/docs/circle.html#properties),
+-- [error band](https://vega.github.io/vega-lite/docs/errorband.html#properties),
+-- [error bar](https://vega.github.io/vega-lite/docs/errorbar.html#properties),
+-- [hyperlink mark](https://vega.github.io/vega-lite/docs/mark.html#hyperlink),
+-- [line mark](https://vega.github.io/vega-lite/docs/line.html#properties),
+-- [point mark](https://vega.github.io/vega-lite/docs/point.html#properties),
+-- [square mark](https://vega.github.io/vega-lite/docs/square.html#properties),
+-- [text mark](https://vega.github.io/vega-lite/docs/text.html#properties) and
+-- [tick mark](https://vega.github.io/vega-lite/docs/tick.html#properties)
+-- property documentation.
+
+-- $cursors
+-- See the
+-- [CSS cursor documentation](https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Keyword%20values)
+
 -- $encoding
 -- Types and functions for declaring which data fields are mapped to which
 -- channels. Channels can include: position on screen (e.g. 'X', 'Y'); visual
@@ -508,6 +634,25 @@ import Data.Monoid ((<>))
 -- visualizations ('facet'). All can be further customised via a series of
 -- properties that determine how the encoding is implemented (such as
 -- scaling, sorting, and spacing).
+
+-- $position
+-- Control where items appear in the visualization. See the
+-- [Vega-Lite position documentation](https://vega.github.io/vega-lite/docs/encoding.html#position).
+
+-- $sortprops
+-- See the
+-- [Vega-Lite sort documentation](https://vega.github.io/vega-lite/docs/sort.html).
+
+-- $axisprops
+-- See the
+-- Vega-Lite axis property documentation](https://vega.github.io/vega-lite/docs/axis.html#axis-properties).
+
+-- $markprops
+-- Control the appearance of the visual marks in the visualization
+-- (e.g. 'color' and 'size').
+
+-- $textchannels
+-- Control the appearance of the text and tooltip elements in the visualization.
 
 -- $hyperlink
 -- Channels which offer a clickable URL destination. Unlike most other
@@ -539,6 +684,9 @@ import Data.Monoid ((<>))
 -- <https://vega.github.io/vega-lite/docs/encoding.html#detail Vega-Lite documentation>
 -- for more information.
 
+-- $scaling
+-- How the encoding of a data field is applied.
+
 -- $view
 -- Views can be combined to create more complex multiview displays. This may involve
 -- layering views on top of each other (superposition) or laying them out in adjacent
@@ -548,11 +696,20 @@ import Data.Monoid ((<>))
 -- resolving them can be defined with 'resolve'. For details of creating composite views see the
 -- <https://vega.github.io/vega-lite/docs/composition.html Vega-Lite documentation>.
 
+-- $resolution
+-- Control the independence between composed views.
+--
+-- See the [Vega-Lite resolve documentation](https://vega.github.io/vega-lite/docs/resolve.html).
+
 -- $facetview
 -- These are small multiples each of which show subsets of the same dataset. The specification
 -- determines which field should be used to determine subsets along with their spatial
 -- arrangement (in rows or columns). For details see the
 -- <https://vega.github.io/vega-lite/docs/facet.html Vega-Lite documentation>.
+
+-- $facetheaders
+-- See the
+-- [Vega-Lite header documentation](https://vega.github.io/vega-lite/docs/header.html).
 
 -- $selections
 -- Selections are the way in which interactions (such as clicking or dragging) can be
@@ -561,20 +718,19 @@ import Data.Monoid ((<>))
 -- <https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
 
 -- $conditional
--- Sometimes it is useful to make channel encoding conditional on something. For example,
--- on the result of some interaction such as clicking or dragging or some data property
--- such whether null or an outlier. 'MSelectionCondition' and 'TSelectionCondition' will
--- encode a mark or text dependent on an interactive selection. 'MDataCondition'
--- and 'TDataCondition' will encode it dependening on some data property.
+-- To make channel encoding conditional on the result of some interaction, use
+-- 'MSelectionCondition', 'TSelectionCondition', or 'HSelectionCondition'. Similarly
+-- 'MDataCondition', 'TDataCondition', or 'HDataCondition' will encode a mark
+-- conditionally depending on some data properties such as whether a datum is null
+-- or an outlier.
 --
 -- For interaction, once a selection has been defined and named, supplying a set of
--- 'MSelectionCondition' encodings allow mark encodings to become dependent on that selection.
--- 'MSelectionCondition' is followed firstly by a Boolean expression relating to the
--- selection upon which it is dependent, then an \"if\" and an \"else\" clause. Each clause
--- is a list of mark field encodings that should be applied when the selection is true
--- (the \"if clause\") and when it is false (the \"else clause\"). The color encoding below
--- is saying \"whenever data marks are selected with an interval mouse drag, encode
--- the cylinder field with an ordinal color scheme, else make them grey\".
+-- encodings allow mark encodings to become dependent on that selection.
+-- 'MSelectionCondition' is followed firstly a (Boolean) selection and then an
+-- encoding if that selection is true and another encoding to be applied if it is false.
+-- The color specification below states \"whenever data marks are selected with an
+-- interval mouse drag, encode the cylinder field with an ordinal color scheme,
+-- otherwise make them grey\":
 --
 -- @
 -- sel = 'selection' . 'select' "myBrush" 'Interval' []
@@ -589,25 +745,54 @@ import Data.Monoid ((<>))
 --             ]
 -- @
 --
--- In a similar way, 'MDataCondition' will encocode a mark in one of two ways depending
--- on whether a predicate test is satisfied.
+-- In a similar way, 'MDataCondition' will encode a mark depending on whether any
+-- predicate tests are satisfied. Unlike selections, multiple conditions and associated
+-- encodings can be specified. Each test condition is evaluated in order and only on
+-- failure of the test does encoding proceed to the next test. If no tests are true,
+-- the encoding in the final parameter is applied in a similar way to @case of@
+-- expressions:
 --
 -- @
 -- enc = encoding
---         . position X [ PName \"IMDB_Rating\", PmType Quantitative ]
---         . position Y [ PName \"Rotten_Tomatoes_Rating\", PmType Quantitative ]
+--         . position X [ PName \"value\", PmType Quantitative ]
 --           . color
 --               [ 'MDataCondition'
---                   ('Or' ('Expr' "datum.IMDB_Rating === null")
---                       (Expr "datum.Rotten_Tomatoes_Rating === null")
---                   )
---                   [ MString "#ddd" ]
---                   [ MString "#0099ee" ]
+--                    [ ( 'Expr' "datum.value < 40", [ MString "blue" ] )
+--                    , ( Expr "datum.value < 50", [ MString "red" ] )
+--                    , ( Expr "datum.value < 60", [ MString "yellow" ] )
+--                    ]
+--                    [ MString "black" ]
 --               ]
 -- @
 --
--- For details, see the
+-- For more details, see the
 -- <https://vega.github.io/vega-lite/docs/condition.html Vega-Lite documentation>.
+
+-- $global
+-- Configuration options that affect the entire visualization. These are in addition
+-- to the data and transform options described above.
+
+-- $viewbackground
+-- The background of a single view in a view composition can be styled independently
+-- of other views. For more details see the
+-- [Vega-Lite view background documentation](https://vega.github.io/vega-lite/docs/spec.html#view-background).
+
+-- $axisconfig
+-- See the
+-- [Vega-Lite axis config documentation](https://vega.github.io/vega-lite/docs/axis.html#general-config).
+
+-- $scaleconfig
+-- See the
+-- [Vega-Lite scale configuration documentation](https://vega.github.io/vega-lite/docs/scale.html#scale-config).
+
+-- $generaldatatypes
+-- In addition to more general data types like integers and string, the following types
+-- can carry data used in specifications.
+
+-- $temporaldata
+-- See the
+-- [Vega-Lite dateTime documentation](https://vega.github.io/vega-lite/docs/types.html#datetime)
+-- and the [Vega-Lite time unit documentation](https://vega.github.io/vega-lite/docs/timeunit.html).
 
 -- $breaking
 -- The @0.4.0.0@ release added a large number of functions, types, and
@@ -2000,6 +2185,7 @@ data Measurement
 Type of binning property to customise. See the
 <https://vega.github.io/vega-lite/docs/bin.html Vega-Lite documentation> for
 more details.
+
 -}
 
 data BinProperty
@@ -3267,6 +3453,7 @@ timeUnitLabel (Utc tu) = "utc" <> timeUnitLabel tu
 Represents the type of cursor to display. For an explanation of each type,
 see the
 <https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Keyword%20values CSS documentation>.
+
 -}
 data Cursor
     = CAuto
@@ -5127,12 +5314,41 @@ Not (And (Expr "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating
 -}
 data BooleanOp
     = Expr T.Text
+    -- ^ Expression that should evaluate to either true or false. Can use any valid
+    --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
     | Selection T.Text
+      -- ^ Interactive selection that will be true or false as part of a logical composition.
+      --   For example: to filter a dataset so that only items selected interactively and that have
+      --   a weight of more than 30:
+      --
+      -- @
+      -- 'transform'
+      --    . 'filter' ('FCompose' (And (Selected "brush") ('Expr' "datum.weight > 30")))
+      -- @
     | SelectionName T.Text
+    -- ^  Name a selection that is used as part of a conditional encoding.
+    --
+    -- @
+    -- 'color'
+    --    [ 'MSelectionCondition' (SelectionName \"myBrush\")
+    --        [ 'MName' \"myField\", 'MmType' 'Nominal' ]
+    --        [ 'MString' \"grey\" ]
+    --    ]
+    -- @
     | And BooleanOp BooleanOp
+      -- ^ Apply an \'and\' Boolean operation as part of a logical composition.
+      --
+      -- @
+      -- And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null")
+      -- @
     | Or BooleanOp BooleanOp
+      -- ^ Apply an \'or\' Boolean operation as part of a logical composition.
     | Not BooleanOp
-
+      -- ^ Negate the given expression.
+      --
+      -- @
+      -- Not (And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null"))
+      -- @
 
 booleanOpSpec :: BooleanOp -> VLSpec
 booleanOpSpec (Expr expr) = toJSON expr
@@ -6059,8 +6275,8 @@ Provides an optional name to be associated with the visualization.
 
 @
 'toVegaLite'
-    [ name "PopGrowth"
-    , 'dataFromUrl' "data/population.json" []
+    [ name \"PopGrowth\"
+    , 'dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6177,9 +6393,15 @@ see the
 <https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
 
 @
-sel = selection . 'select' "view" 'Interval' [ 'BindScales' ]
+sel =
+   selection
+       . 'select' \"view\" 'Interval' [ 'BindScales' ] []
+       . select \"myBrush\" 'Interval' []
+       . select \"myPaintbrush\" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
+
 -}
+
 selection :: [LabelledSpec] -> (VLProperty, VLSpec)
 selection sels = (VLSelection, object sels)
 
