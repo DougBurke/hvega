@@ -1,0 +1,41 @@
+{
+    "mark": {
+        "median": {
+            "strokeWidth": 0,
+            "size": 18,
+            "fill": "black"
+        },
+        "box": {
+            "color": "firebrick"
+        },
+        "rule": {
+            "strokeWidth": 0.4
+        },
+        "outliers": {
+            "strokeWidth": 0.3,
+            "color": "black",
+            "size": 10
+        },
+        "type": "boxplot",
+        "ticks": {
+            "size": 8
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/population.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "age",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "people",
+            "type": "quantitative",
+            "axis": {
+                "title": "Population"
+            }
+        }
+    }
+}

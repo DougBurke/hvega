@@ -42,7 +42,7 @@ import Graphics.Vega.VegaLite
 -- in hvega.
 --
 import qualified ColorTests as ColT
--- import qualified CompositeTests as CompT
+import qualified CompositeTests as CompT
 import qualified ConditionalTests as CondT
 import qualified ConfigTests as ConfT
 import qualified DataTests as DT
@@ -59,7 +59,7 @@ import qualified SortTests as SoT
 import qualified TextFormatTests as TfT
 import qualified TimeTests as TmT
 import qualified TooltipTests as TT
--- import qualified TrailTests as TrT
+import qualified TrailTests as TrT
 import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
@@ -81,7 +81,7 @@ toTests lbl dname tests = testGroup lbl
 goldenTests :: TestTree
 goldenTests = testGroup "tests"
   [ toTests "Color" "color" ColT.testSpecs
-  -- , toTests "Composite" "composite" CompT.testSpecs
+  , toTests "Composite" "composite" CompT.testSpecs
   , toTests "Conditional" "conditional" CondT.testSpecs
   , toTests "Config" "config" ConfT.testSpecs
   , toTests "Data" "data" DT.testSpecs
@@ -98,7 +98,7 @@ goldenTests = testGroup "tests"
   , toTests "TextFormat" "textformat" TfT.testSpecs
   , toTests "Time" "time" TmT.testSpecs
   , toTests "Tooltip" "tooltip" TT.testSpecs
-  -- , toTests "Trail" "trail" TrT.testSpecs
+  , toTests "Trail" "trail" TrT.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
   ]

@@ -44,6 +44,7 @@ test-suite test
   hs-source-dirs:      tests/
   main-is:             Test.hs
   other-modules:       ColorTests
+                       CompositeTests
                        ConditionalTests
                        ConfigTests
                        DataTests
@@ -60,6 +61,7 @@ test-suite test
                        TextFormatTests
                        TimeTests
                        TooltipTests
+                       TrailTests
                        ViewCompositionTests
                        WindowTransformTests
 

@@ -275,6 +275,7 @@ module Graphics.Vega.VegaLite
        , Legend(..)
        , LegendOrientation(..)
        , LegendValues(..)
+       , LineMarker(..)
 
          -- ** Text Channels
          --
@@ -283,6 +284,7 @@ module Graphics.Vega.VegaLite
        , text
        , tooltip
        , tooltips
+       , TooltipContent(..)
        , TextChannel(..)
 
          -- ** Hyperlink Channels
@@ -651,6 +653,9 @@ sort_ ops = "sort" .= sortPropertySpec ops
 
 impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
+
+mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
+mprops_ f mps = f .= object (map markProperty mps)
 
 timeUnit_ :: TimeUnit -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
@@ -1487,25 +1492,71 @@ dataFromUrl url fmts =
 
 
 -- | Type of visual mark used to represent data in the visualization.
+
 data Mark
     = Area
+      -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
+      --   for representing a series of data elements, such as in a stacked
+      --   area chart or streamgraph.
     | Bar
+      -- ^ [Bar mark](https://vega.github.io/vega-lite/docs/bar.html)
+      --   for histograms, bar charts etc.
+    | Boxplot
+      -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
+      -- for showing summaries of statistical distributions.
+      --
+      --   @since 0.4.0.0
     | Circle
-    | ErrorBar   -- ^ @since 0.4.0.0
-    | ErrorBand  -- ^ @since 0.4.0.0
+      -- ^ [Circle mark](https://vega.github.io/vega-lite/docs/circle.html)
+      --   for symbolising points.
+    | ErrorBar
+      -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
+      --   for showing summaries of variation along a signal. By default
+      --   no ticks are drawn. To add ticks with default properties use
+      --   @'MTicks []@.
+      --
+      --   @since 0.4.0.0
+    | ErrorBand
+      -- ^ [Errorband composite mark](https://vega.github.io/vega-lite/docs/errorband.html)
+      --   for showing summaries of variation along a signal. By default
+      --   no border is drawn. To add a border with default properties use
+      --   @'MBorders' [].
+      --
+      --   @since 0.4.0.0
     | Geoshape
+      -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
+      -- determined by geographically referenced coordinates.
     | Line
+      -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
+      --   for symbolising a sequence of values.
     | Point
+      -- ^ [Point mark](https://vega.github.io/vega-lite/docs/point.html)
+      --   for symbolising a data point with a symbol.
     | Rect
+      -- ^ [Rectangle mark](https://vega.github.io/vega-lite/docs/rect.html).
     | Rule
+      -- ^ [Rule line](https://vega.github.io/vega-lite/docs/rule.html)
+      --   connecting two vertices.
     | Square
+      -- ^ [Square mark](https://vega.github.io/vega-lite/docs/square.html)
+      --   for symbolising points.
     | Text
+      -- ^ [Text mark](https://vega.github.io/vega-lite/docs/text.html)
+      --   to be displayed at some point location.
     | Tick
+      -- ^ Short line ([tick](https://vega.github.io/vega-lite/docs/tick.html))
+      -- mark for symbolising point locations.
+    | Trail
+      -- ^ [Trail mark](https://vega.github.io/vega-lite/docs/trail.html)
+      --   (line with variable width along its length).
+      --
+      --   @since 0.4.0.0
 
 
 markLabel :: Mark -> T.Text
 markLabel Area = "area"
 markLabel Bar = "bar"
+markLabel Boxplot = "boxplot"
 markLabel Circle = "circle"
 markLabel ErrorBar = "errorbar"
 markLabel ErrorBand = "errorband"
@@ -1517,6 +1568,7 @@ markLabel Rule = "rule"
 markLabel Square = "square"
 markLabel Text = "text"
 markLabel Tick = "tick"
+markLabel Trail = "trail"
 
 
 {-|
@@ -1555,10 +1607,11 @@ data MarkChannel
     | MScale [ScaleProperty]
       -- ^ Use an empty list to remove the scale.
     | MBin [BinProperty]
-    {-
+      -- ^ Discretize numeric values into bins when encoding with a mark property channel.
     | MBinned
-      -- ^ @since 0.4.0.0
-    -}
+      -- ^ Indicate that data encoding with a mark are already binned.
+      --
+      --   @since 0.4.0.0
     | MImpute [ImputeProperty]
       -- ^ Set the imputation rules for a mark channel. See the
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
@@ -1570,6 +1623,7 @@ data MarkChannel
       -- ^ Use an empty list to remove the legend.
     | MSelectionCondition BooleanOp [MarkChannel] [MarkChannel]
     | MDataCondition BooleanOp [MarkChannel] [MarkChannel]
+      -- TODO: change to list
     | MPath T.Text
     | MNumber Double
     | MString T.Text
@@ -1585,6 +1639,7 @@ markChannelProperty (MScale sps) =
 markChannelProperty (MLegend lps) =
   [("legend", if null lps then A.Null else object (map legendProperty lps))]
 markChannelProperty (MBin bps) = [bin bps]
+markChannelProperty MBinned = [binned_]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   let h = ("condition", hkey)
@@ -1608,18 +1663,51 @@ markChannelProperty (MBoolean b) = ["value" .= b]
 
 {-|
 
+Appearance of a line marker that is overlaid on an area mark.
+
+@since 0.4.0.0
+
+-}
+
+data LineMarker
+  = LMNone
+    -- ^ No line marker.
+  | LMMarker [MarkProperty]
+    -- ^ The properties of a line marker overlain on an area mark.
+
+
+lineMarkerSpec :: LineMarker -> VLSpec
+lineMarkerSpec LMNone = toJSON False
+lineMarkerSpec (LMMarker mps) = object (map markProperty mps)
+
+
+{-|
+
 Properties for customising the appearance of a mark. For details see the
 <https://vega.github.io/vega-lite/docs/mark.html#config Vega-Lite documentation>.
 
 Not all properties are valid for each mark type.
+
+The Vega-Lite specification supports setting those properties that take
+@['MarkProperty']@ also to a boolean value. This is currently not
+supported in @hvega@.
+
 -}
+
 data MarkProperty
     = MAlign HAlign
     | MAngle Double
     | MBandSize Double
     | MBaseline VAlign
     | MBinSpacing Double
-    | MBorders Bool                -- ^ @since 0.4.0.0
+    | MBorders [MarkProperty]
+      -- ^ Border properties for an errorband mark.
+      --
+      --   @since 0.4.0.0
+    | MBox [MarkProperty]
+      -- ^ Box-symbol properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MClip Bool
     | MColor T.Text
     | MCursor Cursor
@@ -1627,7 +1715,10 @@ data MarkProperty
     | MDiscreteBandSize Double
     | MdX Double
     | MdY Double
-    | MExtent MarkErrorExtent      -- ^ @since 0.4.0.0
+    | MExtent MarkErrorExtent
+      -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
+      --
+      --   @since 0.4.0.0
     | MFill T.Text
     | MFilled Bool
     | MFillOpacity Double
@@ -1635,19 +1726,54 @@ data MarkProperty
     | MFontSize Double
     | MFontStyle T.Text
     | MFontWeight FontWeight
+    | MHRef T.Text
+      -- ^ Hyperlink to be associated with a mark making it a clickable
+      --   hyperlink.
+      --
+      --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
+    | MLine LineMarker
+      -- ^ How should the vertices of an area mark be joined?
+      --
+      --   @since 0.4.0.0
+    | MMedian [MarkProperty]
+      -- ^ Median-line properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
     | MOpacity Double
+    | MOrder Bool
+      -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
+      --   the order is determined by measurement type or order channel. If
+      --   @False@, the original data order is used.
+      --
+      --   @since 0.4.0.0
     | MOrient MarkOrientation
-    | MPoint PointMarker           -- ^ @since 0.4.0.0
+    | MOutliers [MarkProperty]
+      -- ^ Outlier symbol properties for the boxplot mark.
+      --
+      --   @since 0.4.0.0
+    | MPoint PointMarker
+      -- ^ @since 0.4.0.0
     | MRadius Double
+    | MRule [MarkProperty]
+      -- ^ Rule (main line) properties for the errorbar and boxplot marks.
+      --
+      --   @since 0.4.0.0
     | MShape Symbol
     | MShortTimeLabels Bool
     | MSize Double
     | MStroke T.Text
-    | MStrokeCap StrokeCap         -- ^ @since 0.4.0.0
+    | MStrokeCap StrokeCap
+      -- ^ @since 0.4.0.0
     | MStrokeDash [Double]
     | MStrokeDashOffset Double
-    | MStrokeJoin StrokeJoin       -- ^ @since 0.4.0.0
+    | MStrokeJoin StrokeJoin
+      -- ^ @since 0.4.0.0
+    | MStrokeMiterLimit Double
+      -- ^ Mitre limit at which to bevel a join between line segments of a
+      --   mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeOpacity Double
     | MStrokeWidth Double
     | MStyle [T.Text]
@@ -1655,9 +1781,55 @@ data MarkProperty
     | MText T.Text
     | MTheta Double
     | MThickness Double
+    | MTicks [MarkProperty]
+      -- ^ Tick properties for the errorbar or boxplot mark.
+      --
+      --   @since 0.4.0.0
+    | MTooltip TooltipContent
+      -- ^ The tooltip content for a mark.
+      --
+      --   @since 0.4.0.0
+    | MX Double
+      -- ^ X position of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY Double
+      -- ^ Y position of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2 Double
+      -- ^ X2 position of a mark. This is the secondary position for
+      --   lines and area marks).
+      --
+      --   @since 0.4.0.0
+    | MY2 Double
+      -- ^ Y2 position of a mark. This is the secondary position for
+      --   lines and area marks).
+      --
+      --   @since 0.4.0.0
+    | MXOffset Double
+      -- ^ X position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MYOffset Double
+      -- ^ Y position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2Offset Double
+      -- ^ X2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY2Offset Double
+      -- ^ Y2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+
+
 
 markProperty :: MarkProperty -> LabelledSpec
 markProperty (MFilled b) = "filled" .= b
+markProperty (MBorders mps) = mprops_ "borders" mps
+markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
@@ -1669,12 +1841,17 @@ markProperty (MStrokeWidth w) = "strokeWidth" .= w
 markProperty (MStrokeDash xs) = "strokeDash" .= xs
 markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
 markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
+markProperty (MMedian mps) = mprops_ "median" mps
 markProperty (MOpacity x) = "opacity" .= x
 markProperty (MFillOpacity x) = "fillOpacity" .= x
 markProperty (MStyle styles) = "style" .= styles
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
+markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
+markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
+markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
@@ -1683,21 +1860,33 @@ markProperty (MAlign algn) = "align" .= hAlignLabel algn
 markProperty (MBaseline va) = "baseline" .= vAlignLabel va
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
-markProperty (MExtent mee) = "extent" .= markErrorExtentLabel mee
+markProperty (MExtent mee) = markErrorExtentLSpec mee
 markProperty (MFont fnt) = "font" .= fnt
 markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
+markProperty (MHRef s) = "href" .= s
 markProperty (MRadius x) = "radius" .= x
+markProperty (MRule mps) = mprops_ "rule" mps
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x
+markProperty (MTicks mps) = mprops_ "ticks" mps
 markProperty (MBinSpacing x) = "binSpacing" .= x
 markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
 markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
 markProperty (MShortTimeLabels b) = "shortTimeLabels" .= b
 markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
-markProperty (MBorders b) = "borders" .= b
+markProperty (MTooltip TTNone) = "tooltip" .= A.Null
+markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+markProperty (MX x) = "x" .= x
+markProperty (MY x) = "y" .= x
+markProperty (MX2 x) = "x2" .= x
+markProperty (MY2 x) = "y2" .= x
+markProperty (MXOffset x) = "xOffset" .= x
+markProperty (MYOffset x) = "yOffset" .= x
+markProperty (MX2Offset x) = "x2Offset" .= x
+markProperty (MY2Offset x) = "y2Offset" .= x
 
 
 -- | @since 0.4.0.0
@@ -1826,11 +2015,11 @@ binProperty (Nice b) = ("nice", toJSON b)
 
 
 bin :: [BinProperty] -> LabelledSpec
-bin bProps =
-  let ans = if null bProps
-            then toJSON True
-            else object (map binProperty bProps)
-  in ("bin", ans)
+bin [] = "bin" .= True
+bin xs = "bin" .= object (map binProperty xs)
+
+binned_ :: LabelledSpec
+binned_ = "bin" .= fromT "binned"
 
 
 {-|
@@ -2378,7 +2567,7 @@ positionChannelProperty :: PositionChannel -> LabelledSpec
 positionChannelProperty (PName s) = field_ s
 positionChannelProperty (PmType m) = mtype_ m
 positionChannelProperty (PBin b) = bin b
-positionChannelProperty PBinned = "bin" .= fromT "binned"
+positionChannelProperty PBinned = binned_
 positionChannelProperty (PAggregate op) = aggregate_ op
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= s
@@ -3215,20 +3404,44 @@ Indicates the extent of the rule used for the error bar.  See
 <https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
 for details.
 
+This is called @SummaryExtent@ in Elm and the constructors also have
+different names.
+
 @since 0.4.0.0
 -}
+
 data MarkErrorExtent
   = ConfidenceInterval
+    -- ^ Band extent between the 95% confidence intervals of a distribution.
   | StdErr
+    -- ^ Band extent as the standard error about the mean of a distribution.
   | StdDev
+    -- ^ Band extent as the standard deviation of a distribution.
   | Iqr
+    -- ^ Band extent between the lower and upper quartiles of a distribution
+    --   (the inter-quartile range).
+    {- these don't appear to be in the Vega-Lite schema as of 3.3.0
+  | ExRange
+    -- ^ Band extent between the minimum and maximum values in a distribution.
+  | IqrScale Double
+    -- ^ A scaling of the interquartile range to be used as whiskers in a
+    --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
+    --   ±1.5x the IQR from the mean.
+    -}
 
+-- This is a little different from the other calls since I wanted to
+-- make sure the scale factor was encoded as a number not a string.
+--
+extent_ :: T.Text -> LabelledSpec
+extent_ v = "extent" .= v
 
-markErrorExtentLabel :: MarkErrorExtent -> T.Text
-markErrorExtentLabel ConfidenceInterval = "ci"
-markErrorExtentLabel StdErr             = "stderr"
-markErrorExtentLabel StdDev             = "stddev"
-markErrorExtentLabel Iqr                = "iqr"
+markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
+markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
+markErrorExtentLSpec StdErr             = extent_ "stderr"
+markErrorExtentLSpec StdDev             = extent_ "stdev"
+markErrorExtentLSpec Iqr                = extent_ "iqr"
+-- markErrorExtentLSpec ExRange            = extent_ "min-max"
+-- markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
 -- | Identifies the type of symbol.
@@ -4003,6 +4216,7 @@ selectionResolutionLabel Intersection = "intersect"
 Properties for customising the appearance of an interval selection mark (dragged
 rectangle). For details see the
 <https://vega.github.io/vega-lite/docs/selection.html#interval-mark Vega-Lite documentation>.
+
 -}
 data SelectionMarkProperty
     = SMFill T.Text
@@ -4020,7 +4234,7 @@ selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
 selectionMarkProperty (SMStroke colour) = "stroke" .= colour
 selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
 selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
-selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= map toJSON xs
+selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= xs
 selectionMarkProperty (SMStrokeDashOffset x) = "strokeDashOffset" .= x
 
 
@@ -4253,9 +4467,11 @@ viewConfigProperty (StrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
 
 
 {-|
+
 Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
+
 -}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
@@ -4273,14 +4489,18 @@ data ConfigurationProperty
     | CircleStyle [MarkProperty]
     | CountTitle T.Text
     | FieldTitle FieldTitleProperty
-    | GeoshapeStyle [MarkProperty]             -- ^ @since 0.4.0.0
+    | GeoshapeStyle [MarkProperty]
+      -- ^ @since 0.4.0.0
     | Legend [LegendConfig]
     | LineStyle [MarkProperty]
-    | FacetStyle [FacetConfig]                 -- ^ @since 0.4.0.0
-    | HeaderStyle [HeaderProperty]             -- ^ @since 0.4.0.0
+    | FacetStyle [FacetConfig]
+      -- ^ @since 0.4.0.0
+    | HeaderStyle [HeaderProperty]
+      -- ^ @since 0.4.0.0
     | MarkStyle [MarkProperty]
     | NamedStyle T.Text [MarkProperty]
-    | NamedStyles [(T.Text, [MarkProperty])]   -- ^ @since 0.4.0.0
+    | NamedStyles [(T.Text, [MarkProperty])]
+      -- ^ @since 0.4.0.0
     | NumberFormat T.Text
     | Padding Padding
     | PointStyle [MarkProperty]
@@ -4324,25 +4544,25 @@ configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
 configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
 configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
-configProperty (MarkStyle mps) = "mark" .= object (map markProperty mps)
+configProperty (MarkStyle mps) = mprops_ "mark" mps
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
-configProperty (AreaStyle mps) = "area" .= object (map markProperty mps)
-configProperty (BarStyle mps) = "bar" .= object (map markProperty mps)
-configProperty (CircleStyle mps) = "circle" .= object (map markProperty mps)
+configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (BarStyle mps) = mprops_ "bar" mps
+configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
-configProperty (GeoshapeStyle mps) = "geoshape" .= object (map markProperty mps)
+configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = "header" .= object (map headerProperty hps)
-configProperty (LineStyle mps) = "line" .= object (map markProperty mps)
-configProperty (PointStyle mps) = "point" .= object (map markProperty mps)
-configProperty (RectStyle mps) = "rect" .= object (map markProperty mps)
-configProperty (RuleStyle mps) = "rule" .= object (map markProperty mps)
-configProperty (SquareStyle mps) = "square" .= object (map markProperty mps)
-configProperty (TextStyle mps) = "text" .= object (map markProperty mps)
-configProperty (TickStyle mps) = "tick" .= object (map markProperty mps)
+configProperty (LineStyle mps) = mprops_ "line" mps
+configProperty (PointStyle mps) = mprops_ "point" mps
+configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RuleStyle mps) = mprops_ "rule" mps
+configProperty (SquareStyle mps) = mprops_ "square" mps
+configProperty (TextStyle mps) = mprops_ "text" mps
+configProperty (TickStyle mps) = mprops_ "tick" mps
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
-configProperty (NamedStyle nme mps) = "style" .= object [nme .= object (map markProperty mps)]
+configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
-  let toStyle (nme, mps) = nme .= object (map markProperty mps)
+  let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
 configProperty (Stack so) = stackOffset so
@@ -4350,7 +4570,7 @@ configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
   in "selection" .= object (map selProp selConfig)
-configProperty (TrailStyle mps) = "trail" .= object (map markProperty mps)
+configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 
 
@@ -6865,3 +7085,21 @@ tooltips ::
   -> BuildLabelledSpecs
 tooltips tDefs ols =
   ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols
+
+
+-- | @since 0.4.0.0
+
+data TooltipContent
+  = TTEncoding
+    -- ^ Tooltips are generated by the encoding (this is the default).
+  | TTData
+    -- ^ Tooltips are based on the data values.
+  | TTNone
+    -- ^ Disable tooltips.
+
+
+-- Note that TTNone is special cased by markProperty
+ttContentLabel :: TooltipContent -> T.Text
+ttContentLabel TTEncoding = "encoding"
+ttContentLabel TTData = "data"
+ttContentLabel TTNone = "null"

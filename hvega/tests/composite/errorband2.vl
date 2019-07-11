@@ -1,0 +1,27 @@
+{
+    "mark": {
+        "borders": {},
+        "extent": "stdev",
+        "interpolate": "monotone",
+        "type": "errorband"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "Year",
+            "timeUnit": "year",
+            "type": "temporal"
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "scale": {
+                "zero": false
+            },
+            "title": "Miles per Gallon (1 stdev)",
+            "type": "quantitative"
+        }
+    }
+}
