@@ -921,6 +921,9 @@ import Data.Monoid ((<>))
 --
 -- * The constructors of the 'ViewConfig' type have been renamed so they
 --   all begin with @View@ (to match 'ViewWidth' and 'ViewHeight').
+--
+-- * The 'Divide' constructor of 'BinProperty' now takes a list of
+--   Doubles rather than two.
 
 --- helpers not in VegaLite.elm
 
@@ -2482,26 +2485,62 @@ more details.
 
 -}
 
+-- based on schema 3.3.0 #/definitions/BinParams
+
 data BinProperty
-    = Base Double
-    | Divide Double Double
+    = AlreadyBinned Bool
+      -- ^ Should the input data be treated as already binned?
+      --
+      --   @since 0.4.0.0
+    | BinAnchor Double
+      -- ^ A value in the binned domain at which to anchor the bins, shifting the bin
+      --   boundaries if necessary to ensure that a boundary aligns with the anchor
+      --   value.
+      --
+      --   @since 0.4.0.0
+    | Base Double
+      -- ^ The number base to ude for automatic bin determination.
+      --
+      --   Default is @10@.
+    | Divide [Double]
+      -- ^ Scale factors indicating allowable subdivisions.
+      --
+      --   Default is @[5, 2]@.
+      --
+      --   Prior to @0.4.0.0@ the @Divide@ constructor took two numbers.
     | Extent Double Double
+      -- ^ The range (minimum, maximum) of the desired bin values.
     | MaxBins Int
+      -- ^ The maxium number of bins.
+      --
+      --   Default is @6@ for 'row', 'column', and 'shape' channels,
+      --   @10@ otherwise.
     | MinStep Double
+      -- ^ A minimum allowable step size.
     | Nice Bool
+      -- ^ If @True@, the bin boundaries are adjusted to use human-friendly values,
+      --   such as multiples of ten.
+      --
+      --   Default is @True@.
     | Step Double
+      -- ^ The step size to use between bins.
+      --
+      --   If specified, 'MaxBins' and other related options are ignored.
     | Steps [Double]
+      -- ^ Pick the step size from this list.
 
 
 binProperty :: BinProperty -> LabelledSpec
-binProperty (MaxBins n) = ("maxbins", toJSON n)
-binProperty (Base x) = ("base", toJSON x)
-binProperty (Step x) = ("step", toJSON x)
-binProperty (Steps xs) = ("steps", toJSON (map toJSON xs))
-binProperty (MinStep x) = ("minstep", toJSON x)
-binProperty (Divide x y) = ("divide", toJSON [ toJSON x, toJSON y ])
-binProperty (Extent mn mx) = ("extent", toJSON [ toJSON mn, toJSON mx ])
-binProperty (Nice b) = ("nice", toJSON b)
+binProperty (AlreadyBinned b) = "binned" .= b
+binProperty (BinAnchor x) = "anchor" .= x
+binProperty (Base x) = "base" .= x
+binProperty (Divide xs) = "divide" .= xs
+binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
+binProperty (MaxBins n) = "maxbins" .= n
+binProperty (MinStep x) = "minstep" .= x
+binProperty (Nice b) = "nice" .= b
+binProperty (Step x) = "step" .= x
+binProperty (Steps xs) = "steps" .= xs
 
 
 bin :: [BinProperty] -> LabelledSpec
