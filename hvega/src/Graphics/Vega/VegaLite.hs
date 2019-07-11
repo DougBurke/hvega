@@ -230,6 +230,7 @@ module Graphics.Vega.VegaLite
        , window
        , Window(..)
        , WOperation(..)
+       , WindowProperty(..)
 
          -- * Creating the Mark Specification
          --
@@ -243,10 +244,18 @@ module Graphics.Vega.VegaLite
          -- $markproperties
 
        , MarkProperty(..)
+       , StrokeCap(..)
+       , StrokeJoin(..)
+
+         -- *** Used by Mark Properties
+
        , MarkOrientation(..)
        , MarkInterpolation(..)
-       , MarkErrorExtent(..)
        , Symbol(..)
+       , PointMarker(..)
+       , LineMarker(..)
+       , MarkErrorExtent(..)
+       , TooltipContent(..)
 
          -- ** Cursors
          --
@@ -277,6 +286,7 @@ module Graphics.Vega.VegaLite
          -- $sortprops
 
        , SortProperty(..)
+       , SortField(..)
 
          -- ** Axis properties
          --
@@ -312,12 +322,19 @@ module Graphics.Vega.VegaLite
        , fillOpacity
        , strokeOpacity
        , shape
+
+         -- *** Mark Channel properties
+
        , MarkChannel(..)
-       , LegendProperty(..)
+
+         -- *** Mark Legends
+         --
+         -- $marklegends
+
        , Legend(..)
+       , LegendProperty(..)
        , LegendOrientation(..)
        , LegendValues(..)
-       , LineMarker(..)
 
          -- ** Text Channels
          --
@@ -326,7 +343,6 @@ module Graphics.Vega.VegaLite
        , text
        , tooltip
        , tooltips
-       , TooltipContent(..)
        , TextChannel(..)
        , FontWeight(..)
 
@@ -369,6 +385,11 @@ module Graphics.Vega.VegaLite
        , ScaleDomain(..)
        , ScaleRange(..)
        , ScaleNice(..)
+
+         -- *** Color scaling
+         --
+         -- $color
+
        , CInterpolate(..)
 
          -- * Creating view compositions
@@ -386,6 +407,7 @@ module Graphics.Vega.VegaLite
        , spacingRC
        , center
        , centerRC
+       , CompositionAlignment(..)
 
          -- ** Resolution
          --
@@ -409,7 +431,6 @@ module Graphics.Vega.VegaLite
        , facetFlow
        , FacetMapping(..)
        , FacetChannel(..)
-       , FacetConfig(..)
        , asSpec
        , specification
        , Arrangement(..)
@@ -430,8 +451,13 @@ module Graphics.Vega.VegaLite
        , SelectionProperty(..)
        , Binding(..)
        , InputProperty(..)
-       , SelectionResolution(..)
        , SelectionMarkProperty(..)
+
+       -- ** Selection Resolution
+       --
+       -- $selectionresolution
+
+       , SelectionResolution(..)
 
          -- ** Making conditional channel encodings
          --
@@ -451,20 +477,8 @@ module Graphics.Vega.VegaLite
        , padding
        , autosize
        , background
-       , CompositionAlignment(..)
-       , ConfigurationProperty(..)
-       , Autosize(..)
        , Padding(..)
-       , PointMarker(..)
-       , TitleConfig(..)
-       , APosition(..)
-       , ViewConfig(..)
-       , RangeConfig(..)
-       , FieldTitleProperty(..)
-       , WindowProperty(..)
-       , SortField(..)
-       , StrokeCap(..)
-       , StrokeJoin(..)
+       , Autosize(..)
 
          -- ** View Backgroud
          --
@@ -477,6 +491,7 @@ module Graphics.Vega.VegaLite
 
        , configure
        , configuration
+       , ConfigurationProperty(..)
 
          -- ** Axis Configuration Options
          --
@@ -494,6 +509,32 @@ module Graphics.Vega.VegaLite
          -- $scaleconfig
 
        , ScaleConfig(..)
+
+         -- ** Scale Range Configuration Options
+         --
+         -- $scalerangeconfig
+
+       , RangeConfig(..)
+
+         -- ** Title Configuration Options
+         --
+         -- $titleconfig
+
+       , TitleConfig(..)
+
+         -- ** View Configuration Options
+         --
+         -- $viewconfig
+
+       , ViewConfig(..)
+       , APosition(..)
+       , FieldTitleProperty(..)
+
+         -- ** Facet Configuration Options
+         --
+         -- $facetconfig
+
+       , FacetConfig(..)
 
          -- * General Data types
          --
@@ -651,6 +692,10 @@ import Data.Monoid ((<>))
 -- Control the appearance of the visual marks in the visualization
 -- (e.g. 'color' and 'size').
 
+-- $marklegends
+-- See the
+-- [Vega-Lite legend property documentation](https://vega.github.io/vega-lite/docs/legend.html#legend-properties).
+
 -- $textchannels
 -- Control the appearance of the text and tooltip elements in the visualization.
 
@@ -685,7 +730,12 @@ import Data.Monoid ((<>))
 -- for more information.
 
 -- $scaling
--- How the encoding of a data field is applied.
+-- Used to specify how the encoding of a data field should be applied. See the
+-- [Vega-Lite scale documentation](https://vega.github.io/vega-lite/docs/scale.html).
+
+-- $color
+-- For color interpolation types, see the
+-- [Vega-Lite continuous scale documentation](https://vega.github.io/vega-lite/docs/scale.html#continuous).
 
 -- $view
 -- Views can be combined to create more complex multiview displays. This may involve
@@ -716,6 +766,10 @@ import Data.Monoid ((<>))
 -- responded to in a visualization. They transform interactions into data queries.
 -- For details, see the
 -- <https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
+
+-- $selectionresolution
+-- Determines how selections are made across multiple views.
+-- See the [Vega-lite resolve selection documentation](https://vega.github.io/vega-lite/docs/selection.html#resolve).
 
 -- $conditional
 -- To make channel encoding conditional on the result of some interaction, use
@@ -784,6 +838,22 @@ import Data.Monoid ((<>))
 -- $scaleconfig
 -- See the
 -- [Vega-Lite scale configuration documentation](https://vega.github.io/vega-lite/docs/scale.html#scale-config).
+
+-- $scalerangeconfig
+-- See the
+-- [Vega-Lite scheme configuration documentation](https://vega.github.io/vega/docs/schemes/#scheme-properties).
+
+-- $titleconfig
+-- See the
+-- [Vega-Lite title configuration documentation](https://vega.github.io/vega-lite/docs/title.html#config).
+
+-- $viewconfig
+-- See the
+-- [Vega-Lite view configuration documentation](https://vega.github.io/vega-lite/docs/spec.html#config).
+
+-- $facetconfig
+-- See the
+-- [Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -1232,12 +1302,19 @@ and @FoUtc@, the formatting specification can be specified using
 or left as an empty string if default date formatting is to be applied. Care should
 be taken when assuming default parsing of dates because different browsers can
 parse dates differently. Being explicit about the date format is usually safer.
+
 -}
 data DataType
     = FoNumber
+      -- ^ Indicate numeric data type to be parsed when reading input data.
     | FoBoolean
+      -- ^ Indicate Boolean data type to be parsed when reading input data.
     | FoDate T.Text
+      -- ^ Date format for parsing input data using
+      --   [D3's formatting specifiers](https://vega.github.io/vega-lite/docs/data.html#format)
+      --   or left as an empty string for default formatting.
     | FoUtc T.Text
+      -- ^ Similar to 'FoDate' but for UTC format dates.
 
 
 {-|
@@ -1252,8 +1329,13 @@ property field containing the attribute data to extract. For details see the
 -}
 data Format
     = JSON T.Text
+      -- ^ Property to be extracted from some JSON when it has some surrounding structure.
+      --   e.g., specifying the property @values.features@ is equivalent to retrieving
+      --   @json.values.features@ from a JSON object with a custom delimiter.
     | CSV
+      -- ^ Comma-separated (CSV) data file format.
     | TSV
+      -- ^ Tab-separated (TSV) data file format
     | DSV Char
       -- ^ The fields are separated by the given character (which must be a
       --   single 16-bit code unit).
@@ -1266,8 +1348,25 @@ data Format
       -- @since 0.4.0.0
       -}
     | TopojsonFeature T.Text
+      -- ^ A topoJSON feature format containing an object with the given name. For example:
+      --
+      -- @
+      -- 'dataFromUrl' \"https:\/\/gicentre.github.io\/data\/geoTutorials\/londonBoroughs.json\"
+      --    [ TopojsonFeature \"boroughs\" ]
+      -- @
     | TopojsonMesh T.Text
+      -- ^ A topoJSON mesh format containing an object with the given name. Unlike
+      --   'TopojsonFeature', the corresponding geo data are returned as a single unified mesh,
+      --   not as individual GeoJSON features.
     | Parse [(T.Text, DataType)]
+      -- ^ Parsing rules when processing some data text, specified as a list of tuples
+      --   in the form @(fieldname, datatype)@. Useful when automatic type inference needs
+      --   to be overridden, for example when converting strings to numbers:
+      --
+      -- @
+      -- 'dataFromUrl' \"myDataFile.csv\"
+      --    [ Parse [ ( \"x\", 'FoNumber' ), ( "\y\", FoNumber ) ] ]
+      -- @
 
 
 {-|
@@ -1370,7 +1469,7 @@ can be created with normal data generating functions such as 'dataFromRows' or
 let toJS = Data.Aeson.toJSON
     obj = Data.Aeson.object
 
-    data = 'dataFromRows' []
+    dvals = 'dataFromRows' []
             . 'dataRow' [ ( "cat", 'Str' "a" ), ( "val", 'Number' 10 ) ]
             . dataRow [ ( "cat", Str "b" ), ( "val", Number 18 ) ]
     json = toJS
@@ -1381,7 +1480,7 @@ let toJS = Data.Aeson.toJSON
     enc = ...
 
 in 'toVegaLite'
-    [ datasets [ ( \"myData\", data [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
+    [ datasets [ ( \"myData\", dvals [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
     , 'dataFromSource' \"myData\" []
     , 'mark' 'Bar' []
     , enc []
@@ -1517,11 +1616,10 @@ default formatting. See the
 for details. The columns themselves are most easily generated with 'dataColumn'
 
 @
-data =
-    dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
-        . 'dataColumn' \"Animal\" ('Strings' [ \"Fish\", \"Dog\", \"Cat\" ])
-        . dataColumn \"Age\" ('Numbers' [ 28, 12, 6 ])
-        . dataColumn \"Year\" (Strings [ "2010", "2014", "2015" ])
+dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
+  . 'dataColumn' \"Animal\" ('Strings' [ \"Fish\", \"Dog\", \"Cat\" ])
+  . dataColumn \"Age\" ('Numbers' [ 28, 12, 6 ])
+  . dataColumn \"Year\" (Strings [ "2010", "2014", "2015" ])
 @
 -}
 dataFromColumns :: [Format] -> [DataColumn] -> Data
@@ -1589,6 +1687,7 @@ dataFromJson vlspec fmts =
 
 A single data value. This is used when a function can accept values of different
 types (e.g. either a number or a string).
+
 -}
 data DataValue
     = Boolean Bool
@@ -1661,10 +1760,10 @@ if you are creating data inline (as opposed to reading from a file), adding data
 is more efficient and less error-prone.
 
 @
-data = dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
-        . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", Str "2010" ) ]
-        . dataRow [ ( \"Animal\", Str \"Dog\" ), ( \"Age\", Number 12 ), ( \"Year\", Str "2014" ) ]
-        . dataRow [ ( \"Animal\", Str \"Cat\" ), ( \"Age\", Number 6 ), ( \"Year\", Str "2015" ) ]
+dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
+  . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", Str "2010" ) ]
+  . dataRow [ ( \"Animal\", Str \"Dog\" ), ( \"Age\", Number 12 ), ( \"Year\", Str "2014" ) ]
+  . dataRow [ ( \"Animal\", Str \"Cat\" ), ( \"Age\", Number 6 ), ( \"Year\", Str "2015" ) ]
 @
 -}
 dataFromRows :: [Format] -> [DataRow] -> Data
@@ -1688,7 +1787,7 @@ for details.
 
 @
 'toVegaLite'
-    [ 'datasets' [ ( "myData", data [] ),  ( "myJson", 'dataFromJson' json [] ) ]
+    [ 'datasets' [ ( "myData", dvals [] ),  ( "myJson", 'dataFromJson' json [] ) ]
     , dataFromSource "myData" []
     , 'mark' 'Bar' []
     , enc []
@@ -1837,15 +1936,23 @@ mark mrk props =
 
 Mark channel properties used for creating a mark channel encoding.
 -}
+
+-- https://vega.github.io/vega-lite/docs/encoding.html#mark-prop
+
 data MarkChannel
     = MName T.Text
+      -- ^ Field used for encoding with a mark property channel.
     | MRepeat Arrangement
       -- ^ Reference in a mark channel to a field name generated by 'repeatFlow'
-      -- or 'repeat'. The parameter identifies whether reference is being made to
-      -- fields that are to be arranged in columns, in rows, or a with a flow layout.
+      --   or 'repeat'. The parameter identifies whether reference is being made to
+      --   fields that are to be arranged in columns, in rows, or a with a flow layout.
     | MmType Measurement
+      -- ^ Level of measurement when encoding with a mark property channel.
     | MScale [ScaleProperty]
-      -- ^ Use an empty list to remove the scale.
+      -- ^ Scaling applied to a field when encoding with a mark property channel.
+      --   The scale will transform a field's value into a color, shape, size etc.
+      --
+      --   Use an empty list to remove the scale.
     | MBin [BinProperty]
       -- ^ Discretize numeric values into bins when encoding with a mark property channel.
     | MBinned
@@ -1858,23 +1965,50 @@ data MarkChannel
       --
       --   @since 0.4.0.0
     | MTimeUnit TimeUnit
+      -- ^ Time unit aggregation of field values when encoding with a mark property channel.
     | MAggregate Operation
+      -- ^ Compute aggregate summary statistics for a field to be encoded with a
+      --   mark property channel.
     | MLegend [LegendProperty]
-      -- ^ Use an empty list to remove the legend.
+      -- ^ Properties of a legend that describes a mark's encoding.
+      --
+      --   For no legend, provide an empty list.
     | MSelectionCondition BooleanOp [MarkChannel] [MarkChannel]
+      -- ^ Make a mark channel conditional on interactive selection. The first parameter
+      --   is a selection condition to evaluate; the second the encoding to apply if that
+      --   selection is true; the third parameter is the encoding if the selection is false.
+      --
+      -- @
+      -- 'color'
+      --   [ MSelectionCondition ('SelectionName' \"myBrush\")
+      --      [ 'MName' \"myField\", 'MmType' 'Ordinal' ]
+      --      [ 'MString' \"grey\" ]
+      --   ]
+      -- @
     | MDataCondition [(BooleanOp, [MarkChannel])] [MarkChannel]
       -- ^ Make a text channel conditional on one or more predicate expressions. The first
       --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
       --   if that expression is @True@. The second is the encoding if none of the expressions
       --   evaluate as @True@.
       --
+      -- @
+      -- 'color'
+      --   [ MDataCondition [ ( 'Expr' \"datum.myField === null\", [ 'MString' \"grey\" ] ) ]
+      --      [ MString \"black\" ]
+      --   ]
+      -- @
+      --
       --   The arguments to this constructor have changed in @0.4.0.0 to support
       --   multiple expressions.
     | MPath T.Text
+      -- ^ SVG path string used when encoding with a mark property channel. Useful
+      --   for providing custom shapes.
     | MNumber Double
+      -- ^ Literal numeric value when encoding with a mark property channel.
     | MString T.Text
+      -- ^ Literal string value when encoding with a mark property channel.
     | MBoolean Bool
-
+      -- ^ Boolean value when encoding with a mark property channel.
 
 markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
@@ -1932,10 +2066,15 @@ supported in @hvega@.
 
 data MarkProperty
     = MAlign HAlign
+      -- ^ Horizontal alignment of a text mark.
     | MAngle Double
+      -- ^ Rotation angle, in degrees, of a text mark.
     | MBandSize Double
+      -- ^ Band size of a bar mark.
     | MBaseline VAlign
+      -- ^ Vertical alignment of a text mark.
     | MBinSpacing Double
+      -- ^ Offset between bars for a binned field using a bar mark.
     | MBorders [MarkProperty]
       -- ^ Border properties for an errorband mark.
       --
@@ -1945,29 +2084,47 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MClip Bool
+      -- ^ Should a mark be clipped to the enclosing group's dimensions.
     | MColor T.Text
+      -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
+      -- precedence and will override this if specified.
     | MCursor Cursor
+      -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
+      -- ^ Continuous band size of a bar mark.
     | MDiscreteBandSize Double
+      -- ^ Discrete band size of a bar mark.
     | MdX Double
+      -- ^ Horizontal offset between a text mark and its anchor.
     | MdY Double
+      -- ^ Vertical offset between a text mark and its anchor.
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
       --
       --   @since 0.4.0.0
     | MFill T.Text
+      -- ^ Default fill color of a mark.
     | MFilled Bool
+      -- ^ Should a mark's color should be used as the fill color instead of
+      --   stroke color.
     | MFillOpacity Double
+      -- ^ Fill opacity of a mark.
     | MFont T.Text
+      -- ^ Font of a text mark. Can be any font name made accessible via
+      -- a css file (or a generic font like \"serif\", \"monospace\" etc.).
     | MFontSize Double
+      -- ^ Font size, in pixels, used by a text mark.
     | MFontStyle T.Text
+      -- ^ Font style (e.g. \"italic\") used by a text mark.
     | MFontWeight FontWeight
+      -- ^ Font weight used by a text mark.
     | MHRef T.Text
       -- ^ Hyperlink to be associated with a mark making it a clickable
       --   hyperlink.
       --
       --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
+      -- ^ Interpolation method used by line and area marks.
     | MLine LineMarker
       -- ^ How should the vertices of an area mark be joined?
       --
@@ -1977,6 +2134,7 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MOpacity Double
+      -- ^ Overall opacity of a mark in the range 0 to 1.
     | MOrder Bool
       -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
       --   the order is determined by measurement type or order channel. If
@@ -1984,39 +2142,63 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MOrient MarkOrientation
+      -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the boxplot mark.
       --
       --   @since 0.4.0.0
     | MPoint PointMarker
-      -- ^ @since 0.4.0.0
+      -- ^ Appearance of a point marker joining the vertices of a line or area mark.
+      --
+      --   @since 0.4.0.0
     | MRadius Double
+      -- ^ Polar coordinate radial offset of a text mark from its origin.
     | MRule [MarkProperty]
       -- ^ Rule (main line) properties for the errorbar and boxplot marks.
       --
       --   @since 0.4.0.0
     | MShape Symbol
+      -- ^ Shape of a point mark.
     | MShortTimeLabels Bool
+      -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
+      -- ^ SIze of a mark.
     | MStroke T.Text
+      -- ^ Default stroke color of a mark.
     | MStrokeCap StrokeCap
-      -- ^ @since 0.4.0.0
+      -- ^ Cap style of a mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeDash [Double]
+      -- ^ Stroke dash style used by a mark. Determined by an alternating 'on-off'
+      --   sequence of line lengths, in pixels.
     | MStrokeDashOffset Double
+      -- ^ Number of pixels before the first line dash is drawn.
     | MStrokeJoin StrokeJoin
-      -- ^ @since 0.4.0.0
+      -- ^ Line segment join style of a mark's stroke.
+      --
+      --   @since 0.4.0.0
     | MStrokeMiterLimit Double
       -- ^ Mitre limit at which to bevel a join between line segments of a
       --   mark's stroke.
       --
       --   @since 0.4.0.0
     | MStrokeOpacity Double
+      -- ^ Stroke opacity of a mark in the range 0 to 1.
     | MStrokeWidth Double
+      -- ^ Stroke width of a mark in pixels.
     | MStyle [T.Text]
+      -- ^ Names of custom styles to apply to a mark. Each should refer to a named style
+      --   defined in a separate style configuration.
     | MTension Double
+      -- ^ Interpolation tension used when interpolating line and area marks.
     | MText T.Text
+      -- ^ Placeholder text for a text mark for when a text channel is not specified.
     | MTheta Double
+      -- ^ Polar coordinate angle (clockwise from north in radians) of a text mark from
+      --   the origin determined by its x and y properties.
     | MThickness Double
+      -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
       -- ^ Tick properties for the errorbar or boxplot mark.
       --
@@ -2129,8 +2311,11 @@ markProperty (MY2Offset x) = "y2Offset" .= x
 
 data StrokeCap
     = CButt
+      -- ^ Butt stroke cap.
     | CRound
+      -- ^ Rounded stroke cap.
     | CSquare
+      -- ^ Square stroke cap.
 
 
 strokeCapLabel :: StrokeCap -> T.Text
@@ -2143,8 +2328,11 @@ strokeCapLabel CSquare = "square"
 
 data StrokeJoin
     = JMiter
+      -- ^ Mitred stroke join.
     | JRound
+      -- ^ Rounded stroke join.
     | JBevel
+      -- ^ Bevelled stroke join.
 
 
 strokeJoinLabel :: StrokeJoin -> T.Text
@@ -2526,24 +2714,24 @@ data ScaleProperty
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
-scaleProperty (SType sType) = ("type", toJSON (scaleLabel sType))
-scaleProperty (SDomain sdType) = ("domain", scaleDomainSpec sdType)
+scaleProperty (SType sType) = "type" .= scaleLabel sType
+scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
 scaleProperty (SRange range) =
   let js = case range of
-        RNumbers xs -> toJSON (map toJSON xs)
-        RStrings ss -> toJSON (map toJSON ss)
+        RNumbers xs -> toJSON xs
+        RStrings ss -> toJSON ss
         RName s -> toJSON s
-  in ("range", js)
+  in "range" .= js
 scaleProperty (SScheme nme extent) = schemeProperty nme extent
-scaleProperty (SPadding x) = ("padding", toJSON x)
-scaleProperty (SPaddingInner x) = ("paddingInner", toJSON x)
-scaleProperty (SPaddingOuter x) = ("paddingOuter", toJSON x)
-scaleProperty (SRangeStep numOrNull) = ("rangeStep", maybe A.Null toJSON numOrNull)
-scaleProperty (SRound b) = ("round", toJSON b)
-scaleProperty (SClamp b) = ("clamp", toJSON b)
-scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
-scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
-scaleProperty (SZero b) = ("zero", toJSON b)
+scaleProperty (SPadding x) = "padding" .= x
+scaleProperty (SPaddingInner x) = "paddingInner" .= x
+scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
+scaleProperty (SRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
+scaleProperty (SRound b) = "round" .= b
+scaleProperty (SClamp b) = "clamp" .= b
+scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
+scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
+scaleProperty (SZero b) = "zero" .= b
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SBase x) = "base" .= x
@@ -2675,11 +2863,11 @@ data ScaleNice
     | NYear
       -- ^ Nice time intervals that try to align with whole or rounded years.
     | NInterval TimeUnit Int
-      -- ^ 'Nice' temporal interval values when scaling.
+      -- ^ \"Nice\" temporal interval values when scaling.
     | IsNice Bool
       -- ^ Enable or disable nice scaling.
     | NTickCount Int
-      -- ^ Desired number of tick marks in a 'nice' scaling.
+      -- ^ Desired number of tick marks in a \"nice\" scaling.
 
 
 scaleNiceSpec :: ScaleNice -> VLSpec
@@ -3299,10 +3487,12 @@ data AxisProperty
       --
       --   @since 0.4.0.0
     | AxValues [Double]
+      -- ^ Numeric values to appear along the axis.
     | AxDates [[DateTime]]
-    -- TODO: need to extend this I think?
+      -- ^ The dates or times to appear along the axis.
     | AxZIndex Int
-      -- ^ The z-index of the axis.
+      -- ^ The z-index of the axis. A 1 means the axis is in front of the
+      --   chart marks, 0 means it is drawn behind them.
 
 
 axisProperty :: AxisProperty -> LabelledSpec
@@ -4756,26 +4946,36 @@ Properties for customising the nature of the selection. See the
 for details.
 -}
 data SelectionProperty
-    = On T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Translate T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Zoom T.Text
-      -- ^ A <https://vega.github.io/vega/docs/event-streams Vega event stream>
-      --   or the empty string (which sets the property to @false@).
-    | Fields [T.Text]
-    | Encodings [Channel]
-    | Empty
-    | ResolveSelections SelectionResolution
-    | SelectionMark [SelectionMarkProperty]
+    = Empty
+      -- ^ Make a selection empty by default when nothing selected.
     | BindScales
+      -- ^ Enable two-way binding between a selection and the scales used in the same view.
+    | On T.Text
+      -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
+      --   that triggers a selection, or the empty string (which sets the property to @false@).
+    | Translate T.Text
+      -- ^ Translation selection transformation used for panning a view. See the
+      --   [Vega-Lite translate documentation](https://vega.github.io/vega-lite/docs/translate.html).
+    | Zoom T.Text
+      -- ^ Zooming selection transformation used for zooming a view. See the
+      --   [Vega-Lite zoom documentation](https://vega.github.io/vega-lite/docs/zoom.html).
+    | Fields [T.Text]
+      -- ^ Field names for projecting a selection.
+    | Encodings [Channel]
+      -- ^ Encoding channels that form a named selection.
+    | ResolveSelections SelectionResolution
+      -- ^ Strategy that determines how selections' data queries are resolved when applied
+      --   in a filter transform, conditional encoding rule, or scale domain.
+    | SelectionMark [SelectionMarkProperty]
+      -- ^ Appearance of an interval selection mark (dragged rectangle).
     | Bind [Binding]
+      -- ^ Binding to some input elements as part of a named selection.
     | Nearest Bool
+      -- ^ Whether or not a selection should capture nearest marks to a pointer
+      --   rather than an exact position match.
     | Toggle T.Text
-      -- ^ A <https://vega.github.io/vega/docs/expressions Vega expression> that evaluates
-      --   to @true@ or @false@.
+      -- ^ Predicate expression that determines a toggled selection. See the
+      --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
 
 
 selectionProperty :: SelectionProperty -> LabelledSpec
@@ -4866,8 +5066,13 @@ for details
 -}
 data SelectionResolution
     = Global
+      -- ^ One selection available across all subviews (default).
     | Union
+      -- ^ Each subview contains its own brush and marks are selected if they lie
+      --   within /any/ of these individual selections.
     | Intersection
+      -- ^  Each subview contains its own brush and marks are selected if they lie
+      --    within /all/ of these individual selections.
 
 
 selectionResolutionLabel :: SelectionResolution -> T.Text
@@ -4949,19 +5154,31 @@ and the
 -}
 data Binding
     = IRange T.Text [InputProperty]
+      -- ^ Range slider input element that can bound to a named field value.
     | ICheckbox T.Text [InputProperty]
+      -- ^ Checkbox input element that can bound to a named field value.
     | IRadio T.Text [InputProperty]
+      -- ^ Radio box input element that can bound to a named field value.
     | ISelect T.Text [InputProperty]
-      -- TODO: Check validity: The following input types can generate a warning if options are included even if options appear to have an effect (e.g. placeholder)
+      -- ^ Select input element that can bound to a named field value.
     | IText T.Text [InputProperty]
+      -- ^ Text input element that can bound to a named field value.
     | INumber T.Text [InputProperty]
+      -- ^ Number input element that can bound to a named field value.
     | IDate T.Text [InputProperty]
+      -- ^ Date input element that can bound to a named field value.
     | ITime T.Text [InputProperty]
+      -- ^ Time input element that can bound to a named field value.
     | IMonth T.Text [InputProperty]
+      -- ^ Month input element that can bound to a named field value.
     | IWeek T.Text [InputProperty]
+      -- ^ Week input element that can bound to a named field value.
     | IDateTimeLocal T.Text [InputProperty]
+      -- ^ Local time input element that can bound to a named field value.
     | ITel T.Text [InputProperty]
+      -- ^ Telephone number input element that can bound to a named field value.
     | IColor T.Text [InputProperty]
+      -- ^ Color input element that can bound to a named field value.
 
 
 bindingSpec :: Binding -> LabelledSpec
@@ -4988,8 +5205,11 @@ bindingSpec bnd =
 
 data APosition
     = AStart
+      -- ^ The start of the text.
     | AMiddle
+      -- ^ The middle of the text.
     | AEnd
+      -- ^ The end of the text.
 
 
 anchorLabel :: APosition -> T.Text
@@ -5007,15 +5227,25 @@ For further details see the
 -}
 data TitleConfig
     = TAnchor APosition
+      -- ^ Default anchor position when placing titles.
     | TAngle Double
+      -- ^ Default angle when orientating titles.
     | TBaseline VAlign
+      -- ^ Default vertical alignment when placing titles.
     | TColor T.Text
+      -- ^ Default color when showing titles.
     | TFont T.Text
+      -- ^ Default font when showing titles.
     | TFontSize Double
+      -- ^ Default font size when showing titles.
     | TFontWeight FontWeight
+      -- ^ Default font weight when showing titles.
     | TLimit Double
+      -- ^ Default maximum length, in pixels, of titles.
     | TOffset Double
+      -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
+      -- ^ Default placement of titles relative to the chart body.
 
 
 titleConfigSpec :: TitleConfig -> LabelledSpec
@@ -5140,57 +5370,101 @@ for details.
 -}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
+      -- ^ The default appearance of area marks.
     | Autosize [Autosize]
+      -- ^ The default sizing of visualizations.
     | Axis [AxisConfig]
+      -- ^ The default appearance of axes.
     | AxisX [AxisConfig]
+      -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
+      -- ^ The default appearance of the Y axes.
     | AxisLeft [AxisConfig]
+      -- ^ The default appearance of the left-side axes.
     | AxisRight [AxisConfig]
+      -- ^ The default appearance of the right-side axes.
     | AxisTop [AxisConfig]
+      -- ^ The default appearance of the top-side axes.
     | AxisBottom [AxisConfig]
+      -- ^ The default appearance of the bottom-side axes.
     | AxisBand [AxisConfig]
+      -- ^ The default appearance of axes with band scaling.
     | Background T.Text
+      -- ^ The default background color of visualizations.
     | BarStyle [MarkProperty]
+      -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
+      -- ^ The default appearance of circle marks.
     | CountTitle T.Text
+      -- ^ The default title style for count fields.
     | FieldTitle FieldTitleProperty
+      -- ^ The default title-generation style for fields.
     | GeoshapeStyle [MarkProperty]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of geoshape marks.
+      --
+      --   @since 0.4.0.0
     | Legend [LegendConfig]
+      -- ^ The default appearance of legends.
     | LineStyle [MarkProperty]
+      -- ^ The default appearance of line marks.
     | FacetStyle [FacetConfig]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of facet layouts.
+      --
+      --   @since 0.4.0.0
     | HeaderStyle [HeaderProperty]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of facet headers.
+      --
+      --   @since 0.4.0.0
     | MarkStyle [MarkProperty]
+      -- ^ The default mark appearance.
     | NamedStyle T.Text [MarkProperty]
+      -- ^ The default appearance of a single named style.
     | NamedStyles [(T.Text, [MarkProperty])]
-      -- ^ @since 0.4.0.0
+      -- ^ The default appearance of a list of named styles.
+      --
+      --   @since 0.4.0.0
     | NumberFormat T.Text
+      -- ^ The default number formatting for axis and text labels.
     | Padding Padding
+      -- ^ The default padding in pixels from the edge of the of visualization
+      --   to the data rectangle.
     | PointStyle [MarkProperty]
+      -- ^ The default appearance of point marks.
     | Projection [ProjectionProperty]
+      -- ^ The default style of map projections.
     | Range [RangeConfig]
+      -- ^ The default range properties used when scaling.
     | RectStyle [MarkProperty]
+      -- ^ The default appearance of rectangle marks.
     | RemoveInvalid Bool
+      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
+      --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
+      -- ^ The default appearance of rule marks.
     | Scale [ScaleConfig]
+      -- ^ The default properties used when scaling.
     | SelectionStyle [(Selection, [SelectionProperty])]
+      -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
+      -- ^  the default appearance of square marks
     | Stack StackOffset
-    -- ^ The default stack offset style for stackable marks.
-    --
-    --   Changed from @StackProperty@ in version 0.4.0.0
+      -- ^ The default stack offset style for stackable marks.
+      --
+      --   Changed from @StackProperty@ in version 0.4.0.0
     | TextStyle [MarkProperty]
+      -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
+      -- ^ The default appearance of tick marks.
     | TitleStyle [TitleConfig]
+      -- ^ The default appearance of visualization titles.
     | TimeFormat T.Text
-      -- Note: Trails appear unusual in having their own top-level config
-      -- (see https://vega.github.io/vega-lite/docs/trail.html#config)
+      -- ^ The default time format for axis and legend labels.
     | TrailStyle [MarkProperty]
-    -- ^ @since 0.4.0.0
+      -- ^ The default style of trail marks.
+      --
+      --   @since 0.4.0.0
     | View [ViewConfig]
-
+      -- ^ The default single view style.
 
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
@@ -7744,6 +8018,7 @@ sel =
         . select "myBrush" Interval []
         . select "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
+
 -}
 select ::
   T.Text
@@ -7878,12 +8153,12 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = 'transform' . timeUnitAs 'Month' "date" "monthly"
+trans = 'transform' . timeUnitAs 'Month' \"date\" \"monthly\"
 
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
+        . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
         . position 'Y' [ 'PAggregate' 'Sum', PmType 'Quantitative' ]
-        . 'detail' [ 'DName' "monthly", 'DmType' 'Temporal' ]
+        . 'detail' [ 'DName' \"monthly\", 'DmType' 'Temporal' ]
 @
 -}
 timeUnitAs ::
