@@ -2732,21 +2732,44 @@ a scale can be changed with the 'PSort' constructor.
 data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
+    | SBase Double
+      -- ^ The base to use for log scaling ('ScLog').
+      --
+      --   Default is @10@.
+      --
+      --   @since 0.4.0.0
+    | SBins [Double]
+      -- ^ An array of bin boundaries over the scale domain. If give, axes and legends will use
+      --   these boundaries to inform the choice of tick marks and text labels.
+      --
+      --   @since 0.4.0.0
+    | SClamp Bool
+      -- ^ Should values outside the data domain be clamped (to the minimum or
+      --   maximum value)?
+    | SConstant Double
+      -- ^ The desired slope of the 'ScSymLog' function at zero.
+      --
+      --   The default is @1@.
+      --
+      --   @since 0.4.0.0
     | SDomain ScaleDomain
       -- ^ Custom scaling domain.
-    | SRange ScaleRange
-      -- ^ Range of a scaling. The type of range depends on the encoding channel.
-    | SScheme T.Text [Double]
-      -- ^  Color scheme used by a color scaling. The first parameter is the name of the
-      --    scheme (e.g. \"viridis\") and the second an optional specification of the number of
-      --    colors to use (list of one number), or the extent of the color range to use (list
-      --    of two numbers between 0 and 1).
+    | SExponent Double
+      -- ^ The exponent to use for power scaling ('ScPow').
+      --
+      --   @since 0.4.0.0
+    | SInterpolate CInterpolate
+      -- ^ Interpolation method for scaling range values.
+    | SNice ScaleNice
+      -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SPadding Double
       -- ^ Padding in pixels to apply to a scaling.
     | SPaddingInner Double
       -- ^ Inner padding to apply to a band scaling.
     | SPaddingOuter Double
       -- ^ Outer padding to apply to a band scaling.
+    | SRange ScaleRange
+      -- ^ Range of a scaling. The type of range depends on the encoding channel.
     | SRangeStep (Maybe Double)
       -- ^ Distance between the starts of adjacent bands in a band scaling. If
       --   @Nothing@, the distance is determined automatically.
@@ -2754,66 +2777,55 @@ data ScaleProperty
       -- ^ Are numeric values in a scaling are rounded to integers?
       --
       --   The default is @False@.
-    | SClamp Bool
-      -- ^ Should values outside the data domain be clamped (to the minimum or
-      --   maximum value)?
-    | SInterpolate CInterpolate
-      -- ^ Interpolation method for scaling range values.
-    | SNice ScaleNice
-      -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
+    | SScheme T.Text [Double]
+      -- ^  Color scheme used by a color scaling. The first parameter is the name of the
+      --    scheme (e.g. \"viridis\") and the second an optional specification, which can
+      --    contain 1, 2, or 3 numbers:
+      --
+      --      - the number of colors to use (list of one number);
+      --      - the extent of the color range to use (list of two numbers between 0 and 1);
+      --      - the number of colors and extent (three numbers, first is the number of colors).
+      --
+      --    The number of colors was broken prior to @0.4.0.0@ and the option to
+      --    define both the count and extent was added in @0.4.0.0@.
     | SZero Bool
       -- ^ Should a numeric scaling be forced to include a zero value?
       --
       --   Not all scales support @SZero@ and the default depends on the type of
       --   channel.
-    | SExponent Double
-      -- ^ The exponent to use for power scaling ('ScPow').
-      --
-      --   @since 0.4.0.0
-    | SConstant Double
-      -- ^ The desired slope of the 'ScSymLog' function at zero. If
-      --   unspecified, the default is 1.
-      --
-      --   @since 0.4.0.0
-    | SBase Double
-      -- ^ The base to use for log scaling ('ScLog').
-      --
-      --   Default is @10@.
-      --
-      --   @since 0.4.0.0
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
+scaleProperty (SBase x) = "base" .= x
+scaleProperty (SBins xs) = "bins" .= xs
+scaleProperty (SClamp b) = "clamp" .= b
+scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
-scaleProperty (SRange range) =
-  let js = case range of
-        RNumbers xs -> toJSON xs
-        RStrings ss -> toJSON ss
-        RName s -> toJSON s
-  in "range" .= js
-scaleProperty (SScheme nme extent) = schemeProperty nme extent
+scaleProperty (SExponent x) = "exponent" .= x
+scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
+scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
 scaleProperty (SPadding x) = "padding" .= x
 scaleProperty (SPaddingInner x) = "paddingInner" .= x
 scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
+scaleProperty (SRange (RNumbers xs)) = "range" .= xs
+scaleProperty (SRange (RStrings ss)) = "range" .= ss
+scaleProperty (SRange (RName s)) = "range" .= s
 scaleProperty (SRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
 scaleProperty (SRound b) = "round" .= b
-scaleProperty (SClamp b) = "clamp" .= b
-scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
-scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
+scaleProperty (SScheme nme extent) = schemeProperty nme extent
 scaleProperty (SZero b) = "zero" .= b
-scaleProperty (SExponent x) = "exponent" .= x
-scaleProperty (SConstant x) = "constant" .= x
-scaleProperty (SBase x) = "base" .= x
 
+
+-- TODO: there should probably be a more-structured way to specify this
+--
+-- based on schema 3.3.0 #/definitions/SchemeParams
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
-schemeProperty nme extent =
-  let js = case extent of
-        [mn, mx] -> object ["name" .= nme, "extent" .= [mn, mx]]
-        _ -> toJSON nme
-
-  in ("scheme", js)
+schemeProperty nme [n] = "scheme" .= object ["name" .= nme, "count" .= n]
+schemeProperty nme [mn, mx] = "scheme" .= object ["name" .= nme, "extent" .= [mn, mx]]
+schemeProperty nme [n, mn, mx] = "scheme" .= object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
+schemeProperty nme _ = "scheme" .= nme
 
 
 -- | Used to indicate the type of scale transformation to apply.
