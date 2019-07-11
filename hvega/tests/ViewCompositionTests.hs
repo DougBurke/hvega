@@ -112,7 +112,7 @@ cfg =
     -- Styling to remove axis gridlines and labels
     configure
         . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-        . configuration (View [ Stroke Nothing, ViewHeight 120 ])
+        . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
         . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
 
 grid1 :: VegaLite

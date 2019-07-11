@@ -917,6 +917,9 @@ import Data.Monoid ((<>))
 --   accepting multiple expressions.
 --
 -- * The @MarkOrientation@ type has been renamed 'Orientation'.
+--
+-- * The constructors of the 'ViewConfig' type have been renamed so they
+--   all begin with @View@ (to match 'ViewWidth' and 'ViewHeight').
 
 --- helpers not in VegaLite.elm
 
@@ -5755,6 +5758,12 @@ View configuration property. These are used to configure the style of a single
 view within a visualization such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
+
+This type has been changed in the @0.4.0.0@ release to use a consistent
+naming scheme for the costructors (everything starts with @View@). Prior to
+this release only @ViewWidth@ and @ViewHeight@ were named this way. There
+are also five new constructors.
+
 -}
 
 -- based on schema 3.3.0 #/definitions/ViewConfig
@@ -5768,46 +5777,67 @@ data ViewConfig
       -- ^ The default height of the single plot or each plot in a trellis plot when the
       --   visualization has a continuous (non-ordinal) scale or when the
       --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
-    | Clip Bool
+    | ViewClip Bool
       -- ^ Should the view be clipped?
-    | Fill (Maybe T.Text)
+    | ViewCornerRadius Double
+      -- ^ The radius, in pixels, of rounded rectangle corners.
+      --
+      --   The default is @0@.
+      --
+      --   @since 0.4.0.0
+    | ViewFill (Maybe T.Text)
       -- ^ The fill color.
-    | FillOpacity Double
+    | ViewFillOpacity Double
       -- ^ The fill opacity.
-    | Stroke (Maybe T.Text)
+    | ViewOpacity Double
+      -- ^ The overall opacity.
+      --
+      --   The default is @0.7@ for non-aggregate plots with 'Point', 'Tick',
+      --   'Circle', or 'Square' marks or layered 'Bar' charts, and @1@
+      --   otherwise.
+      --
+      --   @since 0.4.0.0
+    | ViewStroke (Maybe T.Text)
       -- ^ The stroke color.
-    | StrokeOpacity Double
-      -- ^ The stroke opacity.
-    | StrokeWidth Double
-      -- ^ The stroke width, in pixels.
-    | StrokeCap StrokeCap
+    | ViewStrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --
       --   @since 0.4.0.0
-    | StrokeDash [Double]
+    | ViewStrokeDash [Double]
       -- ^ The stroke dash style. It is defined by an alternating 'on-off'
       --   sequence of line lengths, in pixels.
-    | StrokeDashOffset Double
+    | ViewStrokeDashOffset Double
       -- ^ Number of pixels before the first line dash is drawn.
-    | StrokeJoin StrokeJoin
+    | ViewStrokeJoin StrokeJoin
       -- ^ The stroke line-join method.
       --
       --   @since 0.4.0.0
+    | ViewStrokeMiterLimit Double
+      -- ^ The miter limit at which to bevel a line join.
+      --
+      --   @since 0.4.0.0
+    | ViewStrokeOpacity Double
+      -- ^ The stroke opacity.
+    | ViewStrokeWidth Double
+      -- ^ The stroke width, in pixels.
 
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
 viewConfigProperty (ViewWidth x) = "width" .= x
 viewConfigProperty (ViewHeight x) = "height" .= x
-viewConfigProperty (Clip b) = "clip" .= b
-viewConfigProperty (Fill ms) = "fill" .= fromMaybe "" ms
-viewConfigProperty (FillOpacity x) = "fillOpacity" .= x
-viewConfigProperty (Stroke ms) = "stroke" .= fromMaybe "" ms
-viewConfigProperty (StrokeOpacity x) = "strokeOpacity" .= x
-viewConfigProperty (StrokeWidth x) = "strokeWidth" .= x
-viewConfigProperty (StrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-viewConfigProperty (StrokeDash xs) = "strokeDash" .= map toJSON xs
-viewConfigProperty (StrokeDashOffset x) = "strokeDashOffset" .= x
-viewConfigProperty (StrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+viewConfigProperty (ViewClip b) = "clip" .= b
+viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
+viewConfigProperty (ViewFill ms) = "fill" .= fromMaybe "" ms
+viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
+viewConfigProperty (ViewOpacity x) = "opacity" .= x
+viewConfigProperty (ViewStroke ms) = "stroke" .= fromMaybe "" ms
+viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
+viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs
+viewConfigProperty (ViewStrokeDashOffset x) = "strokeDashOffset" .= x
+viewConfigProperty (ViewStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+viewConfigProperty (ViewStrokeMiterLimit x) = "strokeMiterLimit" .= x
+viewConfigProperty (ViewStrokeOpacity x) = "strokeOpacity" .= x
+viewConfigProperty (ViewStrokeWidth x) = "strokeWidth" .= x
 
 
 {-|
@@ -7080,7 +7110,7 @@ more details.
 config =
     configure
         . 'configuration' ('Axis' [ 'DomainWidth' 1 ])
-        . configuration ('View' [ 'Stroke' (Just "transparent") ])
+        . configuration ('View' [ 'ViewStroke' (Just "transparent") ])
         . configuration ('SelectionStyle' [ ( 'Single', [ 'On' "dblclick" ] ) ])
 @
 -}
