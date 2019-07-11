@@ -122,7 +122,8 @@
                 "text": {
                     "field": "a",
                     "format": "%b `%y",
-                    "type": "temporal"
+                    "type": "temporal",
+                    "formatType": "time"
                 },
                 "x": {
                     "field": "a",

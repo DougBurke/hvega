@@ -11,7 +11,7 @@ import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("markCondition1", markCondition1)
-            -- , ("markCondition2", markCondition2)
+            , ("markCondition2", markCondition2)
             , ("selectionCondition1", selectionCondition1)
             , ("selectionCondition2", selectionCondition2)
             , ("selectionCondition3", selectionCondition3)
@@ -37,16 +37,16 @@ markCondition1 =
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
                 . color
                     [ MDataCondition
-                        ( Or (Expr "datum.IMDB_Rating === null")
-                                (Expr "datum.Rotten_Tomatoes_Rating === null") )
-                        [ MString "#ddd" ]
+                        [ ( Or (Expr "datum.IMDB_Rating === null")
+                            (Expr "datum.Rotten_Tomatoes_Rating === null")
+                          ,  [ MString "#ddd" ]
+                          )
+                        ]
                         [ MString "#0099ee" ]
                     ]
     in
     toVegaLite [ config [], dataVals, mark Point [], enc [] ]
 
-
-{- TODO: support multiple conditions
 
 markCondition2 :: VegaLite
 markCondition2 =
@@ -68,8 +68,6 @@ markCondition2 =
                     ]
     in
     toVegaLite [ width 400, dataVals [], mark Circle [ MSize 800 ], enc [] ]
-
--}
 
 selectionCondition1 :: VegaLite
 selectionCondition1 =

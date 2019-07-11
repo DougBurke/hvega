@@ -10,15 +10,17 @@
     "encoding": {
         "color": {
             "value": "#0099ee",
-            "condition": {
-                "value": "#ddd",
-                "test": {
-                    "or": [
-                        "datum.IMDB_Rating === null",
-                        "datum.Rotten_Tomatoes_Rating === null"
-                    ]
+            "condition": [
+                {
+                    "value": "#ddd",
+                    "test": {
+                        "or": [
+                            "datum.IMDB_Rating === null",
+                            "datum.Rotten_Tomatoes_Rating === null"
+                        ]
+                    }
                 }
-            }
+            ]
         },
         "x": {
             "field": "IMDB_Rating",

@@ -818,6 +818,11 @@ import Data.Monoid ((<>))
 -- should be used instead.
 --
 -- The @LEntryPadding@ constructor of 'LegendProperty' was removed.
+--
+-- The arguments to the `MDataCondition`, `TDataCondition`, and
+-- `HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
+-- and `HyperlinkChannel` respectively) have changed to support
+-- accepting multiple expressions.
 
 --- helpers not in VegaLite.elm
 
@@ -858,8 +863,45 @@ timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
 
+-- The assumption at the moment is that it's always correct to
+-- replace the empty list by null.
+--
+scaleProp_ :: [ScaleProperty] -> LabelledSpec
+scaleProp_ [] = "scale" .= A.Null
+scaleProp_ sps = "scale" .= object (map scaleProperty sps)
+
+scaleConfig_ :: [ScaleConfig] -> LabelledSpec
+-- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
+scaleConfig_ scs = "scale" .= object (map scaleConfigProperty scs)
+
+
+legendProp_ :: [LegendProperty] -> LabelledSpec
+legendProp_ [] = "legend" .= A.Null
+legendProp_ lps = "legend" .= object (map legendProperty lps)
+
+
 value_ :: T.Text -> LabelledSpec
 value_ v = "value" .= v
+
+
+selCond_ :: (a -> [LabelledSpec]) -> BooleanOp -> [a] -> [a] -> [LabelledSpec]
+selCond_ getProps selName ifClause elseClause =
+  let h = ("condition", hkey)
+      toProps = concatMap getProps
+      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hs = toProps elseClause
+  in h : hs
+
+dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
+dataCond_ getProps tests elseClause =
+  let h = "condition" .= map testClause tests
+      testClause (predicate, ifClause) =
+        object (("test", booleanOpSpec predicate) : toProps ifClause)
+      toProps = concatMap getProps
+      hs = toProps elseClause
+  in h : hs
+
+
 
 fromT :: T.Text -> VLSpec
 fromT = toJSON
@@ -1817,8 +1859,14 @@ data MarkChannel
     | MLegend [LegendProperty]
       -- ^ Use an empty list to remove the legend.
     | MSelectionCondition BooleanOp [MarkChannel] [MarkChannel]
-    | MDataCondition BooleanOp [MarkChannel] [MarkChannel]
-      -- TODO: change to list
+    | MDataCondition [(BooleanOp, [MarkChannel])] [MarkChannel]
+      -- ^ Make a text channel conditional on one or more predicate expressions. The first
+      --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
+      --   if that expression is @True@. The second is the encoding if none of the expressions
+      --   evaluate as @True@.
+      --
+      --   The arguments to this constructor have changed in @0.4.0.0 to support
+      --   multiple expressions.
     | MPath T.Text
     | MNumber Double
     | MString T.Text
@@ -1829,25 +1877,15 @@ markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
 markChannelProperty (MmType t) = [mtype_ t]
-markChannelProperty (MScale sps) =
-  [("scale", if null sps then A.Null else object (map scaleProperty sps))]
-markChannelProperty (MLegend lps) =
-  [("legend", if null lps then A.Null else object (map legendProperty lps))]
+markChannelProperty (MScale sps) = [scaleProp_ sps]
+markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
 markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap markChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
-markChannelProperty (MDataCondition predicate ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap markChannelProperty
-      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ markChannelProperty selName ifClause elseClause
+markChannelProperty (MDataCondition tests elseClause) =
+  dataCond_ markChannelProperty tests elseClause
 markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]
 markChannelProperty (MAggregate op) = [aggregate_ op]
 markChannelProperty (MPath s) = ["value" .= s]
@@ -2148,10 +2186,14 @@ data Position
     | Y
     | X2
     | Y2
-    | XError    -- ^ @since 0.4.0.0
-    | YError    -- ^ @since 0.4.0.0
-    | XError2   -- ^ @since 0.4.0.0
-    | YError2   -- ^ @since 0.4.0.0
+    | XError
+      -- ^ @since 0.4.0.0
+    | YError
+      -- ^ @since 0.4.0.0
+    | XError2
+      -- ^ @since 0.4.0.0
+    | YError2
+      -- ^ @since 0.4.0.0
     | Longitude
     | Latitude
     | Longitude2
@@ -2435,19 +2477,36 @@ a scale can be changed with the 'PSort' constructor.
 
 data ScaleProperty
     = SType Scale
+      -- ^ Type of scaling to apply.
     | SDomain ScaleDomain
+      -- ^ Custom scaling domain.
     | SRange ScaleRange
+      -- ^ Range of a scaling. The type of range depends on the encoding channel.
     | SScheme T.Text [Double]
+      -- ^  Color scheme used by a color scaling. The first parameter is the name of the
+      --    scheme (e.g. \"viridis\") and the second an optional specification of the number of
+      --    colors to use (list of one number), or the extent of the color range to use (list
+      --    of two numbers between 0 and 1).
     | SPadding Double
+      -- ^ Padding in pixels to apply to a scaling.
     | SPaddingInner Double
+      -- ^ Inner padding to apply to a band scaling.
     | SPaddingOuter Double
+      -- ^ Outer padding to apply to a band scaling.
     | SRangeStep (Maybe Double)
+      -- ^ Distance between the starts of adjacent bands in a band scaling. If
+      --   @Nothing@, the distance is determined automatically.
     | SRound Bool
+      -- ^ Are numeric values in a scaling are rounded to integers?
     | SClamp Bool
-      -- TODO:  Need to restrict set of valid scale types that work with color interpolation.
+      -- ^ Should values outside the data domain be clamped (to the minimum or
+      --   maximum value)?
     | SInterpolate CInterpolate
+      -- ^ Interpolation method for scaling range values.
     | SNice ScaleNice
+      -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SZero Bool
+      -- ^ Should a numeric scaling be forced to include a zero value?
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
@@ -2484,17 +2543,31 @@ schemeProperty nme extent =
 
 data Scale
     = ScLinear
+      -- ^ A linear scale.
     | ScPow
+      -- ^ A power scale. The exponent to use for scaling is specified with
+      --   'SExponent'.
     | ScSqrt
+      -- ^ A square-root scale.
     | ScLog
+      -- ^ A log scale. Defaults to log of base 10, but can be customised with
+      --   'SBase'.
     | ScTime
+      -- ^ A temporal scale.
     | ScUtc
+      -- ^ A temporal scale, in UTC.
     | ScSequential
+      -- ^ Use 'ScLinear' instead (to be removed).
     | ScOrdinal
+      -- ^ An ordinal scale.
     | ScBand
+      -- ^ A band scale.
     | ScPoint
+      -- ^ A point scale.
     | ScBinLinear
+      -- ^ A linear band scale.
     | ScBinOrdinal
+      -- ^ An ordinal band scale.
 
 
 scaleLabel :: Scale -> T.Text
@@ -2520,11 +2593,15 @@ Describes the scale domain (type of data in scale). For full details see the
 
 data ScaleDomain
     = DNumbers [Double]
+      -- ^ Numeric values that define a scale domain.
     | DStrings [T.Text]
+      -- ^ String values that define a scale domain.
     | DDateTimes [[DateTime]]
+      -- ^ Date-time values that define a scale domain.
     | DSelection T.Text
+      -- ^ Scale domain based on a named interactive selection.
     | Unaggregated
-
+    -- ^ Specify an unaggregated scale domain (type of data in scale).
 
 scaleDomainSpec :: ScaleDomain -> VLSpec
 scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
@@ -2541,16 +2618,27 @@ Describes the way a scale can be rounded to \"nice\" numbers. For full details s
 -}
 data ScaleNice
     = NMillisecond
+      -- ^ Nice time intervals that try to align with rounded milliseconds.
     | NSecond
+      -- ^ Nice time intervals that try to align with whole or rounded seconds.
     | NMinute
+      -- ^ Nice time intervals that try to align with whole or rounded minutes.
     | NHour
+      -- ^ Nice time intervals that try to align with whole or rounded hours.
     | NDay
+      -- ^ Nice time intervals that try to align with whole or rounded days.
     | NWeek
+    -- ^ Nice time intervals that try to align with whole or rounded weeks.
     | NMonth
+      -- ^ Nice time intervals that try to align with whole or rounded months.
     | NYear
+      -- ^ Nice time intervals that try to align with whole or rounded years.
     | NInterval TimeUnit Int
+      -- ^ 'Nice' temporal interval values when scaling.
     | IsNice Bool
+      -- ^ Enable or disable nice scaling.
     | NTickCount Int
+      -- ^ Desired number of tick marks in a 'nice' scaling.
 
 
 scaleNiceSpec :: ScaleNice -> VLSpec
@@ -2572,39 +2660,58 @@ scaleNiceSpec (NTickCount n) = toJSON n
 
 Describes a scale range of scale output values. For full details see the
 <https://vega.github.io/vega-lite/docs/scale.html#range Vega-Lite documentation>.
+
+For color scales you can also specify a color [scheme](https://vega.github.io/vega-lite/docs/scale.html#scheme)
+instead of range.
+
+Any directly specified range for @x@ and @y@ channels will be ignored. Range can be customized
+via the view's corresponding [size](https://vega.github.io/vega-lite/docs/size.html)
+('width' and 'height') or via range steps and paddings properties (e.g. 'SCRangeStep')
+for band and point scales.
+
 -}
 
 data ScaleRange
     = RNumbers [Double]
+      -- ^ For [continuous scales](https://vega.github.io/vega-lite/docs/scale.html#continuous),
+      --   a two-element array indicating minimum and maximum values, or an array with more than
+      --   two entries for specifying a
+      --   [piecewise scale](https://vega.github.io/vega-lite/docs/scale.html#piecewise).
     | RStrings [T.Text]
+      -- ^ Text scale range for discrete scales.
     | RName T.Text
-
+      -- ^ Name of a [pre-defined named scale range](https://vega.github.io/vega-lite/docs/scale.html#range-config)
+      --   (e.g. \"symbol\" or \"diverging\").
 
 {-|
 
 Indicates the type of color interpolation to apply, when mapping a data field
-onto a color scale. Note that color interpolation cannot be applied with the default
-\"sequential\" color scale ('ScSequential'), so additionally, you should set the
-'SType' to another continuous scale such as 'ScLinear' and 'ScPow'.
+onto a color scale.
 
 For details see the
 <https://vega.github.io/vega-lite/docs/scale.html#continuous Vega-Lite documentation>.
+
 -}
 data CInterpolate
     = CubeHelix Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ Cube helix color interpolation for continuous color scales using the given
+      --   gamma value (anchored at 1).
     | CubeHelixLong Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ Long-path cube helix color interpolation for continuous color scales using
+      --   the given gamma value (anchored at 1).
     | Hcl
+      -- ^ HCL color interpolation for continuous color scales.
     | HclLong
+      -- ^ HCL color interpolation in polar coordinate space for continuous color scales.
     | Hsl
+      -- ^ HSL color interpolation for continuous color scales.
     | HslLong
+      -- ^ HSL color interpolation in polar coordinate space for continuous color scales.
     | Lab
+      -- ^ Lab color interpolation for continuous color scales.
     | Rgb Double
-      -- ^ The numeric value is the gamma value for the scheme (the recommended
-      --   value is 1).
+      -- ^ RGB color interpolation for continuous color scales using the given gamma
+      --   value (anchored at 1).
 
 
 -- Need to tie down some types as things are too polymorphic,
@@ -2793,11 +2900,7 @@ positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= s
 positionChannelProperty PNoTitle = "title" .= A.Null
 positionChannelProperty (PSort ops) = sort_ ops
-positionChannelProperty (PScale sps) =
-  let js = if null sps
-           then A.Null
-           else object (map scaleProperty sps)
-  in "scale" .= js
+positionChannelProperty (PScale sps) = scaleProp_ sps
 positionChannelProperty (PAxis aps) =
   let js = if null aps
            then A.Null
@@ -3287,9 +3390,14 @@ for more details.
 
 data OverlapStrategy
     = ONone
+      -- ^ No overlap strategy to be applied when there is not space to show all items
+      --   on an axis.
     | OParity
+      -- ^ Give all items equal weight in overlap strategy to be applied when there is
+      --   not space to show them all on an axis.
     | OGreedy
-
+      -- ^ Greedy overlap strategy to be applied when there is not space to show all
+      --   items on an axis.
 
 overlapStrategyLabel :: OverlapStrategy -> T.Text
 overlapStrategyLabel ONone = "false"
@@ -3609,6 +3717,7 @@ markInterpolationLabel Monotone = "monotone"
 
 Indicates desired orientation of a mark (e.g. horizontally or vertically
 oriented bars).
+
 -}
 data MarkOrientation
     = Horizontal
@@ -3669,13 +3778,20 @@ markErrorExtentLSpec Iqr                = extent_ "iqr"
 
 data Symbol
     = SymCircle
+      -- ^ Specify a circular symbol for a shape mark.
     | SymSquare
+      -- ^ Specify a square symbol for a shape mark.
     | Cross
+      -- ^ Specify a cross symbol for a shape mark.
     | Diamond
+      -- ^ Specify a diamond symbol for a shape mark.
     | TriangleUp
+      -- ^ Specify an upward-triangular symbol for a shape mark.
     | TriangleDown
+      -- ^ Specify a downward-triangular symbol for a shape mark.
     | Path T.Text
-      -- ^ Define a custom shape with a SVG path description.
+      -- ^ A custom symbol shape as an
+      --   [SVG path description](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
 
 
 symbolLabel :: Symbol -> T.Text
@@ -3805,7 +3921,8 @@ data LegendConfig
     | GradientStrokeWidth Double
     | GradientHeight Double
     | GradientWidth Double
-    | LeGridAlign CompositionAlignment    -- ^ @since 0.4.0.0
+    | LeGridAlign CompositionAlignment
+      -- ^ @since 0.4.0.0
     | LeLabelAlign HAlign
     | LeLabelBaseline VAlign
     | LeLabelColor T.Text
@@ -4481,26 +4598,53 @@ rangeConfigProperty rangeCfg =
 Scale configuration property. These are used to configure all scales.
 For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
+
 -}
 data ScaleConfig
     = SCBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales.
     | SCBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales.
     | SCClamp Bool
+      -- ^ Whether or not by default values that exceed the data domain are clamped to
+      --   the min/max range value.
     | SCMaxBandSize Double
+      -- ^ Default maximum value for mapping quantitative fields to a bar's
+      --   size/bandSize.
     | SCMinBandSize Double
+      -- ^ Default minimum value for mapping quantitative fields to a bar's
+      --   size/bandSize.
     | SCMaxFontSize Double
+      -- ^ Default maximum value for mapping a quantitative field to a text
+      --   mark's size.
     | SCMinFontSize Double
+      -- ^ Default minimum value for mapping a quantitative field to a text
+      --   mark's size.
     | SCMaxOpacity Double
+      -- ^ Default maximum opacity (in the range [0, 1]) for mapping a field
+      --   to opacity.
     | SCMinOpacity Double
+      -- ^ Default minimum opacity (in the range [0, 1]) for mapping a field
+      --   to opacity.
     | SCMaxSize Double
+      -- ^ Default maximum size for point-based scales.
     | SCMinSize Double
+      -- ^ Default minimum size for point-based scales.
     | SCMaxStrokeWidth Double
+      -- ^ Default maximum stroke width for rule, line and trail marks.
     | SCMinStrokeWidth Double
+      -- ^ Default minimum stroke width for rule, line and trail marks.
     | SCPointPadding Double
+      -- ^ Default padding for point-ordinal scales.
     | SCRangeStep (Maybe Double)
+      -- ^ Default range step for band and point scales when the mark is not text.
     | SCRound Bool
+      -- ^ Are numeric values are rounded to integers when scaling? Useful
+      --   for snapping to the pixel grid.
     | SCTextXRangeStep Double
+      -- ^ Default range step for x band and point scales of text marks.
     | SCUseUnaggregatedDomain Bool
+      -- ^ Whether or not to use the source data range before aggregation.
 
 
 scaleConfigProperty :: ScaleConfig -> LabelledSpec
@@ -5024,7 +5168,7 @@ configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
-configProperty (Scale scs) = "scale" .= object (map scaleConfigProperty scs)
+configProperty (Scale scs) = scaleConfig_ scs
 configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
@@ -5775,8 +5919,6 @@ headerProperty (HTitlePadding x) = "titlePadding" .= x
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
 
--- TODO: should HDataCondition accept multiple tests like TDataCondition?
-
 data HyperlinkChannel
     = HName T.Text
       -- ^ Field used for encoding with a hyperlink channel.
@@ -5800,10 +5942,14 @@ data HyperlinkChannel
       -- ^ Make a hyperlink channel conditional on interactive selection. The first parameter
       --   provides the selection to evaluate, the second the encoding to apply if the hyperlink
       --   has been selected, the third the encoding if it is not selected.
-    | HDataCondition BooleanOp [HyperlinkChannel] [HyperlinkChannel]
-      -- ^ Make a hyperlink channel conditional on some predicate expression. The first
-      --   parameter provides the expression to evaluate, the second the encoding to apply
-      --   if the expression is @True@, the third the encoding if the expression is @False@.
+    | HDataCondition [(BooleanOp, [HyperlinkChannel])] [HyperlinkChannel]
+      -- ^ Make a hyperlink channel conditional on one or more predicate expressions. The first
+      --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
+      --   if that expression is @True@. The second is the encoding if none of the expressions
+      --   evaluate as @True@.
+      --
+      --   The arguments to this constructor have changed in @0.4.0.0 to support
+      --   multiple expressions.
     | HString T.Text
       -- ^ Literal string value when encoding with a hyperlink channel.
 
@@ -5814,20 +5960,13 @@ hyperlinkChannelProperty (HmType t) = [mtype_ t]
 hyperlinkChannelProperty (HBin bps) = [bin bps]
 hyperlinkChannelProperty HBinned = [binned_]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap hyperlinkChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
-hyperlinkChannelProperty (HDataCondition predicate ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap hyperlinkChannelProperty
-      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ hyperlinkChannelProperty selName ifClause elseClause
+hyperlinkChannelProperty (HDataCondition tests elseClause) =
+  dataCond_ hyperlinkChannelProperty tests elseClause
 hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
 hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
 hyperlinkChannelProperty (HString s) = [value_ s]
+
 
 ----
 
@@ -5955,41 +6094,85 @@ facetConfigProperty (FSpacing x) = "spacing" .= x
 
 -- | Types of text channel property used for displaying text as part of the visualization.
 
+-- Basing the following partly on vega-lite-3.3.0.json / TextFieldDef
+-- but that doesn't seem to be sufficient.
+
 data TextChannel
     = TName T.Text
+      -- ^ Name of the field used for encoding with a text channel.
+    | TAggregate Operation
+      -- ^ Compute some aggregate summary statistics for a field to be encoded with a
+      --   text channel. The type of aggregation is determined by the given operation
+      --   parameter.
+    | TBin [BinProperty]
+      -- ^ Discretize numeric values into bins when encoding with a text channel.
+    | TBinned
+      -- ^ Indicate that data encoded with a text channel are already binned.
+      --
+      --   @since 0.4.0.0
+    | TDataCondition [(BooleanOp, [TextChannel])] [TextChannel]
+      -- ^ Make a text channel conditional on one or more predicate expressions. The first
+      --   parameter is a list of tuples each pairing an expression to evaluate with the encoding
+      --   if that expression is @True@. The second is the encoding if none of the expressions
+      --   evaluate as @True@.
+      --
+      --   The arguments to this constructor have changed in @0.4.0.0 to support
+      --   multiple expressions.
+    | TFormat T.Text
+      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html)
+      --   for text marks. To distinguish between formatting as numeric values and data/time
+      --   values, additionally use 'TFormatAsNum' or 'TFormatAsTemporal'.
+    | TFormatAsNum
+      -- ^ The text marks should be formatted as numbers. Use a
+      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
+      --   with 'TFormat'.
+      --
+      -- @since 0.4.0.0
+    | TFormatAsTemporal
+      -- ^ The text marks should be formatted as dates or times. Use a
+      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
+      --   with 'TFormat'.
+      --
+      -- @since 0.4.0.0
+    | TmType Measurement
+      -- ^ Level of measurement when encoding with a text channel.
     | TRepeat Arrangement
       -- ^ Reference in a text channel to a field name generated by 'repeatFlow'
-      -- or 'repeat'. The parameter identifies whether reference is being made to
-      -- fields that are to be arranged in columns, in rows, or a with a flow layout.
-    | TmType Measurement
-    | TBin [BinProperty]
-    | TAggregate Operation
-    | TTimeUnit TimeUnit
+      --   or 'repeat'. The parameter identifies whether reference is being made to
+      --   fields that are to be arranged in columns, in rows, or a with a flow layout.
     | TSelectionCondition BooleanOp [TextChannel] [TextChannel]
-    | TDataCondition BooleanOp [TextChannel] [TextChannel]
-    | TFormat T.Text
+      -- ^ Make a text channel conditional on interactive selection. The first parameter
+      --   is a selection condition to evaluate; the second the encoding to apply if that
+      --   selection is true; the third parameter is the encoding if the selection is false.
+    | TTitle T.Text
+      -- ^ Title of a field when encoding with a text or tooltip channel.
+      --
+      --   @since 0.4.0.0
+    | TNoTitle
+      -- ^ Display no title.
+      --
+      --   @since 0.4.0.0
+    | TTimeUnit TimeUnit
+      -- ^ Time unit aggregation of field values when encoding with a text channel.
 
 
 textChannelProperty :: TextChannel -> [LabelledSpec]
 textChannelProperty (TName s) = [field_  s]
-textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
-textChannelProperty (TmType measure) = [mtype_ measure]
-textChannelProperty (TBin bps) = [bin bps]
 textChannelProperty (TAggregate op) = [aggregate_ op]
-textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
+textChannelProperty (TBin bps) = [bin bps]
+textChannelProperty TBinned = [binned_]
 textChannelProperty (TFormat fmt) = ["format" .= fmt]
+textChannelProperty TFormatAsNum = ["formatType" .= fromT "number"]
+textChannelProperty TFormatAsTemporal = ["formatType" .= fromT "time"]
+textChannelProperty (TmType measure) = [mtype_ measure]
+textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
+textChannelProperty (TTitle s) = ["title" .= s]
+textChannelProperty TNoTitle = ["title" .= A.Null]
+textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
+textChannelProperty (TDataCondition tests elseClause) =
+  dataCond_ textChannelProperty tests elseClause
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap textChannelProperty
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
-textChannelProperty (TDataCondition predicate ifClause elseClause) =
-  let h = ("condition", hkey)
-      toProps = concatMap textChannelProperty
-      hkey = object (("test", booleanOpSpec predicate) : toProps ifClause)
-      hs = toProps elseClause
-  in h : hs
+  selCond_ textChannelProperty selName ifClause elseClause
 
 
 -- | Properties of an ordering channel used for sorting data fields.
@@ -6697,7 +6880,7 @@ data Window
       -- ^ Window-specific operation to be used in a window transformation.
     | WParam Int
       -- ^ Numeric parameter for window-only operations that can be parameterised
-      -- (woPercentile, woLag, woLead and woNthValue).
+      --   ('Ntile', 'Lag', 'Lead' and 'NthValue').
     | WField T.Text
       -- ^ Field for which to compute a window operation. Not needed for operations
       --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
@@ -6716,16 +6899,27 @@ windowFieldProperty (WField f) = field_ f
 
 data WOperation
     = RowNumber
+      -- ^ Assign consecutive row number to values in a data object to be applied in a window transform.
     | Rank
+      -- ^ Rank function to be applied in a window transform.
     | DenseRank
+      -- ^ Dense rank function to be applied in a window transform.
     | PercentRank
+      -- ^ Percentile of values in a sliding window to be applied in a window transform.
     | CumeDist
+      -- ^ Cumulative distribution function to be applied in a window transform.
     | Ntile
+      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
     | Lag
+      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
     | Lead
+      -- ^ Value following the current object in a sliding window to be applied in a window transform.
     | FirstValue
+      -- ^ First value in a sliding window to be applied in a window transform.
     | LastValue
+      -- ^ Last value in a sliding window to be applied in a window transform.
     | NthValue
+      -- ^ Nth value in a sliding window to be applied in a window transform.
 
 
 wOperationLabel :: WOperation -> T.Text
