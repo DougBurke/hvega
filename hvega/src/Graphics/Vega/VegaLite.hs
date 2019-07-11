@@ -802,6 +802,9 @@ import Data.Monoid ((<>))
 -- represented a Vega, rather than Vega-Lite, property. The 'PSort'
 -- constructor is used to change the order of an axis.
 --
+-- The @ScSequential@ constructor was removed from @Scale@ as
+-- @ScLinear@ should be used.
+--
 -- The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
 -- removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
 -- are invalid. The 'AxTitleLimit' (new in this release) and
@@ -2507,6 +2510,19 @@ data ScaleProperty
       -- ^ \"Nice\" minimum and maximum values in a scaling (e.g. multiples of 10).
     | SZero Bool
       -- ^ Should a numeric scaling be forced to include a zero value?
+    | SExponent Double
+      -- ^ The exponent to use for power scaling ('ScPow').
+      --
+      --   @since 0.4.0.0
+    | SConstant Double
+      -- ^ The desired slope of the 'ScSymLog' function at zero. If
+      --   unspecified, the default is 1.
+      --
+      --   @since 0.4.0.0
+    | SBase Double
+      -- ^ The base to use for log scaling ('ScLog').
+      --
+      --   @since 0.4.0.0
 
 
 scaleProperty :: ScaleProperty -> LabelledSpec
@@ -2528,6 +2544,9 @@ scaleProperty (SClamp b) = ("clamp", toJSON b)
 scaleProperty (SInterpolate interp) = ("interpolate", cInterpolateSpec interp)
 scaleProperty (SNice ni) = ("nice", scaleNiceSpec ni)
 scaleProperty (SZero b) = ("zero", toJSON b)
+scaleProperty (SExponent x) = "exponent" .= x
+scaleProperty (SConstant x) = "constant" .= x
+scaleProperty (SBase x) = "base" .= x
 
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
@@ -2540,6 +2559,9 @@ schemeProperty nme extent =
 
 
 -- | Used to indicate the type of scale transformation to apply.
+--
+--   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
+--   'ScLinear' should be used instead.
 
 data Scale
     = ScLinear
@@ -2552,12 +2574,16 @@ data Scale
     | ScLog
       -- ^ A log scale. Defaults to log of base 10, but can be customised with
       --   'SBase'.
+    | ScSymLog
+      -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
+      --   scale. Similar to a log scale but supports zero and negative values. The slope
+      --   of the function at zero can be set with 'SConstant'.
+      --
+      --   @since 0.4.0.0
     | ScTime
       -- ^ A temporal scale.
     | ScUtc
       -- ^ A temporal scale, in UTC.
-    | ScSequential
-      -- ^ Use 'ScLinear' instead (to be removed).
     | ScOrdinal
       -- ^ An ordinal scale.
     | ScBand
@@ -2568,6 +2594,18 @@ data Scale
       -- ^ A linear band scale.
     | ScBinOrdinal
       -- ^ An ordinal band scale.
+    | ScQuantile
+      -- ^ A quantile scale.
+      --
+      --   @since 0.4.0.0
+    | ScQuantize
+      -- ^ A quantizing scale.
+      --
+      --   @since 0.4.0.0
+    | ScThreshold
+      -- ^ A threshold scale.
+      --
+      --   @since 0.4.0.0
 
 
 scaleLabel :: Scale -> T.Text
@@ -2575,14 +2613,17 @@ scaleLabel ScLinear = "linear"
 scaleLabel ScPow = "pow"
 scaleLabel ScSqrt = "sqrt"
 scaleLabel ScLog = "log"
+scaleLabel ScSymLog = "symlog"
 scaleLabel ScTime = "time"
 scaleLabel ScUtc = "utc"
-scaleLabel ScSequential = "sequential"
 scaleLabel ScOrdinal = "ordinal"
 scaleLabel ScBand = "band"
 scaleLabel ScPoint = "point"
 scaleLabel ScBinLinear = "bin-linear"
 scaleLabel ScBinOrdinal = "bin-ordinal"
+scaleLabel ScQuantile = "quantile"
+scaleLabel ScQuantize = "quantize"
+scaleLabel ScThreshold = "threshold"
 
 
 {-|
@@ -4600,11 +4641,28 @@ For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
 
 -}
+
 data ScaleConfig
     = SCBandPaddingInner Double
       -- ^ Default inner padding for x and y band-ordinal scales.
     | SCBandPaddingOuter Double
       -- ^ Default outer padding for x and y band-ordinal scales.
+    | SCBarBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales of 'Bar' marks.
+      --
+      --   @since 0.4.0.0
+    | SCBarBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales of 'Bar' marks.
+      --
+      --   @since 0.4.0.0
+    | SCRectBandPaddingInner Double
+      -- ^ Default inner padding for x and y band-ordinal scales of 'Rect' marks.
+      --
+      --   @since 0.4.0.0
+    | SCRectBandPaddingOuter Double
+      -- ^ Default outer padding for x and y band-ordinal scales of 'Rect' marks.
+      --
+      --   @since 0.4.0.0
     | SCClamp Bool
       -- ^ Whether or not by default values that exceed the data domain are clamped to
       --   the min/max range value.
@@ -4650,6 +4708,10 @@ data ScaleConfig
 scaleConfigProperty :: ScaleConfig -> LabelledSpec
 scaleConfigProperty (SCBandPaddingInner x) = "bandPaddingInner" .= x
 scaleConfigProperty (SCBandPaddingOuter x) = "bandPaddingOuter" .= x
+scaleConfigProperty (SCBarBandPaddingInner x) = "barBandPaddingInner" .= x
+scaleConfigProperty (SCBarBandPaddingOuter x) = "barBandPaddingOuter" .= x
+scaleConfigProperty (SCRectBandPaddingInner x) = "rectBandPaddingInner" .= x
+scaleConfigProperty (SCRectBandPaddingOuter x) = "rectBandPaddingOuter" .= x
 scaleConfigProperty (SCClamp b) = "clamp" .= b
 scaleConfigProperty (SCMaxBandSize x) = "maxBandSize" .= x
 scaleConfigProperty (SCMinBandSize x) = "minBandSize" .= x

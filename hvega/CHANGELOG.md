@@ -37,6 +37,9 @@ The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `PSort`
 constructor is used to change the order of an axis.
 
+The @ScSequential@ constructor was removed from @Scale@ as
+@ScLinear@ should be used.
+
 The `AxTitleMaxLength` and `TitleMaxLength` constructors have been
 removed (from `AxisProperty` and `AxisConfig` respectively) as they
 are invalid. The `AxTitleLimit` (new in this release) and

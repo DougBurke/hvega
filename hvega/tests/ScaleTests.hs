@@ -10,13 +10,13 @@ import Graphics.Vega.VegaLite hiding (filter, repeat)
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("scale1", scale1)
             , ("scale2", scale2)
-            -- , ("scale3", scale3)
-            -- , ("scale4", scale4)
-            -- , ("scale5", scale5)
+            , ("scale3", scale3)
+            , ("scale4", scale4)
+            , ("scale5", scale5)
             , ("scale6", scale6)
-            -- , ("scale7", scale7)
-            -- , ("scale8", scale8)
-            -- , ("scale9", scale9)
+            , ("scale7", scale7)
+            , ("scale8", scale8)
+            , ("scale9", scale9)
             ]
 
 scale1 :: VegaLite
@@ -54,8 +54,6 @@ scale2 =
     in
     toVegaLite [ conf [], cars, enc [], mark Point [] ]
 
-
-{- TODO: add ScQuantile, ScQuantize, AxNoTitle
 
 scale3 :: VegaLite
 scale3 =
@@ -115,10 +113,7 @@ scale4 =
                     ]
     in
     toVegaLite [ dataVals [], enc [], mark Circle [] ]
--}
 
-
-{- TODO: add ScThreshold
 scale5 :: VegaLite
 scale5 =
     let
@@ -155,7 +150,6 @@ scale5 =
                     ]
     in
     toVegaLite [ dataVals [], enc [], mark Circle [] ]
--}
 
 
 scale6 :: VegaLite
@@ -177,7 +171,6 @@ scale6 =
     toVegaLite [ dataVals [], mark Point [], enc [] ]
 
 
-{- TODO: add SExponent SBase
 scale7 :: VegaLite
 scale7 =
     let
@@ -233,4 +226,3 @@ scale9 =
                     ]
     in
     toVegaLite [ dataVals [], mark Point [], enc [] ]
--}

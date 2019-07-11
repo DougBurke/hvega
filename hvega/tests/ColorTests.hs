@@ -9,7 +9,6 @@
 --    interp3
 --    interp4
 --    interp5
---    scale2           -- this is because it uses SType ScSequential
 --
 
 module ColorTests (testSpecs) where
@@ -31,13 +30,12 @@ testSpecs = [ ("defContinuous", defContinuous)
             , ("customContinuous", customContinuous)
             , ("customDiscrete", customDiscrete)
             , ("scale1", scale1)
-            , ("scale2", scale2)
             , ("scale3", scale3)
-            -- , ("scale4", scale4)
+            , ("scale4", scale4)
             , ("scale5", scale5)
             , ("scale6", scale6)
-            -- , ("scale7", scale7)
-            -- , ("scale8", scale8)
+            , ("scale7", scale7)
+            , ("scale8", scale8)
             , ("interp1", interp1)
             , ("interp2", interp2)
             , ("interp3", interp3)
@@ -137,23 +135,23 @@ scale1 =
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScLinear, SRange (RStrings [ "yellow", "red" ]) ] ])
 
 
+{- ScSequential has been removed from hvega, with the suggstion to use ScLinear instead,
+   which is tested in scale1. This is left in mainly to explain the test numbering.
 scale2 :: VegaLite
 scale2 =
     chart "Sequential (deprecated) colour scale."
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScSequential, SRange (RStrings [ "yellow", "red" ]) ] ])
-
+-}
 
 scale3 :: VegaLite
 scale3 =
     chart "Power colour scale with default (1) exponent."
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScPow, SRange (RStrings [ "yellow", "red" ]) ] ])
 
-{- TODO SExponent
 scale4 :: VegaLite
 scale4 =
     chart "Cubic Power colour scale."
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScPow, SExponent 3, SRange (RStrings [ "yellow", "red" ]) ] ])
--}
 
 scale5 :: VegaLite
 scale5 =
@@ -166,8 +164,6 @@ scale6 =
     chart "Log colour scale."
         (color [ MName "Acceleration", MmType Quantitative, MScale [ SType ScLog, SRange (RStrings [ "yellow", "red" ]) ] ])
 
-{- TODO: ScSymLog, SConstant
-
 scale7 :: VegaLite
 scale7 =
     chart "SymLog colour scale with default slope constant (1)."
@@ -177,8 +173,6 @@ scale8 :: VegaLite
 scale8 =
     chart "SymLog colour scale with slope constant of 0.01."
         (color [ MName "accelerationZScore", MmType Quantitative, MScale [ SType ScSymLog, SConstant 0.01, SRange (RStrings [ "yellow", "red" ]) ] ])
--}
-
 
 interp1 :: VegaLite
 interp1 =

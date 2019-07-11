@@ -1,0 +1,53 @@
+{
+    "mark": "point",
+    "data": {
+        "values": [
+            {
+                "r": 100
+            },
+            {
+                "r": 200
+            },
+            {
+                "r": 300
+            },
+            {
+                "r": 400
+            },
+            {
+                "r": 500
+            },
+            {
+                "r": 600
+            },
+            {
+                "r": 700
+            },
+            {
+                "r": 800
+            },
+            {
+                "r": 900
+            },
+            {
+                "r": 1000
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "size": {
+            "field": "r",
+            "scale": {
+                "base": 2.718281828459045,
+                "range": [
+                    0,
+                    80000
+                ],
+                "type": "log"
+            },
+            "type": "quantitative",
+            "legend": null
+        }
+    }
+}

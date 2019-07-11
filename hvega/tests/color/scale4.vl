@@ -14,11 +14,12 @@
         "color": {
             "field": "Acceleration",
             "scale": {
+                "exponent": 3,
                 "range": [
                     "yellow",
                     "red"
                 ],
-                "type": "sequential"
+                "type": "pow"
             },
             "type": "quantitative"
         },
@@ -37,5 +38,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Sequential (deprecated) colour scale."
+    "description": "Cubic Power colour scale."
 }
