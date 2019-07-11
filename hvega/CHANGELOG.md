@@ -62,9 +62,11 @@ should be used instead.
 The `LEntryPadding` constructor of `LegendProperty` was removed.
 
 The arguments to the `MDataCondition`, `TDataCondition`, and
-`HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
-and `HyperlinkChannel` respectively) have changed to support
+`HDataCondition` constructors - of `MarkChannel`, `TextChannel`,
+and `HyperlinkChannel` respectively - have changed to support
 accepting multiple expressions.
+
+The `MarkOrientation` type has been renamed `Orientation`.
 
 ## 0.3.0.1
 

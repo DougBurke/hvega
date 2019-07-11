@@ -21,9 +21,9 @@ visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
 Although this is based on the Elm module, there are differences, such as using
-type constructors rather than functions for many properties (e.g. @PName \"HorsePower\"
-rather than @pName \"HorsePower\"@), and the return value of 'toVegaLite'.
-than this is). The intention is to keep close to the Elm module, but it is more
+type constructors rather than functions for many properties - such as
+@PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ - and the return
+value of 'toVegaLite'. The intention is to keep close to the Elm module, but it is more
 a guide than an absolute requirement!
 
 Note that this module exports several symbols that are exported
@@ -38,7 +38,7 @@ import qualified Graphics.Vega.VegaLite as VL
 or to hide the clashing names explicitly:
 
 @
-import Prelude hiding (filter, lookup)
+import Prelude hiding (filter, lookup, repeat)
 @
 
 In the following example, we'll assume the latter.
@@ -50,19 +50,21 @@ Let's say we have the following plot declaration in a module:
 @
 \{\-\# language OverloadedStrings \#\-\}
 
-vl1 = 'toVegaLite' ['description' desc, 'background' "white", dat [], 'mark' 'Bar' barOpts, enc []] where
-    desc = "A very exciting bar chart"
+vl1 =
+  let desc = "A very exciting bar chart"
 
-    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
-          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
-          . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
-          . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
+      dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
+            . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
+            . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
+            . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
 
-    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
+      barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
 
-    enc = 'encoding'
-          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
-          . position Y [PName "count", PmType Quantitative]
+      enc = 'encoding'
+            . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
+            . position Y [PName "count", PmType Quantitative]
+
+  in 'toVegaLite' ['description' desc, 'background' "white", dat [], 'mark' 'Bar' barOpts, enc []]
 @
 
 We can inspect how the encoded JSON looks like in an GHCi session:
@@ -249,7 +251,7 @@ module Graphics.Vega.VegaLite
 
          -- *** Used by Mark Properties
 
-       , MarkOrientation(..)
+       , Orientation(..)
        , MarkInterpolation(..)
        , Symbol(..)
        , PointMarker(..)
@@ -556,9 +558,14 @@ module Graphics.Vega.VegaLite
        , DayName(..)
        , TimeUnit(..)
 
-         -- * Breaking changes
+         -- * Update notes
          --
-         -- $breaking
+         -- $update
+
+         -- ** Version 0.4
+         --
+         -- $update0400
+
         )
     where
 
@@ -868,42 +875,48 @@ import Data.Monoid ((<>))
 -- [Vega-Lite dateTime documentation](https://vega.github.io/vega-lite/docs/types.html#datetime)
 -- and the [Vega-Lite time unit documentation](https://vega.github.io/vega-lite/docs/timeunit.html).
 
--- $breaking
+-- $update
+-- The following section describes how to update code that used
+-- an older version of @hvega@.
+
+-- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
--- constructors. It also removed and renamed the following symbols:
+-- constructors. It also removed or renamed the following symbols:
 --
--- The @SReverse@ construtor was removed from 'ScaleProperty' as it
--- represented a Vega, rather than Vega-Lite, property. The 'PSort'
--- constructor is used to change the order of an axis.
+-- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
+--   represented a Vega, rather than Vega-Lite, property. The 'PSort'
+--   constructor is used to change the order of an axis.
 --
--- The @ScSequential@ constructor was removed from @Scale@ as
--- @ScLinear@ should be used.
+-- * The @ScSequential@ constructor was removed from 'Scale' as
+--   'ScLinear' should be used.
 --
--- The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
--- removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
--- are invalid. The 'AxTitleLimit' (new in this release) and
--- 'TitleLimit' constructors should be used instead.
+-- * The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
+--   removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
+--   are invalid. The 'AxTitleLimit' (new in this release) and
+--   'TitleLimit' constructors should be used instead.
 --
--- There have been a number of changes to the 'LegendConfig' type: the
--- @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
--- @GradientWidth@, and @SymbolColor@ constructors have been removed;
--- the renaming constructors have been renamed so they all begin with
--- @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
--- to 'AxisConfig'); and new constructors have been added.
+-- * There have been significant changes to the 'LegendConfig' type: the
+--   @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
+--   @GradientWidth@, and @SymbolColor@ constructors have been removed;
+--   the renaming constructors have been renamed so they all begin with
+--   @Le@ (e.g. @Orient@ is now 'LeOrient', and 'Orient' has been added
+--   to 'AxisConfig'); and new constructors have been added.
 --
--- The @StackProperty@ type has been renamed to 'StackOffset' and its
--- constructors have changed, and a new 'StackProperty'
--- type has been added (that references the 'StackOffset' type).
+-- * The @StackProperty@ type has been renamed to 'StackOffset' and its
+--   constructors have changed, and a new 'StackProperty'
+--   type has been added (that references the 'StackOffset' type).
 --
--- The @Average@ constructor of 'Operation' was removed, and 'Mean'
--- should be used instead.
+-- * The @Average@ constructor of 'Operation' was removed, and 'Mean'
+--   should be used instead.
 --
--- The @LEntryPadding@ constructor of 'LegendProperty' was removed.
+-- * The @LEntryPadding@ constructor of 'LegendProperty' was removed.
 --
--- The arguments to the `MDataCondition`, `TDataCondition`, and
--- `HDataCondition` constructors (of `MarkChannel`, `TextChannel`,
--- and `HyperlinkChannel` respectively) have changed to support
--- accepting multiple expressions.
+-- * The arguments to the `MDataCondition`, `TDataCondition`, and
+--   `HDataCondition` constructors - of `MarkChannel`, `TextChannel`,
+--   and `HyperlinkChannel` respectively - have changed to support
+--   accepting multiple expressions.
+--
+-- * The @MarkOrientation@ type has been renamed 'Orientation'.
 
 --- helpers not in VegaLite.elm
 
@@ -1013,7 +1026,7 @@ newtype VegaLite =
   -- field).
   }
 
--- | The specification is represented as JSON.
+-- | The Vega-Lite specification is represented as JSON.
 type VLSpec = Value
 
 vlSchemaName :: T.Text
@@ -1122,7 +1135,7 @@ the exception of the data specification which is usually defined outside of any 
 layer. Whereas for repeated and faceted specs, the entire specification is provided.
 
 @
-spec1 = asSpec [ enc1 [], mark Line [] ]
+spec1 = asSpec [ enc1 [], `mark` `Line` [] ]
 @
 -}
 asSpec :: [(VLProperty, VLSpec)] -> VLSpec
@@ -1413,7 +1426,7 @@ type DataRow = VLSpec
 
 {-|
 
-Convenience type annotation label for use with data generation functions.
+Convenience type-annotation label for use with data generation functions.
 
 @
 myRegion : ['DataColumn'] -> Data
@@ -1865,7 +1878,7 @@ data Mark
       -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
       --   for showing summaries of variation along a signal. By default
       --   no ticks are drawn. To add ticks with default properties use
-      --   @'MTicks []@.
+      --   @`MTicks` []@.
       --
       --   @since 0.4.0.0
     | ErrorBand
@@ -1877,7 +1890,7 @@ data Mark
       --   @since 0.4.0.0
     | Geoshape
       -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
-      -- determined by geographically referenced coordinates.
+      --   determined by geographically referenced coordinates.
     | Line
       -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
       --   for symbolising a sequence of values.
@@ -1896,8 +1909,8 @@ data Mark
       -- ^ [Text mark](https://vega.github.io/vega-lite/docs/text.html)
       --   to be displayed at some point location.
     | Tick
-      -- ^ Short line ([tick](https://vega.github.io/vega-lite/docs/tick.html))
-      -- mark for symbolising point locations.
+      -- ^ Short line - [tick](https://vega.github.io/vega-lite/docs/tick.html) -
+      --   mark for symbolising point locations.
     | Trail
       -- ^ [Trail mark](https://vega.github.io/vega-lite/docs/trail.html)
       --   (line with variable width along its length).
@@ -2173,7 +2186,7 @@ data MarkProperty
       --   @False@, the original data order is used.
       --
       --   @since 0.4.0.0
-    | MOrient MarkOrientation
+    | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the boxplot mark.
@@ -2202,10 +2215,10 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MStrokeDash [Double]
-      -- ^ Stroke dash style used by a mark. Determined by an alternating 'on-off'
+      -- ^ The stroke dash style used by a mark, defined by an alternating 'on-off'
       --   sequence of line lengths, in pixels.
     | MStrokeDashOffset Double
-      -- ^ Number of pixels before the first line dash is drawn.
+      -- ^ The number of pixels before the first line dash is drawn.
     | MStrokeJoin StrokeJoin
       -- ^ Line segment join style of a mark's stroke.
       --
@@ -2300,7 +2313,7 @@ markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel int
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= markOrientationLabel orient
+markProperty (MOrient orient) = "orient" .= orientationSpec orient
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
@@ -3084,7 +3097,7 @@ data PositionChannel
       --      . 'position' 'X' [ PWidth ]
       -- @
       --
-      -- ^ @since 0.4.0.0
+      --   @since 0.4.0.0
     | PNumber Double
       -- ^ Set a position to an arbitrary value. Useful for placing items at the top of
       --   a plot area (@PNumber 0@) or a fixed number of pixels from the top.
@@ -3978,21 +3991,25 @@ markInterpolationLabel Monotone = "monotone"
 
 {-|
 
-Indicates desired orientation of a mark (e.g. horizontally or vertically
-oriented bars).
+The orientation of an item.
+
+In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.
 
 -}
 
--- TODO: rename Orientation?
+-- based on schema 3.3.0 #/definitions/Orientation
 
-data MarkOrientation
+data Orientation
     = Horizontal
+      -- ^ Display horizontally.
     | Vertical
+      -- ^ Display vertically.
 
 
-markOrientationLabel :: MarkOrientation -> T.Text
-markOrientationLabel Horizontal = "horizontal"
-markOrientationLabel Vertical = "vertical"
+orientationSpec :: Orientation -> VLSpec
+orientationSpec Horizontal = "horizontal"
+orientationSpec Vertical = "vertical"
+
 
 {-|
 
@@ -4203,7 +4220,7 @@ data LegendConfig
       -- ^ The corner radius for the full legend.
     | LeFillColor T.Text
       -- ^ The background fill color for the full legend.
-    | LeGradientDirection MarkOrientation
+    | LeGradientDirection Orientation
       -- ^ The default direction for gradient legends.
       --
       --   @since 0.4.0.0
@@ -4340,7 +4357,7 @@ data LegendConfig
       --   in pixels.
       --
       --   @since 0.4.0.0
-    | LeSymbolDirection MarkOrientation
+    | LeSymbolDirection Orientation
       -- ^ The default direction for symbol legends.
       --
       --   @since 0.4.0.0
@@ -4414,7 +4431,7 @@ legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
 legendConfigProperty (LeFillColor s) = "fillColor" .= s
-legendConfigProperty (LeGradientDirection mo) = "gradientDirection" .= markOrientationLabel mo
+legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
 legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
 legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
@@ -4455,7 +4472,7 @@ legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
 legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
 legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
-legendConfigProperty (LeSymbolDirection mo) = "symbolDirection" .= markOrientationLabel mo
+legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
 legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
 legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
 legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
@@ -4537,7 +4554,7 @@ data LegendLayout
     -- ^ The bounds calculation to ude for legend orient group layout.
   | LeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
-  | LeLDirection MarkOrientation
+  | LeLDirection Orientation
     -- ^ The layout firection for legend orient group layout.
   | LeLLeft [BaseLegendLayout]
   | LeLMargin Double
@@ -4557,7 +4574,7 @@ legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
 legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
 legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
 legendLayoutSpec (LeLCenter b) = "center" .= b
-legendLayoutSpec (LeLDirection mo) = "direction" .= markOrientationLabel mo
+legendLayoutSpec (LeLDirection o) = "direction" .= orientationSpec o
 legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
 legendLayoutSpec (LeLMargin x) = "margin" .= x
 legendLayoutSpec (LeLOffset x) = "offset" .= x
@@ -4587,7 +4604,7 @@ data BaseLegendLayout
     -- ^ The bounds calculation to use for legend orient group layout.
   | BLeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
-  | BLeLDirection MarkOrientation
+  | BLeLDirection Orientation
     -- ^ The layout direction for legend orient group layout.
   | BLeLMargin Double
     -- ^ The margin, in pixels, between legends within an orient group.
@@ -4599,7 +4616,7 @@ baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
 baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
 baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
 baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
-baseLegendLayoutSpec (BLeLDirection mo) = "direction" .= markOrientationLabel mo
+baseLegendLayoutSpec (BLeLDirection o) = "direction" .= orientationSpec o
 baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
 baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
@@ -4631,7 +4648,7 @@ data LegendProperty
       -- ^ The corner radius for the full legend.
       --
       --   @since 0.4.0.0
-    | LDirection MarkOrientation
+    | LDirection Orientation
       -- ^ The direction of the legend.
       --
       --   @since 0.4.0.0
@@ -4821,7 +4838,7 @@ legendProperty (LClipHeight x) = "clipHeight" .= x
 legendProperty (LColumnPadding x) = "columnPadding" .= x
 legendProperty (LColumns n) = "columns" .= n
 legendProperty (LCornerRadius x) = "cornerRadius" .= x
-legendProperty (LDirection mo) = "direction" .= markOrientationLabel mo
+legendProperty (LDirection o) = "direction" .= orientationSpec o
 legendProperty (LFillColor s) = "fillColor" .= s
 legendProperty (LFormat s) = "format" .= s
 legendProperty LFormatAsNum = "formatType" .= fromT "number"
@@ -5520,6 +5537,16 @@ property is an optional CSS selector indicating the parent element to which the
 input element should be added. This allows the option of the input element to be
 outside the visualization container.
 -}
+
+-- based on schema 3.3.0 #/definitions/BindRange
+--       or              #/definitions/InputBinding
+
+-- placeholder is in InputBinding
+-- debounce is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
+-- element is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
+
+-- but InputBinding doesn't have min/max/others
+
 data InputProperty
     = Debounce Double
     | Element T.Text
@@ -5532,14 +5559,14 @@ data InputProperty
 
 
 inputProperty :: InputProperty -> LabelledSpec
+inputProperty (Debounce x) = "debounce" .= x
+inputProperty (Element el) = "element" .= el -- #/definitions/Element
+inputProperty (InOptions opts) = "options" .= map toJSON opts
 inputProperty (InMin x) = "min" .= x
 inputProperty (InMax x) = "max" .= x
-inputProperty (InStep x) = "step" .= x
-inputProperty (Debounce x) = "debounce" .= x
 inputProperty (InName s) = "name" .= s
-inputProperty (InOptions opts) = "options" .= map toJSON opts
+inputProperty (InStep x) = "step" .= x
 inputProperty (InPlaceholder el) = "placeholder" .= toJSON el
-inputProperty (Element el) = "element" .= toJSON el
 
 
 {-|
@@ -5729,19 +5756,43 @@ view within a visualization such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 -}
+
+-- based on schema 3.3.0 #/definitions/ViewConfig
+
 data ViewConfig
     = ViewWidth Double
+      -- ^ The default width of the single plot or each plot in a trellis plot when the
+      --   visualization has a continuous (non-ordinal) scale or when the
+      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (x axis).
     | ViewHeight Double
+      -- ^ The default height of the single plot or each plot in a trellis plot when the
+      --   visualization has a continuous (non-ordinal) scale or when the
+      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
     | Clip Bool
+      -- ^ Should the view be clipped?
     | Fill (Maybe T.Text)
+      -- ^ The fill color.
     | FillOpacity Double
+      -- ^ The fill opacity.
     | Stroke (Maybe T.Text)
+      -- ^ The stroke color.
     | StrokeOpacity Double
+      -- ^ The stroke opacity.
     | StrokeWidth Double
-    | StrokeCap StrokeCap          -- ^ @since 0.4.0.0
+      -- ^ The stroke width, in pixels.
+    | StrokeCap StrokeCap
+      -- ^ The stroke cap for line-ending style.
+      --
+      --   @since 0.4.0.0
     | StrokeDash [Double]
+      -- ^ The stroke dash style. It is defined by an alternating 'on-off'
+      --   sequence of line lengths, in pixels.
     | StrokeDashOffset Double
-    | StrokeJoin StrokeJoin        -- ^ @since 0.4.0.0
+      -- ^ Number of pixels before the first line dash is drawn.
+    | StrokeJoin StrokeJoin
+      -- ^ The stroke line-join method.
+      --
+      --   @since 0.4.0.0
 
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
@@ -6850,7 +6901,7 @@ facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 {-|
 
 See the
-[Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+<https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
 
 @since 0.4.0.0
 
