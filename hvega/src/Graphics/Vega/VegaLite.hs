@@ -4957,6 +4957,22 @@ data SelectionProperty
     | On T.Text
       -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
       --   that triggers a selection, or the empty string (which sets the property to @false@).
+    | Clear T.Text
+      -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
+      --   that can clear a selection. For example, to allow a zoomed/panned view to be reset
+      --   on shift-click:
+      --
+      -- @
+      -- 'selection'
+      --     . 'select' \"myZoomPan\"
+      --         'Interval'
+      --         [ 'BindScales', Clear \"click[event.shiftKey]\" ]
+      -- @
+      --
+      --   To remove the default clearing behaviour of a selection, provide an empty string
+      --   rather than an event stream selector.
+      --
+      --   @since 0.4.0.0
     | Translate T.Text
       -- ^ Translation selection transformation used for panning a view. See the
       --   [Vega-Lite translate documentation](https://vega.github.io/vega-lite/docs/translate.html).
@@ -4967,6 +4983,26 @@ data SelectionProperty
       -- ^ Field names for projecting a selection.
     | Encodings [Channel]
       -- ^ Encoding channels that form a named selection.
+    | SInit [(T.Text, DataValue)]
+      -- ^ Initialise one or more selections with values from bound fields. For example,
+      --
+      -- @
+      -- 'selection'
+      --     . 'select' \"CylYr\"
+      --         'Single'
+      --         [ 'Fields' [ \"Cylinders\", \"Year\" ]
+      --         , SInit
+      --             [ ( \"Cylinders\", 'Number' 4 )
+      --             , ( \"Year\", Number 1977 )
+      --             ]
+      --         , 'Bind'
+      --             [ 'IRange' \"Cylinders\" [ 'InName' \"Cylinders \", 'InMin' 3, 'InMax' 8, 'InStep' 1 ]
+      --             , IRange \"Year\" [ InName \"Year \", InMin 1969, InMax 1981, InStep 1 ]
+      --             ]
+      --         ]
+      -- @
+      --
+      --   @since 0.4.0.0
     | ResolveSelections SelectionResolution
       -- ^ Strategy that determines how selections' data queries are resolved when applied
       --   in a filter transform, conditional encoding rule, or scale domain.
@@ -4985,7 +5021,9 @@ data SelectionProperty
 selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
 selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
+selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) iVals)
 selectionProperty (On e) = "on" .= e
+selectionProperty (Clear e) = "clear" .= if T.null e then toJSON False else toJSON e
 selectionProperty Empty = "empty" .= fromT "none"
 selectionProperty (ResolveSelections res) = "resolve" .= selectionResolutionLabel res
 selectionProperty (SelectionMark markProps) = "mark" .= object (map selectionMarkProperty markProps)

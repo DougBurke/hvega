@@ -168,8 +168,6 @@ selectionCondition3 =
         [ dataVals, vConcat [ spec1, spec2 ] ]
 
 
-{- TODO: add Clear -}
-
 selectionCondition4 :: VegaLite
 selectionCondition4 =
     let
@@ -180,8 +178,8 @@ selectionCondition4 =
             selection
                 . select "mySelection"
                     Interval
-                    [ {- Clear ""
-                    , -} On "[mousedown[!event.shiftKey], mouseup] > mousemove"
+                    [ Clear ""
+                    , On "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     , Translate "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     ]
 
@@ -200,8 +198,6 @@ selectionCondition4 =
         [ dataVals, sel [], mark Rect [ MCursor CGrab ], enc [] ]
 
 
-{- TODO: add Clear -}
-
 selectionCondition5 :: VegaLite
 selectionCondition5 =
     let
@@ -212,8 +208,8 @@ selectionCondition5 =
             selection
                 . select "mySelection"
                     Interval
-                    [ {- Clear "mouseup"
-                    , -} Empty
+                    [ Clear "mouseup"
+                    , Empty
                     , On "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     , Translate "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     ]
@@ -252,8 +248,6 @@ bindScales1 =
         [ width 300, height 300, dataVals [], sel [], mark Circle [], enc [] ]
 
 
-{- TODO: add Clear -}
-
 bindScales2 :: VegaLite
 bindScales2 =
     let
@@ -264,7 +258,7 @@ bindScales2 =
             selection
                 . select "myZoomPan"
                     Interval
-                    [ BindScales {- , Clear "click[event.shiftKey]" -} ]
+                    [ BindScales, Clear "click[event.shiftKey]" ]
 
         enc =
             encoding
