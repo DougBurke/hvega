@@ -407,6 +407,8 @@ module Graphics.Vega.VegaLite
        , spacingRC
        , center
        , centerRC
+       , bounds
+       , Bounds(..)
        , CompositionAlignment(..)
 
          -- ** Resolution
@@ -1256,6 +1258,7 @@ data VLProperty
     | VLResolve
     | VLSpacing         -- ^ @since 0.4.0.0
     | VLAlign           -- ^ @since 0.4.0.0
+    | VLBounds          -- ^ @since 0.4.0.0
     | VLCenter          -- ^ @since 0.4.0.0
     | VLConfig
     | VLSelection
@@ -1290,6 +1293,7 @@ vlPropertyLabel VLSpec = "spec"
 vlPropertyLabel VLResolve = "resolve"
 vlPropertyLabel VLSpacing = "spacing"
 vlPropertyLabel VLAlign = "align"
+vlPropertyLabel VLBounds = "bounds"
 vlPropertyLabel VLCenter = "center"
 vlPropertyLabel VLViewBackground = "view"
 
@@ -6672,6 +6676,33 @@ centerRC ::
   -> Bool  -- ^ Are columns to be centered?
   -> (VLProperty, VLSpec)
 centerRC cRow cCol = (VLCenter, object ["row" .= cRow, "col" .= cCol])
+
+
+-- | @since 0.4.0.0
+
+data Bounds
+  = Full
+    -- ^ Bounds calculation should use the entire plot area (including axes, title,
+    --   and legend).
+  | Flush
+    -- ^ Bounds calculation should take only the specified width and height values for
+    --   a sub-view. Useful when attempting to place sub-plots without axes or legends into
+    --   a uniform grid structure.
+
+boundsSpec :: Bounds -> VLSpec
+boundsSpec Full = "full"
+boundsSpec Flush = "flush"
+
+
+{-|
+
+Bounds calculation method to use for determining the extent of a sub-plot in
+a composed view.
+
+@since 0.4.0.0
+-}
+bounds :: Bounds -> (VLProperty, VLSpec)
+bounds bnds = (VLBounds, boundsSpec bnds)
 
 
 {-|
