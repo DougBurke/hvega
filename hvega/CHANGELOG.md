@@ -28,6 +28,10 @@ types have been added, based on version 1.12.0 of the elm-vegalite
 module. Thanks again to Jo Wood for doing all the work! The documentation
 indicates new symbols with the `since 0.4.0.0` label.
 
+The `VLProperty` type now exports its constructors, to support users
+who may need to tweak or augment the JSON Vega-Lite specification
+created by `hvega`.
+
 Added a test suite based on the Elm Vega-Lite tests (again, thanks to
 Jo Wood).
 
