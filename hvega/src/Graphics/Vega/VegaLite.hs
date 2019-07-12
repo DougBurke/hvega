@@ -64,7 +64,8 @@ vl1 =
             . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
             . position Y [PName "count", PmType Quantitative]
 
-  in 'toVegaLite' ['description' desc, 'background' "white", dat [], 'mark' 'Bar' barOpts, enc []]
+  in 'toVegaLite' ['description' desc, 'background' "white"
+                , dat [], 'mark' 'Bar' barOpts, enc []]
 @
 
 We can inspect how the encoded JSON looks like in an GHCi session:
@@ -483,6 +484,7 @@ module Graphics.Vega.VegaLite
        , padding
        , autosize
        , background
+       , usermetadata
        , Padding(..)
        , Autosize(..)
 
@@ -1370,6 +1372,10 @@ data VLProperty
       -- ^ See 'title'.
     | VLTransform
       -- ^ See 'transform'.
+    | VLUserMetadata
+      -- ^ see 'usermetadata'.
+      --
+      --   @since 0.4.0.0
     | VLVConcat
       -- ^ See 'vConcat'.
     | VLViewBackground
@@ -1408,6 +1414,7 @@ vlPropertyLabel VLSpacing = "spacing"
 vlPropertyLabel VLSpecification = "spec"
 vlPropertyLabel VLTitle = "title"
 vlPropertyLabel VLTransform = "transform"
+vlPropertyLabel VLUserMetadata = "usermeta"
 vlPropertyLabel VLVConcat = "vconcat"
 vlPropertyLabel VLViewBackground = "view"
 vlPropertyLabel VLWidth = "width"
@@ -3419,6 +3426,17 @@ Provides an optional description to be associated with the visualization.
 -}
 description :: T.Text -> PropertySpec
 description s = (VLDescription, toJSON s)
+
+
+-- | Optional metadata.
+--
+--   @since 0.4.0.0
+
+usermetadata ::
+  A.Object
+  -- ^ The metadata is passed around but ignored by VegaLite.
+  -> PropertySpec
+usermetadata o = (VLUserMetadata, A.Object o)
 
 
 {-|
