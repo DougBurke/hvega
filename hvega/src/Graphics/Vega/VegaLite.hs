@@ -1287,70 +1287,82 @@ Vega-Lite code in some manner (e.g. because @hvega@ is missing needed
 functionality or is buggy).
 
 -}
+
+-- based on schema 3.3.0 #/definitions/TopLevelSpec
+-- which accepts one of
+--    #/definitions/TopLevelUnitSpec
+--    #/definitions/TopLevelFacetSpec
+--    #/definitions/TopLevelLayerSpec
+--    #/definitions/TopLevelRepeatSpec
+--    #/definitions/TopLevelConcatSpec
+--    #/definitions/TopLevelVConcatSpec
+--    #/definitions/TopLevelHConcatSpec
+
 data VLProperty
-    = VLName
-    | VLDescription
-    | VLTitle
-    | VLWidth
-    | VLHeight
+    = VLAlign           -- ^ @since 0.4.0.0
     | VLAutosize
-    | VLPadding
     | VLBackground
-    | VLData
-    | VLDatasets
-    | VLMark
-    | VLTransform
-    | VLProjection
-    | VLEncoding
-    | VLLayer
-    | VLConcat          -- ^ @since 0.4.0.0
-    | VLHConcat
-    | VLVConcat
-    | VLColumns         -- ^ @since 0.4.0.0
-    | VLRepeat
-    | VLFacet
-    | VLSpec
-    | VLResolve
-    | VLSpacing         -- ^ @since 0.4.0.0
-    | VLAlign           -- ^ @since 0.4.0.0
     | VLBounds          -- ^ @since 0.4.0.0
     | VLCenter          -- ^ @since 0.4.0.0
+    | VLColumns         -- ^ @since 0.4.0.0
+    | VLConcat          -- ^ @since 0.4.0.0
     | VLConfig
+    | VLData
+    | VLDatasets
+    | VLDescription
+    | VLEncoding
+    | VLFacet
+    | VLHConcat
+    | VLHeight
+    | VLLayer
+    | VLMark
+    | VLName
+    | VLPadding
+    | VLProjection
+    | VLRepeat
+    | VLResolve
     | VLSelection
+    | VLSpacing         -- ^ @since 0.4.0.0
+    | VLSpec
+    | VLTitle
+    | VLTransform
+    -- | VLUserMeta
+    | VLVConcat
     | VLViewBackground  -- ^ @since 0.4.0.0
+    | VLWidth
 
 
 vlPropertyLabel :: VLProperty -> T.Text
-vlPropertyLabel VLName = "name"
-vlPropertyLabel VLDescription = "description"
-vlPropertyLabel VLTitle = "title"
-vlPropertyLabel VLWidth = "width"
-vlPropertyLabel VLHeight = "height"
-vlPropertyLabel VLPadding = "padding"
+vlPropertyLabel VLAlign = "align"
 vlPropertyLabel VLAutosize = "autosize"
 vlPropertyLabel VLBackground = "background"
-vlPropertyLabel VLData = "data"
-vlPropertyLabel VLDatasets = "datasets"
-vlPropertyLabel VLProjection = "projection"
-vlPropertyLabel VLMark = "mark"
-vlPropertyLabel VLTransform = "transform"
-vlPropertyLabel VLEncoding = "encoding"
-vlPropertyLabel VLConfig = "config"
-vlPropertyLabel VLSelection = "selection"
-vlPropertyLabel VLConcat = "concat"
-vlPropertyLabel VLHConcat = "hconcat"
-vlPropertyLabel VLVConcat = "vconcat"
-vlPropertyLabel VLColumns = "columns"
-vlPropertyLabel VLLayer = "layer"
-vlPropertyLabel VLRepeat = "repeat"
-vlPropertyLabel VLFacet = "facet"
-vlPropertyLabel VLSpec = "spec"
-vlPropertyLabel VLResolve = "resolve"
-vlPropertyLabel VLSpacing = "spacing"
-vlPropertyLabel VLAlign = "align"
 vlPropertyLabel VLBounds = "bounds"
 vlPropertyLabel VLCenter = "center"
+vlPropertyLabel VLColumns = "columns"
+vlPropertyLabel VLConcat = "concat"
+vlPropertyLabel VLConfig = "config"
+vlPropertyLabel VLData = "data"
+vlPropertyLabel VLDatasets = "datasets"
+vlPropertyLabel VLDescription = "description"
+vlPropertyLabel VLEncoding = "encoding"
+vlPropertyLabel VLFacet = "facet"
+vlPropertyLabel VLHConcat = "hconcat"
+vlPropertyLabel VLHeight = "height"
+vlPropertyLabel VLLayer = "layer"
+vlPropertyLabel VLMark = "mark"
+vlPropertyLabel VLName = "name"
+vlPropertyLabel VLPadding = "padding"
+vlPropertyLabel VLProjection = "projection"
+vlPropertyLabel VLRepeat = "repeat"
+vlPropertyLabel VLResolve = "resolve"
+vlPropertyLabel VLSelection = "selection"
+vlPropertyLabel VLSpacing = "spacing"
+vlPropertyLabel VLSpec = "spec"
+vlPropertyLabel VLTitle = "title"
+vlPropertyLabel VLTransform = "transform"
+vlPropertyLabel VLVConcat = "vconcat"
 vlPropertyLabel VLViewBackground = "view"
+vlPropertyLabel VLWidth = "width"
 
 
 {-|
