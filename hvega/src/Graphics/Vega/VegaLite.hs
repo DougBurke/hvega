@@ -925,6 +925,10 @@ import Data.Monoid ((<>))
 -- * The constructors of the 'ViewConfig' type have been renamed so they
 --   all begin with @View@ (to match 'ViewWidth' and 'ViewHeight').
 --
+-- * The constructors of the 'ProjectionProperty' type have been renamed
+--   so that they begin with @Pr@ rather than @P@ (to avoid conflicts
+--   with the 'PositionChannel' type).
+--
 -- * The 'Divide' constructor of 'BinProperty' now takes a list of
 --   Doubles rather than two.
 --
@@ -5256,26 +5260,28 @@ compositionAlignmentSpec CAAll = "all"
 Properties for customising a geospatial projection that converts longitude,latitude
 pairs into planar @(x,y)@ coordinate pairs for rendering and query. For details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
+
+This type has been changed in the @0.4.0.0@ release so that all constructors
+start with @Pr@ rather than @P@ (and so provide some differentiation to the
+'PositionChannel' constructors).
+
 -}
 
 -- based on schema 3.3.0 #/definitions/Projection
 
 data ProjectionProperty
-    = PType Projection
+    = PrType Projection
       -- ^ The type of the map projection.
-    | PClipAngle (Maybe Double)
+    | PrClipAngle (Maybe Double)
       -- ^ The clipping circle angle in degrees. A value of @Nothing@ will switch to
       --   antimeridian cutting rather than small-circle clipping.
-    | PClipExtent ClipRect
+    | PrClipExtent ClipRect
       -- ^ Projection’s viewport clip extent to the specified bounds in pixels.
-    | PCenter Double Double
+    | PrCenter Double Double
       -- ^ Projection’s center as longitude and latitude in degrees.
     | PrScale Double
       -- ^ The projection's zoom scale, which if set, overrides automatic scaling of a
       --   geo feature to fit within the viewing area.
-      --
-      --   Note that the prefix is @Pr@ and not @P@, so that is does not conflict with
-      --   'PScale'.
       --
       --   @since 0.4.0.0
     | PrTranslate Double Double
@@ -5285,10 +5291,10 @@ data ProjectionProperty
       --   Note that the prefix is @Pr@ and not @P@, to match the Elm API.
       --
       --   @since 0.4.0.0
-    | PRotate Double Double Double
+    | PrRotate Double Double Double
       -- ^ A projection’s three-axis rotation angle. The order is @lambda@ @phi@ @gamma@,
       --   and specifies the rotation angles in degrees about each spherical axis.
-    | PPrecision Double
+    | PrPrecision Double
       -- ^ Threshold for the projection’s adaptive resampling in pixels, and corresponds to the
       --   Douglas–Peucker distance. If precision is not specified, the projection’s current
       --   resampling precision of 0.707 is used.
@@ -5296,62 +5302,62 @@ data ProjectionProperty
       --   Version 3.3.0 of the Vega-Lite spec claims this should be output as a string,
       --   but it is written out as a number since the
       --   [spec is in error](https://github.com/vega/vega-lite/issues/5190).
-    | PReflectX Bool
+    | PrReflectX Bool
       -- ^ Reflect the x-coordinates after performing an identity projection. This
-      -- creates a left-right mirror image of the geoshape marks when subject to an
-      -- identity projection with 'Identity'.
+      --   creates a left-right mirror image of the geoshape marks when subject to an
+      --   identity projection with 'Identity'.
       --
       -- @since 0.4.0.0
-    | PReflectY Bool
+    | PrReflectY Bool
       -- ^ Reflect the y-coordinates after performing an identity projection. This
-      -- creates a left-right mirror image of the geoshape marks when subject to an
-      -- identity projection with 'Identity'.
+      --   creates a left-right mirror image of the geoshape marks when subject to an
+      --   identity projection with 'Identity'.
       --
       -- @since 0.4.0.0
-    | PCoefficient Double
+    | PrCoefficient Double
       -- ^ The @Hammer@ map projection coefficient.
-    | PDistance Double
+    | PrDistance Double
       -- ^ The @Satellite@ map projection distance.
-    | PFraction Double
+    | PrFraction Double
       -- ^ The @Bottomley@ map projection fraction.
-    | PLobes Int
+    | PrLobes Int
       -- ^ Number of lobes in lobed map projections such as the @Berghaus star@.
-    | PParallel Double
+    | PrParallel Double
       -- ^ Parallel for map projections such as the @Armadillo@.
-    | PRadius Double
+    | PrRadius Double
       -- ^ Radius value for map projections such as the @Gingery@.
-    | PRatio Double
+    | PrRatio Double
       -- ^ Ratio value for map projections such as the @Hill@.
-    | PSpacing Double
+    | PrSpacing Double
       -- ^ Spacing value for map projections such as the @Lagrange@.
-    | PTilt Double
+    | PrTilt Double
       -- ^ @Satellite@ map projection tilt.
 
 
 projectionProperty :: ProjectionProperty -> LabelledSpec
-projectionProperty (PType proj) = "type" .= projectionLabel proj
-projectionProperty (PClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
-projectionProperty (PClipExtent rClip) =
+projectionProperty (PrType proj) = "type" .= projectionLabel proj
+projectionProperty (PrClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
+projectionProperty (PrClipExtent rClip) =
   ("clipExtent", case rClip of
     NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
-projectionProperty (PCenter lon lat) = "center" .= [lon, lat]
+projectionProperty (PrCenter lon lat) = "center" .= [lon, lat]
 projectionProperty (PrScale sc) = "scale" .= sc
 projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
-projectionProperty (PRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
-projectionProperty (PPrecision pr) = "precision" .= pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
-projectionProperty (PReflectX b) = "reflectX" .= b
-projectionProperty (PReflectY b) = "reflectY" .= b
-projectionProperty (PCoefficient x) = "coefficient" .= x
-projectionProperty (PDistance x) = "distance" .= x
-projectionProperty (PFraction x) = "fraction" .= x
-projectionProperty (PLobes n) = "lobes" .= n
-projectionProperty (PParallel x) = "parallel" .= x
-projectionProperty (PRadius x) = "radius" .= x
-projectionProperty (PRatio x) = "ratio" .= x
-projectionProperty (PSpacing x) = "spacing" .= x
-projectionProperty (PTilt x) = "tilt" .= x
+projectionProperty (PrRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
+projectionProperty (PrPrecision pr) = "precision" .= pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
+projectionProperty (PrReflectX b) = "reflectX" .= b
+projectionProperty (PrReflectY b) = "reflectY" .= b
+projectionProperty (PrCoefficient x) = "coefficient" .= x
+projectionProperty (PrDistance x) = "distance" .= x
+projectionProperty (PrFraction x) = "fraction" .= x
+projectionProperty (PrLobes n) = "lobes" .= n
+projectionProperty (PrParallel x) = "parallel" .= x
+projectionProperty (PrRadius x) = "radius" .= x
+projectionProperty (PrRatio x) = "ratio" .= x
+projectionProperty (PrSpacing x) = "spacing" .= x
+projectionProperty (PrTilt x) = "tilt" .= x
 
 
 {-|
@@ -5951,7 +5957,7 @@ For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 
 This type has been changed in the @0.4.0.0@ release to use a consistent
-naming scheme for the costructors (everything starts with @View@). Prior to
+naming scheme for the constructors (everything starts with @View@). Prior to
 this release only @ViewWidth@ and @ViewHeight@ were named this way. There
 are also five new constructors.
 

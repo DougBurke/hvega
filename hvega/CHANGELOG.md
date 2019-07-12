@@ -69,6 +69,10 @@ The `MarkOrientation` type has been renamed `Orientation`.
 The constructors of the `ViewConfig` type have been renamed so they
 all begin with `View` (to match `ViewWidth` and `ViewHeight`).
 
+The constructors of the `ProjectionProperty` type have been renamed
+so that they begin with `Pr` rather than `P` (to avoid conflicts
+with the `PositionChannel` type).
+
 The `Divide` constructor of `BinProperty` now takes a list of
 Doubles rather than two.
 

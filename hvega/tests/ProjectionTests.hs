@@ -51,19 +51,19 @@ worldMapTemplate tText projProps =
 
 standardProjs :: [(String, VegaLite)]
 standardProjs =
-    [ worldMapTemplate "Albers" [ PType Albers ]
-    , worldMapTemplate "AzimuthalEqualArea" [ PType AzimuthalEqualArea ]
-    , worldMapTemplate "AzimuthalEquidistant" [ PType AzimuthalEquidistant ]
-    , worldMapTemplate "ConicConformal" [ PType ConicConformal, PClipAngle (Just 65) ]
-    , worldMapTemplate "ConicEqualArea" [ PType ConicEqualArea ]
-    , worldMapTemplate "ConicEquidistant" [ PType ConicEquidistant ]
-    , worldMapTemplate "Equirectangular" [ PType Equirectangular ]
-    , worldMapTemplate "Gnomonic" [ PType Gnomonic ]
-    , worldMapTemplate "Identity" [ PType Identity ]
-    , worldMapTemplate "Mercator" [ PType Mercator ]
-    , worldMapTemplate "Orthographic" [ PType Orthographic ]
-    , worldMapTemplate "Stereographic" [ PType Stereographic ]
-    , worldMapTemplate "TransverseMercator" [ PType TransverseMercator ]
+    [ worldMapTemplate "Albers" [ PrType Albers ]
+    , worldMapTemplate "AzimuthalEqualArea" [ PrType AzimuthalEqualArea ]
+    , worldMapTemplate "AzimuthalEquidistant" [ PrType AzimuthalEquidistant ]
+    , worldMapTemplate "ConicConformal" [ PrType ConicConformal, PrClipAngle (Just 65) ]
+    , worldMapTemplate "ConicEqualArea" [ PrType ConicEqualArea ]
+    , worldMapTemplate "ConicEquidistant" [ PrType ConicEquidistant ]
+    , worldMapTemplate "Equirectangular" [ PrType Equirectangular ]
+    , worldMapTemplate "Gnomonic" [ PrType Gnomonic ]
+    , worldMapTemplate "Identity" [ PrType Identity ]
+    , worldMapTemplate "Mercator" [ PrType Mercator ]
+    , worldMapTemplate "Orthographic" [ PrType Orthographic ]
+    , worldMapTemplate "Stereographic" [ PrType Stereographic ]
+    , worldMapTemplate "TransverseMercator" [ PrType TransverseMercator ]
     ]
 
 
@@ -72,10 +72,10 @@ d3Projections =
     -- Note these require registering via JavaScript in the hosting page.
     let
         customSpec pText =
-            worldMapTemplate pText [ PType (Custom (T.pack pText))
-                                   , PClipAngle (Just 179.999)
-                                   , PRotate 20 (-90) 0
-                                   , PPrecision 0.1 ]
+            worldMapTemplate pText [ PrType (Custom (T.pack pText))
+                                   , PrClipAngle (Just 179.999)
+                                   , PrRotate 20 (-90) 0
+                                   , PrPrecision 0.1 ]
     in
     map customSpec [ "airy", "aitoff", "armadillo", "august", "baker", "berghaus", "bertin1953", "boggs", "bonne", "bottomley", "collignon", "craig", "craster", "cylindricalequalarea", "cylindricalstereographic", "eckert1", "eckert2", "eckert3", "eckert4", "eckert5", "eckert6", "eisenlohr", "fahey", "foucaut", "gingery", "winkel3" ]
 
@@ -89,7 +89,7 @@ configExample =
                 . configuration (TitleStyle [ TFont "Roboto", TFontWeight W600, TFontSize 18 ])
                 . configuration (View [ ViewWidth 500, ViewHeight 300, ViewStroke Nothing ])
                 . configuration (Autosize [ AFit ])
-                . configuration (Projection [ PType Orthographic, PRotate 0 0 0 ])
+                . configuration (Projection [ PrType Orthographic, PrRotate 0 0 0 ])
 
         globeSpec =
             asSpec
@@ -141,21 +141,21 @@ reflectExample rx ry =
             asSpec
                 [ dataFromUrl "data/globe.json" [ TopojsonFeature "globe" ]
                 , mark Geoshape [ MColor "#c1e7f5" ]
-                , projection [ PType Identity, PReflectX rx, PReflectY ry ]
+                , projection [ PrType Identity, PrReflectX rx, PrReflectY ry ]
                 ]
 
         graticuleSpec =
             asSpec
                 [ dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
                 , mark Geoshape [ MFillOpacity 0.01, MStroke "#411", MStrokeWidth 0.1 ]
-                , projection [ PType Identity, PReflectX rx, PReflectY ry ]
+                , projection [ PrType Identity, PrReflectX rx, PrReflectY ry ]
                 ]
 
         countrySpec =
             asSpec
                 [ dataFromUrl "https://vega.github.io/vega-lite/data/world-110m.json" [ TopojsonFeature "countries" ]
                 , mark Geoshape [ MColor "#708E71" ]
-                , projection [ PType Identity, PReflectX rx, PReflectY ry ]
+                , projection [ PrType Identity, PrReflectX rx, PrReflectY ry ]
                 ]
     in
     ( tname, toVegaLite [ width 500, height 250, layer [ globeSpec, graticuleSpec, countrySpec ] ] )
