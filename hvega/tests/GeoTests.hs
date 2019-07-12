@@ -52,7 +52,7 @@ defaultSize1 :: VegaLite
 defaultSize1 =
     toVegaLite
         [ description "Default map size"
-        , projection [ PType AlbersUsa ]
+        , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "counties" ]
         , mark Geoshape []
         , encoding $ color [ MString "black" ] []
@@ -64,7 +64,7 @@ defaultSize2 =
     toVegaLite
         [ description "Default map size with view width and height specified in config."
         , configure $ configuration (View [ ViewWidth 500, ViewHeight 300 ]) $ []
-        , projection [ PType AlbersUsa ]
+        , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "counties" ]
         , mark Geoshape []
         , encoding $ color [ MString "black" ] []
@@ -265,7 +265,7 @@ sphere1 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic ]
+            projection [ PrType Orthographic ]
     in
     toVegaLite [ width 300, height 300, dataVals, proj, mark Geoshape [ MFill "rgb(149,181,146)" ] ]
 
@@ -278,7 +278,7 @@ sphere2 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic ]
+            projection [ PrType Orthographic ]
 
         sphereSpec =
             asSpec [ sphere, mark Geoshape [ MFill "aliceblue" ] ]
@@ -293,7 +293,7 @@ graticule1 :: VegaLite
 graticule1 =
     let
         proj =
-            projection [ PType Orthographic, PRotate (-42) (-30) 0 ]
+            projection [ PrType Orthographic, PrRotate (-42) (-30) 0 ]
 
         sphereSpec =
             asSpec [ sphere, mark Geoshape [ MFill "aliceblue" ] ]
@@ -308,7 +308,7 @@ graticule2 :: VegaLite
 graticule2 =
     let
         proj =
-            projection [ PType Orthographic, PRotate (-42) (-30) 0 ]
+            projection [ PrType Orthographic, PrRotate (-42) (-30) 0 ]
 
         sphereSpec =
             asSpec [ sphere, mark Geoshape [ MFill "aliceblue" ] ]
@@ -328,7 +328,7 @@ graticule3 :: VegaLite
 graticule3 =
     let
         proj =
-            projection [ PType Orthographic, PRotate (-42) (-30) 0 ]
+            projection [ PrType Orthographic, PrRotate (-42) (-30) 0 ]
 
         sphereSpec =
             asSpec [ sphere, mark Geoshape [ MFill "aliceblue" ] ]
@@ -350,7 +350,7 @@ graticule4 :: VegaLite
 graticule4 =
     let
         proj =
-            projection [ PType Orthographic, PRotate (-42) (-30) 0 ]
+            projection [ PrType Orthographic, PrRotate (-42) (-30) 0 ]
 
         sphereSpec =
             asSpec [ sphere, mark Geoshape [ MFill "aliceblue" ] ]
@@ -371,7 +371,7 @@ scale1 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic, PrScale 470 ]
+            projection [ PrType Orthographic, PrScale 470 ]
 
         countrySpec =
             asSpec [ dataVals, mark Geoshape [ MFill "rgb(149,181,146)" ] ]
@@ -393,7 +393,7 @@ translate1 =
                 [ TopojsonFeature "countries1" ]
 
         proj =
-            projection [ PType Orthographic, PrTranslate 0 100 ]
+            projection [ PrType Orthographic, PrTranslate 0 100 ]
 
         countrySpec =
             asSpec [ dataVals, mark Geoshape [ MFill "rgb(149,181,146)" ] ]
@@ -415,7 +415,7 @@ mapComp1 =
                 [ width 300
                 , height 300
                 , dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
-                , projection [ PType Orthographic ]
+                , projection [ PrType Orthographic ]
                 , mark Geoshape [ MFilled False ]
                 ]
     in
@@ -439,7 +439,7 @@ mapComp2 =
                         , mark Geoshape [ MFill "black", MFillOpacity 0.7 ]
                         ]
             in
-            asSpec [ width 300, height 300, projection [ PType Orthographic ], layer [ graticuleSpec, countrySpec ] ]
+            asSpec [ width 300, height 300, projection [ PrType Orthographic ], layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
         [ configure $ configuration (View [ ViewStroke Nothing ]) $ []
@@ -456,7 +456,7 @@ mapComp3 =
                     asSpec
                         [ width 300
                         , height 300
-                        , projection [ PType Orthographic, PRotate rot 0 0 ]
+                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
                         , mark Geoshape [ MFilled False, MStroke "#411", MStrokeWidth 0.1 ]
                         ]
@@ -465,7 +465,7 @@ mapComp3 =
                     asSpec
                         [ width 300
                         , height 300
-                        , projection [ PType Orthographic, PRotate rot 0 0 ]
+                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/world-110m.json" [ TopojsonFeature "countries" ]
                         , mark Geoshape [ MStroke "white", MFill "black", MStrokeWidth 0.5 ]
                         ]
@@ -485,7 +485,7 @@ mapComp4 =
                     asSpec
                         [ width 300
                         , height 300
-                        , projection [ PType Orthographic, PRotate 0 0 0 ]
+                        , projection [ PrType Orthographic, PrRotate 0 0 0 ]
                         , dataFromUrl "data/globe.json" [ TopojsonFeature "globe" ]
                         , mark Geoshape [ MFill "#c1e7f5", MStrokeOpacity 0 ]
                         ]
@@ -494,7 +494,7 @@ mapComp4 =
                     asSpec
                         [ width 300
                         , height 300
-                        , projection [ PType Orthographic, PRotate rot 0 0 ]
+                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
                         , mark Geoshape [ MFilled False, MStroke "#411", MStrokeWidth 0.1 ]
                         ]
@@ -503,7 +503,7 @@ mapComp4 =
                     asSpec
                         [ width 300
                         , height 300
-                        , projection [ PType Orthographic, PRotate rot 0 0 ]
+                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/world-110m.json" [ TopojsonFeature "countries" ]
                         , mark Geoshape [ MStroke "white", MFill "#242", MStrokeWidth 0.1 ]
                         ]
@@ -528,7 +528,7 @@ dotMap1 =
         [ description "US zip codes: One dot per zipcode colored by first digit"
         , width 500
         , height 300
-        , projection [ PType AlbersUsa ]
+        , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/zipcodes.csv" []
         , transform $ calculateAs "substring(datum.zip_code, 0, 1)" "digit" $ []
         , mark Circle []
@@ -566,7 +566,7 @@ scribbleMap1 =
         , config []
         , width 1000
         , height 600
-        , projection [ PType AlbersUsa ]
+        , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/zipcodes.csv" []
         , trans []
         , mark Line [ MStrokeWidth 0.2, MInterpolate Monotone ]
@@ -604,7 +604,7 @@ scribbleMap2 =
         , config []
         , width 1000
         , height 600
-        , projection [ PType AlbersUsa ]
+        , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/zipcodes.csv" []
         , trans []
         , mark Line [ MStrokeWidth 0.2, MInterpolate Monotone ]

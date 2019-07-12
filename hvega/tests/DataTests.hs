@@ -236,7 +236,7 @@ geodata2 =
         , height 400
         , configure $ configuration (View [ ViewStroke Nothing ]) []
         , dataFromJson geojson [ JSON "features" ]
-        , projection [ PType Orthographic ]
+        , projection [ PrType Orthographic ]
         , encoding (color [ MName "properties.Region", MmType Nominal, MLegend [ LNoTitle ] ] [])
         , mark Geoshape []
         ]
