@@ -5292,6 +5292,10 @@ data ProjectionProperty
       -- ^ Threshold for the projection’s adaptive resampling in pixels, and corresponds to the
       --   Douglas–Peucker distance. If precision is not specified, the projection’s current
       --   resampling precision of 0.707 is used.
+      --
+      --   Version 3.3.0 of the Vega-Lite spec claims this should be output as a string,
+      --   but it is written out as a number since the
+      --   [spec is in error](https://github.com/vega/vega-lite/issues/5190).
     | PReflectX Bool
       -- ^ Reflect the x-coordinates after performing an identity projection. This
       -- creates a left-right mirror image of the geoshape marks when subject to an
@@ -5336,7 +5340,7 @@ projectionProperty (PCenter lon lat) = "center" .= [lon, lat]
 projectionProperty (PrScale sc) = "scale" .= sc
 projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
 projectionProperty (PRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
-projectionProperty (PPrecision pr) = "precision" .= show pr  -- this is a string, not a number, in v3.3.0 of the spec! See https://github.com/vega/vega-lite/issues/5190
+projectionProperty (PPrecision pr) = "precision" .= pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
 projectionProperty (PReflectX b) = "reflectX" .= b
 projectionProperty (PReflectY b) = "reflectY" .= b
 projectionProperty (PCoefficient x) = "coefficient" .= x
