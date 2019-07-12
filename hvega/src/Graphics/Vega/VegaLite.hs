@@ -1286,6 +1286,9 @@ constructors to @VLProperty@ unless you need to transform the
 Vega-Lite code in some manner (e.g. because @hvega@ is missing needed
 functionality or is buggy).
 
+Note that there is only a very-limited attempt to enforce the Vega-Lite
+Schema (e.g. to ensure the required components are provided).
+
 -}
 
 -- based on schema 3.3.0 #/definitions/TopLevelSpec
@@ -1299,37 +1302,82 @@ functionality or is buggy).
 --    #/definitions/TopLevelHConcatSpec
 
 data VLProperty
-    = VLAlign           -- ^ @since 0.4.0.0
+    = VLAlign
+      -- ^ See 'align'.
+      --
+      --   @since 0.4.0.0
     | VLAutosize
+      -- ^ See 'autosize'.
     | VLBackground
-    | VLBounds          -- ^ @since 0.4.0.0
-    | VLCenter          -- ^ @since 0.4.0.0
-    | VLColumns         -- ^ @since 0.4.0.0
-    | VLConcat          -- ^ @since 0.4.0.0
+      -- ^ See 'background'.
+    | VLBounds
+      -- ^ See 'bounds'.
+      --
+      --   @since 0.4.0.0
+    | VLCenter
+      -- ^ See 'center' and 'centerRC'.
+      --
+      --   @since 0.4.0.0
+    | VLColumns
+      -- ^ See 'columns'.
+      --
+      --   @since 0.4.0.0
+    | VLConcat
+      -- ^ See 'vlConcat'.
+      --
+      --   @since 0.4.0.0
     | VLConfig
+      -- ^ See 'configure'.
     | VLData
+      -- ^ See 'dataFromColumns', 'dataFromJson', 'dataFromRows',
+      --   'dataFromSource', 'dataFromUrl', 'dataName', 'dataSequence',
+      --   'dataSequenceAs', 'graticule', and 'sphere'.
     | VLDatasets
+      -- ^ See 'datasets'.
     | VLDescription
+      -- ^ See 'description'.
     | VLEncoding
+      -- ^ See 'encoding'.
     | VLFacet
+      -- ^ See 'facet' and 'facetFlow'.
     | VLHConcat
+      -- ^ See 'hConcat'.
     | VLHeight
+      -- ^ See 'height'.
     | VLLayer
+      -- ^ See 'layer'.
     | VLMark
+      -- ^ See 'mark'.
     | VLName
+      -- ^ See 'name'.
     | VLPadding
+      -- ^ See 'padding'.
     | VLProjection
+      -- ^ See 'projection'.
     | VLRepeat
+      -- ^ See 'repeat' and 'repeatFlow'.
     | VLResolve
+      -- ^ See 'resolve'.
     | VLSelection
-    | VLSpacing         -- ^ @since 0.4.0.0
-    | VLSpec
+      -- ^ See 'selection'.
+    | VLSpacing
+      -- ^ See 'alignRC', 'spacing', and 'spacingRC'.
+      --
+      --   @since 0.4.0.0
+    | VLSpecification
+      -- ^ See 'specification'.
     | VLTitle
+      -- ^ See 'title'.
     | VLTransform
-    -- | VLUserMeta
+      -- ^ See 'transform'.
     | VLVConcat
-    | VLViewBackground  -- ^ @since 0.4.0.0
+      -- ^ See 'vConcat'.
+    | VLViewBackground
+      -- ^ See 'viewBackground'.
+      --
+      --   @since 0.4.0.0
     | VLWidth
+      -- ^ See 'width'.
 
 
 vlPropertyLabel :: VLProperty -> T.Text
@@ -1357,7 +1405,7 @@ vlPropertyLabel VLRepeat = "repeat"
 vlPropertyLabel VLResolve = "resolve"
 vlPropertyLabel VLSelection = "selection"
 vlPropertyLabel VLSpacing = "spacing"
-vlPropertyLabel VLSpec = "spec"
+vlPropertyLabel VLSpecification = "spec"
 vlPropertyLabel VLTitle = "title"
 vlPropertyLabel VLTransform = "transform"
 vlPropertyLabel VLVConcat = "vconcat"
@@ -7607,7 +7655,7 @@ Defines a specification object for use with faceted and repeated small multiples
 @
 -}
 specification :: VLSpec -> PropertySpec
-specification spec = (VLSpec, spec)
+specification spec = (VLSpecification, spec)
 
 
 {-|
