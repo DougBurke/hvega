@@ -1066,9 +1066,23 @@ let dat = 'dataFromColumns' []
 in toVegaLite [ dat [], mark 'Bar' [], enc [] ]
 @
 
-The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>.
+The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>,
+although there are some differences, in part because of bugs in @hvega@ -
+in which case please [report an issue](https://github.com/DougBurke/hvega/issues) - but also because of issues with the Vega-Lite spec (for instance there
+are several minor issues I have reported against version 3.3.0 of the
+Vega-Lite schema).
 
 -}
+
+-- TODO:
+--    Should the input data, or converted to VLSpec, be stored
+--    without the $schema key, so it can be easily combined with
+--    other visualizations?
+--
+--    Could we make VegaLite a Semigroup so you can easily combine
+--    specifications? However, what would that mean (concatenation,
+--    if so what direction, anything else?)
+
 toVegaLite :: [(VLProperty, VLSpec)] -> VegaLite
 toVegaLite vals =
   let kvals = ("$schema" .= vlSchemaName)
@@ -2055,8 +2069,8 @@ data MarkChannel
       --   ]
       -- @
       --
-      --   The arguments to this constructor have changed in @0.4.0.0 to support
-      --   multiple expressions.
+      --   The arguments to this constructor have changed in @0.4.0.0@
+      --   to support multiple expressions.
     | MPath T.Text
       -- ^ SVG path string used when encoding with a mark property channel. Useful
       --   for providing custom shapes.
@@ -2761,7 +2775,7 @@ transformation. To customise all scales use 'configure' and supply relevant
 'ScaleConfig' values. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html Vega-Lite documentation>.
 
-The @SReverse@ constructor was removed in version 0.4.0.0, as it
+The @SReverse@ constructor was removed in version @0.4.0.0@, as it
 represented a Vega, rather than Vega-Lite, property. The order of
 a scale can be changed with the 'PSort' constructor.
 -}
@@ -3232,7 +3246,7 @@ data PositionChannel
       -- ^ Type of stacking offset for the field when encoding with a
       --   position channel.
       --
-      --   Changed from @StackProperty@ in version 0.4.0.0
+      --   Changed from @StackProperty@ in version @0.4.0.0@.
     | PImpute [ImputeProperty]
       -- ^ Set the imputation rules for a position channel. See the
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
@@ -3347,7 +3361,7 @@ To configure all axes, use 'AxisConfig' with a 'configuration' instead. See the
 <https://vega.github.io/vega-lite/docs/axis.html#axis-properties Vega-Lite documentation>
 for more details.
 
-The @AxTitleMaxLength@ constructor was removed in release 0.4.0.0. The
+The @AxTitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 'AxTitleLimit' constructor should be used instead.
 
 -}
@@ -4271,7 +4285,7 @@ This data type has seen significant changes in the @0.4.0.0@ release:
 
 - the remaining constructors that did not begin with @Le@ were renamed (for
   example @Orient@ was changed to 'LeOrient');
-Breaking change: r
+
 - and new constructors were added.
 
 -}
@@ -6019,7 +6033,7 @@ data ConfigurationProperty
     | Stack StackOffset
       -- ^ The default stack offset style for stackable marks.
       --
-      --   Changed from @StackProperty@ in version 0.4.0.0
+      --   Changed from @StackProperty@ in version @0.4.0.0@.
     | TextStyle [MarkProperty]
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
@@ -6089,7 +6103,7 @@ Axis configuration options for customising all axes. See the
 <https://vega.github.io/vega-lite/docs/axis.html#general-config Vega-Lite documentation>
 for more details.
 
-The @TitleMaxLength@ constructor was removed in release 0.4.0.0. The
+The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 @TitleLimit@ constructor should be used instead.
 
 -}
@@ -6853,8 +6867,8 @@ data HyperlinkChannel
       --   if that expression is @True@. The second is the encoding if none of the expressions
       --   evaluate as @True@.
       --
-      --   The arguments to this constructor have changed in @0.4.0.0 to support
-      --   multiple expressions.
+      --   The arguments to this constructor have changed in @0.4.0.0@
+      --   to support multiple expressions.
     | HString T.Text
       -- ^ Literal string value when encoding with a hyperlink channel.
 
@@ -7044,8 +7058,8 @@ data TextChannel
       --   if that expression is @True@. The second is the encoding if none of the expressions
       --   evaluate as @True@.
       --
-      --   The arguments to this constructor have changed in @0.4.0.0 to support
-      --   multiple expressions.
+      --   The arguments to this constructor have changed in @0.4.0.0@
+      --   to support multiple expressions.
     | TFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html)
       --   for text marks. To distinguish between formatting as numeric values and data/time
