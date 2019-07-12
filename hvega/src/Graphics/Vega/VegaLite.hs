@@ -1066,9 +1066,23 @@ let dat = 'dataFromColumns' []
 in toVegaLite [ dat [], mark 'Bar' [], enc [] ]
 @
 
-The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>.
+The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>,
+although there are some differences, in part because of bugs in @hvega@ -
+in which case please [report an issue](https://github.com/DougBurke/hvega/issues) - but also because of issues with the Vega-Lite spec (for instance there
+are several minor issues I have reported against version 3.3.0 of the
+Vega-Lite schema).
 
 -}
+
+-- TODO:
+--    Should the input data, or converted to VLSpec, be stored
+--    without the $schema key, so it can be easily combined with
+--    other visualizations?
+--
+--    Could we make VegaLite a Semigroup so you can easily combine
+--    specifications? However, what would that mean (concatenation,
+--    if so what direction, anything else?)
+
 toVegaLite :: [(VLProperty, VLSpec)] -> VegaLite
 toVegaLite vals =
   let kvals = ("$schema" .= vlSchemaName)
