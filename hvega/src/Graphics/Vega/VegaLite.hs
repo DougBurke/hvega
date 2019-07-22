@@ -1822,7 +1822,7 @@ in 'toVegaLite'
     [ 'width' 200
     , 'height' 200
     , dataFromJson geojson []
-    , 'projection' [ 'PType' 'Orthographic' ]
+    , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' []
     ]
 @
@@ -5164,7 +5164,7 @@ data Projection
     | AlbersUsa
       -- ^ An Albers USA map projection that combines continental USA with
       --   Alaska and Hawaii. Unlike other projection types, this remains
-      --   unaffected by 'PRotate'.
+      --   unaffected by 'PrRotate'.
     | AzimuthalEqualArea
       -- ^ An azimuthal equal area map projection.
     | AzimuthalEquidistant
@@ -5188,8 +5188,8 @@ data Projection
     | Gnomonic
       -- ^ A gnomonic map projection.
     | Identity
-      -- ^ The identiy projection. This can be combined with 'PReflectX' and
-      --   'PReflectY' in the list of projection properties.
+      -- ^ The identiy projection. This can be combined with 'PrReflectX' and
+      --   'PrReflectY' in the list of projection properties.
       --
       --   @since 0.4.0.0
     | Mercator
@@ -5368,7 +5368,7 @@ This is useful when using the 'Geoshape' mark. For further details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 
 @
-proj = projection [ 'PType' 'Orthographic', 'PRotate' (-40) 0 0 ]
+proj = projection [ 'PrType' 'Orthographic', 'PrRotate' (-40) 0 0 ]
 @
 -}
 projection :: [ProjectionProperty] -> PropertySpec
@@ -6136,7 +6136,7 @@ data ConfigurationProperty
       --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
-    | Scale [ScaleConfig]
+    | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
       -- ^ The default properties used when scaling.
     | SelectionStyle [(Selection, [SelectionProperty])]
       -- ^ The default appearance of selection marks.
@@ -6491,7 +6491,7 @@ data BooleanOp
     = Expr T.Text
     -- ^ Expression that should evaluate to either true or false. Can use any valid
     --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
-    | Selection T.Text
+    | Selection T.Text  -- TODO: rename Selected
       -- ^ Interactive selection that will be true or false as part of a logical composition.
       --   For example: to filter a dataset so that only items selected interactively and that have
       --   a weight of more than 30:
@@ -6669,7 +6669,7 @@ The sphere will be subject to whatever projection is specified for the view.
 @
 'toVegaLite'
     [ sphere
-    , 'projection' [ 'PType' 'Orthographic' ]
+    , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' [ 'MFill' "aliceblue" ]
     ]
 @
@@ -6686,7 +6686,7 @@ Generate a grid of lines of longitude (meridians) and latitude
 (parallels).
 
 @
-let proj = 'projection' [ 'PType' 'Orthographic' ]
+let proj = 'projection' [ 'PrType' 'Orthographic' ]
     sphereSpec = 'asSpec' [ 'sphere',
                             'mark' 'Geoshape' [ 'MFill' "aliceblue" ] ]
     gratSpec =
