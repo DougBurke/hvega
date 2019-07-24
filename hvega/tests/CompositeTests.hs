@@ -13,9 +13,9 @@ import Graphics.Vega.VegaLite
 
 
 testSpecs :: [(String, VegaLite)]
-testSpecs = [ -- ("boxplot1", boxplot1)
-            -- , ("boxplot2", boxplot2)
-            {- , -} ("boxplot3", boxplot3)
+testSpecs = [ ("boxplot1", boxplot1)
+            , ("boxplot2", boxplot2)
+            , ("boxplot3", boxplot3)
             , ("errorband1", errorband1)
             , ("errorband2", errorband2)
             , ("errorbar1", errorbar1)
@@ -23,7 +23,6 @@ testSpecs = [ -- ("boxplot1", boxplot1)
             , ("errorbar3", errorbar3)
             ]
 
-{-
 bPlot :: MarkErrorExtent -> VegaLite
 bPlot ext =
     let
@@ -36,21 +35,13 @@ bPlot ext =
                 . position Y [ PName "people", PmType Quantitative, PAxis [ AxTitle "Population" ] ]
     in
     toVegaLite [ pop, mark Boxplot [ MExtent ext ], enc [] ]
--}
 
-{- TODO: ExRange
 boxplot1 :: VegaLite
-boxplot1 =
-    bPlot ExRange
--}
+boxplot1 = bPlot ExRange
 
-{- TODO: IqrScale
 boxplot2 :: VegaLite
-boxplot2 =
-    bPlot (IqrScale 2)
--}
+boxplot2 = bPlot (IqrScale 2)
 
--- TODO: IqrScale
 boxplot3 :: VegaLite
 boxplot3 =
     let
@@ -65,8 +56,8 @@ boxplot3 =
     toVegaLite
         [ pop
         , mark Boxplot
-            [ {- MExtent (IqrScale 0.5)
-            , -} MBox [ MColor "firebrick" ]
+            [ MExtent (IqrScale 0.5)
+            , MBox [ MColor "firebrick" ]
             , MOutliers [ MColor "black", MStrokeWidth 0.3, MSize 10 ]
             , MMedian [ MSize 18, MFill "black", MStrokeWidth 0 ]
             , MRule [ MStrokeWidth 0.4 ]

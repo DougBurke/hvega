@@ -4225,6 +4225,8 @@ Indicates the extent of the rule used for the error bar.  See
 <https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
 for details.
 
+Note that not all options are valid for all mark types.
+
 This is called @SummaryExtent@ in Elm and the constructors also have
 different names.
 
@@ -4232,6 +4234,9 @@ different names.
 -}
 
 -- based on schema 3.3.0 #/definitions/ErrorBarExtent
+--          (ConfidenceInterval to Iqr)
+-- and combined with the box/band "min-max" and IQR scaling values
+--
 
 data MarkErrorExtent
   = ConfidenceInterval
@@ -4242,19 +4247,13 @@ data MarkErrorExtent
     -- ^ Band extent as the standard deviation of a distribution.
   | Iqr
     -- ^ Band extent between the lower and upper quartiles of a distribution
-    --   (the inter-quartile range).
-    {- these don't appear to be in the Vega-Lite schema as of 3.3.0
-
-        well, you can use them with 'extent', just not with the settings
-        above
-
+    --   (the inter-quartile range, q1 to q3).
   | ExRange
     -- ^ Band extent between the minimum and maximum values in a distribution.
   | IqrScale Double
     -- ^ A scaling of the interquartile range to be used as whiskers in a
     --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
     --   ±1.5x the IQR from the mean.
-    -}
 
 -- This is a little different from the other calls since I wanted to
 -- make sure the scale factor was encoded as a number not a string.
@@ -4267,8 +4266,8 @@ markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
 markErrorExtentLSpec StdErr             = extent_ "stderr"
 markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
--- markErrorExtentLSpec ExRange            = extent_ "min-max"
--- markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
+markErrorExtentLSpec ExRange            = extent_ "min-max"
+markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
 -- | Identifies the type of symbol.
