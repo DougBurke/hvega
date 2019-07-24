@@ -427,7 +427,6 @@ module Graphics.Vega.VegaLite
        , Resolution(..)
 
          -- ** Faceted views
-         -- #facetview#
          --
          -- $facetview
 
@@ -733,8 +732,6 @@ import Data.Monoid ((<>))
 -- for further details. See also, <#facetview faceted views> for a more flexible (but
 -- more verbose) way of defining faceted views.
 
--- NOTE: the facetview link above doesn't seem to work. Argh.
-
 -- $detail
 -- Used for grouping data but without changing the visual appearance of a mark. When,
 -- for example, a field is encoded by color, all data items with the same value for
@@ -767,6 +764,7 @@ import Data.Monoid ((<>))
 -- See the [Vega-Lite resolve documentation](https://vega.github.io/vega-lite/docs/resolve.html).
 
 -- $facetview
+-- #facetview#
 -- These are small multiples each of which show subsets of the same dataset. The specification
 -- determines which field should be used to determine subsets along with their spatial
 -- arrangement (in rows or columns). For details see the
@@ -888,11 +886,17 @@ import Data.Monoid ((<>))
 -- constructors. It also removed or renamed the following symbols:
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
---   represented a Vega, rather than Vega-Lite, property. The 'PSort'
---   constructor is used to change the order of an axis.
+--   represented a Vega, rather than Vega-Lite, property. The @xSort@
+--   constructors are used to change the order of an item (e.g.
+--   'PSort', 'MSort').
 --
 -- * The @ScSequential@ constructor was removed from 'Scale' as
 --   'ScLinear' should be used.
+--
+-- * The 'SortProperty' type has had a number of changes: the @Op@,
+--   @ByField@, and @ByRepeat@ constructors have been removed, and
+--   'ByRepeatOp', 'ByFieldOp', and 'ByChannel' constructors have been
+--   added.
 --
 -- * The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
 --   removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
@@ -2739,6 +2743,9 @@ operationLabel VarianceP = "variancep"
 
 
 -- | Identifies how repeated or faceted views are arranged.
+--
+--   This is used with a number of constructors, such as 'ByRepeatOp',
+--   'HRepeat', 'MRepeat', and 'ORepeat'.
 
 -- based on schema 3.3.0 #/definitions/RepeatRef
 
@@ -3225,13 +3232,13 @@ data SortProperty
       -- 'position' 'Y'
       --   [ 'PName' "variety"
       --   , 'PmType' 'Ordinal'
-      --   , 'PSort' [ ByField "age" 'Mean', 'Descending' ]
+      --   , 'PSort' [ ByFieldOp "age" 'Mean', 'Descending' ]
       --   ]
       -- @
       --
       --   @since 0.4.0.0
     | ByChannel Channel
-      -- ^ Sorting is by another channel.
+      -- ^ Sort by another channel.
       --
       -- @
       -- 'position' 'Y'
@@ -7449,7 +7456,9 @@ for further details.
 
 @
 'toVegaLite'
-    [ facet [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
+    [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Ordinal' ]
+            , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Ordinal' ]
+            ]
     , 'specification' spec
     ]
 @
@@ -7468,12 +7477,13 @@ Facet a view to create small multiples in a flow layout. Used when the encoding
 of the visualization in small multiples is identical, but data for each is grouped
 by the given fields. When creating a faceted view in this way you also need to
 define a full specification to apply to each of those facets using 'asSpec'.
+
 Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
 
 @
 'toVegaLite'
-    [ facet [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
+    [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
     , 'specification' spec
     ]
 @
@@ -8143,7 +8153,8 @@ trans =
 -}
 binAs ::
   [BinProperty]
-  -- ^ An empty list means that the default binning is used.
+  -- ^ An empty list means that the default binning is used (that is, the
+  --   @bin@ field will be set to @true@ in the Vega-Lite specification).
   -> T.Text
   -- ^ The field to bin.
   -> T.Text
@@ -8200,7 +8211,7 @@ color markProps ols = mchan_ "color" markProps : ols
 {-|
 
 Encodes a new facet to be arranged in columns. See the
-[Vega-Lite column documentation](https://vega.github.io/vega-lite/docs/facet.html#row--column-encoding-channels).
+<https://vega.github.io/vega-lite/docs/facet.html#facet-row-and-column-encoding-channels Vega-Lite column documentation>.
 
 @
 enc =
