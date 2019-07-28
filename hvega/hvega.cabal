@@ -72,8 +72,8 @@ test-suite test
                      , bytestring == 0.10.*
                      , containers >= 0.5.8 && < 0.7
                      , filepath
-                     , tasty == 1.2.*
-                     , tasty-golden == 2.3.*
+                     , tasty
+                     , tasty-golden >= 2.2 && < 2.4
                      , text == 1.2.*
                      , hvega
 
