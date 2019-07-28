@@ -1011,9 +1011,18 @@ selCond_ getProps selName ifClause elseClause =
       hs = toProps elseClause
   in h : hs
 
+-- Special case the single-condition check, so that I don't get false
+-- positives when comparing against the Vega-Lite specification. There
+-- should be no actionable difference from this special case (i.e.
+-- the output being '[object]' and 'object' have the same meaning).
+--
 dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
 dataCond_ getProps tests elseClause =
-  let h = "condition" .= map testClause tests
+  let h = ("condition", condClause)
+      condClause = case conds of
+                     [cond] -> cond
+                     _ -> toJSON conds
+      conds = map testClause tests
       testClause (predicate, ifClause) =
         object (("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap getProps
