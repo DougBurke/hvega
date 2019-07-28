@@ -82,6 +82,10 @@ with the `PositionChannel` type).
 The `Divide` constructor of `BinProperty` now takes a list of
 Doubles rather than two.
 
+Two new type aliases have been added: `Color` and `Opacity`. These
+do not provide any new functionality, but may clash with symbols
+defined in other modules.
+
 ## 0.3.0.1
 
 The minimum base version has been bumped from 4.7 to 4.9, which

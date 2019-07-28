@@ -98,6 +98,7 @@ module Graphics.Vega.VegaLite
        , PropertySpec
        , LabelledSpec
        , BuildLabelledSpecs
+       , Color
        , Opacity
        , combineSpecs
        , toHtml
@@ -936,6 +937,10 @@ import Data.Monoid ((<>))
 -- * The 'Divide' constructor of 'BinProperty' now takes a list of
 --   Doubles rather than two.
 --
+-- * Two new type aliases have been added: 'Color' and 'Opacity'. These
+--   do not provide any new functionality, but may clash with symbols
+--   defined in other modules.
+--
 -- Note that the `VLProperty` type now exports its constructors, which
 -- may come in useful for those people who need to edit or augment the
 -- JSON Vega-Lite specification created by @hvega@.
@@ -1575,9 +1580,34 @@ type Data = (VLProperty, VLSpec)
 
 {-|
 
+Convenience type-annotation label to indicate a color value.
+There is __no__ attempt to validate that the user-supplied input
+is a valid color.
+
+Any supported HTML color specification can be used, such as:
+
+@
+\"#eee\"
+\"#734FD8\"
+\"crimson\"
+\"rgb(255,204,210)\"
+\"hsl(180, 50%, 50%)\"
+@
+
+@since 0.4.0.0
+-}
+
+type Color = T.Text
+
+
+{-|
+
 Convenience type-annotation label to indicate an opacity value, which
 lies in the range 0 to 1 inclusive. There is __no__ attempt to validate
 that the user-supplied value falls in this range.
+
+A value of 0 indicates fully transparent (see through), and 1 is
+fully opaque (does not show anything it is on top of).
 
 @since 0.4.0.0
 -}
@@ -2303,20 +2333,9 @@ data MarkProperty
       --   @since 0.4.0.0
     | MClip Bool
       -- ^ Should a mark be clipped to the enclosing group's dimensions.
-    | MColor T.Text
+    | MColor Color
       -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
       --   precedence and will override this if specified.
-      --
-      --   Any supported HTML color specification can be used, such as:
-      --
-      --   @
-      --   MColor \"#eee\"
-      --   MColor \"#734FD8\"
-      --   MColor \"crimson\"
-      --   MColor \"rgb(255,204,210)\"
-      --   MColor \"hsl(180, 50%, 50%)\"
-      --   @
-      --
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
@@ -3596,7 +3615,7 @@ data AxisProperty
       --   @since 0.4.0.0
     | AxDomain Bool
       -- ^ Should the axis domain (the baseline) be displayed?
-    | AxDomainColor T.Text
+    | AxDomainColor Color
       -- ^ The axis domain color.
       --
       --   @since 0.4.0.0
@@ -3635,7 +3654,7 @@ data AxisProperty
       -- @since 0.4.0.0
     | AxGrid Bool
       -- ^ Should an axis grid be displayed?
-    | AxGridColor T.Text
+    | AxGridColor Color
       -- ^ The color for the grid.
       --
       --   @since 0.4.0.0
@@ -3674,7 +3693,7 @@ data AxisProperty
       --   pixels by which the label bounding box can extend beyond the axis.
       --
       --   @since 0.4.0.0
-    | AxLabelColor T.Text
+    | AxLabelColor Color
       -- ^ The label color.
       --
       --   @since 0.4.0.0
@@ -3741,7 +3760,7 @@ data AxisProperty
       -- ^ The anchor position of the axis in pixels.
     | AxTicks Bool
       -- ^ Should tick marks be drawn on an axis?
-    | AxTickColor T.Text
+    | AxTickColor Color
       -- ^ The color of the ticks.
       --
       --   @since 0.4.0.0
@@ -3805,7 +3824,7 @@ data AxisProperty
       -- ^ The vertical alignment of the axis title.
       --
       --   @since 0.4.0.0
-    | AxTitleColor T.Text
+    | AxTitleColor Color
       -- ^ The color of the axis title.
       --
       --   @since 0.4.0.0
@@ -4529,7 +4548,7 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeCornerRadius Double
       -- ^ The corner radius for the full legend.
-    | LeFillColor T.Text
+    | LeFillColor Color
       -- ^ The background fill color for the full legend.
     | LeGradientDirection Orientation
       -- ^ The default direction for gradient legends.
@@ -4556,7 +4575,7 @@ data LegendConfig
       -- ^ The opacity of the color gradient.
       --
       --   @since 0.4.0.0
-    | LeGradientStrokeColor T.Text
+    | LeGradientStrokeColor Color
       -- ^ The color of the gradient stroke.
     | LeGradientStrokeWidth Double
       -- ^ The width of the gradient stroke, in pixels.
@@ -4580,7 +4599,7 @@ data LegendConfig
       -- ^ The alignment of the legend label.
     | LeLabelBaseline VAlign
       -- ^ The position of the baseline of the legend label.
-    | LeLabelColor T.Text
+    | LeLabelColor Color
       -- ^ The color of the legend label.
     | LeLabelFont T.Text
       -- ^ The font of the legend label.
@@ -4641,19 +4660,19 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeShortTimeLabels Bool
       -- ^ Should month and weekday names be abbreviated?
-    | LeStrokeColor T.Text
+    | LeStrokeColor Color
       -- ^ The border stoke color for the full legend.
     | LeStrokeDash [Double]
       -- ^ The border stroke dash pattern for the full legend (alternating
       --   stroke, space lengths in pixels).
     | LeStrokeWidth Double
       -- ^ The border stroke width for the full legend.
-    | LeSymbolBaseFillColor T.Text
+    | LeSymbolBaseFillColor Color
       -- ^ The fill color for legend symbols. This is only applied if
       --   there is no \"fill\" scale color encoding for the legend.
       --
       --   @since 0.4.0.0
-    | LeSymbolBaseStrokeColor T.Text
+    | LeSymbolBaseStrokeColor Color
       -- ^ The stroke color for legend symbols. This is only applied if
       --   there is no \"fill\" scale color encoding for the legend.
       --
@@ -4672,7 +4691,7 @@ data LegendConfig
       -- ^ The default direction for symbol legends.
       --
       --   @since 0.4.0.0
-    | LeSymbolFillColor T.Text
+    | LeSymbolFillColor Color
       -- ^ The color of the legend symbol.
       --
       --   @since 0.4.0.0
@@ -4686,7 +4705,7 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeSymbolSize Double
       -- ^ The size of the legend symbol, in pixels.
-    | LeSymbolStrokeColor T.Text
+    | LeSymbolStrokeColor Color
       -- ^ The stroke color for legend symbols.
       --
       --   @since 0.4.0.0
@@ -4710,7 +4729,7 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeTitleBaseline VAlign
       -- ^ The vertical text alignment for legend titles.
-    | LeTitleColor T.Text
+    | LeTitleColor Color
       -- ^ The color of the legend title.
     | LeTitleFont T.Text
       -- ^ The font of the legend title.
@@ -4963,7 +4982,7 @@ data LegendProperty
       -- ^ The direction of the legend.
       --
       --   @since 0.4.0.0
-    | LFillColor T.Text
+    | LFillColor Color
       -- ^ The background fill color for the full legend.
       --
       --   @since 0.4.0.0
@@ -4991,7 +5010,7 @@ data LegendProperty
       -- ^ The opacity of the color gradient.
       --
       --   @since 0.4.0.0
-    | LGradientStrokeColor T.Text
+    | LGradientStrokeColor Color
       -- ^ The color of the gradient stroke.
       --
       --   @since 0.4.0.0
@@ -5012,7 +5031,7 @@ data LegendProperty
       -- ^ @since 0.4.0.0
     | LLabelBaseline VAlign
       -- ^ @since 0.4.0.0
-    | LLabelColor T.Text
+    | LLabelColor Color
       -- ^ @since 0.4.0.0
     | LLabelFont T.Text
       -- ^ @since 0.4.0.0
@@ -5046,7 +5065,7 @@ data LegendProperty
       -- ^ The vertical padding, in pixels, between symbol legend entries.
       --
       --   @since 0.4.0.0
-    | LStrokeColor T.Text
+    | LStrokeColor Color
       -- ^ The border stroke color for the full legend.
       --
       --   @since 0.4.0.0
@@ -5059,7 +5078,7 @@ data LegendProperty
       -- ^ The pixel offset at which to start drawing the symbol dash array.
       --
       --   @since 0.4.0.0
-    | LSymbolFillColor T.Text
+    | LSymbolFillColor Color
       -- ^ The fill color of the legend symbol.
       --
       --   @since 0.4.0.0
@@ -5075,7 +5094,7 @@ data LegendProperty
       -- ^ The size of the legend symbol, in pixels.
       --
       --   @since 0.4.0.0
-    | LSymbolStrokeColor T.Text
+    | LSymbolStrokeColor Color
       -- ^ The edge color of the legend symbol.
       --
       --   @since 0.4.0.0
@@ -5103,7 +5122,7 @@ data LegendProperty
       -- ^ @since 0.4.0.0
     | LTitleBaseline VAlign
       -- ^ @since 0.4.0.0
-    | LTitleColor T.Text
+    | LTitleColor Color
       -- ^ @since 0.4.0.0
     | LTitleFont T.Text
       -- ^ @since 0.4.0.0
@@ -5979,7 +5998,7 @@ data TitleConfig
       -- ^ Default angle when orientating titles.
     | TBaseline VAlign
       -- ^ Default vertical alignment when placing titles.
-    | TColor T.Text
+    | TColor Color
       -- ^ Default color when showing titles.
     | TFont T.Text
       -- ^ Default font when showing titles.
@@ -6347,7 +6366,7 @@ data AxisConfig
       -- ^ The default axis band position.
     | Domain Bool
       -- ^ Should the axis domain be displayed?
-    | DomainColor T.Text
+    | DomainColor Color
       -- ^ The axis domain color.
     | DomainDash [Double]
       -- ^ The dash style of the domain (alternating stroke, space lengths
@@ -6366,7 +6385,7 @@ data AxisConfig
       -- ^ The width of the axis domain.
     | Grid Bool
       -- ^ Should an axis grid be displayed?
-    | GridColor T.Text
+    | GridColor Color
       -- ^ The color for the grid.
     | GridDash [Double]
       -- ^ The dash style of the grid (alternating stroke, space lengths
@@ -6397,7 +6416,7 @@ data AxisConfig
       --   pixels by which the label bounding box can extend beyond the axis.
       --
       --   @since 0.4.0.0
-    | LabelColor T.Text
+    | LabelColor Color
       -- ^ The label color.
     | LabelFlush (Maybe Double)   -- XXXXX as with labelbound
       -- ^ The label alignment at the start or end of the axis. If
@@ -6455,7 +6474,7 @@ data AxisConfig
       -- ^ Should an axis use short time labels (abbreviated month and week-day names)?
     | Ticks Bool
       -- ^ Should tick marks be drawn on an axis?
-    | TickColor T.Text
+    | TickColor Color
       -- ^ The color of the ticks.
     | TickDash [Double]
       -- ^ The dash style of the ticks (alternating stroke, space lengths
@@ -6497,7 +6516,7 @@ data AxisConfig
       -- ^ The angle of the axis title.
     | TitleBaseline VAlign
       -- ^ The vertical alignment of the axis title.
-    | TitleColor T.Text
+    | TitleColor Color
       -- ^ The color of the axis title.
     | TitleFont T.Text
       -- ^ The font for the axis title.
@@ -6973,7 +6992,7 @@ data HeaderProperty
       -- ^ The angle to draw the labels.
       --
       -- @since 0.4.0.0
-    | HLabelColor T.Text
+    | HLabelColor Color
       -- ^ The color of the labels.
       --
       -- @since 0.4.0.0
@@ -7013,7 +7032,7 @@ data HeaderProperty
       -- ^ The vertical alignment of the title.
       --
       -- @since 0.4.0.0
-    | HTitleColor T.Text
+    | HTitleColor Color
       -- ^ The color of the title.
       --
       -- @since 0.4.0.0
