@@ -2201,11 +2201,6 @@ data MarkChannel
       -- ^ Sort order.
       --
       --   @since 0.4.0.0
-    | MImpute [ImputeProperty]
-      -- ^ Set the imputation rules for a mark channel. See the
-      --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
-      --
-      --   @since 0.4.0.0
     | MTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a mark property channel.
     | MTitle T.Text
@@ -2269,7 +2264,6 @@ markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
 markChannelProperty (MSort ops) = [sort_ ops]
-markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   selCond_ markChannelProperty selName ifClause elseClause
 markChannelProperty (MDataCondition tests elseClause) =
@@ -7419,11 +7413,6 @@ data DetailChannel
     = DName T.Text
     | DmType Measurement
     | DBin [BinProperty]
-    | DImpute [ImputeProperty]
-    -- ^ Set the imputation rules for a detail channel. See the
-    -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
-    --
-    --   @since 0.4.0.0
     | DTimeUnit TimeUnit
     | DAggregate Operation
 
@@ -7432,7 +7421,6 @@ detailChannelProperty :: DetailChannel -> LabelledSpec
 detailChannelProperty (DName s) = field_ s
 detailChannelProperty (DmType t) = mtype_ t
 detailChannelProperty (DBin bps) = bin bps
-detailChannelProperty (DImpute ips) = impute_ ips
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
 detailChannelProperty (DAggregate op) = aggregate_ op
 
