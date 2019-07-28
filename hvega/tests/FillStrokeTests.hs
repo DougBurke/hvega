@@ -54,12 +54,12 @@ defChart :: VegaLite
 defChart = encChart (const [])
 
 fill1, fill2, fill3 :: VegaLite
-fill1 = encChart (fill [])
+fill1 = encChart (fill [])  -- this produces invalid output
 fill2 = encChart (fill [ MName "y", MmType Ordinal ])
 fill3 = encChart (fill [ MString "red" ])
 
 stroke1, stroke2, stroke3 :: VegaLite
-stroke1 = encChart (stroke [])
+stroke1 = encChart (stroke []) -- this produces invalid output
 stroke2 = encChart (stroke [ MName "y", MmType Ordinal ])
 stroke3 = encChart (stroke [ MString "red" ])
 
