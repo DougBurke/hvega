@@ -2217,10 +2217,17 @@ data LineMarker
     -- ^ No line marker.
   | LMMarker [MarkProperty]
     -- ^ The properties of a line marker overlain on an area mark.
+    --
+    --   Use an empty list to use a filled point with default properties.
 
 
+-- An empty object has the same meaning as true, so there is no real need to
+-- treat 'LMMarker []' specially, but I don't think it complicates things
+-- here.
+--
 lineMarkerSpec :: LineMarker -> VLSpec
 lineMarkerSpec LMNone = toJSON False
+lineMarkerSpec (LMMarker []) = toJSON True
 lineMarkerSpec (LMMarker mps) = object (map markProperty mps)
 
 
@@ -5151,11 +5158,17 @@ data PointMarker
     -- ^ No marker to be shown.
     | PMMarker [MarkProperty]
     -- ^ The properties of the marks to be shown at the points.
+    --
+    --   Use an empty list to use a filled point with default properties.
 
-
+-- An empty object has the same meaning as true, so there is no real need to
+-- treat 'PMMarker []' specially, but I don't think it complicates things
+-- here.
+--
 pointMarkerSpec :: PointMarker -> VLSpec
 pointMarkerSpec PMTransparent = "transparent"
 pointMarkerSpec PMNone = toJSON False
+pointMarkerSpec (PMMarker []) = toJSON True
 pointMarkerSpec (PMMarker mps) = object (map markProperty mps)
 
 
