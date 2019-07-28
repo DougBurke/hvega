@@ -2014,24 +2014,43 @@ data Mark
       --   for histograms, bar charts etc.
     | Boxplot
       -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
-      -- for showing summaries of statistical distributions.
+      --   for showing summaries of statistical distributions.
+      --
+      --   By default, just box and whiskers are shown, but ticks and outliers
+      --   can be specified explicitly. For example:
+      --
+      --   @
+      --   'mark' Boxplot
+      --       [ 'MTicks' [ 'MColor' \"black\", 'MSize' 8 ]
+      --       , 'MBox' [ 'MFill' \"grey\" ]
+      --       , 'MOutliers' [ 'MColor' \"firebrick\" ]
+      --   ]
+      --   @
       --
       --   @since 0.4.0.0
     | Circle
       -- ^ [Circle mark](https://vega.github.io/vega-lite/docs/circle.html)
-      --   for symbolising points.
+      --   for representing points.
     | ErrorBar
       -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
       --   for showing summaries of variation along a signal. By default
       --   no ticks are drawn. To add ticks with default properties use
-      --   @`MTicks` []@.
+      --   @`MTicks` []@, otherwise supply a list of configuration options:
+      --
+      --   @
+      --   'mark' ErrorBar [ 'MTicks' [ 'MColor' \"black\", 'MSize' 8 ] ]
+      --   @
       --
       --   @since 0.4.0.0
     | ErrorBand
       -- ^ [Errorband composite mark](https://vega.github.io/vega-lite/docs/errorband.html)
       --   for showing summaries of variation along a signal. By default
       --   no border is drawn. To add a border with default properties use
-      --   @'MBorders' [].
+      --   @'MBorders' []@, otherwise supply a list of configuration options:
+      --
+      --   @
+      --   'mark' ErrorBand [ 'MBorders' [ 'MColor' \"black\", 'MStrokeWidth' 0.5 ] ]
+      --   @
       --
       --   @since 0.4.0.0
     | Geoshape
@@ -2231,6 +2250,7 @@ data LineMarker
     -- ^ No line marker.
   | LMMarker [MarkProperty]
     -- ^ The properties of a line marker overlain on an area mark.
+    --   Used with 'MLine'.
     --
     --   Use an empty list to use a filled point with default properties.
 
@@ -2285,7 +2305,18 @@ data MarkProperty
       -- ^ Should a mark be clipped to the enclosing group's dimensions.
     | MColor T.Text
       -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
-      -- precedence and will override this if specified.
+      --   precedence and will override this if specified.
+      --
+      --   Any supported HTML color specification can be used, such as:
+      --
+      --   @
+      --   MColor \"#eee\"
+      --   MColor \"#734FD8\"
+      --   MColor \"crimson\"
+      --   MColor \"rgb(255,204,210)\"
+      --   MColor \"hsl(180, 50%, 50%)\"
+      --   @
+      --
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
@@ -2959,9 +2990,9 @@ data ScaleProperty
       --
       --   The default is @False@.
     | SScheme T.Text [Double]
-      -- ^  Color scheme used by a color scaling. The first parameter is the name of the
-      --    scheme (e.g. \"viridis\") and the second an optional specification, which can
-      --    contain 1, 2, or 3 numbers:
+      -- ^  Color scheme used by a color scaling. The first parameter is the
+      --    name of the scheme (e.g. \"viridis\") and the second an optional
+      --    specification, which can contain 1, 2, or 3 numbers:
       --
       --      - the number of colors to use (list of one number);
       --      - the extent of the color range to use (list of two numbers between 0 and 1);
@@ -3344,7 +3375,21 @@ data PositionChannel
     | PmType Measurement
       -- ^ Level of measurement when encoding with a position channel.
     | PBin [BinProperty]
-      -- ^ Discretize numeric values into bins when encoding with a position channel.
+      -- ^ Discretize numeric values into bins when encoding with a
+      --   position channel.
+      --
+      --   For example, to encode a frequency histogram with bins every 5 units:
+      --
+      --   @
+      --   enc = 'encoding'
+      --           . 'position' 'X' [ 'PName' \"x\"
+      --                        , 'PmType' 'Ordinal'
+      --                        , 'PBin' ['Step' 5]
+      --                        ]
+      --           . 'position' 'Y' [ 'PmType' 'Quantitative'
+      --                        , 'PAggregate' 'Count'
+      --                        ]
+      --   @
     | PBinned
       -- ^ Indicate that the data encoded with position is already binned.
       --
@@ -3360,11 +3405,33 @@ data PositionChannel
       --
       -- @since 0.4.0.0
     | PAggregate Operation
-      -- ^ Compute some aggregate summary statistics for a field to be encoded with a
-      --   position channel.
+      -- ^ Compute some aggregate summary statistics for a field to be encoded
+      --   with a position channel.
+      --
+      --   @
+      --   enc = 'encoding'
+      --           . 'position' 'X' [ 'PName' \"role\", 'PmType' 'Ordinal' ]
+      --           . 'position' 'Y' [ 'PName' \"salary\"
+      --                        , 'PmType' 'Quantitative'
+      --                        , 'PAggregate' 'Mean'
+      --                        ]
+      --   @
     | PScale [ScaleProperty]
       -- ^ Scaling applied to a field when encoding with a position channel.
-      --   The scale will transform a field's value into a position along one axis.
+      --   The scale will transform a field's value into a position along
+      --   one axis.
+      --
+      --   For example, the following will scale the bars positioned along
+      --   a horizontal axis to have an inner spacing of 50% (0.5) of the
+      --   total space allocated to each bar:
+      --
+      --   @
+      --   enc = 'encoding'
+      --           . 'position' 'X' [ 'PName' \"ageGroup\"
+      --                        , 'PmType' 'Nominal'
+      --                        , 'PScale' ['SPaddingInner' 0.5]
+      --                        ]
+      --   @
     | PAxis [AxisProperty]
       -- ^ Axis properties used when encoding with a position channel. For no axis,
       --   provide an empty list.
@@ -3373,6 +3440,20 @@ data PositionChannel
     | PStack StackOffset
       -- ^ Type of stacking offset for the field when encoding with a
       --   position channel.
+      --
+      --   For example, stacking areas away from a centreline can be used
+      --   to create a
+      --   [streamgraph](https://vega.github.io/vega-lite/examples/stacked_area_stream.html):
+      --
+      --   @
+      --   enc = 'encoding'
+      --           . 'position' 'X' ['PName' \"week\", 'PmType' 'Ordinal']
+      --           . 'position' 'Y' [ 'PName' \"takings\"
+      --                        , 'PmType' 'Quantitative'
+      --                        , 'PStack' 'StCenter'
+      --                        ]
+      --           . 'color' ['MName' \"shop\", 'MmType' 'Nominal']
+      --   @
       --
       --   Changed from @StackProperty@ in version @0.4.0.0@.
     | PImpute [ImputeProperty]
@@ -5174,6 +5255,7 @@ data PointMarker
     -- ^ No marker to be shown.
     | PMMarker [MarkProperty]
     -- ^ The properties of the marks to be shown at the points.
+    --   Used with 'MPoint'.
     --
     --   Use an empty list to use a filled point with default properties.
 
@@ -7344,6 +7426,10 @@ Configurations are applied to all relevant items in the specification. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation> for
 more details.
 
+The following example would make axis lines (domain) 2 pixels wide,
+remove the border rectangle and require interactive selection of items
+to use a double-click:
+
 @
 config =
     configure
@@ -7533,7 +7619,9 @@ facetFlow fFields = (VLFacet, object (map facetChannelProperty fFields))
 {-|
 
 Overrides the default height of the visualization. If not specified the height
-will be calculated based on the content of the visualization.
+will be calculated based on the content of the visualization. See
+'autosize' for customization of the content sizing relative to this
+setting.
 
 @
 'toVegaLite'
@@ -7909,7 +7997,9 @@ vConcat specs = (VLVConcat, toJSON specs)
 {-|
 
 Override the default width of the visualization. If not specified the width
-will be calculated based on the content of the visualization.
+will be calculated based on the content of the visualization. See
+'autosize' for customization of the content sizing relative to this
+setting.
 
 @
 'toVegaLite'
@@ -8203,7 +8293,8 @@ binAs bProps field label ols =
 
 {-|
 
-Creates a new data field based on calculations from existing fields.
+Creates a new data field based on calculations from existing fields and values.
+
 See the <https://vega.github.io/vega-lite/docs/calculate.html Vega-Lite documentation>
 for further details.
 
@@ -8213,7 +8304,8 @@ trans = 'transform' . calculateAs "datum.sex == 2 ? \'F\' : \'M\'" "gender"
 -}
 calculateAs ::
   T.Text
-  -- ^ The calculation to perform.
+  -- ^ The calculation to perform, supporting the
+  --   [Vega-Lite expression syntax](https://vega.github.io/vega/docs/expressions/).
   -> T.Text
   -- ^ The field to assign the new values.
   -> BuildLabelledSpecs
@@ -8357,9 +8449,7 @@ fillOpacity markProps ols = mchan_ "fillOpacity" markProps : ols
 {-|
 
 Adds the given filter operation a list of transformations that may be applied
-to a channel or field. The first parameter is the filter operation and the second,
-often implicit, parameter is the list of other filter operations to which this
-should be added in sequence.
+to a channel or field.
 
 @
 trans =
@@ -8375,6 +8465,11 @@ trans =
     transform
         . filter ('FCompose' ('And' ('Expr' "datum.Weight_in_lbs > 3000") ('Selection' "brush")))
 @
+
+The [Vega-Lite expression documentation](https://vega.github.io/vega/docs/expressions/)
+describes the supported format (e.g. the requirement to precede column names
+with @"datum."@).
+
 -}
 filter :: Filter -> BuildLabelledSpecs
 filter f ols =
@@ -8454,6 +8549,24 @@ containing the corresponding data values. This performs the same function as the
 operations in the R tidyverse.
 
 See also 'foldAs'.
+
+@
+dvals =
+    'dataFromColumns' []
+        . 'dataColumn' \"city\" ('Strings' [ \"Bristol\", \"Sheffield\", \"Glasgow\" ])
+        . 'dataColumn' \"temp2017\" ('Numbers' [ 12, 11, 7 ])
+        . 'dataColumn' \"temp2018\" ('Numbers' [ 14, 13, 10 ])
+
+trans =
+    'transform'
+        . 'fold' [ \"temp2017\", \"temp2018\" ]
+
+enc =
+    'encoding'
+        . 'position' 'X' [ 'PName' \"key\", 'PmType' 'Nominal' ]
+        . 'position' 'Y' [ 'PName' \"city\", 'PmType' 'Nominal' ]
+        . 'size' [ 'MName' \"value\", 'MmType' 'Quantitative' ]
+@
 
 @since 0.4.0.0
 -}
