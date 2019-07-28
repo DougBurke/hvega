@@ -1504,8 +1504,7 @@ data Format
       -- ^ A topoJSON feature format containing an object with the given name. For example:
       --
       -- @
-      -- 'dataFromUrl' \"https:\/\/gicentre.github.io\/data\/geoTutorials\/londonBoroughs.json\"
-      --    [ TopojsonFeature \"boroughs\" ]
+      -- 'dataFromUrl' \"londonBoroughs.json\" ['TopojsonFeature' \"boroughs\"]
       -- @
     | TopojsonMesh T.Text
       -- ^ A topoJSON mesh format containing an object with the given name. Unlike
@@ -1760,8 +1759,12 @@ dataName s odata@(_, dataSpec) =
 {-|
 
 Generate a sequence of numbers as a data source. The resulting
-sequence will have the name @data@. To give it an alternative name use
+sequence will have the name @\"data\"@. To give it an alternative name use
 'dataSequenceAs'.
+
+@
+myData = dataSequence 0 6.28 0.1
+@
 
 @since 0.4.0.0
 
@@ -1785,6 +1788,10 @@ dataSequence start stop step =
 
 Generate a sequence of numbers as a named data source. This extends
 'dataSequence' by allowing you to name the data source.
+
+@
+myTheta = dataSequenceAs 0 6.28 0.1 \"theta\"
+@
 
 @since 0.4.0.0
 
@@ -2157,7 +2164,13 @@ for the second parameter.
 
 @
 mark 'Circle' []
-mark 'Line' [ 'MInterpolate' 'StepAfter' ]
+mark 'Line' ['MInterpolate' 'StepAfter']
+@
+
+@
+let dvals = 'dataFromUrl' \"city.json\" ['TopojsonFeature' \"boroughs\"] []
+    markOpts = mark 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
+in 'toVegaLite' [dvals, markOpts]
 @
 -}
 mark :: Mark -> [MarkProperty] -> PropertySpec
@@ -5678,7 +5691,11 @@ data SelectionProperty
     = Empty
       -- ^ Make a selection empty by default when nothing selected.
     | BindScales
-      -- ^ Enable two-way binding between a selection and the scales used in the same view.
+      -- ^ Enable two-way binding between a selection and the scales used
+      --   in the same view. This is commonly used for zooming and panning
+      --   by binding selection to position scaling:
+      --
+      --   @sel = 'selection' . 'select' \"mySelection\" 'Interval' ['BindScales']@
     | On T.Text
       -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
       --   that triggers a selection, or the empty string (which sets the property to @false@).
@@ -5691,7 +5708,7 @@ data SelectionProperty
       -- 'selection'
       --     . 'select' \"myZoomPan\"
       --         'Interval'
-      --         [ 'BindScales', Clear \"click[event.shiftKey]\" ]
+      --         ['BindScales', 'Clear' \"click[event.shiftKey]\"]
       -- @
       --
       --   To remove the default clearing behaviour of a selection, provide an empty string
@@ -5708,6 +5725,11 @@ data SelectionProperty
       -- ^ Field names for projecting a selection.
     | Encodings [Channel]
       -- ^ Encoding channels that form a named selection.
+      --
+      --   For example, to __project__ a selection across all items that
+      --   share the same value in the color channel:
+      --
+      --   @sel = 'selection' . 'select' \"mySelection\" 'Multi' ['Encodings' ['ChColor']]@
     | SInit [(T.Text, DataValue)]
       -- ^ Initialise one or more selections with values from bound fields. For example,
       --
@@ -5715,14 +5737,14 @@ data SelectionProperty
       -- 'selection'
       --     . 'select' \"CylYr\"
       --         'Single'
-      --         [ 'Fields' [ \"Cylinders\", \"Year\" ]
-      --         , SInit
-      --             [ ( \"Cylinders\", 'Number' 4 )
-      --             , ( \"Year\", Number 1977 )
+      --         [ 'Fields' [\"Cylinders\", \"Year\"]
+      --         , 'SInit'
+      --             [ (\"Cylinders\", 'Number' 4)
+      --             , (\"Year\", 'Number' 1977)
       --             ]
       --         , 'Bind'
-      --             [ 'IRange' \"Cylinders\" [ 'InName' \"Cylinders \", 'InMin' 3, 'InMax' 8, 'InStep' 1 ]
-      --             , IRange \"Year\" [ InName \"Year \", InMin 1969, InMax 1981, InStep 1 ]
+      --             [ 'IRange' \"Cylinders\" ['InName' \"Cylinders \", 'InMin' 3, 'InMax' 8, 'InStep' 1]
+      --             , 'IRange' \"Year\" ['InName' \"Year \", 'InMin' 1969, 'InMax' 1981, 'InStep' 1]
       --             ]
       --         ]
       -- @
@@ -5735,6 +5757,27 @@ data SelectionProperty
       -- ^ Appearance of an interval selection mark (dragged rectangle).
     | Bind [Binding]
       -- ^ Binding to some input elements as part of a named selection.
+      --
+      --   The followig example allows a selection to be based on a
+      --   drop-down list of options:
+      --
+      --   @
+      --   sel = 'selection'
+      --           . 'select' \"mySelection\"
+      --               'Single'
+      --               ['Fields' [\"crimeType\"]
+      --               , 'Bind' ['ISelect' \"crimeType\"
+      --                         ['InOptions'
+      --                            [ \"Anti-social behaviour\"
+      --                            , \"Criminal damage and arson\"
+      --                            , \"Drugs\"
+      --                            , \"Robbery\"
+      --                            , \"Vehicle crime\"
+      --                            ]
+      --                         ]
+      --                      ]
+      --               ]
+      --   @
     | Nearest Bool
       -- ^ Whether or not a selection should capture nearest marks to a pointer
       --   rather than an exact position match.
@@ -6724,8 +6767,13 @@ data Filter
     | FCompose BooleanOp
       -- ^ Build up a filtering predicate through logical composition ('And', 'Or' etc.).
     | FSelection T.Text
-      -- ^ Filter a data stream so that only data in a given field that are within the
-      --   given interactive selection are used.
+      -- ^ Filter a data stream so that only data in a given field that are
+      --   within the given interactive selection are used.
+      --
+      --   @
+      --   sel = 'selection' . 'select' \"myBrush\" 'Interval' ['Encodings' ['ChX']]
+      --   trans = 'transform' . 'filter' ('FSelection' \"myBrush\")
+      --   @
     | FOneOf T.Text DataValues
       -- ^ Filter a data stream so that only data in a given field contained in the given
       --   list of values are used.
@@ -7212,8 +7260,8 @@ categoricalDomainMap scaleDomainPairs =
 {-|
 
 Create a list of fields to use in set of repeated small multiples. The list of
-fields named here can be referenced in an encoding with @`PRepeat` Column@
-or @`PRepeat` Row@.
+fields named here can be referenced in an encoding with @'PRepeat' 'Column'@
+or @'PRepeat' 'Row'@.
 
 -}
 data RepeatFields
@@ -7576,6 +7624,27 @@ bounds bnds = (VLBounds, boundsSpec bnds)
 The list of specifications to be juxtaposed horizontally in a flow
 layout of views.
 
+The number of columns in the flow layout can be set with 'columns'
+and, if not specified, will default to a single row of unlimited columns.
+
+@
+let dvals = 'dataSequenceAs' 0 6.28 0.1 \"x\"
+    trans = 'transform'
+              . 'calculateAs' \"sin(datum.x)\" \"sinX\"
+              . 'calculateAs' \"cos(datum.x)\" \"cosX\"
+    enc = 'encoding'
+            . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
+    encCos = enc . 'position' 'Y' ['PName' \"cosX\", 'PmType' 'Quantitative']
+    encSin = enc . 'position' 'Y' ['PName' \"sinX\", 'PmType' 'Quantitative']
+
+in toVegaLite [ dvals
+              , trans []
+              , 'vlConcat' [ 'asSpec' [encCos [], 'mark' 'Line' []]
+                         , 'asSpec' [encSin [], 'mark' 'Line' []]
+                         ]
+              ]
+@
+
 This is named @concat@ in Elm VegaLite but has been renamed here
 to avoid conflicting with the Prelude.
 
@@ -7680,11 +7749,28 @@ hConcat specs = (VLHConcat, toJSON specs)
 Assigns a list of specifications to superposed layers in a visualization.
 
 @
-'toVegaLite'
-    [ 'dataFromUrl' "data/driving.json" []
-    , layer [ spec1, spec2 ]
-    ]
+'toVegaLite' ['dataFromUrl' "data/driving.json" [], layer [spec1, spec2]]
 @
+
+A complete example showing @layer@ in use:
+
+@
+let dvals = 'dataFromColumns' []
+              . 'dataColumn' \"x\" ('Numbers' [1, 2, 3, 4, 5])
+              . 'dataColumn' \"a\" ('Numbers' [28, 91, 43, 55, 81])
+    enc = 'encoding'
+             . 'position' 'X' ['PName' \"x\", 'PmType' 'Ordinal']
+             . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
+             . 'text' ['TName' \"a\", 'TmType' 'Nominal']
+
+    in 'toVegaLite' [ dvals []
+                  , enc []
+                  , 'layer' [ 'asSpec' ['mark' 'Bar' []]
+                          , 'asSpec' ['mark' 'Text' ['MdY' (-8)]]
+                          ]
+                  ]
+@
+
 -}
 layer :: [VLSpec] -> PropertySpec
 layer specs = (VLLayer, toJSON specs)
@@ -7730,11 +7816,15 @@ padding pad = (VLPadding, paddingSpec pad)
 
 {-|
 
-Define the fields that will be used to compose rows and columns of a set of
-small multiples. This is used where the encoding of the visualization in small
-multiples is largely identical, but the data field used in each might vary. When
-a list of fields is identified with @repeat@ you also need to define a full specification
-to apply to each of those fields using 'asSpec'.
+Define the fields that will be used to compose rows and columns of a
+set of small multiples. This is used where the encoding of the
+visualization in small multiples is largely identical, but the data
+field used in each might vary. When a list of fields is identified
+with @repeat@ you also need to define a full specification to apply to
+each of those fields using 'asSpec'.
+
+Unlike __faceting__, which creates multiple charts based on different values of a
+single field, __repeating__ uses a different field for each chart.
 
 See the
 <https://vega.github.io/vega-lite/docs/repeat.html Vega-Lite documentation>
@@ -7742,7 +7832,7 @@ for further details.
 
 @
 'toVegaLite'
-    [ repeat [ 'ColumnFields' [ \"Cat\", \"Dog\", \"Fish\" ] ]
+    [ 'repeat' ['ColumnFields' [\"Cat\", \"Dog\", \"Fish\"]]
     , 'specification' ('asSpec' spec)
     ]
 @
@@ -7783,24 +7873,45 @@ repeatFlow fields = (VLRepeat, toJSON fields)
 
 {-|
 
-Determine whether scales, axes or legends in composite views should share channel
-encodings. This allows, for example, two different color encodings to be created
-in a layered view, which otherwise by default would share color channels between
-layers. Each resolution rule should be in a tuple pairing the channel to which it
-applies and the rule type.
+Determine whether scales, axes or legends in composite views should
+share channel encodings. This allows, for example, two different color
+encodings to be created in a layered view, which otherwise by default
+would share color channels between layers. Each resolution rule should
+be in a tuple pairing the channel to which it applies and the rule
+type.
 
 @
-let res = resolve
-            . 'resolution' ('RLegend' [ ( 'ChColor', 'Independent' ) ])
+let res = 'resolve'
+            . 'resolution' ('RLegend' [('ChColor', 'Independent')])
+
 in 'toVegaLite'
-    [ 'dataFromUrl' "data/movies.json" []
-    , 'vConcat' [ heatSpec, barSpec ]
+    [ 'dataFromUrl' \"data/movies.json\" []
+    , 'vConcat' [heatSpec, barSpec]
     , res []
     ]
 @
 
 For more information see the
 <https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation>.
+
+@
+let dvals = 'dataFromColumns' []
+              . 'dataColumn' "x" ('Numbers' [1, 2, 3, 4, 5])
+              . 'dataColumn' "a" ('Numbers' [28, 91, 43, 55, 81])
+              . 'dataColumn' "b" ('Numbers' [17, 22, 28, 30, 40])
+    encBar = 'encoding'
+               . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
+               . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
+    specBar = 'asSpec' ['mark' 'Bar' [], encBar []]
+    encLine = 'encoding'
+                . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
+                . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
+    specLine = 'asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
+    res = 'resolve'
+            . 'resolution' ('RScale' [('ChY', 'Independent')])
+
+in 'toVegaLite' [dvals [], res [], 'layer' [specBar, specLine]]
+@
 
 -}
 resolve :: [LabelledSpec] -> PropertySpec
@@ -7815,10 +7926,10 @@ see the
 
 @
 sel =
-   selection
-       . 'select' \"view\" 'Interval' [ 'BindScales' ] []
-       . select \"myBrush\" 'Interval' []
-       . select \"myPaintbrush\" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
+   'selection'
+       . 'select' \"view\" 'Interval' ['BindScales'] []
+       . 'select' \"myBrush\" 'Interval' []
+       . 'select' \"myPaintbrush\" 'Multi' ['On' \"mouseover\", 'Nearest' True]
 @
 
 -}
@@ -8226,7 +8337,7 @@ trans =
 @
 
 For details, see the
-[Vega-Lite joinaggregate documentation](https://vega.github.io/vega-lite/docs/joinaggregate.html)
+[Vega-Lite join aggregate documentation](https://vega.github.io/vega-lite/docs/joinaggregate.html)
 
 See also 'aggregate'.
 
@@ -8276,6 +8387,15 @@ window wss wProps ols =
 {-|
 
 Randomly sample rows from a data source up to a given maximum.
+
+For example, the following randomly samples 50 values from a sine curve:
+
+@
+ dvals = 'dataSequenceAs' 0 13 0.001 \"x\"
+ trans = 'transform'
+           . 'calculateAs' \"sin(datum.x)\" \"y\"
+           . 'sample' 50
+@
 
 @since 0.4.0.0
 
@@ -8363,12 +8483,18 @@ color markProps ols = mchan_ "color" markProps : ols
 Encodes a new facet to be arranged in columns. See the
 <https://vega.github.io/vega-lite/docs/facet.html#facet-row-and-column-encoding-channels Vega-Lite column documentation>.
 
+Note that when faceting, dimensions specified with 'width' and 'height'
+refer to the individual faceted plots, not the overall visualization.
+
 @
-enc =
-    'encoding'
-        . 'position' 'X' [ 'PName' "people", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName "gender", PmType 'Nominal' ]
-        . column [ 'FName' "age", 'FmType' 'Ordinal' ]
+let dvals = 'dataFromUrl' \"crimeData.csv\"
+    enc = 'encoding'
+            . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
+            . 'position' 'Y' ['PName' \"reportedCrimes\", 'PmType' 'Quantitative'
+                         , 'PAggregate' 'Sum']
+            . 'column' ['FName' \"crimeType\", 'FmType' 'Nominal']
+
+    in 'toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
 @
 -}
 column ::
@@ -8420,17 +8546,20 @@ configuration cfg ols = configProperty cfg : ols
 {-|
 
 Encode a \"level of detail\" channel. This provides a way of grouping by a field
-but unlike, say 'color', all groups have the same visual properties. The first
-parameter is a list of the field characteristics to be grouped. The second parameter
-is a list of any previous channels to which this detail channel should be added. See the
+but unlike, say 'color', all groups have the same visual properties.
+
+See the
 <https://vega.github.io/vega-lite/docs/encoding.html#detail Vega-Lite documentation>
 for details.
 
 @
-detail [ 'DName' \"Species\", 'DmType' 'Nominal' ] []
+detail ['DName' \"Species\", 'DmType' 'Nominal'] []
 @
 -}
-detail :: [DetailChannel] -> BuildLabelledSpecs
+detail ::
+  [DetailChannel]
+  -- ^ The field to group.
+  -> BuildLabelledSpecs
 detail detailProps ols =
     ("detail" .= object (map detailChannelProperty detailProps)) : ols
 
@@ -8646,13 +8775,14 @@ hyperlink hyperProps ols =
 
 {-|
 
-Perform a lookup of named fields between two data sources. This allows you to
-find values in one data source based on the values in another (like a relational
-join).
+Perform a lookup of named fields between two data sources. This allows
+you to find values in one data source based on the values in another
+(like a relational join).
 
-Unlike 'lookupAs', this function will only return the specific fields named in the
-fourth parameter. If you wish to return the entire set of fields in the secondary
-data source as a single object, use 'lookupAs'.
+Unlike 'lookupAs', this function will only return the specific fields
+named in the fourth parameter. If you wish to return the entire set of
+fields in the secondary data source as a single object, use
+'lookupAs'.
 
 See the <https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
 for further details.
@@ -8662,9 +8792,8 @@ The following would return the values in the @age@ and @height@ fields from
 file matches the value of @person@ in the primary data source.
 
 @
-trans =
-    'transform'
-        . lookup "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" [ "age", "height" ]
+trans = 'transform'
+          . 'lookup' \"person\" ('dataFromUrl' \"data/lookup_people.csv\" []) \"name\" [\"age\", \"height\"]
 @
 -}
 lookup ::
@@ -8951,13 +9080,26 @@ resolution res ols = resolveProperty res : ols
 
 Encode a new facet to be arranged in rows.
 
+See the
+<https://vega.github.io/vega-lite/docs/facet.html#facet-row-and-column-encoding-channels Vega-Lite row documentation>.
+
+Note that when faceting, dimensions specified with 'width' and 'height'
+refer to the individual faceted plots, not the whole visualization.
+
 @
-enc =
-    'encoding'
-        . 'position' 'X' [ 'PName' "people", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName "gender", PmType 'Nominal' ]
-        . row [ 'FName' "age", 'FmType' 'Ordinal' ]
+let dvals = 'dataFromUrl' \"crimeData.csv\"
+    enc = 'encoding'
+            . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
+            . 'position' 'Y' ['PName' \"reportedCrimes\"
+                         , 'PmType' 'Quantitative'
+                         , 'PAggregate' 'Sum'
+                         , 'PAxis' ['AxNoTitle']
+                         ]
+            . 'row' ['FName' \"crimeType\", 'FmType' 'Nominal']
+
+in 'toVegaLite' ['height' 80, dvals [], 'mark' 'Bar' [], enc []]
 @
+
 -}
 row ::
   [FacetChannel]
@@ -9147,6 +9289,9 @@ enc = 'encoding'
         . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
         . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
+
+To encode multiple tooltip values with a mark, use 'tooltips'.
+
 -}
 tooltip ::
   [TextChannel]
@@ -9157,9 +9302,7 @@ tooltip tDefs ols =
 
 {-|
 
-Encode a tooltip channel with multiple tooltips.
-The first parameter is a list of the multiple tooltips, each of which is a list of text
-channel properties that define the channel.
+Encode a tooltip channel using multiple data fields.
 
 @since 0.3.0.0
 
