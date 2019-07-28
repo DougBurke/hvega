@@ -2877,6 +2877,9 @@ transformation. To customise all scales use 'configure' and supply relevant
 'ScaleConfig' values. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html Vega-Lite documentation>.
 
+There are two utility routines for constructing a list of scale
+properties: 'categoricalDomainMap' and 'domainRangeMap'.
+
 The @SReverse@ constructor was removed in version @0.4.0.0@, as it
 represented a Vega, rather than Vega-Lite, property. The order of
 a scale can be changed with the 'PSort' constructor.
@@ -3453,6 +3456,8 @@ usermetadata o = (VLUserMetadata, A.Object o)
 {-|
 
 Provide an optional title to be displayed in the visualization.
+
+There is currently no way to set the title options using @hvega@.
 
 @
 'toVegaLite'
