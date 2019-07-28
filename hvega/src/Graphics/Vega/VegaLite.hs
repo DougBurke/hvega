@@ -1256,11 +1256,15 @@ opAs ::
   -> T.Text
   -- ^ The name given to the transformed data.
   -> VLSpec
+
+-- The Count case is special-cased purely to make it easier to compare
+-- the hvega output against the Veg-Lite examples. There should be no
+-- semantic difference here.
+--
+opAs Count _ label =
+  object [ op_ Count, "as" .= label ]
 opAs op field label =
-  object [ op_ op
-         , field_ field
-         , "as" .= label
-         ]
+  object [ op_ op, field_ field, "as" .= label ]
 
 
 {-|
@@ -2456,6 +2460,7 @@ markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
 markProperty (MMedian mps) = mprops_ "median" mps
 markProperty (MOpacity x) = "opacity" .= x
 markProperty (MFillOpacity x) = "fillOpacity" .= x
+markProperty (MStyle [style]) = "style" .= style  -- special case singleton
 markProperty (MStyle styles) = "style" .= styles
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
@@ -5957,6 +5962,7 @@ data ViewBackground
 
 
 viewBackgroundSpec :: ViewBackground -> LabelledSpec
+viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
 viewBackgroundSpec (VBStyle styles) = "style" .= styles
 viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
 viewBackgroundSpec (VBFill (Just s)) = "fill" .= s

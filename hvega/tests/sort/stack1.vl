@@ -8,8 +8,7 @@
             "aggregate": [
                 {
                     "op": "count",
-                    "as": "count_*",
-                    "field": ""
+                    "as": "count_*"
                 }
             ]
         },
