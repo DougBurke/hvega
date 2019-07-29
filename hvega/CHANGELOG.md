@@ -122,6 +122,10 @@ type was added for use with `TFrame`.
 The `title` function now takes a second argument, a list of `TitleConfig`
 values for configuring the appearance of the title.
 
+The `ArgMax` and `ArgMin` constructors of `Operation` now take an
+optional field name, to allow them to be used as part of an encoding
+aggregation (e.g. with `PAggregate`).
+
 Three new type aliases have been added: `Color`, `Opacity`, and
 `ZIndex`. These do not provide any new functionality, but may clash
 with symbols defined in other modules.

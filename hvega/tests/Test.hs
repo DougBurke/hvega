@@ -63,6 +63,9 @@ import qualified TrailTests as TrT
 import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
+-- extend from the "tests" to gallery plots
+import qualified GalleryAdvanced as GA
+
 -- The "golden" output is "tests/<label>/<name>.vl"
 --
 --
@@ -71,6 +74,12 @@ toTest = pure . encodePretty . fromVL
 
 toFP :: String -> String -> FilePath
 toFP label tname = "tests" </> label </> (tname <.> ".vl")
+
+-- types don't nicely match up with toFP here, but FilePath and String
+-- are aliases so it doesn't cause a problem yet.
+--
+gallery :: String -> String
+gallery = ("gallery" </>)
 
 toTests :: String -> String -> [(String, VegaLite)] -> TestTree
 toTests lbl dname tests = testGroup lbl
@@ -101,6 +110,7 @@ goldenTests = testGroup "tests"
   , toTests "Trail" "trail" TrT.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
+  , toTests "GalleryAdvanced" (gallery "advanced") GA.testSpecs
   ]
 
 main :: IO ()

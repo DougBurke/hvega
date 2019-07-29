@@ -1,0 +1,233 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "sum",
+                    "as": "sum",
+                    "field": "amount"
+                }
+            ]
+        },
+        {
+            "window": [
+                {
+                    "op": "lead",
+                    "as": "lead",
+                    "field": "label"
+                }
+            ]
+        },
+        {
+            "as": "lead",
+            "calculate": "datum.lead === null ? datum.label : datum.lead"
+        },
+        {
+            "as": "previous_sum",
+            "calculate": "datum.label === 'End' ? 0 : datum.sum - datum.amount"
+        },
+        {
+            "as": "amount",
+            "calculate": "datum.label === 'End' ? datum.sum : datum.amount"
+        },
+        {
+            "as": "text_amount",
+            "calculate": "(datum.label !== 'Begin' && datum.label !== 'End' && datum.amount > 0 ? '+' : '') + datum.amount"
+        },
+        {
+            "as": "center",
+            "calculate": "(datum.sum + datum.previous_sum) / 2"
+        },
+        {
+            "as": "sum_dec",
+            "calculate": "datum.sum < datum.previous_sum ? datum.sum : ''"
+        },
+        {
+            "as": "sum_inc",
+            "calculate": "datum.sum > datum.previous_sum ? datum.sum : ''"
+        }
+    ],
+    "height": 450,
+    "data": {
+        "values": [
+            {
+                "amount": 4000,
+                "label": "Begin"
+            },
+            {
+                "amount": 1707,
+                "label": "Jan"
+            },
+            {
+                "amount": -1425,
+                "label": "Feb"
+            },
+            {
+                "amount": -1030,
+                "label": "Mar"
+            },
+            {
+                "amount": 1812,
+                "label": "Apr"
+            },
+            {
+                "amount": -1067,
+                "label": "May"
+            },
+            {
+                "amount": -1481,
+                "label": "Jun"
+            },
+            {
+                "amount": 1228,
+                "label": "Jul"
+            },
+            {
+                "amount": 1176,
+                "label": "Aug"
+            },
+            {
+                "amount": 1146,
+                "label": "Sep"
+            },
+            {
+                "amount": 1205,
+                "label": "Oct"
+            },
+            {
+                "amount": -1388,
+                "label": "Nov"
+            },
+            {
+                "amount": 1492,
+                "label": "Dec"
+            },
+            {
+                "amount": 0,
+                "label": "End"
+            }
+        ]
+    },
+    "width": 800,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": {
+                "size": 45,
+                "type": "bar"
+            },
+            "encoding": {
+                "color": {
+                    "value": "#93c4aa",
+                    "condition": [
+                        {
+                            "value": "#f7e0b6",
+                            "test": "datum.label === 'Begin' || datum.label === 'End'"
+                        },
+                        {
+                            "value": "#f78a64",
+                            "test": "datum.sum < datum.previous_sum"
+                        }
+                    ]
+                },
+                "y2": {
+                    "field": "sum"
+                },
+                "y": {
+                    "field": "previous_sum",
+                    "title": "Amount",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "x2Offset": 22.5,
+                "strokeWidth": 2,
+                "color": "#404040",
+                "opacity": 1,
+                "xOffset": -22.5,
+                "type": "rule"
+            },
+            "encoding": {
+                "x2": {
+                    "field": "lead"
+                },
+                "y": {
+                    "field": "sum",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "dy": -8,
+                "color": "#404040",
+                "type": "text",
+                "fontWeight": "bold"
+            },
+            "encoding": {
+                "text": {
+                    "field": "sum_inc",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "sum_inc",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "dy": 8,
+                "color": "#404040",
+                "type": "text",
+                "baseline": "top",
+                "fontWeight": "bold"
+            },
+            "encoding": {
+                "text": {
+                    "field": "sum_dec",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "sum_dec",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "type": "text",
+                "baseline": "middle",
+                "fontWeight": "bold"
+            },
+            "encoding": {
+                "color": {
+                    "value": "white",
+                    "condition": {
+                        "value": "#725a30",
+                        "test": "datum.label === 'Begin' || datum.label === 'End'"
+                    }
+                },
+                "text": {
+                    "field": "text_amount",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "center",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "label",
+            "sort": null,
+            "title": "Months",
+            "type": "ordinal"
+        }
+    },
+    "description": "Waterfall chart of monthly profit and loss"
+}

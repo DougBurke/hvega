@@ -907,7 +907,7 @@ import Data.Monoid ((<>))
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
--- constructors. It also removed or renamed the following symbols:
+-- constructors. It also removed or changed the following symbols:
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
 --   represented a Vega, rather than Vega-Lite, property. The @xSort@
@@ -967,6 +967,10 @@ import Data.Monoid ((<>))
 -- * The 'title' function now takes a second argument, a list of 'TitleConfig'
 --   values for configuring the appearance of the title.
 --
+-- * The 'ArgMax' and 'ArgMin' constructors of 'Operation' now take an
+--   optional field name, to allow them to be used as part of an encoding
+--   aggregation (e.g. with 'PAggregate').
+--
 -- * Three new type aliases have been added: 'Color', 'Opacity', and
 --   'ZIndex'. These do not provide any new functionality, but may clash
 --   with symbols from other modules.
@@ -978,7 +982,7 @@ import Data.Monoid ((<>))
 --- helpers not in VegaLite.elm
 
 aggregate_ :: Operation -> LabelledSpec
-aggregate_ op = "aggregate" .= operationLabel op
+aggregate_ op = "aggregate" .= operationSpec op
 
 type_ :: T.Text -> LabelledSpec
 type_ t = "type" .= t
@@ -991,7 +995,7 @@ order_ :: T.Text -> LabelledSpec
 order_ o = "order" .= o
 
 op_ :: Operation -> LabelledSpec
-op_ op = "op" .= operationLabel op
+op_ op = "op" .= operationSpec op
 
 repeat_ :: Arrangement -> LabelledSpec
 repeat_ arr = "repeat" .= arrangementLabel arr
@@ -2817,12 +2821,44 @@ The @Average@ constructor was removed in version @0.4.0.0@; use 'Mean' instead.
 
 -}
 data Operation
-    = ArgMax
-      -- ^ An input data object containing the maximum field value to be used in an
-      -- aggregation operation.
-    | ArgMin
-      -- ^ An input data object containing the minimum field value to be used in an
-      -- aggregation operation.
+    = ArgMax (Maybe T.Text)
+      -- ^ An input data object containing the maximum field value to be used
+      --   in an aggregation operation.
+      --
+      --   If supplied as part of an encoding aggregation, the parameter
+      --   should be 'Just' the name of the field to maximise. When used
+      --   as part of a transform the parameter should be 'Nothing' as the
+      --   field is specified in the 'aggregate' call.
+      --
+      --   Encoding example, to find the production budget for the maximum
+      --   US grossing film in each genre:
+      --
+      --   @
+      --   'encoding'
+      --     . 'position' 'X'
+      --                [ 'PName' \"Production_Budget\"
+      --                , 'PmType' 'Quantitative'
+      --                , 'PAggregate' ('ArgMax' ('Just' \"US_Gross\"))
+      --                ]
+      --     . 'position' 'Y' ['PName' \"Major_Genre\", 'PmType' 'Nominal']
+      --   @
+      --
+      --   An example of its use as part of an 'aggregate' call:
+      --
+      --   @
+      --   'transform'
+      --     . 'aggregate'
+      --         [ 'opAs' ('ArgMax' 'Nothing') \"US_Gross\" \"amUSGross\"]
+      --         [\"Major_Genre\"]
+      --   @
+      --
+      --   The optional field name was added in the @0.4.0.0@ release.
+    | ArgMin (Maybe T.Text)
+      -- ^ An input data object containing the minimum field value to be used
+      --   in an aggregation operation. See 'ArgMax' for a discussion of the
+      --   optional argument.
+      --
+      --   The optional field name was added in the @0.4.0.0@ release.
     | CI0
       -- ^ Lower 95% confidence interval to be used in an aggregation operation.
     | CI1
@@ -2862,27 +2898,31 @@ data Operation
       -- ^ Population variance of field values to be used in an aggregate operation.
 
 
-operationLabel :: Operation -> T.Text
-operationLabel ArgMax = "argmax"
-operationLabel ArgMin = "argmin"
-operationLabel CI0 = "ci0"
-operationLabel CI1 = "ci1"
-operationLabel Count = "count"
-operationLabel Distinct = "distinct"
-operationLabel Max = "max"
-operationLabel Mean = "mean"
-operationLabel Median = "median"
-operationLabel Min = "min"
-operationLabel Missing = "missing"
-operationLabel Q1 = "q1"
-operationLabel Q3 = "q3"
-operationLabel Stderr = "stderr"
-operationLabel Stdev = "stdev"
-operationLabel StdevP = "stdevp"
-operationLabel Sum = "sum"
-operationLabel Valid = "valid"
-operationLabel Variance = "variance"
-operationLabel VarianceP = "variancep"
+-- Unlike Elm, not checking if the string is empty for ArgMin/Max
+
+operationSpec :: Operation -> VLSpec
+operationSpec (ArgMax Nothing) = "argmax"
+operationSpec (ArgMax (Just s)) = object ["argmax" .= s]
+operationSpec (ArgMin Nothing) = "argmin"
+operationSpec (ArgMin (Just s)) = object ["argmin" .= s]
+operationSpec CI0 = "ci0"
+operationSpec CI1 = "ci1"
+operationSpec Count = "count"
+operationSpec Distinct = "distinct"
+operationSpec Max = "max"
+operationSpec Mean = "mean"
+operationSpec Median = "median"
+operationSpec Min = "min"
+operationSpec Missing = "missing"
+operationSpec Q1 = "q1"
+operationSpec Q3 = "q3"
+operationSpec Stderr = "stderr"
+operationSpec Stdev = "stdev"
+operationSpec StdevP = "stdevp"
+operationSpec Sum = "sum"
+operationSpec Valid = "valid"
+operationSpec Variance = "variance"
+operationSpec VarianceP = "variancep"
 
 
 -- | Identifies how repeated or faceted views are arranged.
@@ -6808,7 +6848,7 @@ data BooleanOp
       --
       -- @
       -- 'transform'
-      --    . 'filter' ('FCompose' ('And' ('Selected' "brush") ('Expr' "datum.weight > 30")))
+      --    . 'filter' ('FCompose' ('And' ('Selection' "brush") ('Expr' "datum.weight > 30")))
       -- @
     | SelectionName T.Text
     -- ^  Name a selection that is used as part of a conditional encoding.
@@ -8426,7 +8466,7 @@ data Window
 
 
 windowFieldProperty :: Window -> LabelledSpec
-windowFieldProperty (WAggregateOp op) = "op" .= operationLabel op
+windowFieldProperty (WAggregateOp op) = "op" .= operationSpec op
 windowFieldProperty (WOp op) = "op" .= wOperationLabel op
 windowFieldProperty (WParam n) = "param" .= n
 windowFieldProperty (WField f) = field_ f
