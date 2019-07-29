@@ -531,6 +531,7 @@ module Graphics.Vega.VegaLite
          -- $titleconfig
 
        , TitleConfig(..)
+       , TitleFrame(..)
 
          -- ** View Configuration Options
          --
@@ -936,6 +937,10 @@ import Data.Monoid ((<>))
 --
 -- * The 'Divide' constructor of 'BinProperty' now takes a list of
 --   Doubles rather than two.
+--
+-- * The 'TitleConfig' type has gained the following constructors:
+--   'TFontStyle', 'TFrame', 'TStyle', and 'TZIndex'. The 'TitleFrame'
+--   type was added for use with 'TFrame'.
 --
 -- * Two new type aliases have been added: 'Color' and 'Opacity'. These
 --   do not provide any new functionality, but may clash with symbols
@@ -6058,15 +6063,35 @@ data TitleConfig
       -- ^ Default font when showing titles.
     | TFontSize Double
       -- ^ Default font size when showing titles.
+    | TFontStyle T.Text
+      -- ^ Defaylt font style when showing titles.
+      --
+      --   @since 0.4.0.0
     | TFontWeight FontWeight
       -- ^ Default font weight when showing titles.
+    | TFrame TitleFrame
+      -- ^ Default title position anchor.
+      --
+      --   @since 0.4.0.0
     | TLimit Double
       -- ^ Default maximum length, in pixels, of titles.
     | TOffset Double
       -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
       -- ^ Default placement of titles relative to the chart body.
-
+    | TStyle [T.Text]
+      -- ^ A list of named styles to apply. A named style can be specified
+      --   via 'NamedStyle' or 'NamedStyles'. Later styles in the list will
+      --   override earlier ones if there is a conflict in any of the
+      --   properties.
+      --
+      --   @since 0.4.0.0
+    | TZIndex Int
+      -- ^ Drawing order of a title relative to the other chart elements.
+      --   1 indicates title is drawn in front of chart marks, 0 indicates it
+      --   is drawn behind them.
+      --
+      --   @since 0.4.0.0
 
 titleConfigSpec :: TitleConfig -> LabelledSpec
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
@@ -6075,10 +6100,28 @@ titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
 titleConfigSpec (TColor clr) = "color" .= clr
 titleConfigSpec (TFont fnt) = "font" .= fnt
 titleConfigSpec (TFontSize x) = "fontSize" .= x
+titleConfigSpec (TFontStyle s) = "fontStyle" .= s
 titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
+titleConfigSpec (TFrame tf) = "frame" .= titleFrameSpec tf
 titleConfigSpec (TLimit x) = "limit" .= x
 titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
+titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
+titleConfigSpec (TStyle styles) = "style" .= styles
+titleConfigSpec (TZIndex n) = "zindex" .= n
+
+-- | Specifies how the title anchor is positioned relative to the frame.
+--
+--   @since 0.4.0.0
+data TitleFrame
+    = FrBounds
+      -- ^ The position is relative to the full bounding box.
+    | FrGroup
+      -- ^ The pistion is relative to the group width / height.
+
+titleFrameSpec :: TitleFrame -> VLSpec
+titleFrameSpec FrBounds = "bounds"
+titleFrameSpec FrGroup = "group"
 
 
 -- | The properties for a single view or layer background.
