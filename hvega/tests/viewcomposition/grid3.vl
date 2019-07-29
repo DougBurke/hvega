@@ -11,7 +11,7 @@
         },
         "view": {
             "height": 120,
-            "stroke": ""
+            "stroke": null
         },
         "facet": {
             "columns": 5,

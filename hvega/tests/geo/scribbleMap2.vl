@@ -15,7 +15,7 @@
     "height": 600,
     "config": {
         "view": {
-            "stroke": ""
+            "stroke": null
         },
         "title": {
             "fontSize": 28,

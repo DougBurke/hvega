@@ -2,7 +2,7 @@
     "height": 700,
     "config": {
         "view": {
-            "stroke": ""
+            "stroke": null
         }
     },
     "width": 1200,

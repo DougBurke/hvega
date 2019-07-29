@@ -12,7 +12,7 @@
     "height": 400,
     "config": {
         "view": {
-            "stroke": ""
+            "stroke": null
         }
     },
     "mark": {

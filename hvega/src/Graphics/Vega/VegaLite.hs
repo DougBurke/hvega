@@ -6351,10 +6351,10 @@ viewConfigProperty (ViewWidth x) = "width" .= x
 viewConfigProperty (ViewHeight x) = "height" .= x
 viewConfigProperty (ViewClip b) = "clip" .= b
 viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
-viewConfigProperty (ViewFill ms) = "fill" .= fromMaybe "" ms
+viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
 viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
 viewConfigProperty (ViewOpacity x) = "opacity" .= x
-viewConfigProperty (ViewStroke ms) = "stroke" .= fromMaybe "" ms
+viewConfigProperty (ViewStroke ms) = "stroke" .= maybe A.Null toJSON ms
 viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs
 viewConfigProperty (ViewStrokeDashOffset x) = "strokeDashOffset" .= x
