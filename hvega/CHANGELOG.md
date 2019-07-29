@@ -86,9 +86,9 @@ The `TitleConfig` type has gained the following constructors:
 `TFontStyle`, `TFrame`, `TStyle`, and `TZIndex`. The `TitleFrame`
 type was added for use with `TFrame`.
 
-Two new type aliases have been added: `Color` and `Opacity`. These
-do not provide any new functionality, but may clash with symbols
-defined in other modules.
+Three new type aliases have been added: `Color`, `Opacity`, and
+`ZIndex`. These do not provide any new functionality, but may clash
+with symbols defined in other modules.
 
 ## 0.3.0.1
 

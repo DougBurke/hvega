@@ -100,6 +100,7 @@ module Graphics.Vega.VegaLite
        , BuildLabelledSpecs
        , Color
        , Opacity
+       , ZIndex
        , combineSpecs
        , toHtml
        , toHtmlFile
@@ -942,9 +943,9 @@ import Data.Monoid ((<>))
 --   'TFontStyle', 'TFrame', 'TStyle', and 'TZIndex'. The 'TitleFrame'
 --   type was added for use with 'TFrame'.
 --
--- * Two new type aliases have been added: 'Color' and 'Opacity'. These
---   do not provide any new functionality, but may clash with symbols
---   defined in other modules.
+-- * Three new type aliases have been added: 'Color', 'Opacity', and
+--   'ZIndex'. These do not provide any new functionality, but may clash
+--   with symbols from other modules.
 --
 -- Note that the `VLProperty` type now exports its constructors, which
 -- may come in useful for those people who need to edit or augment the
@@ -1617,6 +1618,22 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate the "z index" value (which
+defines the relative depth of items in the visualization).
+
+A value of 1 means the item is drawn in front, and 0 behind it. There is
+__no__ attempt to validate that the user-supplied value falls in this range.
+
+It is left as an integer in case the schema is extended.
+
+@since 0.4.0.0
+-}
+
+type ZIndex = Int
 
 
 formatProperty :: Format -> [LabelledSpec]
@@ -3895,9 +3912,8 @@ data AxisProperty
       -- ^ Numeric values to appear along the axis.
     | AxDates [[DateTime]]
       -- ^ The dates or times to appear along the axis.
-    | AxZIndex Int
-      -- ^ The z-index of the axis. A 1 means the axis is in front of the
-      --   chart marks, 0 means it is drawn behind them.
+    | AxZIndex ZIndex
+      -- ^ The z-index of the axis, relative to the chart marks.
 
 
 axisProperty :: AxisProperty -> LabelledSpec
@@ -5189,7 +5205,7 @@ data LegendProperty
       -- ^ Custom y position, in pixels, for the legend when 'LOrient' is set to 'LONone'.
       --
       --   @since 0.4.0.0
-    | LZIndex Int
+    | LZIndex ZIndex
       -- ^ The z-index at which to draw the legend.
 
 legendProperty :: LegendProperty -> LabelledSpec
@@ -6086,10 +6102,8 @@ data TitleConfig
       --   properties.
       --
       --   @since 0.4.0.0
-    | TZIndex Int
+    | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
-      --   1 indicates title is drawn in front of chart marks, 0 indicates it
-      --   is drawn behind them.
       --
       --   @since 0.4.0.0
 
