@@ -553,6 +553,12 @@ module Graphics.Vega.VegaLite
 
        , FacetConfig(..)
 
+         -- ** Concatenated View Configuration Options
+         --
+         -- $concatconfig
+
+       , ConcatConfig(..)
+
          -- * General Data types
          --
          -- $generaldatatypes
@@ -870,7 +876,7 @@ import Data.Monoid ((<>))
 -- [Vega-Lite scheme configuration documentation](https://vega.github.io/vega/docs/schemes/#scheme-properties).
 
 -- $titleconfig
--- Unlike 'title', these options apply to **all** titles if multiiple views
+-- Unlike 'title', these options apply to __all__ titles if multiple views
 -- are created. See the
 -- [Vega-Lite title configuration documentation](https://vega.github.io/vega-lite/docs/title.html#config).
 
@@ -880,7 +886,11 @@ import Data.Monoid ((<>))
 
 -- $facetconfig
 -- See the
--- [Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+-- [Vega-Lite facet configuration documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+
+-- $concatconfig
+-- See the
+-- [Vega-Lite concat configuration documentation](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration).
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -6367,6 +6377,10 @@ data ConfigurationProperty
       -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
+    | ConcatStyle [ConcatConfig]
+      -- ^ The default appearance of concatenated layouts.
+      --
+      --   @since 0.4.0.0
     | CountTitle T.Text
       -- ^ The default title style for count fields.
     | FacetStyle [FacetConfig]
@@ -6442,6 +6456,7 @@ configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
+configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
@@ -7409,6 +7424,8 @@ facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 
 {-|
 
+Configuration options for faceted views, used with 'FacetStyle'.
+
 See the
 <https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
 
@@ -7419,8 +7436,7 @@ data FacetConfig
     = FColumns Int
     -- ^ The maximum number of columns to use in a faceted-flow layout.
     | FSpacing Double
-    -- ^ The spacing in pixels between sub-views in a view composition,
-    --   such as a faceted or concatenated view.
+    -- ^ The spacing in pixels between sub-views in a faceted composition.
 
 
 facetConfigProperty :: FacetConfig -> LabelledSpec
@@ -7808,6 +7824,25 @@ setting.
 -}
 height :: Double -> PropertySpec
 height h = (VLHeight, toJSON h)
+
+
+{-|
+
+Configuration options for concatenated views, used with 'ConcatStyle'.
+
+@since 0.4.0.0
+
+-}
+data ConcatConfig
+    = ConcatColumns Int
+      -- ^ The maximum number of columns to use in a concatenated flow layout.
+    | ConcatSpacing Double
+      -- ^ The spacing in pixels between sub-views in a concatenated view.
+
+
+concatConfigProperty :: ConcatConfig -> LabelledSpec
+concatConfigProperty (ConcatColumns n) = "columns" .= n
+concatConfigProperty (ConcatSpacing x) = "spacing" .= x
 
 
 {-|
