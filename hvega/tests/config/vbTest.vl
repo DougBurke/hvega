@@ -7,7 +7,11 @@
                 "type": "point"
             },
             "width": 200,
-            "title": "Car Scatter",
+            "title": {
+                "color": "brown",
+                "text": "Car Scatter",
+                "fontSize": 12
+            },
             "encoding": {
                 "color": {
                     "field": "Cylinders",

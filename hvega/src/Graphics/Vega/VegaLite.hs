@@ -473,12 +473,11 @@ module Graphics.Vega.VegaLite
 
        , BooleanOp(..)
 
-         -- * Global Configuration
+         -- ** Top-level Settings
          --
-         -- $global
+         -- $toplevel
 
        , name
-       , title
        , description
        , height
        , width
@@ -489,7 +488,13 @@ module Graphics.Vega.VegaLite
        , Padding(..)
        , Autosize(..)
 
-         -- ** View Backgroud
+         -- *** Title
+         --
+         -- $title
+
+       , title
+
+         -- *** View Backgroud
          --
          -- $viewbackground
 
@@ -838,9 +843,14 @@ import Data.Monoid ((<>))
 -- For more details, see the
 -- <https://vega.github.io/vega-lite/docs/condition.html Vega-Lite documentation>.
 
--- $global
--- Configuration options that affect the entire visualization. These are in addition
--- to the data and transform options described above.
+-- $toplevel
+-- These are in addition to the data and transform options described above,
+-- and are described in the
+-- [Vega-Lite top-level spec documentation](https://vega.github.io/vega-lite/docs/spec.html#top-level-specifications).
+
+-- $title
+-- Per-title settings. Use 'TitleStyle' to change the appearance of all
+-- titles in a multi-view specification.
 
 -- $viewbackground
 -- The background of a single view in a view composition can be styled independently
@@ -860,7 +870,8 @@ import Data.Monoid ((<>))
 -- [Vega-Lite scheme configuration documentation](https://vega.github.io/vega/docs/schemes/#scheme-properties).
 
 -- $titleconfig
--- See the
+-- Unlike 'title', these options apply to **all** titles if multiiple views
+-- are created. See the
 -- [Vega-Lite title configuration documentation](https://vega.github.io/vega-lite/docs/title.html#config).
 
 -- $viewconfig
@@ -942,6 +953,9 @@ import Data.Monoid ((<>))
 -- * The 'TitleConfig' type has gained the following constructors:
 --   'TFontStyle', 'TFrame', 'TStyle', and 'TZIndex'. The 'TitleFrame'
 --   type was added for use with 'TFrame'.
+--
+-- * The 'title' function now takes a second argument, a list of 'TitleConfig'
+--   values for configuring the appearance of the title.
 --
 -- * Three new type aliases have been added: 'Color', 'Opacity', and
 --   'ZIndex'. These do not provide any new functionality, but may clash
@@ -3626,19 +3640,29 @@ usermetadata o = (VLUserMetadata, A.Object o)
 
 Provide an optional title to be displayed in the visualization.
 
-There is currently no way to set the title options using @hvega@.
-
 @
 'toVegaLite'
-    [ title "Population Growth"
-    , 'dataFromUrl' "data/population.json" []
+    [ 'title' "Population Growth" ['TColor' \"orange\"]
+    , 'dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
-    , enc []
+    , 'encoding' ...
     ]
 @
+
+Prior to @0.4.0.0@ there was no way to set the title options
+(other than using 'configuration' with 'TitleStyle').
+
 -}
-title :: T.Text -> PropertySpec
-title s = (VLTitle, toJSON s)
+title ::
+  T.Text
+  -> [TitleConfig]
+  -- ^ Configure the appearance of the title.
+  --
+  --   @since 0.4.0.0
+  -> PropertySpec
+title s [] = (VLTitle, toJSON s)
+title s topts = (VLTitle,
+                 object ("text" .= s : map titleConfigSpec topts))
 
 
 {-|

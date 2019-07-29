@@ -39,7 +39,7 @@ worldMapTemplate tText projProps =
     , toVegaLite
         [ width 500
         , height 300
-        , title (T.pack tText)
+        , title (T.pack tText) []
         , background "#c1e7f5"
         , projection projProps
 
@@ -110,7 +110,7 @@ configExample =
                 ]
     in
     ( "configExample"
-    , toVegaLite [ title "Hello, World!", cfg [], layer [ globeSpec, graticuleSpec, countrySpec ] ]
+    , toVegaLite [ title "Hello, World!" [], cfg [], layer [ globeSpec, graticuleSpec, countrySpec ] ]
     )
 
 
