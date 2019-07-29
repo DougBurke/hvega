@@ -6656,6 +6656,10 @@ data AxisConfig
     | MinExtent Double
       -- ^ The minimum extent, in pixels, that axis ticks and labels should use.
       --   This determines a minmium offset value for axis titles.
+    | NoTitle
+      -- ^ Do not draw a title for this axis.
+      --
+      --   @since 0.4.0.0
     | Orient Side
       -- ^ The orientation of the axis.
       --
@@ -6692,10 +6696,6 @@ data AxisConfig
       -- ^ The size of the tick marks in pixels.
     | TickWidth Double
       -- ^ The width of the tick marks in pixels.
-      {-
-    | Title Bool
-      -- ^ Should the title be
-      -}
     | TitleAlign HAlign
       -- ^ The horizontal alignment of the axis title.
     | TitleAnchor APosition
@@ -6773,6 +6773,7 @@ axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
 axisConfigProperty (LabelSeparation x) = "labelSeparation" .= x
 axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
+axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
 axisConfigProperty (Ticks b) = "ticks" .= b
