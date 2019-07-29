@@ -3,31 +3,64 @@ For the latest version of this document, please see
 
 ## 0.4.0.0
 
-Corrected the serialization of the `datasets` function (#20), reported
-by Matthew Pickering (mpickering).
+Thanks to (in no order): Matthew Pickering (mpickering),
+Adam Conner-Sax (adamConnerSax), and Jo Wood (jwoLondon).
 
-Corrected the serialization of `Function` to match the Vega Lite 3.3.0
-specification.
+This is a large release, in that it greatly-improves the functionality
+of hvega (more-closely aligning it with version 3.3.0 of the Vega-Lite
+specification), but does provide a number of **breaking changes** (a
+number of functions and constructors have either been removed or had
+some combination of being renamed, argument types have changed, or the
+number of arguments has been changed). The documentation has also
+seen a number of additions and improvements.
 
-Added the `MarkErrorExtent` type, to indicate the extent of the rule
-used for error bars and added the `ErrorBar` and `ErrorBand` marks.
-The `MarkProperty` type has gained `MBorders` and `MExtent` constructors,
-and the `Position` type has added `XError`, `XError2`, `YError`, and
-`YError2` constructors as part of this change.
-
-This functionality was provided by Adam Conner-Sax (adamConnerSax).
+### Added functionality
 
 A large number of functions, data types, and constructors for data
-types have been added, based on version 1.12.0 of the elm-vegalite
-module. Thanks again to Jo Wood for doing all the work! The documentation
-indicates new symbols with the `since 0.4.0.0` label.
+types have been added, based on version 1.12.0 (and the development
+version of the next release) of the elm-vegalite module. Thanks to Jo
+Wood for doing all the work! The documentation indicates new symbols
+with the `since 0.4.0.0` label. Some of the changes are listed below,
+and in the 'Breaking Changes' section below.
+
+The `Mark` type has gained `Boxplot`, `ErrorBar`, `ErrorBand`, and
+`Trail` constructors. The `MarkProperty` type has gained `MBorders`,
+`MBox`, `MExtent`, `MHRef`, `MLine`, `MMedian`, `MOrder`, `MOutliers`,
+`MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`, `MStrokeMiterLimit`,
+`MTicks`, `MTooltip`, `MX`, `MY`, `MX2`, `MY2`, `MXOffset`,
+`MYOffset`, `MX2Offset`, and `MY2Offset` constructors. The `Position`
+type has added `XError`, `XError2`, `YError`, and `YError2`
+constructors. The `MarkErrorExtent` type was added.  Some of these
+changes were provided by Adam Conner-Sax.
+
+The `BooleanOp` type has gained the `FilterOp` constructor which
+lets you use a `Filter` expression as part of a boolean operation.
 
 The `VLProperty` type now exports its constructors, to support users
 who may need to tweak or augment the JSON Vega-Lite specification
-created by `hvega`.
+created by `hvega` (see [issue
+17](https://github.com/DougBurke/hvega/issues/17)).
 
-Added a test suite based on the Elm Vega-Lite tests (again, thanks to
-Jo Wood).
+### Improved testing
+
+Added a test suite based on the Elm Vega-Lite tests (based entirely on
+the work of Jo Wood).
+
+The IPython notebooks have been expanded to cover recent changes in the
+[Vega-Lite gallery](https://vega.github.io/vega-lite/examples/), and
+include validation of the output (to check against the expected output).
+
+### Bug fixes
+
+Corrected the serialization of the `datasets` function, reported by
+Matthew Pickering as [issue
+29](https://github.com/DougBurke/hvega/issues/17).
+
+Improved the output to better-match the Vega Lite 3.3.0 specification.
+Note that hvega does not guarantee that it always creates valid output,
+in part because this would complicate the API, but also because the
+Vega-Lite specification is changing (e.g. I reported several issues with
+specification during development of this release).
 
 ### Breaking Changes
 

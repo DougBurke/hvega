@@ -6768,8 +6768,8 @@ Used for creating logical compositions. For example
 @
 'color'
     [ 'MSelectionCondition' (Or ('SelectionName' "alex") (SelectionName "morgan"))
-        [ 'MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative' ]
-        [ 'MString' "gray" ]
+        ['MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative']
+        ['MString' "gray"]
     ]
 @
 
@@ -6781,8 +6781,26 @@ Not (And (Expr "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating
 -}
 data BooleanOp
     = Expr T.Text
-    -- ^ Expression that should evaluate to either true or false. Can use any valid
-    --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
+      -- ^ Expression that should evaluate to either true or false.
+      --   Can use any valid
+      --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
+    | FilterOp Filter
+      -- ^ Convert a 'Filter' into a 'BooleanOp' so that it may be used as
+      --   part of a more complex expression.
+      --
+      --   For example (using 'Data.Function.&' to apply 'FilterOp' to a filter):
+      --
+      --   @
+      --   trans = 'transform'
+      --             . 'filter' ('FCompose'
+      --                        ('And'
+      --                          ('FValid' "IMDB_Rating" & 'FilterOp')
+      --                          ('FValid' "Rotten_Tomatoes_Rating" & 'FilterOp')
+      --                        )
+      --                      )
+      --   @
+      --
+      --   @since 0.4.0.0
     | Selection T.Text  -- TODO: rename Selected
       -- ^ Interactive selection that will be true or false as part of a logical composition.
       --   For example: to filter a dataset so that only items selected interactively and that have
@@ -6790,23 +6808,23 @@ data BooleanOp
       --
       -- @
       -- 'transform'
-      --    . 'filter' ('FCompose' (And (Selected "brush") ('Expr' "datum.weight > 30")))
+      --    . 'filter' ('FCompose' ('And' ('Selected' "brush") ('Expr' "datum.weight > 30")))
       -- @
     | SelectionName T.Text
     -- ^  Name a selection that is used as part of a conditional encoding.
     --
     -- @
     -- 'color'
-    --    [ 'MSelectionCondition' (SelectionName \"myBrush\")
-    --        [ 'MName' \"myField\", 'MmType' 'Nominal' ]
-    --        [ 'MString' \"grey\" ]
+    --    [ 'MSelectionCondition' ('SelectionName' \"myBrush\")
+    --        ['MName' \"myField\", 'MmType' 'Nominal']
+    --        ['MString' \"grey\"]
     --    ]
     -- @
     | And BooleanOp BooleanOp
       -- ^ Apply an \'and\' Boolean operation as part of a logical composition.
       --
       -- @
-      -- And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null")
+      -- 'And' ('Expr' "datum.IMDB_Rating === null") ('Expr' "datum.Rotten_Tomatoes_Rating === null")
       -- @
     | Or BooleanOp BooleanOp
       -- ^ Apply an \'or\' Boolean operation as part of a logical composition.
@@ -6814,11 +6832,12 @@ data BooleanOp
       -- ^ Negate the given expression.
       --
       -- @
-      -- Not (And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null"))
+      -- 'Not' ('And' ('Expr' "datum.IMDB_Rating === null") ('Expr' "datum.Rotten_Tomatoes_Rating === null"))
       -- @
 
 booleanOpSpec :: BooleanOp -> VLSpec
 booleanOpSpec (Expr expr) = toJSON expr
+booleanOpSpec (FilterOp f) = filterSpec f
 booleanOpSpec (SelectionName selName) = toJSON selName
 booleanOpSpec (Selection sel) = object ["selection" .= sel]
 booleanOpSpec (And operand1 operand2) = object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
@@ -6832,11 +6851,14 @@ Type of filtering operation. See the
 <https://vega.github.io/vega-lite/docs/filter.html Vega-Lite documentation>
 for details.
 
+These can also be included into a 'BooleanOp' expression using 'FilterOp'
+(as of version @0.4.0.0@).
+
 -}
 data Filter
     = FEqual T.Text DataValue
-      -- ^ Filter a data stream so that only data in a given field equal to the given
-      --   value are used.
+      -- ^ Filter a data stream so that only data in a given field equal to
+      --   the given value are used.
     | FLessThan T.Text DataValue
       -- ^ Filter a data stream so that only data in a given field less than the given
       --   value are used.
@@ -6861,7 +6883,20 @@ data Filter
       -- ^ Filter a data stream so that only data that satisfy the given predicate
       --   expression are used.
     | FCompose BooleanOp
-      -- ^ Build up a filtering predicate through logical composition ('And', 'Or' etc.).
+      -- ^ Build up a filtering predicate through logical composition such
+      --   as 'And' and 'Or'.
+      --
+      --   The following fgragment will apply a filter to identify only
+      --   those items selected interactively and that represent ages
+      --   over 65:
+      --
+      --   @
+      --   trans = 'transform'
+      --             . 'filter'
+      --                 ('FCompose'
+      --                   ('And' ('Selection' "brush") ('Expr' "datum.age > 65"))
+      --                 )
+      --   @
     | FSelection T.Text
       -- ^ Filter a data stream so that only data in a given field that are
       --   within the given interactive selection are used.
@@ -6881,6 +6916,43 @@ data Filter
       --   field are used.
       --
       --   @since 0.4.0.0
+
+
+fop_ :: T.Text -> T.Text -> DataValue -> VLSpec
+fop_ field label val = object [field_ field, label .= dataValueSpec val]
+
+filterSpec :: Filter -> VLSpec
+filterSpec (FExpr expr) = toJSON expr
+filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+
+filterSpec (FEqual field val) = fop_ field "equal" val
+filterSpec (FLessThan field val) = fop_ field "lt" val
+filterSpec (FLessThanEq field val) = fop_ field "lte" val
+filterSpec (FGreaterThan field val) = fop_ field "gt" val
+filterSpec (FGreaterThanEq field val) = fop_ field "gte" val
+
+filterSpec (FSelection selName) = object ["selection" .= selName]
+
+filterSpec (FRange field vals) =
+  let ans = case vals of
+              NumberRange mn mx -> map toJSON [mn, mx]
+              DateRange dMin dMax -> [process dMin, process dMax]
+
+      process [] = A.Null
+      process dts = object (map dateTimeProperty dts)
+
+  in object [field_ field, "range" .= ans]
+
+filterSpec (FOneOf field vals) =
+  let ans = case vals of
+              Numbers xs -> map toJSON xs
+              DateTimes dts -> map (object . map dateTimeProperty) dts
+              Strings ss -> map toJSON ss
+              Booleans bs -> map toJSON bs
+
+  in object [field_ field, "oneOf" .= ans]
+
+filterSpec (FValid field) = object [field_ field, "valid" .= True]
 
 
 {-|
@@ -8741,41 +8813,8 @@ with @"datum."@).
 
 -}
 filter :: Filter -> BuildLabelledSpecs
-filter f ols =
-  let js = case f of
-        FExpr expr -> toJSON expr
-        FCompose boolExpr -> booleanOpSpec boolExpr
+filter f ols = ("filter" .= filterSpec f) : ols
 
-        FEqual field val -> object [field_ field, "equal" .= dataValueSpec val]
-        FLessThan field val -> object [field_ field, "lt" .= dataValueSpec val]
-        FLessThanEq field val -> object [field_ field, "lte" .= dataValueSpec val]
-        FGreaterThan field val -> object [field_ field, "gt" .= dataValueSpec val]
-        FGreaterThanEq field val -> object [field_ field, "gte" .= dataValueSpec val]
-
-        FSelection selName -> object ["selection" .= selName]
-
-        FRange field vals ->
-            let ans = case vals of
-                        NumberRange mn mx -> map toJSON [mn, mx]
-                        DateRange dMin dMax -> [process dMin, process dMax]
-
-                process [] = A.Null
-                process dts = object (map dateTimeProperty dts)
-
-            in object [field_ field, "range" .= ans]
-
-        FOneOf field vals ->
-            let ans = case vals of
-                        Numbers xs -> map toJSON xs
-                        DateTimes dts -> map (object . map dateTimeProperty) dts
-                        Strings ss -> map toJSON ss
-                        Booleans bs -> map toJSON bs
-
-            in object [field_ field, "oneOf" .= ans]
-
-        FValid field -> object [field_ field, "valid" .= True]
-
-  in ("filter", js) : ols
 
 
 {-|
