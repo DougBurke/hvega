@@ -32,11 +32,17 @@ Jo Wood).
 ### Breaking Changes
 
 The `SReverse` construtor was removed from `ScaleProperty` as it
-represented a Vega, rather than Vega-Lite, property. The `PSort`
-constructor is used to change the order of an axis.
+represented a Vega, rather than Vega-Lite, property. The `xSort`
+constructors are used to change the order of an item (e.g. `PSort`,
+`MSort`).
 
 The `ScSequential` constructor was removed from `Scale` as
 `ScLinear` should be used.
+
+The `SortProperty` type has had a number of changes: the `Op`,
+`ByField`, and `ByRepeat` constructors have been removed, and
+`ByRepeatOp`, `ByFieldOp`, and `ByChannel` constructors have been
+added.
 
 The `AxTitleMaxLength` and `TitleMaxLength` constructors have been
 removed (from `AxisProperty` and `AxisConfig` respectively) as they

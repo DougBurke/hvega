@@ -427,7 +427,6 @@ module Graphics.Vega.VegaLite
        , Resolution(..)
 
          -- ** Faceted views
-         -- #facetview#
          --
          -- $facetview
 
@@ -733,8 +732,6 @@ import Data.Monoid ((<>))
 -- for further details. See also, <#facetview faceted views> for a more flexible (but
 -- more verbose) way of defining faceted views.
 
--- NOTE: the facetview link above doesn't seem to work. Argh.
-
 -- $detail
 -- Used for grouping data but without changing the visual appearance of a mark. When,
 -- for example, a field is encoded by color, all data items with the same value for
@@ -767,6 +764,7 @@ import Data.Monoid ((<>))
 -- See the [Vega-Lite resolve documentation](https://vega.github.io/vega-lite/docs/resolve.html).
 
 -- $facetview
+-- #facetview#
 -- These are small multiples each of which show subsets of the same dataset. The specification
 -- determines which field should be used to determine subsets along with their spatial
 -- arrangement (in rows or columns). For details see the
@@ -888,11 +886,17 @@ import Data.Monoid ((<>))
 -- constructors. It also removed or renamed the following symbols:
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
---   represented a Vega, rather than Vega-Lite, property. The 'PSort'
---   constructor is used to change the order of an axis.
+--   represented a Vega, rather than Vega-Lite, property. The @xSort@
+--   constructors are used to change the order of an item (e.g.
+--   'PSort', 'MSort').
 --
 -- * The @ScSequential@ constructor was removed from 'Scale' as
 --   'ScLinear' should be used.
+--
+-- * The 'SortProperty' type has had a number of changes: the @Op@,
+--   @ByField@, and @ByRepeat@ constructors have been removed, and
+--   'ByRepeatOp', 'ByFieldOp', and 'ByChannel' constructors have been
+--   added.
 --
 -- * The @AxTitleMaxLength@ and @TitleMaxLength@ constructors have been
 --   removed (from 'AxisProperty' and 'AxisConfig' respectively) as they
@@ -1822,7 +1826,7 @@ in 'toVegaLite'
     [ 'width' 200
     , 'height' 200
     , dataFromJson geojson []
-    , 'projection' [ 'PType' 'Orthographic' ]
+    , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' []
     ]
 @
@@ -2739,6 +2743,9 @@ operationLabel VarianceP = "variancep"
 
 
 -- | Identifies how repeated or faceted views are arranged.
+--
+--   This is used with a number of constructors, such as 'ByRepeatOp',
+--   'HRepeat', 'MRepeat', and 'ORepeat'.
 
 -- based on schema 3.3.0 #/definitions/RepeatRef
 
@@ -2869,6 +2876,9 @@ Individual scale property. These are used to customise an individual scale
 transformation. To customise all scales use 'configure' and supply relevant
 'ScaleConfig' values. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html Vega-Lite documentation>.
+
+There are two utility routines for constructing a list of scale
+properties: 'categoricalDomainMap' and 'domainRangeMap'.
 
 The @SReverse@ constructor was removed in version @0.4.0.0@, as it
 represented a Vega, rather than Vega-Lite, property. The order of
@@ -3225,13 +3235,13 @@ data SortProperty
       -- 'position' 'Y'
       --   [ 'PName' "variety"
       --   , 'PmType' 'Ordinal'
-      --   , 'PSort' [ ByField "age" 'Mean', 'Descending' ]
+      --   , 'PSort' [ ByFieldOp "age" 'Mean', 'Descending' ]
       --   ]
       -- @
       --
       --   @since 0.4.0.0
     | ByChannel Channel
-      -- ^ Sorting is by another channel.
+      -- ^ Sort by another channel.
       --
       -- @
       -- 'position' 'Y'
@@ -3446,6 +3456,8 @@ usermetadata o = (VLUserMetadata, A.Object o)
 {-|
 
 Provide an optional title to be displayed in the visualization.
+
+There is currently no way to set the title options using @hvega@.
 
 @
 'toVegaLite'
@@ -4213,6 +4225,8 @@ Indicates the extent of the rule used for the error bar.  See
 <https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
 for details.
 
+Note that not all options are valid for all mark types.
+
 This is called @SummaryExtent@ in Elm and the constructors also have
 different names.
 
@@ -4220,6 +4234,9 @@ different names.
 -}
 
 -- based on schema 3.3.0 #/definitions/ErrorBarExtent
+--          (ConfidenceInterval to Iqr)
+-- and combined with the box/band "min-max" and IQR scaling values
+--
 
 data MarkErrorExtent
   = ConfidenceInterval
@@ -4230,19 +4247,13 @@ data MarkErrorExtent
     -- ^ Band extent as the standard deviation of a distribution.
   | Iqr
     -- ^ Band extent between the lower and upper quartiles of a distribution
-    --   (the inter-quartile range).
-    {- these don't appear to be in the Vega-Lite schema as of 3.3.0
-
-        well, you can use them with 'extent', just not with the settings
-        above
-
+    --   (the inter-quartile range, q1 to q3).
   | ExRange
     -- ^ Band extent between the minimum and maximum values in a distribution.
   | IqrScale Double
     -- ^ A scaling of the interquartile range to be used as whiskers in a
     --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
     --   ±1.5x the IQR from the mean.
-    -}
 
 -- This is a little different from the other calls since I wanted to
 -- make sure the scale factor was encoded as a number not a string.
@@ -4255,8 +4266,8 @@ markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
 markErrorExtentLSpec StdErr             = extent_ "stderr"
 markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
--- markErrorExtentLSpec ExRange            = extent_ "min-max"
--- markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
+markErrorExtentLSpec ExRange            = extent_ "min-max"
+markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
 -- | Identifies the type of symbol.
@@ -5164,7 +5175,7 @@ data Projection
     | AlbersUsa
       -- ^ An Albers USA map projection that combines continental USA with
       --   Alaska and Hawaii. Unlike other projection types, this remains
-      --   unaffected by 'PRotate'.
+      --   unaffected by 'PrRotate'.
     | AzimuthalEqualArea
       -- ^ An azimuthal equal area map projection.
     | AzimuthalEquidistant
@@ -5188,8 +5199,8 @@ data Projection
     | Gnomonic
       -- ^ A gnomonic map projection.
     | Identity
-      -- ^ The identiy projection. This can be combined with 'PReflectX' and
-      --   'PReflectY' in the list of projection properties.
+      -- ^ The identiy projection. This can be combined with 'PrReflectX' and
+      --   'PrReflectY' in the list of projection properties.
       --
       --   @since 0.4.0.0
     | Mercator
@@ -5368,7 +5379,7 @@ This is useful when using the 'Geoshape' mark. For further details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 
 @
-proj = projection [ 'PType' 'Orthographic', 'PRotate' (-40) 0 0 ]
+proj = projection [ 'PrType' 'Orthographic', 'PrRotate' (-40) 0 0 ]
 @
 -}
 projection :: [ProjectionProperty] -> PropertySpec
@@ -6136,7 +6147,7 @@ data ConfigurationProperty
       --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
-    | Scale [ScaleConfig]
+    | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
       -- ^ The default properties used when scaling.
     | SelectionStyle [(Selection, [SelectionProperty])]
       -- ^ The default appearance of selection marks.
@@ -6491,7 +6502,7 @@ data BooleanOp
     = Expr T.Text
     -- ^ Expression that should evaluate to either true or false. Can use any valid
     --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
-    | Selection T.Text
+    | Selection T.Text  -- TODO: rename Selected
       -- ^ Interactive selection that will be true or false as part of a logical composition.
       --   For example: to filter a dataset so that only items selected interactively and that have
       --   a weight of more than 30:
@@ -6669,7 +6680,7 @@ The sphere will be subject to whatever projection is specified for the view.
 @
 'toVegaLite'
     [ sphere
-    , 'projection' [ 'PType' 'Orthographic' ]
+    , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' [ 'MFill' "aliceblue" ]
     ]
 @
@@ -6686,7 +6697,7 @@ Generate a grid of lines of longitude (meridians) and latitude
 (parallels).
 
 @
-let proj = 'projection' [ 'PType' 'Orthographic' ]
+let proj = 'projection' [ 'PrType' 'Orthographic' ]
     sphereSpec = 'asSpec' [ 'sphere',
                             'mark' 'Geoshape' [ 'MFill' "aliceblue" ] ]
     gratSpec =
@@ -7449,7 +7460,9 @@ for further details.
 
 @
 'toVegaLite'
-    [ facet [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
+    [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Ordinal' ]
+            , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Ordinal' ]
+            ]
     , 'specification' spec
     ]
 @
@@ -7468,12 +7481,13 @@ Facet a view to create small multiples in a flow layout. Used when the encoding
 of the visualization in small multiples is identical, but data for each is grouped
 by the given fields. When creating a faceted view in this way you also need to
 define a full specification to apply to each of those facets using 'asSpec'.
+
 Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
 
 @
 'toVegaLite'
-    [ facet [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
+    [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
     , 'specification' spec
     ]
 @
@@ -8143,7 +8157,8 @@ trans =
 -}
 binAs ::
   [BinProperty]
-  -- ^ An empty list means that the default binning is used.
+  -- ^ An empty list means that the default binning is used (that is, the
+  --   @bin@ field will be set to @true@ in the Vega-Lite specification).
   -> T.Text
   -- ^ The field to bin.
   -> T.Text
@@ -8200,7 +8215,7 @@ color markProps ols = mchan_ "color" markProps : ols
 {-|
 
 Encodes a new facet to be arranged in columns. See the
-[Vega-Lite column documentation](https://vega.github.io/vega-lite/docs/facet.html#row--column-encoding-channels).
+<https://vega.github.io/vega-lite/docs/facet.html#facet-row-and-column-encoding-channels Vega-Lite column documentation>.
 
 @
 enc =
