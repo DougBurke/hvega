@@ -41,7 +41,7 @@ singleVis config =
                 . color [ MName "Cylinders", MmType Ordinal ]
                 . shape [ MName "Origin", MmType Nominal ]
     in
-    toVegaLite [ title "Car Scatter", config [], cars, width 200, height 200, mark Point [ MSize 100 ], scatterEnc [] ]
+    toVegaLite [ title "Car Scatter" [], config [], cars, width 200, height 200, mark Point [ MSize 100 ], scatterEnc [] ]
 
 
 {- TODO: padding causes spec to be invalid -}
@@ -59,7 +59,7 @@ compositeVis config =
                 . shape [ MName "Origin", MmType Nominal ]
 
         scatterSpec =
-            asSpec [ title "Car Scatter", width 200, height 200
+            asSpec [ title "Car Scatter" [], width 200, height 200
                    {- , padding (PSize 20) -}
                    , mark Point [ MSize 100 ], scatterEnc [] ]
 
@@ -76,12 +76,12 @@ compositeVis config =
                 . color [ MName "Origin", MmType Nominal ]
 
         barSpec =
-            asSpec [ title "Car Histogram", width 200, height 200
+            asSpec [ title "Car Histogram" [], width 200, height 200
                    {- , padding (PSize 20) -}
                    , mark Bar [], barEnc [] ]
 
         streamSpec =
-            asSpec [ title "Car Streamgraph", width 200, height 200
+            asSpec [ title "Car Streamgraph" [], width 200, height 200
                    {- , padding (PSize 20) -}
                    , mark Area [], streamEnc [] ]
 
@@ -119,7 +119,7 @@ vbTest =
 
         scatterSpec =
             asSpec
-                [ title "Car Scatter"
+                [ title "Car Scatter" [TColor "brown", TFontSize 12]
                 , width 200
                 , height 200
                 , mark Point [ MSize 100 ]
@@ -128,7 +128,7 @@ vbTest =
 
         barSpec =
             asSpec
-                [ title "Car Histogram"
+                [ title "Car Histogram" []
                 , width 200
                 , height 200
                 , viewBackground
@@ -155,7 +155,7 @@ vbTest =
 
         streamSpec =
             asSpec
-                [ title "Car Streamgraph"
+                [ title "Car Streamgraph" []
                 , width 200
                 , height 200
                 , viewBackground [ VBStyle [ "myStyle", "mySecondStyle" ] ]

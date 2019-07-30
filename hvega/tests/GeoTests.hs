@@ -562,7 +562,7 @@ scribbleMap1 =
                 . detail [ DName "conterminous", DmType Nominal ]
     in
     toVegaLite
-        [ title "US connected zip codes"
+        [ title "US connected zip codes" []
         , config []
         , width 1000
         , height 600
@@ -600,7 +600,7 @@ scribbleMap2 =
                 . detail [ DName "ziplen", DmType Nominal ]
     in
     toVegaLite
-        [ title "US connected zip codes, coloured by first three digits"
+        [ title "US connected zip codes, coloured by first three digits" []
         , config []
         , width 1000
         , height 600
