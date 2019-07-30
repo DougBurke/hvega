@@ -57,7 +57,7 @@
             }
         },
         "view": {
-            "stroke": ""
+            "stroke": null
         },
         "axisX": {
             "labelAngle": 0,

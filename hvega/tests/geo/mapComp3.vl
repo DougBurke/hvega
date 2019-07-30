@@ -165,7 +165,7 @@
     ],
     "config": {
         "view": {
-            "stroke": ""
+            "stroke": null
         }
     },
     "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
