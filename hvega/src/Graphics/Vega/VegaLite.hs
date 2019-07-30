@@ -1808,14 +1808,11 @@ dataSequenceAs start stop step outName =
 
 {-|
 
-Declare a data source from a provided list of column values. Each column contains
-values of the same type, but columns each with a different type are permitted.
-Columns should all contain the same number of items; if not the dataset will be
-truncated to the length of the shortest column. An optional list of field formatting
-instructions can be provided as the first parameter or an empty list to use the
-default formatting. See the
-<https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
-for details. The columns themselves are most easily generated with 'dataColumn'
+Declare a data source from a list of column values. Each column has a
+specific type (e.g. 'Number' or 'String'), but different columns can have
+different types.
+
+Note that the columns are truncated to match the length of the shortest column.
 
 @
 dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
@@ -1824,7 +1821,21 @@ dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
   . dataColumn \"Year\" (Strings [ "2010", "2014", "2015" ])
 @
 -}
-dataFromColumns :: [Format] -> [DataColumn] -> Data
+dataFromColumns ::
+  [Format]
+  -- ^ An optional list of formatting instructions for the columns.
+  --
+  --   Simple numbers and strings do not normally need formatting, but it is
+  --   good practice to explicitly declare date-time formats as handling of
+  --   these values can vary between different viewers (e.g. browsers).
+  --
+  --   See the
+  --   <https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
+  --   for more details.
+  -> [DataColumn]
+  -- ^ The columns to add. This is expected to be created with one or more
+  --   calls to 'dataColumn'.
+  -> Data
 dataFromColumns fmts cols =
   let dataArray = map object (transpose cols)
 
@@ -1887,8 +1898,11 @@ dataFromJson vlspec fmts =
 
 {-|
 
-A single data value. This is used when a function can accept values of different
-types (e.g. either a number or a string).
+A single data value. This is used when a function or constructor
+can accept values of different types (e.g. either a number or a string),
+such as:
+'dataRow', 'geometry', many constructors of the 'Filter' type,
+'ImNewValue', and 'SInit'.
 
 -}
 data DataValue
@@ -1907,8 +1921,11 @@ dataValueSpec (Str t) = toJSON t
 
 {-|
 
-A list of data values. This is used when a function can accept lists of
-different types (e.g. either a list of numbers or a list of strings).
+A list of data values. This is used when a function or constructor
+can accept lists of different types (e.g. either a list of numbers
+or a list of strings), such as:
+'dataColumn', 'CustomSort', 'FOneOf', or 'ImKeyVals'.
+
 -}
 data DataValues
     = Booleans [Bool]
@@ -2184,11 +2201,6 @@ data MarkChannel
       -- ^ Sort order.
       --
       --   @since 0.4.0.0
-    | MImpute [ImputeProperty]
-      -- ^ Set the imputation rules for a mark channel. See the
-      --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
-      --
-      --   @since 0.4.0.0
     | MTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a mark property channel.
     | MTitle T.Text
@@ -2252,7 +2264,6 @@ markChannelProperty (MLegend lps) = [legendProp_ lps]
 markChannelProperty (MBin bps) = [bin bps]
 markChannelProperty MBinned = [binned_]
 markChannelProperty (MSort ops) = [sort_ ops]
-markChannelProperty (MImpute ips) = [impute_ ips]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   selCond_ markChannelProperty selName ifClause elseClause
 markChannelProperty (MDataCondition tests elseClause) =
@@ -7402,11 +7413,6 @@ data DetailChannel
     = DName T.Text
     | DmType Measurement
     | DBin [BinProperty]
-    | DImpute [ImputeProperty]
-    -- ^ Set the imputation rules for a detail channel. See the
-    -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
-    --
-    --   @since 0.4.0.0
     | DTimeUnit TimeUnit
     | DAggregate Operation
 
@@ -7415,7 +7421,6 @@ detailChannelProperty :: DetailChannel -> LabelledSpec
 detailChannelProperty (DName s) = field_ s
 detailChannelProperty (DmType t) = mtype_ t
 detailChannelProperty (DBin bps) = bin bps
-detailChannelProperty (DImpute ips) = impute_ ips
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
 detailChannelProperty (DAggregate op) = aggregate_ op
 
@@ -8733,11 +8738,15 @@ data ImputeProperty
       --   a start (first parameter), to less than an end (second parameter) in steps of
       --   the third parameter.
     | ImMethod ImMethod
+      -- ^ How is the imputed value constructed.
+      --
+      --   When using @ImMethod 'ImValue'@, the replacement value is
+      --   set with 'ImNewValue'.
     | ImGroupBy [T.Text]
       -- ^ Allow imputing of missing values on a per-group basis. For use with the impute
       --   transform only and not a channel encoding.
     | ImNewValue DataValue
-      -- ^ The replacement value (when using 'ImValue').
+      -- ^ The replacement value (when using @ImMethod 'ImValue'@).
 
 
 imputeProperty :: ImputeProperty -> LabelledSpec
@@ -8790,7 +8799,7 @@ data ImMethod
   | ImMedian
     -- ^ Use the median value.
   | ImValue
-    -- ^ Use a replacement value.
+    -- ^ Use a replacement value (set with @ImNewValue@).
 
 
 imMethodLabel :: ImMethod -> T.Text
@@ -8804,6 +8813,27 @@ imMethodLabel ImValue = "value"
 
 Impute missing data values.
 
+The following example creates a value for @b@, set to the
+mean of existing @b@ values with @c=1@, for the \"missing\" coordinate
+of (@a=30@, @c=1@):
+
+@
+let dvals = 'dataFromColumns' []
+              . 'dataColumn' "a" ('Numbers' [0, 0, 10, 10, 20, 20, 30])
+              . 'dataColumn' "b" ('Numbers' [28, 91, 43, 55, 81, 53, 19])
+              . 'dataColumn' "c" ('Numbers' [0, 1, 0, 1, 0, 1, 0])
+
+    trans = 'transform'
+              . 'impute' "b" "a" ['ImMethod' 'ImMean', 'ImGroupBy' ["c"]]
+
+    enc = 'encoding'
+            . 'position' 'X' ['PName' \"a\", 'PmType' 'Quantitative']
+            . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
+            . 'color' ['MName' \"c\", 'MmType' 'Nominal']
+
+    in 'toVegaLite' [dvals [], trans [], enc [], 'mark' 'Line' []]
+@
+
 @since 0.4.0.0
 -}
 
@@ -8813,7 +8843,7 @@ impute ::
   -> T.Text
   -- ^ The key field to uniquely identify data objects within a group.
   -> [ImputeProperty]
-  -- ^ Define how the imputation works
+  -- ^ Define how the imputation works.
   -> BuildLabelledSpecs
 impute fields key imProps ols =
   let ags = [ fromT fields, fromT key
