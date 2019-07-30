@@ -82,9 +82,13 @@ with the `PositionChannel` type).
 The `Divide` constructor of `BinProperty` now takes a list of
 Doubles rather than two.
 
-Two new type aliases have been added: `Color` and `Opacity`. These
-do not provide any new functionality, but may clash with symbols
-defined in other modules.
+The `TitleConfig` type has gained the following constructors:
+`TFontStyle`, `TFrame`, `TStyle`, and `TZIndex`. The `TitleFrame`
+type was added for use with `TFrame`.
+
+Three new type aliases have been added: `Color`, `Opacity`, and
+`ZIndex`. These do not provide any new functionality, but may clash
+with symbols defined in other modules.
 
 ## 0.3.0.1
 
