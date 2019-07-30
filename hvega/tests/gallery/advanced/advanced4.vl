@@ -1,0 +1,58 @@
+{
+    "transform": [
+        {
+            "filter": "isValid(datum.IMDB_Rating)"
+        },
+        {
+            "filter": {
+                "field": "Release_Date",
+                "range": [
+                    null,
+                    {
+                        "year": 2019
+                    }
+                ]
+            }
+        },
+        {
+            "window": [
+                {
+                    "op": "mean",
+                    "as": "AverageRating",
+                    "field": "IMDB_Rating"
+                }
+            ],
+            "frame": [
+                null,
+                null
+            ]
+        },
+        {
+            "as": "RatingDelta",
+            "calculate": "datum.IMDB_Rating - datum.AverageRating"
+        }
+    ],
+    "mark": {
+        "strokeWidth": 0.3,
+        "opacity": 0.3,
+        "type": "point"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "Release_Date",
+            "type": "temporal"
+        },
+        "y": {
+            "field": "RatingDelta",
+            "type": "quantitative",
+            "axis": {
+                "title": "Residual"
+            }
+        }
+    },
+    "description": "A scatterplot showing each movie in the database and the difference from the average movie rating."
+}

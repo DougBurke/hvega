@@ -9,7 +9,10 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=))
-import Graphics.Vega.VegaLite hiding (filter, repeat)
+import Data.Function ((&))
+import Graphics.Vega.VegaLite
+
+import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("data1", data1)
@@ -42,6 +45,8 @@ testSpecs = [ ("data1", data1)
             , ("bin1", bin1)
             , ("sequence1", sequence1)
             , ("sequence2", sequence2)
+            , ("filter1", filter1)
+            , ("filter2", filter2)
             ]
 
 showData :: (VLProperty, VLSpec) -> VegaLite
@@ -483,3 +488,50 @@ sequence2 =
                 . position Y [ PName "v", PmType Quantitative ]
     in
     toVegaLite [ dvals, trans [], enc [], mark Line [] ]
+
+
+filter1 :: VegaLite
+filter1 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "a" (Strings [ "A", "B", "C", "D", "E", "F", "G", "H", "I" ])
+                . dataColumn "b" (Numbers [ 28, 55, 43, 91, 81, 53, 19, 87, 52 ])
+
+        trans =
+            transform
+                . filter (FExpr "datum.a == 'A' || datum.a == 'C' || datum.a == 'E'")
+
+        enc =
+            encoding
+                . position X [ PName "a", PmType Ordinal ]
+                . position Y [ PName "b", PmType Quantitative ]
+    in
+    toVegaLite [ dvals [], trans [], enc [], mark Bar [] ]
+
+
+filter2 :: VegaLite
+filter2 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "a" (Strings [ "A", "B", "C", "D", "E", "F", "G", "H", "I" ])
+                . dataColumn "b" (Numbers [ 28, 55, 43, 91, 81, 53, 19, 87, 52 ])
+
+        trans =
+            transform
+                . filter
+                    (Or
+                        (Or (FEqual "a" (Str "A") & FilterOp)
+                            (FEqual "a" (Str "C") & FilterOp)
+                        )
+                        (FEqual "a" (Str "E") & FilterOp)
+                        & FCompose
+                    )
+
+        enc =
+            encoding
+                . position X [ PName "a", PmType Ordinal ]
+                . position Y [ PName "b", PmType Quantitative ]
+    in
+    toVegaLite [ dvals [], trans [], enc [], mark Bar [] ]

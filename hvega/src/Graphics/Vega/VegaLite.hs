@@ -553,6 +553,12 @@ module Graphics.Vega.VegaLite
 
        , FacetConfig(..)
 
+         -- ** Concatenated View Configuration Options
+         --
+         -- $concatconfig
+
+       , ConcatConfig(..)
+
          -- * General Data types
          --
          -- $generaldatatypes
@@ -870,7 +876,7 @@ import Data.Monoid ((<>))
 -- [Vega-Lite scheme configuration documentation](https://vega.github.io/vega/docs/schemes/#scheme-properties).
 
 -- $titleconfig
--- Unlike 'title', these options apply to **all** titles if multiiple views
+-- Unlike 'title', these options apply to __all__ titles if multiple views
 -- are created. See the
 -- [Vega-Lite title configuration documentation](https://vega.github.io/vega-lite/docs/title.html#config).
 
@@ -880,7 +886,11 @@ import Data.Monoid ((<>))
 
 -- $facetconfig
 -- See the
--- [Vega-Lite facet config documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+-- [Vega-Lite facet configuration documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
+
+-- $concatconfig
+-- See the
+-- [Vega-Lite concat configuration documentation](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration).
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -897,7 +907,7 @@ import Data.Monoid ((<>))
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
--- constructors. It also removed or renamed the following symbols:
+-- constructors. It also removed or changed the following symbols:
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
 --   represented a Vega, rather than Vega-Lite, property. The @xSort@
@@ -957,6 +967,10 @@ import Data.Monoid ((<>))
 -- * The 'title' function now takes a second argument, a list of 'TitleConfig'
 --   values for configuring the appearance of the title.
 --
+-- * The 'ArgMax' and 'ArgMin' constructors of 'Operation' now take an
+--   optional field name, to allow them to be used as part of an encoding
+--   aggregation (e.g. with 'PAggregate').
+--
 -- * Three new type aliases have been added: 'Color', 'Opacity', and
 --   'ZIndex'. These do not provide any new functionality, but may clash
 --   with symbols from other modules.
@@ -968,7 +982,7 @@ import Data.Monoid ((<>))
 --- helpers not in VegaLite.elm
 
 aggregate_ :: Operation -> LabelledSpec
-aggregate_ op = "aggregate" .= operationLabel op
+aggregate_ op = "aggregate" .= operationSpec op
 
 type_ :: T.Text -> LabelledSpec
 type_ t = "type" .= t
@@ -981,7 +995,7 @@ order_ :: T.Text -> LabelledSpec
 order_ o = "order" .= o
 
 op_ :: Operation -> LabelledSpec
-op_ op = "op" .= operationLabel op
+op_ op = "op" .= operationSpec op
 
 repeat_ :: Arrangement -> LabelledSpec
 repeat_ arr = "repeat" .= arrangementLabel arr
@@ -2807,12 +2821,44 @@ The @Average@ constructor was removed in version @0.4.0.0@; use 'Mean' instead.
 
 -}
 data Operation
-    = ArgMax
-      -- ^ An input data object containing the maximum field value to be used in an
-      -- aggregation operation.
-    | ArgMin
-      -- ^ An input data object containing the minimum field value to be used in an
-      -- aggregation operation.
+    = ArgMax (Maybe T.Text)
+      -- ^ An input data object containing the maximum field value to be used
+      --   in an aggregation operation.
+      --
+      --   If supplied as part of an encoding aggregation, the parameter
+      --   should be 'Just' the name of the field to maximise. When used
+      --   as part of a transform the parameter should be 'Nothing' as the
+      --   field is specified in the 'aggregate' call.
+      --
+      --   Encoding example, to find the production budget for the maximum
+      --   US grossing film in each genre:
+      --
+      --   @
+      --   'encoding'
+      --     . 'position' 'X'
+      --                [ 'PName' \"Production_Budget\"
+      --                , 'PmType' 'Quantitative'
+      --                , 'PAggregate' ('ArgMax' ('Just' \"US_Gross\"))
+      --                ]
+      --     . 'position' 'Y' ['PName' \"Major_Genre\", 'PmType' 'Nominal']
+      --   @
+      --
+      --   An example of its use as part of an 'aggregate' call:
+      --
+      --   @
+      --   'transform'
+      --     . 'aggregate'
+      --         [ 'opAs' ('ArgMax' 'Nothing') \"US_Gross\" \"amUSGross\"]
+      --         [\"Major_Genre\"]
+      --   @
+      --
+      --   The optional field name was added in the @0.4.0.0@ release.
+    | ArgMin (Maybe T.Text)
+      -- ^ An input data object containing the minimum field value to be used
+      --   in an aggregation operation. See 'ArgMax' for a discussion of the
+      --   optional argument.
+      --
+      --   The optional field name was added in the @0.4.0.0@ release.
     | CI0
       -- ^ Lower 95% confidence interval to be used in an aggregation operation.
     | CI1
@@ -2852,27 +2898,31 @@ data Operation
       -- ^ Population variance of field values to be used in an aggregate operation.
 
 
-operationLabel :: Operation -> T.Text
-operationLabel ArgMax = "argmax"
-operationLabel ArgMin = "argmin"
-operationLabel CI0 = "ci0"
-operationLabel CI1 = "ci1"
-operationLabel Count = "count"
-operationLabel Distinct = "distinct"
-operationLabel Max = "max"
-operationLabel Mean = "mean"
-operationLabel Median = "median"
-operationLabel Min = "min"
-operationLabel Missing = "missing"
-operationLabel Q1 = "q1"
-operationLabel Q3 = "q3"
-operationLabel Stderr = "stderr"
-operationLabel Stdev = "stdev"
-operationLabel StdevP = "stdevp"
-operationLabel Sum = "sum"
-operationLabel Valid = "valid"
-operationLabel Variance = "variance"
-operationLabel VarianceP = "variancep"
+-- Unlike Elm, not checking if the string is empty for ArgMin/Max
+
+operationSpec :: Operation -> VLSpec
+operationSpec (ArgMax Nothing) = "argmax"
+operationSpec (ArgMax (Just s)) = object ["argmax" .= s]
+operationSpec (ArgMin Nothing) = "argmin"
+operationSpec (ArgMin (Just s)) = object ["argmin" .= s]
+operationSpec CI0 = "ci0"
+operationSpec CI1 = "ci1"
+operationSpec Count = "count"
+operationSpec Distinct = "distinct"
+operationSpec Max = "max"
+operationSpec Mean = "mean"
+operationSpec Median = "median"
+operationSpec Min = "min"
+operationSpec Missing = "missing"
+operationSpec Q1 = "q1"
+operationSpec Q3 = "q3"
+operationSpec Stderr = "stderr"
+operationSpec Stdev = "stdev"
+operationSpec StdevP = "stdevp"
+operationSpec Sum = "sum"
+operationSpec Valid = "valid"
+operationSpec Variance = "variance"
+operationSpec VarianceP = "variancep"
 
 
 -- | Identifies how repeated or faceted views are arranged.
@@ -6367,6 +6417,10 @@ data ConfigurationProperty
       -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
+    | ConcatStyle [ConcatConfig]
+      -- ^ The default appearance of concatenated layouts.
+      --
+      --   @since 0.4.0.0
     | CountTitle T.Text
       -- ^ The default title style for count fields.
     | FacetStyle [FacetConfig]
@@ -6442,6 +6496,7 @@ configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
+configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
@@ -6753,8 +6808,8 @@ Used for creating logical compositions. For example
 @
 'color'
     [ 'MSelectionCondition' (Or ('SelectionName' "alex") (SelectionName "morgan"))
-        [ 'MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative' ]
-        [ 'MString' "gray" ]
+        ['MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative']
+        ['MString' "gray"]
     ]
 @
 
@@ -6766,8 +6821,26 @@ Not (And (Expr "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating
 -}
 data BooleanOp
     = Expr T.Text
-    -- ^ Expression that should evaluate to either true or false. Can use any valid
-    --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
+      -- ^ Expression that should evaluate to either true or false.
+      --   Can use any valid
+      --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
+    | FilterOp Filter
+      -- ^ Convert a 'Filter' into a 'BooleanOp' so that it may be used as
+      --   part of a more complex expression.
+      --
+      --   For example (using 'Data.Function.&' to apply 'FilterOp' to a filter):
+      --
+      --   @
+      --   trans = 'transform'
+      --             . 'filter' ('FCompose'
+      --                        ('And'
+      --                          ('FValid' "IMDB_Rating" & 'FilterOp')
+      --                          ('FValid' "Rotten_Tomatoes_Rating" & 'FilterOp')
+      --                        )
+      --                      )
+      --   @
+      --
+      --   @since 0.4.0.0
     | Selection T.Text  -- TODO: rename Selected
       -- ^ Interactive selection that will be true or false as part of a logical composition.
       --   For example: to filter a dataset so that only items selected interactively and that have
@@ -6775,23 +6848,23 @@ data BooleanOp
       --
       -- @
       -- 'transform'
-      --    . 'filter' ('FCompose' (And (Selected "brush") ('Expr' "datum.weight > 30")))
+      --    . 'filter' ('FCompose' ('And' ('Selection' "brush") ('Expr' "datum.weight > 30")))
       -- @
     | SelectionName T.Text
     -- ^  Name a selection that is used as part of a conditional encoding.
     --
     -- @
     -- 'color'
-    --    [ 'MSelectionCondition' (SelectionName \"myBrush\")
-    --        [ 'MName' \"myField\", 'MmType' 'Nominal' ]
-    --        [ 'MString' \"grey\" ]
+    --    [ 'MSelectionCondition' ('SelectionName' \"myBrush\")
+    --        ['MName' \"myField\", 'MmType' 'Nominal']
+    --        ['MString' \"grey\"]
     --    ]
     -- @
     | And BooleanOp BooleanOp
       -- ^ Apply an \'and\' Boolean operation as part of a logical composition.
       --
       -- @
-      -- And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null")
+      -- 'And' ('Expr' "datum.IMDB_Rating === null") ('Expr' "datum.Rotten_Tomatoes_Rating === null")
       -- @
     | Or BooleanOp BooleanOp
       -- ^ Apply an \'or\' Boolean operation as part of a logical composition.
@@ -6799,11 +6872,12 @@ data BooleanOp
       -- ^ Negate the given expression.
       --
       -- @
-      -- Not (And ('Expr' "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null"))
+      -- 'Not' ('And' ('Expr' "datum.IMDB_Rating === null") ('Expr' "datum.Rotten_Tomatoes_Rating === null"))
       -- @
 
 booleanOpSpec :: BooleanOp -> VLSpec
 booleanOpSpec (Expr expr) = toJSON expr
+booleanOpSpec (FilterOp f) = filterSpec f
 booleanOpSpec (SelectionName selName) = toJSON selName
 booleanOpSpec (Selection sel) = object ["selection" .= sel]
 booleanOpSpec (And operand1 operand2) = object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
@@ -6817,11 +6891,14 @@ Type of filtering operation. See the
 <https://vega.github.io/vega-lite/docs/filter.html Vega-Lite documentation>
 for details.
 
+These can also be included into a 'BooleanOp' expression using 'FilterOp'
+(as of version @0.4.0.0@).
+
 -}
 data Filter
     = FEqual T.Text DataValue
-      -- ^ Filter a data stream so that only data in a given field equal to the given
-      --   value are used.
+      -- ^ Filter a data stream so that only data in a given field equal to
+      --   the given value are used.
     | FLessThan T.Text DataValue
       -- ^ Filter a data stream so that only data in a given field less than the given
       --   value are used.
@@ -6846,7 +6923,20 @@ data Filter
       -- ^ Filter a data stream so that only data that satisfy the given predicate
       --   expression are used.
     | FCompose BooleanOp
-      -- ^ Build up a filtering predicate through logical composition ('And', 'Or' etc.).
+      -- ^ Build up a filtering predicate through logical composition such
+      --   as 'And' and 'Or'.
+      --
+      --   The following fgragment will apply a filter to identify only
+      --   those items selected interactively and that represent ages
+      --   over 65:
+      --
+      --   @
+      --   trans = 'transform'
+      --             . 'filter'
+      --                 ('FCompose'
+      --                   ('And' ('Selection' "brush") ('Expr' "datum.age > 65"))
+      --                 )
+      --   @
     | FSelection T.Text
       -- ^ Filter a data stream so that only data in a given field that are
       --   within the given interactive selection are used.
@@ -6866,6 +6956,43 @@ data Filter
       --   field are used.
       --
       --   @since 0.4.0.0
+
+
+fop_ :: T.Text -> T.Text -> DataValue -> VLSpec
+fop_ field label val = object [field_ field, label .= dataValueSpec val]
+
+filterSpec :: Filter -> VLSpec
+filterSpec (FExpr expr) = toJSON expr
+filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+
+filterSpec (FEqual field val) = fop_ field "equal" val
+filterSpec (FLessThan field val) = fop_ field "lt" val
+filterSpec (FLessThanEq field val) = fop_ field "lte" val
+filterSpec (FGreaterThan field val) = fop_ field "gt" val
+filterSpec (FGreaterThanEq field val) = fop_ field "gte" val
+
+filterSpec (FSelection selName) = object ["selection" .= selName]
+
+filterSpec (FRange field vals) =
+  let ans = case vals of
+              NumberRange mn mx -> map toJSON [mn, mx]
+              DateRange dMin dMax -> [process dMin, process dMax]
+
+      process [] = A.Null
+      process dts = object (map dateTimeProperty dts)
+
+  in object [field_ field, "range" .= ans]
+
+filterSpec (FOneOf field vals) =
+  let ans = case vals of
+              Numbers xs -> map toJSON xs
+              DateTimes dts -> map (object . map dateTimeProperty) dts
+              Strings ss -> map toJSON ss
+              Booleans bs -> map toJSON bs
+
+  in object [field_ field, "oneOf" .= ans]
+
+filterSpec (FValid field) = object [field_ field, "valid" .= True]
 
 
 {-|
@@ -7409,6 +7536,8 @@ facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 
 {-|
 
+Configuration options for faceted views, used with 'FacetStyle'.
+
 See the
 <https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
 
@@ -7419,8 +7548,7 @@ data FacetConfig
     = FColumns Int
     -- ^ The maximum number of columns to use in a faceted-flow layout.
     | FSpacing Double
-    -- ^ The spacing in pixels between sub-views in a view composition,
-    --   such as a faceted or concatenated view.
+    -- ^ The spacing in pixels between sub-views in a faceted composition.
 
 
 facetConfigProperty :: FacetConfig -> LabelledSpec
@@ -7808,6 +7936,25 @@ setting.
 -}
 height :: Double -> PropertySpec
 height h = (VLHeight, toJSON h)
+
+
+{-|
+
+Configuration options for concatenated views, used with 'ConcatStyle'.
+
+@since 0.4.0.0
+
+-}
+data ConcatConfig
+    = ConcatColumns Int
+      -- ^ The maximum number of columns to use in a concatenated flow layout.
+    | ConcatSpacing Double
+      -- ^ The spacing in pixels between sub-views in a concatenated view.
+
+
+concatConfigProperty :: ConcatConfig -> LabelledSpec
+concatConfigProperty (ConcatColumns n) = "columns" .= n
+concatConfigProperty (ConcatSpacing x) = "spacing" .= x
 
 
 {-|
@@ -8319,7 +8466,7 @@ data Window
 
 
 windowFieldProperty :: Window -> LabelledSpec
-windowFieldProperty (WAggregateOp op) = "op" .= operationLabel op
+windowFieldProperty (WAggregateOp op) = "op" .= operationSpec op
 windowFieldProperty (WOp op) = "op" .= wOperationLabel op
 windowFieldProperty (WParam n) = "param" .= n
 windowFieldProperty (WField f) = field_ f
@@ -8706,41 +8853,8 @@ with @"datum."@).
 
 -}
 filter :: Filter -> BuildLabelledSpecs
-filter f ols =
-  let js = case f of
-        FExpr expr -> toJSON expr
-        FCompose boolExpr -> booleanOpSpec boolExpr
+filter f ols = ("filter" .= filterSpec f) : ols
 
-        FEqual field val -> object [field_ field, "equal" .= dataValueSpec val]
-        FLessThan field val -> object [field_ field, "lt" .= dataValueSpec val]
-        FLessThanEq field val -> object [field_ field, "lte" .= dataValueSpec val]
-        FGreaterThan field val -> object [field_ field, "gt" .= dataValueSpec val]
-        FGreaterThanEq field val -> object [field_ field, "gte" .= dataValueSpec val]
-
-        FSelection selName -> object ["selection" .= selName]
-
-        FRange field vals ->
-            let ans = case vals of
-                        NumberRange mn mx -> map toJSON [mn, mx]
-                        DateRange dMin dMax -> [process dMin, process dMax]
-
-                process [] = A.Null
-                process dts = object (map dateTimeProperty dts)
-
-            in object [field_ field, "range" .= ans]
-
-        FOneOf field vals ->
-            let ans = case vals of
-                        Numbers xs -> map toJSON xs
-                        DateTimes dts -> map (object . map dateTimeProperty) dts
-                        Strings ss -> map toJSON ss
-                        Booleans bs -> map toJSON bs
-
-            in object [field_ field, "oneOf" .= ans]
-
-        FValid field -> object [field_ field, "valid" .= True]
-
-  in ("filter", js) : ols
 
 
 {-|

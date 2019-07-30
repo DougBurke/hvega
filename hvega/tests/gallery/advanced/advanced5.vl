@@ -1,0 +1,140 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "rank",
+                    "as": "rank"
+                }
+            ],
+            "groupby": [
+                "matchday"
+            ],
+            "sort": [
+                {
+                    "field": "point",
+                    "order": "descending"
+                },
+                {
+                    "field": "diff",
+                    "order": "descending"
+                }
+            ]
+        }
+    ],
+    "mark": {
+        "orient": "vertical",
+        "type": "line"
+    },
+    "data": {
+        "values": [
+            {
+                "diff": -1,
+                "point": 0,
+                "matchday": 1,
+                "team": "Germany"
+            },
+            {
+                "diff": 1,
+                "point": 3,
+                "matchday": 1,
+                "team": "Mexico"
+            },
+            {
+                "diff": -1,
+                "point": 0,
+                "matchday": 1,
+                "team": "South Korea"
+            },
+            {
+                "diff": 1,
+                "point": 3,
+                "matchday": 1,
+                "team": "Sweden"
+            },
+            {
+                "diff": 0,
+                "point": 3,
+                "matchday": 2,
+                "team": "Germany"
+            },
+            {
+                "diff": 2,
+                "point": 6,
+                "matchday": 2,
+                "team": "Mexico"
+            },
+            {
+                "diff": -2,
+                "point": 0,
+                "matchday": 2,
+                "team": "South Korea"
+            },
+            {
+                "diff": 0,
+                "point": 3,
+                "matchday": 2,
+                "team": "Sweden"
+            },
+            {
+                "diff": -2,
+                "point": 3,
+                "matchday": 3,
+                "team": "Germany"
+            },
+            {
+                "diff": -1,
+                "point": 6,
+                "matchday": 3,
+                "team": "Mexico"
+            },
+            {
+                "diff": 0,
+                "point": 3,
+                "matchday": 3,
+                "team": "South Korea"
+            },
+            {
+                "diff": 3,
+                "point": 6,
+                "matchday": 3,
+                "team": "Sweden"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "title": {
+        "fontStyle": "italic",
+        "text": "World Cup 2018: Group F Rankings",
+        "frame": "bounds"
+    },
+    "encoding": {
+        "color": {
+            "field": "team",
+            "scale": {
+                "domain": [
+                    "Germany",
+                    "Mexico",
+                    "South Korea",
+                    "Sweden"
+                ],
+                "range": [
+                    "black",
+                    "#127153",
+                    "#c91a3c",
+                    "#0c71ab"
+                ]
+            },
+            "type": "nominal"
+        },
+        "x": {
+            "field": "matchday",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "rank",
+            "type": "ordinal"
+        }
+    },
+    "description": "Line chart showing ranks over time for thw World Cup 2018 Group F teams"
+}
