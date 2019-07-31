@@ -4,7 +4,7 @@
 -- Based on the Elm VegaLite GalleryAdvanced.elm (from development of version
 -- 1.13.0)
 --
-module GalleryAdvanced (testSpecs) where
+module Gallery.Advanced (testSpecs) where
 
 import Graphics.Vega.VegaLite
 

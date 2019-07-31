@@ -64,7 +64,7 @@ import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
 -- extend from the "tests" to gallery plots
-import qualified GalleryAdvanced as GA
+import qualified Gallery.Advanced as GA
 
 -- The "golden" output is "tests/<label>/<name>.vl"
 --
