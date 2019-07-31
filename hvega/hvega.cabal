@@ -19,6 +19,31 @@ extra-source-files:  README.md
                      default.nix
                      shell.nix
                      hvega.nix
+                     tests/specs/color/*vl
+                     tests/specs/composite/*vl
+                     tests/specs/conditional/*vl
+                     tests/specs/config/*vl
+                     tests/specs/data/*vl
+                     tests/specs/fillstroke/*vl
+                     tests/specs/gallery/*vl
+                     tests/specs/geo/*vl
+                     tests/specs/hyperlink/*vl
+                     tests/specs/legend/*vl
+                     tests/specs/null/*vl
+                     tests/specs/position/*vl
+                     tests/specs/projection/*vl
+                     tests/specs/scale/*vl
+                     tests/specs/shape/*vl
+                     tests/specs/sort/*vl
+                     tests/specs/textformat/*vl
+                     tests/specs/time/*vl
+                     tests/specs/tooltip/*vl
+                     tests/specs/trail/*vl
+                     tests/specs/viewcomposition/*vl
+                     tests/specs/windowtransform/*vl
+                     tests/specs/gallery/advanced/*vl
+                     tests/specs/gallery/area/*vl
+
 extra-doc-files:     images/example.png
                      images/intro.png
 cabal-version:       >= 1.18
