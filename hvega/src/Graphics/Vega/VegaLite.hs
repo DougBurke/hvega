@@ -3479,6 +3479,7 @@ data PositionChannel
     | PNumber Double
       -- ^ Set a position to an arbitrary value. Useful for placing items at the top of
       --   a plot area (@PNumber 0@) or a fixed number of pixels from the top.
+      --   See also 'PHeight' and 'PWidth'.
       --
       --   @since 0.4.0.0
     | PRepeat Arrangement
@@ -6254,11 +6255,11 @@ viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singlet
 viewBackgroundSpec (VBStyle styles) = "style" .= styles
 viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
 viewBackgroundSpec (VBFill (Just s)) = "fill" .= s
-viewBackgroundSpec (VBFill Nothing) = "fill" .= fromT ""
+viewBackgroundSpec (VBFill Nothing) = "fill" .= A.Null
 viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
 viewBackgroundSpec (VBOpacity x) = "opacity" .= x
 viewBackgroundSpec (VBStroke (Just s)) = "stroke" .= s
-viewBackgroundSpec (VBStroke Nothing) = "stroke" .= fromT ""
+viewBackgroundSpec (VBStroke Nothing) = "stroke" .= A.Null
 viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
