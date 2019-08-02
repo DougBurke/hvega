@@ -55,14 +55,14 @@ vl1 =
 
       dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
             . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
-            . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
-            . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
+            . 'dataRow' [("start", 'Str' "2011-04-02"), ("count", 'Number' 45)]
+            . 'dataRow' [("start", 'Str' "2011-04-12"), ("count", 'Number' 3)]
 
       barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
 
       enc = 'encoding'
             . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
-            . position Y [PName "count", PmType Quantitative]
+            . 'position' 'Y' ['PName' "count", 'PmType' 'Quantitative']
 
   in 'toVegaLite' ['description' desc, 'background' "white"
                 , dat [], 'mark' 'Bar' barOpts, enc []]
@@ -1120,13 +1120,13 @@ allows this to be done compactly.
 @
 let dat = 'dataFromColumns' []
           . 'dataColumn' "a" ('Strings' [ \"C", \"C", \"D", \"D", \"E", \"E" ])
-          . dataColumn "b" ('Numbers' [ 2, 7, 1, 2, 6, 8 ])
+          . 'dataColumn' "b" ('Numbers' [ 2, 7, 1, 2, 6, 8 ])
 
     enc = 'encoding'
           . 'position' 'X' [ 'PName' "a", 'PmType' 'Nominal' ]
-          . position 'Y' [ PName "b", 'PmType' 'Quantitative', 'PAggregate' 'Mean' ]
+          . 'position' 'Y' [ 'PName' "b", 'PmType' 'Quantitative', 'PAggregate' 'Mean' ]
 
-in toVegaLite [ dat [], mark 'Bar' [], enc [] ]
+in 'toVegaLite' [ dat [], 'mark' 'Bar' [], enc [] ]
 @
 
 The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>,
@@ -1162,7 +1162,7 @@ This is useful when you wish to create
 a single page with multiple visulizualizations.
 
 @
-combineSpecs
+'combineSpecs'
     [ ( "vis1", myFirstVis )
     , ( "vis2", mySecondVis )
     , ( "vis3", myOtherVis )
@@ -1233,13 +1233,12 @@ Each feature object in this collection can be created with the 'geometry'
 function.
 
 @
-geojson =
-    geoFeatureCollection
-        [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( -3, 52 ), ( 4, 52 ), ( -3, 59 ) ] ])
-            [ ( "myRegionName", 'Str' "Northern region" ) ]
-        , geometry (GeoPolygon [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 52 ) ] ])
-            [ ( "myRegionName", Str "Southern region" ) ]
-        ]
+'geoFeatureCollection'
+    [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( -3, 52 ), ( 4, 52 ), ( -3, 59 ) ] ])
+        [ ( "myRegionName", 'Str' "Northern region" ) ]
+    , 'geometry' ('GeoPolygon' [ [ ( -3, 52 ), ( 4, 52 ), ( 4, 45 ), ( -3, 52 ) ] ])
+        [ ( "myRegionName", 'Str' "Southern region" ) ]
+    ]
 @
 -}
 geoFeatureCollection :: [VLSpec] -> VLSpec
@@ -1256,11 +1255,10 @@ Each geometry object in this collection can be created with the 'geometry'
 function.
 
 @
-geojson =
-    geometryCollection
-        [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
-        , geometry ('GeoPoint' -3.5 55.5) []
-        ]
+'geometryCollection'
+    [ 'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
+    , 'geometry' ('GeoPoint' -3.5 55.5) []
+    ]
 @
 -}
 geometryCollection :: [VLSpec] -> VLSpec
@@ -1277,13 +1275,12 @@ For further details see the
 <https://vega.github.io/vega-lite/docs/aggregate.html#aggregate-op-def Vega-Lite documentation>.
 
 @
-trans =
-    'transform'
-        . 'aggregate'
-            [ opAs 'Min' "people" "lowerBound"
-            , opAs 'Max' "people" "upperBound"
-            ]
-            [ "age" ]
+'transform'
+    . 'aggregate'
+        [ 'opAs' 'Min' "people" "lowerBound"
+        , 'opAs' 'Max' "people" "upperBound"
+        ]
+        [ "age" ]
 @
 -}
 opAs ::
@@ -1551,7 +1548,7 @@ data Format
       --
       -- @
       -- 'dataFromUrl' \"myDataFile.csv\"
-      --    [ Parse [ ( \"x\", 'FoNumber' ), ( "\y\", FoNumber ) ] ]
+      --    [ 'Parse' [ ( \"x\", 'FoNumber' ), ( "\y\", 'FoNumber' ) ] ]
       -- @
 
 
@@ -1581,14 +1578,14 @@ type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
 {-|
 
 Represents a single column of data. Used when generating inline data with
-'dataColumn'.
+'dataColumn' and 'dataFromColumns'.
 -}
 type DataColumn = [LabelledSpec]
 
 {-|
 
 Represents a single row of data. Used when generating inline data with
-'dataRow'.
+'dataRow' and 'dataFromRows'.
 -}
 type DataRow = VLSpec
 
@@ -1597,11 +1594,11 @@ type DataRow = VLSpec
 Convenience type-annotation label for use with data generation functions.
 
 @
-myRegion : ['DataColumn'] -> Data
+myRegion : ['DataColumn'] -> 'Data'
 myRegion =
     'dataFromColumns' []
         . 'dataColumn' "easting" ('Numbers' [ -3, 4, 4, -3, -3 ])
-        . dataColumn "northing" (Numbers [ 52, 52, 45, 45, 52 ])
+        . 'dataColumn' "northing" ('Numbers' [ 52, 52, 45, 45, 52 ])
 @
 
 It is the same as 'PropertySpec' (which was added in @0.4.0.0@),
@@ -1702,8 +1699,10 @@ dataTypeSpec dType =
 Create a row of data. A row comprises a list of (columnName, value) pairs.
 The final parameter is the list of any other rows to which this is added.
 
+This is expected to be used with 'dataFromRows'.
+
 @
-dataRow [(\"Animal\", 'Str' \"Fish\"), (\"Age\", 'Number' 28), (\"Year\", Str "2010")] []
+'dataRow' [(\"Animal\", 'Str' \"Fish\"), (\"Age\", 'Number' 28), (\"Year\", 'Str' "2010")] []
 @
 -}
 dataRow :: [(T.Text, DataValue)] -> [DataRow] -> [DataRow]
@@ -1722,7 +1721,7 @@ let toJS = Data.Aeson.toJSON
 
     dvals = 'dataFromRows' []
             . 'dataRow' [ ( "cat", 'Str' "a" ), ( "val", 'Number' 10 ) ]
-            . dataRow [ ( "cat", Str "b" ), ( "val", Number 18 ) ]
+            . 'dataRow' [ ( "cat", 'Str' "b" ), ( "val", 'Number' 18 ) ]
     json = toJS
             [ obj [ ( "cat", toJS "a" ), ( "val", toJS 120 ) ]
             , obj [ ( "cat", toJS "b" ), ( "val", toJS 180 ) ]
@@ -1731,7 +1730,7 @@ let toJS = Data.Aeson.toJSON
     enc = ...
 
 in 'toVegaLite'
-    [ datasets [ ( \"myData\", dvals [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
+    [ 'datasets' [ ( \"myData\", dvals [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
     , 'dataFromSource' \"myData\" []
     , 'mark' 'Bar' []
     , enc []
@@ -1765,8 +1764,7 @@ Name to give a data source. Useful when a specification needs to reference a
 data source, such as one generated via an API call.
 
 @
-data =
-    dataName \"myName\" ('dataFromUrl' \"myData.json\" [])
+dvals = 'dataName' \"myName\" ('dataFromUrl' \"myData.json\" [])
 @
 
 @since 0.4.0.0
@@ -1813,7 +1811,7 @@ sequence will have the name @\"data\"@. To give it an alternative name use
 'dataSequenceAs'.
 
 @
-myData = dataSequence 0 6.28 0.1
+myData = 'dataSequence' 0 6.28 0.1
 @
 
 @since 0.4.0.0
@@ -1840,7 +1838,7 @@ Generate a sequence of numbers as a named data source. This extends
 'dataSequence' by allowing you to name the data source.
 
 @
-myTheta = dataSequenceAs 0 6.28 0.1 \"theta\"
+myTheta = 'dataSequenceAs' 0 6.28 0.1 \"theta\"
 @
 
 @since 0.4.0.0
@@ -1872,10 +1870,10 @@ different types.
 Note that the columns are truncated to match the length of the shortest column.
 
 @
-dataFromColumns [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
+'dataFromColumns' [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
   . 'dataColumn' \"Animal\" ('Strings' [ \"Fish\", \"Dog\", \"Cat\" ])
-  . dataColumn \"Age\" ('Numbers' [ 28, 12, 6 ])
-  . dataColumn \"Year\" (Strings [ "2010", "2014", "2015" ])
+  . 'dataColumn' \"Age\" ('Numbers' [ 28, 12, 6 ])
+  . 'dataColumn' \"Year\" ('Strings' [ "2010", "2014", "2015" ])
 @
 -}
 dataFromColumns ::
@@ -1937,7 +1935,7 @@ let geojson =
 in 'toVegaLite'
     [ 'width' 200
     , 'height' 200
-    , dataFromJson geojson []
+    , 'dataFromJson' geojson []
     , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' []
     ]
@@ -2002,8 +2000,10 @@ dataValuesSpecs (Strings ss) = map toJSON ss
 Create a column of data. A column has a name and a list of values. The final
 parameter is the list of any other columns to which this is added.
 
+This is expected to be used with 'dataFromColumns'.
+
 @
-dataColumn \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
+'dataColumn' \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
 @
 -}
 dataColumn :: T.Text -> DataValues -> [DataColumn] -> [DataColumn]
@@ -2022,27 +2022,40 @@ dataColumn colName dVals xs =
 
 {-|
 
-Declare a data source from a provided list of row values. Each row contains
-a list of tuples where the first value is a string representing the column name, and the
-second the column value for that row. Each column can have a value of a different type
-but you must ensure that when subsequent rows are added, they match the types of previous
-values with shared column names. An optional list of field formatting instructions can
-be provided as the first parameter or an empty list to use the default formatting. See the
-<https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
-for details.
+Declare a data source from a provided list of row values. Each row
+contains a list of tuples where the first value is a string
+representing the column name, and the second the column value for that
+row. Each column can have a value of a different type but
+__you must ensure__
+that when subsequent rows are added, they match the types of
+previous values with shared column names.
 
-The rows themselves are most easily generated with 'dataRow'. Note though that generally
-if you are creating data inline (as opposed to reading from a file), adding data by column
-is more efficient and less error-prone.
+Note though that generally if you are creating data inline (as opposed
+to reading from a file), adding data by column is more efficient and
+less error-prone.
 
 @
 dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
-  . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", Str "2010" ) ]
-  . dataRow [ ( \"Animal\", Str \"Dog\" ), ( \"Age\", Number 12 ), ( \"Year\", Str "2014" ) ]
-  . dataRow [ ( \"Animal\", Str \"Cat\" ), ( \"Age\", Number 6 ), ( \"Year\", Str "2015" ) ]
+  . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", 'Str' "2010" ) ]
+  . 'dataRow' [ ( \"Animal\", 'Str' \"Dog\" ), ( \"Age\", 'Number' 12 ), ( \"Year\", 'Str' "2014" ) ]
+  . 'dataRow' [ ( \"Animal\", 'Str' \"Cat\" ), ( \"Age\", 'Number' 6 ), ( \"Year\", 'Str' "2015" ) ]
 @
 -}
-dataFromRows :: [Format] -> [DataRow] -> Data
+dataFromRows ::
+  [Format]
+  -- ^ An optional list of formatting instructions for the rows.
+  --
+  --   Simple numbers and strings do not normally need formatting, but it is
+  --   good practice to explicitly declare date-time formats as handling of
+  --   these values can vary between different viewers (e.g. browsers).
+  --
+  --   See the
+  --   <https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
+  --   for more details.
+  -> [DataRow]
+  -- ^ The rows to add. This is expected to be created with one or more
+  --   calls to 'dataRow'.
+  -> Data
 dataFromRows fmts rows =
   let kvs = ("values", toJSON rows)
             : if null fmts
@@ -2064,9 +2077,9 @@ for details.
 @
 'toVegaLite'
     [ 'datasets' [ ( "myData", dvals [] ),  ( "myJson", 'dataFromJson' json [] ) ]
-    , dataFromSource "myData" []
+    , 'dataFromSource' "myData" []
     , 'mark' 'Bar' []
-    , enc []
+    , ...
     ]
 @
 -}
@@ -2089,14 +2102,10 @@ parameter or an empty list to use the default formatting. See the
 for details.
 
 @
-'toVegaLite'
-    [ dataFromUrl "data/weather.csv" [ 'Parse' [ ( "date", 'FoDate' "%Y-%m-%d %H:%M" ) ] ]
-    , 'mark' 'Line' []
-    , enc []
-    ]
+'dataFromUrl' "data/weather.csv" [ 'Parse' [ ( "date", 'FoDate' "%Y-%m-%d %H:%M" ) ] ]
 @
 -}
--- TODO: should use a URL type
+-- TODO: should this use a URL type?
 dataFromUrl :: T.Text -> [Format] -> Data
 dataFromUrl url fmts =
   let kvs = ("url" .= url)
@@ -2213,13 +2222,13 @@ style for lines. To keep the default style for the mark, just provide an empty l
 for the second parameter.
 
 @
-mark 'Circle' []
-mark 'Line' ['MInterpolate' 'StepAfter']
+'mark' 'Circle' []
+'mark' 'Line' ['MInterpolate' 'StepAfter']
 @
 
 @
 let dvals = 'dataFromUrl' \"city.json\" ['TopojsonFeature' \"boroughs\"] []
-    markOpts = mark 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
+    markOpts = 'mark' 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
 in 'toVegaLite' [dvals, markOpts]
 @
 -}
@@ -2670,12 +2679,17 @@ Create an encoding specification from a list of channel encodings,
 such as 'position', 'color', 'size', 'shape'.
 
 @
-enc = encoding
+enc = 'encoding'
         . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
-        . position 'Y' [ PName \"Age\", PmType 'Quantitative' ]
+        . 'position' 'Y' [ PName \"Age\", 'PmType' 'Quantitative' ]
         . 'shape' [ 'MName' \"Species\", 'MmType' 'Nominal' ]
-        . 'size' [ MName \"Population\", MmType Quantitative ]
+        . 'size' [ 'MName' \"Population\", 'MmType' 'Quantitative' ]
 @
+
+The type of @enc@ in this example is @[LabelledSpec] -> PropertySpec@,
+so it can either be used to add further encoding specifications or as
+@enc []@ to create a specification.
+
 -}
 encoding :: [LabelledSpec] -> PropertySpec
 encoding channels = (VLEncoding, object channels)
@@ -3008,21 +3022,21 @@ to specifying stacking directly when encoding position.
 @
 'transform'
     . 'aggregate' [ 'opAs' 'Count' \"\" \"count_*\" ] [ \"Origin\", \"Cylinders\" ]
-    . stack "count_*"
+    . 'stack' "count_*"
         []
         \"stack_count_Origin1\"
         \"stack_count_Origin2\"
         [ 'StOffset' 'StNormalize', 'StSort' [ 'WAscending' \"Origin\" ] ]
     . 'window'
         [ ( [ 'WAggregateOp' 'Min', 'WField' \"stack_count_Origin1\" ], \"x\" )
-        , ( [ WAggregateOp 'Max', WField \"stack_count_Origin2\" ], \"x2\" )
+        , ( [ 'WAggregateOp' 'Max', 'WField' \"stack_count_Origin2\" ], \"x2\" )
         ]
         [ 'WFrame' Nothing Nothing, 'WGroupBy' [ \"Origin\" ] ]
-    . stack \"count_*\"
+    . 'stack' \"count_*\"
         [ \"Origin\" ]
         \"y\"
         \"y2\"
-        [ StOffset StNormalize, StSort [ WAscending \"Cylinders\" ] ]
+        [ 'StOffset' 'StNormalize', 'StSort' [ 'WAscending' \"Cylinders\" ] ]
 @
 
 @since 0.4.0.0
@@ -3479,6 +3493,7 @@ data PositionChannel
     | PNumber Double
       -- ^ Set a position to an arbitrary value. Useful for placing items at the top of
       --   a plot area (@PNumber 0@) or a fixed number of pixels from the top.
+      --   See also 'PHeight' and 'PWidth'.
       --
       --   @since 0.4.0.0
     | PRepeat Arrangement
@@ -4588,7 +4603,7 @@ for details.
 'toVegaLite'
     [ 'width' 250
     , 'height' 300
-    , autosize [ 'AFit', 'APadding', 'AResize' ]
+    , 'autosize' [ 'AFit', 'APadding', 'AResize' ]
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -5628,7 +5643,7 @@ This is useful when using the 'Geoshape' mark. For further details see the
 <https://vega.github.io/vega-lite/docs/projection.html Vega-Lite documentation>.
 
 @
-proj = projection [ 'PrType' 'Orthographic', 'PrRotate' (-40) 0 0 ]
+'projection' [ 'PrType' 'Orthographic', 'PrRotate' (-40) 0 0 ]
 @
 -}
 projection :: [ProjectionProperty] -> PropertySpec
@@ -6254,11 +6269,11 @@ viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singlet
 viewBackgroundSpec (VBStyle styles) = "style" .= styles
 viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
 viewBackgroundSpec (VBFill (Just s)) = "fill" .= s
-viewBackgroundSpec (VBFill Nothing) = "fill" .= fromT ""
+viewBackgroundSpec (VBFill Nothing) = "fill" .= A.Null
 viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
 viewBackgroundSpec (VBOpacity x) = "opacity" .= x
 viewBackgroundSpec (VBStroke (Just s)) = "stroke" .= s
-viewBackgroundSpec (VBStroke Nothing) = "stroke" .= fromT ""
+viewBackgroundSpec (VBStroke Nothing) = "stroke" .= A.Null
 viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
@@ -7036,8 +7051,7 @@ parameter is the geometric type, the second an optional list of properties to be
 associated with the object.
 
 @
-geojson =
-    geometry ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
+'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
 @
 -}
 geometry :: Geometry -> [(T.Text, DataValue)] -> VLSpec
@@ -7078,7 +7092,7 @@ The sphere will be subject to whatever projection is specified for the view.
 
 @
 'toVegaLite'
-    [ sphere
+    [ 'sphere'
     , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' [ 'MFill' "aliceblue" ]
     ]
@@ -7097,12 +7111,12 @@ Generate a grid of lines of longitude (meridians) and latitude
 
 @
 let proj = 'projection' [ 'PrType' 'Orthographic' ]
-    sphereSpec = 'asSpec' [ 'sphere',
-                            'mark' 'Geoshape' [ 'MFill' "aliceblue" ] ]
+    sphereSpec = 'asSpec' [ 'sphere'
+                        , 'mark' 'Geoshape' [ 'MFill' "aliceblue" ] ]
     gratSpec =
-        asSpec
-            [ graticule [ 'GrStep' (5, 5) ]
-            , mark 'Geoshape' [ 'MFilled' False, 'MStrokeWidth' 0.3 ]
+        'asSpec'
+            [ 'graticule' [ 'GrStep' (5, 5) ]
+            , 'mark' 'Geoshape' [ 'MFilled' False, 'MStrokeWidth' 0.3 ]
             ]
 in 'toVegaLite' [ proj, 'layer' [ sphereSpec, gratSpec ] ]
 @
@@ -7426,7 +7440,7 @@ domain and range values.
 'color'
     [ 'MName' "year"
     , 'MmType' 'Ordinal'
-    , 'MScale' (domainRangeMap ( 1955, "#e6959c" ) ( 2000, "#911a24" ))
+    , 'MScale' (domainRangeMap (1955, \"rgb(230,149,156)\") (2000, \"rgb(145,26,36)\"))
     ]
 @
 -}
@@ -8191,9 +8205,9 @@ Using the functional composition pipeline idiom (as example below) allows you to
 provide the transformations in the order intended in a clear manner.
 
 @
-trans = transform
-        . 'filter' ('FExpr' "datum.year == 2010")
-        . 'calculateAs' "datum.sex == 2 ? \'Female\' : \'Male\'" "gender"
+'transform'
+    . 'filter' ('FExpr' "datum.year == 2010")
+    . 'calculateAs' "datum.sex == 2 ? \'Female\' : \'Male\'" "gender"
 @
 -}
 
@@ -8350,7 +8364,7 @@ Assigns a list of specifications to be juxtaposed vertically in a visualization.
 @
 'toVegaLite'
     [ 'dataFromUrl' "data/driving.json" []
-    , vConcat [ spec1, spec2 ]
+    , 'vConcat' [ spec1, spec2 ]
     ]
 @
 -}
@@ -8367,7 +8381,7 @@ setting.
 
 @
 'toVegaLite'
-    [ width 500
+    [ 'width' 500
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -8525,11 +8539,10 @@ see the
 <https://vega.github.io/vega-lite/docs/aggregate.html#aggregate-op-def Vega-Lite documentation>.
 
 @
-trans =
-    'transform'
-        . aggregate
-            [ 'opAs' 'Min' "people" "lowerBound", opAs 'Max' "people" "upperBound" ]
-            [ "age" ]
+'transform'
+    . 'aggregate'
+        [ 'opAs' 'Min' "people" "lowerBound", 'opAs' 'Max' "people" "upperBound" ]
+        [ "age" ]
 @
 
 See also 'joinAggregate'.
@@ -8557,12 +8570,11 @@ window aggregate field properties, such as a field to group by when aggregating.
 The third parameter is a list of transformations to which this is added.
 
 @
-trans =
-    'transform'
-        . joinAggregate
-            [ 'opAs' 'Mean' "rating" "avYearRating" ]
-            [ 'WGroupBy' [ "year" ] ]
-        . 'filter' ('FExpr' "(datum.rating - datum.avYearRating) > 3"))
+'transform'
+    . 'joinAggregate'
+        [ 'opAs' 'Mean' "rating" "avYearRating" ]
+        [ 'WGroupBy' [ "year" ] ]
+    . 'filter' ('FExpr' "(datum.rating - datum.avYearRating) > 3"))
 @
 
 For details, see the
@@ -8591,10 +8603,9 @@ The first parameter is a list of tuples each comprising a window transform field
 definition and an output name. The second is the window transform definition.
 
 @
-trans =
-    'transform'
-        . window [ ( [ 'WAggregateOp' 'Sum', 'WField' "Time" ], "TotalTime" ) ]
-                 [ 'WFrame' Nothing Nothing ]
+'transform'
+    . 'window' [ ( [ 'WAggregateOp' 'Sum', 'WField' "Time" ], "TotalTime" ) ]
+             [ 'WFrame' Nothing Nothing ]
 @
 
 @since 0.4.0.0
@@ -8643,9 +8654,8 @@ more details. Note that usually, direct binning within an encoding is preferred
 over this form of bin transformation.
 
 @
-trans =
-    'transform'
-        . binAs [ 'MaxBins' 3 ] \"IMDB_Rating\" "ratingGroup"
+'transform'
+    . 'binAs' [ 'MaxBins' 3 ] \"IMDB_Rating\" \"ratingGroup\"
 @
 -}
 binAs ::
@@ -8672,7 +8682,7 @@ See the <https://vega.github.io/vega-lite/docs/calculate.html Vega-Lite document
 for further details.
 
 @
-trans = 'transform' . calculateAs "datum.sex == 2 ? \'F\' : \'M\'" "gender"
+'transform' . 'calculateAs' "datum.sex == 2 ? \'F\' : \'M\'" "gender"
 @
 -}
 calculateAs ::
@@ -8690,14 +8700,14 @@ calculateAs expr label ols = ("calculate" .= [expr, label]) : ols
 Encode a color channel.
 
 @
-color [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'color' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Encoding a color channel will generate a legend by default. To stop the legend
 appearing, just supply an empty list of legend properties to 'MLegend':
 
 @
-color [ MName \"Species\", MmType Nominal, 'MLegend' [] ] []
+'color' [ 'MName' \"Species\", 'MmType' 'Nominal', 'MLegend' [] ] []
 @
 -}
 color ::
@@ -8834,18 +8844,17 @@ Adds the given filter operation a list of transformations that may be applied
 to a channel or field.
 
 @
-trans =
-    'transform'
-        . filter ('FEqual' \"Animal\" ('Str' \"Cat\"))
+'transform'
+    . 'filter' ('FEqual' \"Animal\" ('Str' \"Cat\"))
 @
 
 Filter operations can combine selections and data predicates with 'BooleanOp'
-expressions:
+expressions (and as of @0.4.0.0@, 'FilterOp' can be used to lift the
+'Filter' type into boolean expressions):
 
 @
-trans =
-    transform
-        . filter ('FCompose' ('And' ('Expr' "datum.Weight_in_lbs > 3000") ('Selection' "brush")))
+'transform'
+    . 'filter' ('FCompose' ('And' ('Expr' "datum.Weight_in_lbs > 3000") ('Selection' "brush")))
 @
 
 The [Vega-Lite expression documentation](https://vega.github.io/vega/docs/expressions/)
@@ -9028,8 +9037,8 @@ In the following example, @personDetails@ would reference all the field values i
 file matches the value of @person@ in the primary data source.
 
 @
-trans = 'transform'
-        . lookupAs "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
+'transform'
+    . 'lookupAs' "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
 @
 -}
 lookupAs ::
@@ -9230,7 +9239,7 @@ Encode a position channel.
 @
 enc =
     'encoding'
-      . position 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
+      . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
 @
 
 Encoding by position will generate an axis by default. To prevent the axis from
@@ -9238,8 +9247,8 @@ appearing, simply provide an empty list of axis properties to 'PAxis':
 
 @
 enc =
-    encoding
-      . position X [ PName \"Animal\", PmType Ordinal, 'PAxis' [] ]
+    'encoding'
+      . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal', 'PAxis' [] ]
 @
 -}
 position ::
@@ -9336,7 +9345,7 @@ select nme sType options ols =
 Encode a shape channel.
 
 @
-shape [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'shape' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 -}
 shape ::
@@ -9351,7 +9360,7 @@ shape markProps ols = mchan_ "shape" markProps : ols
 Encode a size channel.
 
 @
-size [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
+'size' [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
 -}
 size ::
@@ -9367,7 +9376,7 @@ Encode a stroke channel. This acts in a similar way to encoding by 'color' but
 only affects the exterior boundary of marks.
 
 @
-stroke [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'stroke' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Note that if both @stroke@ and 'color' encodings are specified, @stroke@ takes
@@ -9422,11 +9431,10 @@ for further details on the text and tooltip channels and
 for formatting the appearance of the text.
 
 @
-enc =
-    'encoding'
-        . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName "gas", PmType Quantitative ]
-        . text [ 'TName' "miles", 'TmType' Quantitative ]
+'encoding'
+    . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
+    . 'position' 'Y' [ 'PName' "gas", 'PmType' 'Quantitative' ]
+    . 'text' [ 'TName' "miles", 'TmType' 'Quantitative' ]
 @
 -}
 text ::
@@ -9451,11 +9459,11 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = 'transform' . timeUnitAs 'Month' \"date\" \"monthly\"
+trans = 'transform' . 'timeUnitAs' 'Month' \"date\" \"monthly\"
 
 enc = 'encoding'
         . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
-        . position 'Y' [ 'PAggregate' 'Sum', PmType 'Quantitative' ]
+        . 'position' 'Y' [ 'PAggregate' 'Sum', 'PmType' 'Quantitative' ]
         . 'detail' [ 'DName' \"monthly\", 'DmType' 'Temporal' ]
 @
 -}
@@ -9482,8 +9490,8 @@ for formatting the appearance of the text.
 @
 enc = 'encoding'
         . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
-        . tooltip [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
+        . 'position' 'Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Quantitative' ]
+        . 'tooltip' [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
 @
 
 To encode multiple tooltip values with a mark, use 'tooltips'.
@@ -9503,11 +9511,11 @@ Encode a tooltip channel using multiple data fields.
 @since 0.3.0.0
 
 @
-enc = 'encoding'
-        . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
-        . tooltips [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
-                    ,[ TName \"Month\", TmType Temporal, TFormat "%Y" ] ]
+'encoding'
+    . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
+    . 'position' 'Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Quantitative' ]
+    . 'tooltips' [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
+               , [ 'TName' \"Month\", 'TmType' 'Temporal', 'TFormat' "%Y" ] ]
 @
 -}
 tooltips ::
