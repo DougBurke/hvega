@@ -64,16 +64,18 @@ import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
 -- extend from the "tests" to gallery plots
-import qualified GalleryAdvanced as GA
+import qualified Gallery.Area as GA
+import qualified Gallery.Advanced as GADV
 
--- The "golden" output is "tests/<label>/<name>.vl"
---
+-- The "golden" output is "tests/specs/<label>/<name>.vl"
+-- where label can now itself contain sub-directories, so should
+-- rework this.
 --
 toTest :: VegaLite -> IO BL8.ByteString
 toTest = pure . encodePretty . fromVL
 
 toFP :: String -> String -> FilePath
-toFP label tname = "tests" </> label </> (tname <.> ".vl")
+toFP label tname = "tests" </> "specs" </> label </> (tname <.> ".vl")
 
 -- types don't nicely match up with toFP here, but FilePath and String
 -- are aliases so it doesn't cause a problem yet.
@@ -110,7 +112,8 @@ goldenTests = testGroup "tests"
   , toTests "Trail" "trail" TrT.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
-  , toTests "GalleryAdvanced" (gallery "advanced") GA.testSpecs
+  , toTests "GalleryArea" (gallery "area") GA.testSpecs
+  , toTests "GalleryAdvanced" (gallery "advanced") GADV.testSpecs
   ]
 
 main :: IO ()
