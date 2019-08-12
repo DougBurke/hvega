@@ -1055,6 +1055,12 @@ selCond_ getProps selName ifClause elseClause =
 -- should be no actionable difference from this special case (i.e.
 -- the output being '[object]' and 'object' have the same meaning).
 --
+-- There is also the simplification to replace
+--      test: { selection: xxx }
+-- by
+--      selection: xxx
+-- which happens for the Selection operator.
+--
 dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
 dataCond_ getProps tests elseClause =
   let h = ("condition", condClause)
@@ -1062,6 +1068,8 @@ dataCond_ getProps tests elseClause =
                      [cond] -> cond
                      _ -> toJSON conds
       conds = map testClause tests
+      testClause (Selection sel, ifClause) =
+        object (("selection" .= sel) : toProps ifClause)
       testClause (predicate, ifClause) =
         object (("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap getProps
@@ -6857,10 +6865,11 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
-    | Selection T.Text  -- TODO: rename Selected
-      -- ^ Interactive selection that will be true or false as part of a logical composition.
-      --   For example: to filter a dataset so that only items selected interactively and that have
-      --   a weight of more than 30:
+    | Selection T.Text  -- TODO: rename Selected?
+      -- ^ Interactive selection that will be true or false as part of
+      --   a logical composition.  For example: to filter a dataset so
+      --   that only items selected interactively and that have a
+      --   weight of more than 30:
       --
       -- @
       -- 'transform'

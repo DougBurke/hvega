@@ -66,6 +66,7 @@ import qualified WindowTransformTests as WT
 -- extend from the "tests" to gallery plots
 import qualified Gallery.Area as GA
 import qualified Gallery.Advanced as GADV
+import qualified Gallery.Interaction as GI
 
 -- The "golden" output is "tests/specs/<label>/<name>.vl"
 -- where label can now itself contain sub-directories, so should
@@ -114,6 +115,7 @@ goldenTests = testGroup "tests"
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
   , toTests "GalleryArea" (gallery "area") GA.testSpecs
   , toTests "GalleryAdvanced" (gallery "advanced") GADV.testSpecs
+  , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
   ]
 
 main :: IO ()

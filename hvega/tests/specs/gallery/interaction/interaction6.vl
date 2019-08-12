@@ -1,0 +1,40 @@
+{
+    "mark": "circle",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "selection": {
+        "myGrid": {
+            "bind": "scales",
+            "type": "interval"
+        }
+    },
+    "encoding": {
+        "size": {
+            "field": "Cylinders",
+            "type": "quantitative"
+        },
+        "x": {
+            "field": "Horsepower",
+            "scale": {
+                "domain": [
+                    75,
+                    150
+                ]
+            },
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "scale": {
+                "domain": [
+                    20,
+                    40
+                ]
+            },
+            "type": "quantitative"
+        }
+    },
+    "description": "Drag to pan. Zoom in or out with mousewheel/zoom gesture."
+}

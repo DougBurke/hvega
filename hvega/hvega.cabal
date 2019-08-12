@@ -25,7 +25,6 @@ extra-source-files:  README.md
                      tests/specs/config/*vl
                      tests/specs/data/*vl
                      tests/specs/fillstroke/*vl
-                     tests/specs/gallery/*vl
                      tests/specs/geo/*vl
                      tests/specs/hyperlink/*vl
                      tests/specs/legend/*vl
@@ -43,6 +42,7 @@ extra-source-files:  README.md
                      tests/specs/windowtransform/*vl
                      tests/specs/gallery/advanced/*vl
                      tests/specs/gallery/area/*vl
+                     tests/specs/gallery/interaction/*vl
 
 extra-doc-files:     images/example.png
                      images/intro.png
@@ -91,6 +91,7 @@ test-suite test
                        WindowTransformTests
                        Gallery.Area
                        Gallery.Advanced
+                       Gallery.Interaction
 
   build-depends:       aeson >= 0.11 && < 1.5
                      , aeson-pretty == 0.8.*
