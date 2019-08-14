@@ -43,6 +43,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/advanced/*vl
                      tests/specs/gallery/area/*vl
                      tests/specs/gallery/interaction/*vl
+                     tests/specs/gallery/multi/*vl
 
 extra-doc-files:     images/example.png
                      images/intro.png
@@ -89,9 +90,10 @@ test-suite test
                        TrailTests
                        ViewCompositionTests
                        WindowTransformTests
-                       Gallery.Area
                        Gallery.Advanced
+                       Gallery.Area
                        Gallery.Interaction
+                       Gallery.Multi
 
   build-depends:       aeson >= 0.11 && < 1.5
                      , aeson-pretty == 0.8.*

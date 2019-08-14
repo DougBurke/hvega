@@ -1,0 +1,110 @@
+{
+    "config": {
+        "range": {
+            "heatmap": {
+                "scheme": "greenblue"
+            }
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "resolve": {
+        "legend": {
+            "color": "independent",
+            "size": "independent"
+        }
+    },
+    "vconcat": [
+        {
+            "layer": [
+                {
+                    "mark": "rect",
+                    "width": 300,
+                    "encoding": {
+                        "color": {
+                            "aggregate": "count",
+                            "type": "quantitative",
+                            "legend": {
+                                "title": null
+                            }
+                        }
+                    }
+                },
+                {
+                    "transform": [
+                        {
+                            "filter": {
+                                "selection": "myPts"
+                            }
+                        }
+                    ],
+                    "mark": "point",
+                    "encoding": {
+                        "color": {
+                            "value": "#666"
+                        },
+                        "size": {
+                            "aggregate": "count",
+                            "type": "quantitative",
+                            "legend": {
+                                "title": "In Selected Category"
+                            }
+                        }
+                    }
+                }
+            ],
+            "encoding": {
+                "x": {
+                    "field": "IMDB_Rating",
+                    "bin": {
+                        "maxbins": 10
+                    },
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "Rotten_Tomatoes_Rating",
+                    "bin": {
+                        "maxbins": 10
+                    },
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "height": 120,
+            "mark": "bar",
+            "width": 420,
+            "selection": {
+                "myPts": {
+                    "encodings": [
+                        "x"
+                    ],
+                    "type": "single"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "grey",
+                    "condition": {
+                        "value": "steelblue",
+                        "selection": "myPts"
+                    }
+                },
+                "x": {
+                    "field": "Major_Genre",
+                    "type": "nominal",
+                    "axis": {
+                        "labelAngle": -40
+                    }
+                },
+                "y": {
+                    "aggregate": "count",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "A dashboard with cross-highlighting"
+}

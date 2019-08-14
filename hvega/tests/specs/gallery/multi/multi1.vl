@@ -1,0 +1,61 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/sp500.csv"
+    },
+    "vconcat": [
+        {
+            "mark": "area",
+            "width": 500,
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "scale": {
+                        "domain": {
+                            "selection": "myBrush"
+                        }
+                    },
+                    "type": "temporal",
+                    "axis": {
+                        "title": null
+                    }
+                },
+                "y": {
+                    "field": "price",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "height": 60,
+            "mark": "area",
+            "width": 480,
+            "selection": {
+                "myBrush": {
+                    "encodings": [
+                        "x"
+                    ],
+                    "type": "interval"
+                }
+            },
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "type": "temporal",
+                    "axis": {
+                        "format": "%Y"
+                    }
+                },
+                "y": {
+                    "field": "price",
+                    "type": "quantitative",
+                    "axis": {
+                        "tickCount": 3,
+                        "grid": false
+                    }
+                }
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Overview and detail."
+}
