@@ -1,0 +1,87 @@
+{
+    "transform": [
+        {
+            "as": "bin_IMDB_Rating",
+            "field": "IMDB_Rating",
+            "bin": true
+        },
+        {
+            "groupby": [
+                "bin_IMDB_Rating",
+                "bin_IMDB_Rating_end"
+            ],
+            "aggregate": [
+                {
+                    "op": "count",
+                    "as": "count"
+                }
+            ]
+        },
+        {
+            "filter": "datum.bin_IMDB_Rating !== null"
+        },
+        {
+            "window": [
+                {
+                    "op": "sum",
+                    "as": "cumulativeCount",
+                    "field": "count"
+                }
+            ],
+            "sort": [
+                {
+                    "field": "bin_IMDB_Rating",
+                    "order": "ascending"
+                }
+            ],
+            "frame": [
+                null,
+                0
+            ]
+        }
+    ],
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "y": {
+                    "field": "cumulativeCount",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "color": "yellow",
+                "opacity": 0.5,
+                "type": "bar"
+            },
+            "encoding": {
+                "y": {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x2": {
+            "field": "bin_IMDB_Rating_end"
+        },
+        "x": {
+            "field": "bin_IMDB_Rating",
+            "scale": {
+                "zero": false
+            },
+            "type": "quantitative",
+            "axis": {
+                "title": "IMDB rating"
+            }
+        }
+    },
+    "description": "A layered histogram and cumulative histogram."
+}

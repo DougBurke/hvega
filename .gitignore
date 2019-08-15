@@ -1,6 +1,6 @@
 *~
 .ghc.environment.*
-dist/
+^dist/
 dist-newstyle/
 .stack-work/
 .ipynb_checkpoints/

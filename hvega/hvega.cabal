@@ -43,6 +43,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/advanced/*vl
                      tests/specs/gallery/area/*vl
                      tests/specs/gallery/bar/*vl
+                     tests/specs/gallery/dist/*vl
                      tests/specs/gallery/interaction/*vl
                      tests/specs/gallery/multi/*vl
 
@@ -94,6 +95,7 @@ test-suite test
                        Gallery.Advanced
                        Gallery.Area
                        Gallery.Bar
+                       Gallery.Dist
                        Gallery.Interaction
                        Gallery.Multi
 

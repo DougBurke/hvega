@@ -1,0 +1,120 @@
+{
+    "transform": [
+        {
+            "groupby": [
+                "age"
+            ],
+            "aggregate": [
+                {
+                    "op": "q1",
+                    "as": "lowerBox",
+                    "field": "people"
+                },
+                {
+                    "op": "q3",
+                    "as": "upperBox",
+                    "field": "people"
+                },
+                {
+                    "op": "median",
+                    "as": "midBox",
+                    "field": "people"
+                }
+            ]
+        },
+        {
+            "as": "IQR",
+            "calculate": "datum.upperBox - datum.lowerBox"
+        },
+        {
+            "as": "upperWhisker",
+            "calculate": "datum.upperBox + datum.IQR * 1.5"
+        },
+        {
+            "as": "lowerWhisker",
+            "calculate": "max(0,datum.lowerBox - datum.IQR *1.5)"
+        }
+    ],
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/population.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": {
+                "style": "boxWhisker",
+                "type": "rule"
+            },
+            "encoding": {
+                "y2": {
+                    "field": "lowerBox"
+                },
+                "y": {
+                    "field": "lowerWhisker",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Population"
+                    }
+                }
+            }
+        },
+        {
+            "mark": {
+                "style": "boxWhisker",
+                "type": "rule"
+            },
+            "encoding": {
+                "y2": {
+                    "field": "upperWhisker"
+                },
+                "y": {
+                    "field": "upperBox",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
+            "encoding": {
+                "size": {
+                    "value": 5
+                },
+                "y2": {
+                    "field": "upperBox"
+                },
+                "y": {
+                    "field": "lowerBox",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "style": "boxMid",
+                "type": "tick"
+            },
+            "encoding": {
+                "color": {
+                    "value": "white"
+                },
+                "size": {
+                    "value": 5
+                },
+                "y": {
+                    "field": "midBox",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "age",
+            "type": "ordinal"
+        }
+    },
+    "description": "A Tukey box plot showing median and interquartile range in the US population distribution of age groups in 2000. This isn't strictly a Tukey box plot as the IQR extends beyond the min/max values for some age cohorts."
+}
