@@ -1,0 +1,52 @@
+{
+    "height": 50,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "mark": "area",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "width": 300,
+    "resolve": {
+        "scale": {
+            "y": "independent"
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "symbol",
+            "type": "nominal",
+            "legend": null
+        },
+        "row": {
+            "field": "symbol",
+            "header": {
+                "labelAngle": 0,
+                "title": "Stock price"
+            },
+            "type": "nominal"
+        },
+        "x": {
+            "field": "date",
+            "type": "temporal",
+            "axis": {
+                "format": "%Y",
+                "grid": false,
+                "title": null
+            }
+        },
+        "y": {
+            "field": "price",
+            "type": "quantitative",
+            "axis": {
+                "grid": false,
+                "title": null
+            }
+        }
+    },
+    "description": "Stock prices of five large companies as a small multiples of area charts"
+}
