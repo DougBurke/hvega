@@ -70,6 +70,7 @@ import qualified Gallery.Bar as GB
 import qualified Gallery.Dist as GD
 import qualified Gallery.Error as GE
 import qualified Gallery.Facet as GF
+import qualified Gallery.Geo as GG
 import qualified Gallery.Interaction as GI
 import qualified Gallery.Multi as GM
 
@@ -124,6 +125,7 @@ goldenTests = testGroup "tests"
   , toTests "GalleryDist" (gallery "dist") GD.testSpecs
   , toTests "GalleryError" (gallery "error") GE.testSpecs
   , toTests "GalleryFacet" (gallery "facet") GF.testSpecs
+  , toTests "GalleryGeo" (gallery "geo") GG.testSpecs
   , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
   , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
   ]

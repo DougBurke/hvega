@@ -46,6 +46,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/dist/*vl
                      tests/specs/gallery/error/*vl
                      tests/specs/gallery/facet/*vl
+                     tests/specs/gallery/geo/*vl
                      tests/specs/gallery/interaction/*vl
                      tests/specs/gallery/multi/*vl
 
@@ -100,6 +101,7 @@ test-suite test
                        Gallery.Dist
                        Gallery.Error
                        Gallery.Facet
+                       Gallery.Geo
                        Gallery.Interaction
                        Gallery.Multi
 
