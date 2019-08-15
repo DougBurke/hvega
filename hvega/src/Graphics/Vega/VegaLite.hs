@@ -818,7 +818,7 @@ import Data.Monoid ((<>))
 --
 -- enc = 'encoding'
 --         . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
---         . position 'Y' [ PName \"Miles_per_Gallon\", PmType Quantitative ]
+--         . 'position' 'Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' Quantitative ]
 --         . 'color'
 --             [ 'MSelectionCondition' ('SelectionName' "myBrush")
 --                 [ 'MName' \"Cylinders\", 'MmType' 'Ordinal' ]
@@ -834,15 +834,15 @@ import Data.Monoid ((<>))
 -- expressions:
 --
 -- @
--- enc = encoding
---         . position X [ PName \"value\", PmType Quantitative ]
---           . color
+-- enc = 'encoding'
+--         . 'position' X [ 'PName' \"value\", 'PmType' 'Quantitative' ]
+--           . 'color'
 --               [ 'MDataCondition'
---                    [ ( 'Expr' "datum.value < 40", [ MString "blue" ] )
---                    , ( Expr "datum.value < 50", [ MString "red" ] )
---                    , ( Expr "datum.value < 60", [ MString "yellow" ] )
+--                    [ ( 'Expr' "datum.value < 40", [ 'MString' "blue" ] )
+--                    , ( 'Expr' "datum.value < 50", [ 'MString' "red" ] )
+--                    , ( 'Expr' "datum.value < 60", [ 'MString' "yellow" ] )
 --                    ]
---                    [ MString "black" ]
+--                    [ 'MString' "black" ]
 --               ]
 -- @
 --
@@ -1055,6 +1055,12 @@ selCond_ getProps selName ifClause elseClause =
 -- should be no actionable difference from this special case (i.e.
 -- the output being '[object]' and 'object' have the same meaning).
 --
+-- There is also the simplification to replace
+--      test: { selection: xxx }
+-- by
+--      selection: xxx
+-- which happens for the Selection operator.
+--
 dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
 dataCond_ getProps tests elseClause =
   let h = ("condition", condClause)
@@ -1062,6 +1068,8 @@ dataCond_ getProps tests elseClause =
                      [cond] -> cond
                      _ -> toJSON conds
       conds = map testClause tests
+      testClause (Selection sel, ifClause) =
+        object (("selection" .= sel) : toProps ifClause)
       testClause (predicate, ifClause) =
         object (("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap getProps
@@ -2941,8 +2949,8 @@ operationSpec VarianceP = "variancep"
 
 -- | Identifies how repeated or faceted views are arranged.
 --
---   This is used with a number of constructors, such as 'ByRepeatOp',
---   'HRepeat', 'MRepeat', and 'ORepeat'.
+--   This is used with a number of constructors: 'ByRepeatOp',
+--   'HRepeat', 'MRepeat', 'ORepeat', 'PRepeat', and 'TRepeat'.
 
 -- based on schema 3.3.0 #/definitions/RepeatRef
 
@@ -3662,7 +3670,7 @@ be transparent.
 
 @
 'toVegaLite'
-    [ background "rgb(251,247,238)"
+    [ 'background' "rgb(251,247,238)"
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -3679,7 +3687,7 @@ Provides an optional description to be associated with the visualization.
 
 @
 'toVegaLite'
-    [ description "Population change of key regions since 1900"
+    [ 'description' "Population change of key regions since 1900"
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -4202,7 +4210,7 @@ for further details.
 
 @
 'encoding'
-    . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' (Utc 'YearMonthDateHours') ]
+    . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' ('Utc' 'YearMonthDateHours') ]
 @
 -}
 
@@ -4456,7 +4464,10 @@ markInterpolationLabel Monotone = "monotone"
 
 {-|
 
-The orientation of an item.
+The orientation of an item. This is used with:
+'BLeLDirection', 'LDirection',
+'LeGradientDirection', 'LeLDirection', 'LeSymbolDirection',
+and 'MOrient'.
 
 In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.
 
@@ -5796,6 +5807,8 @@ selectionLabel Interval = "interval"
 Properties for customising the nature of the selection. See the
 <https://vega.github.io/vega-lite/docs/selection.html#selection-properties Vega-Lite documentation>
 for details.
+
+For use with 'select' and 'SelectionStyle'.
 -}
 data SelectionProperty
     = Empty
@@ -5853,8 +5866,8 @@ data SelectionProperty
       --             , (\"Year\", 'Number' 1977)
       --             ]
       --         , 'Bind'
-      --             [ 'IRange' \"Cylinders\" ['InName' \"Cylinders \", 'InMin' 3, 'InMax' 8, 'InStep' 1]
-      --             , 'IRange' \"Year\" ['InName' \"Year \", 'InMin' 1969, 'InMax' 1981, 'InStep' 1]
+      --             [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
+      --             , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
       --             ]
       --         ]
       -- @
@@ -5982,7 +5995,10 @@ channelLabel ChKey = "key"
 
 Determines how selections in faceted or repeated views are resolved. See the
 <https://vega.github.io/vega-lite/docs/selection.html#resolve Vega-Lite documentation>
-for details
+for details.
+
+For use with 'ResolveSelections'.
+
 -}
 data SelectionResolution
     = Global
@@ -6832,7 +6848,7 @@ Used for creating logical compositions. For example
 Logical compositions can be nested to any level as shown in this example
 
 @
-Not (And (Expr "datum.IMDB_Rating === null") (Expr "datum.Rotten_Tomatoes_Rating === null") )
+'Not' ('And' ('Expr' "datum.IMDB_Rating === null") ('Expr' "datum.Rotten_Tomatoes_Rating === null") )
 @
 -}
 data BooleanOp
@@ -6857,10 +6873,11 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
-    | Selection T.Text  -- TODO: rename Selected
-      -- ^ Interactive selection that will be true or false as part of a logical composition.
-      --   For example: to filter a dataset so that only items selected interactively and that have
-      --   a weight of more than 30:
+    | Selection T.Text  -- TODO: rename Selected?
+      -- ^ Interactive selection that will be true or false as part of
+      --   a logical composition.  For example: to filter a dataset so
+      --   that only items selected interactively and that have a
+      --   weight of more than 30:
       --
       -- @
       -- 'transform'
@@ -7191,6 +7208,9 @@ Indicates whether or not a scale domain should be independent of others in a
 composite visualization. See the
 <https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation> for
 details.
+
+For use with 'Resolve'.
+
 -}
 data Resolution
     = Shared
@@ -7728,10 +7748,10 @@ to use a double-click:
 
 @
 config =
-    configure
+    'configure'
         . 'configuration' ('Axis' [ 'DomainWidth' 1 ])
-        . configuration ('View' [ 'ViewStroke' (Just "transparent") ])
-        . configuration ('SelectionStyle' [ ( 'Single', [ 'On' "dblclick" ] ) ])
+        . 'configuration' ('View' [ 'ViewStroke' (Just "transparent") ])
+        . 'configuration' ('SelectionStyle' [ ( 'Single', [ 'On' \"dblclick\" ] ) ])
 @
 -}
 configure :: [LabelledSpec] -> PropertySpec
@@ -7942,7 +7962,7 @@ setting.
 
 @
 'toVegaLite'
-    [ height 300
+    [ 'height' 300
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -8025,7 +8045,7 @@ Provides an optional name to be associated with the visualization.
 
 @
 'toVegaLite'
-    [ name \"PopGrowth\"
+    [ 'name' \"PopGrowth\"
     , 'dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
     , enc []
@@ -8046,7 +8066,7 @@ for details.
 @
 'toVegaLite'
     [ 'width' 500
-    , padding ('PEdges' 20 10 5 15)
+    , 'padding' ('PEdges' 20 10 5 15)
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -8100,7 +8120,7 @@ if the number of plots exceeds an optional column limit (specified via 'columns'
 
 @
 'toVegaLite'
-    [ repeatFlow [ \"Cat\", \"Dog\", \"Fish\" ]
+    [ 'repeatFlow' [ \"Cat\", \"Dog\", \"Fish\" ]
     , 'specification' ('asSpec' spec)
     ]
 @
@@ -8188,7 +8208,7 @@ Defines a specification object for use with faceted and repeated small multiples
 @
 'toVegaLite'
     [ 'facet' [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
-    , specifcation spec
+    , 'specification' spec
     ]
 @
 -}
@@ -8198,17 +8218,24 @@ specification spec = (VLSpecification, spec)
 
 {-|
 
-Create a single transform from a list of transformation specifications. Note
-that the order of transformations can be important, especially if labels created
-with 'calculateAs', 'timeUnitAs', and 'binAs' are used in other transformations.
-Using the functional composition pipeline idiom (as example below) allows you to
-provide the transformations in the order intended in a clear manner.
+Create a single transform from a list of transformation
+specifications. Note that the order of transformations can be
+important, especially if labels created with 'calculateAs',
+'timeUnitAs', and 'binAs' are used in other transformations.  Using
+the functional composition pipeline idiom (as example below) allows
+you to provide the transformations in the order intended in a clear
+manner.
 
 @
 'transform'
     . 'filter' ('FExpr' "datum.year == 2010")
     . 'calculateAs' "datum.sex == 2 ? \'Female\' : \'Male\'" "gender"
 @
+
+The supported transformations include: 'aggregate', 'binAs',
+'calculateAs', 'impute', 'joinAggregate', 'lookup', 'lookupAs',
+'flattenAs', 'foldAs', 'stack', 'timeUnitAs', and 'window'.
+
 -}
 
 transform :: [LabelledSpec] -> PropertySpec
@@ -8487,7 +8514,7 @@ windowFieldProperty (WParam n) = "param" .= n
 windowFieldProperty (WField f) = field_ f
 
 
--- | Window-specific operation for transformations.
+-- | Window-specific operation for transformations (for use with 'WOp').
 --
 --   @since 0.4.0.0
 
@@ -8775,7 +8802,7 @@ The first parameter identifies the type of configuration, the second a list of p
 configurations to which this one may be added.
 
 @
-configuration ('Axis' [ 'DomainWidth' 4 ]) []
+'configuration' ('Axis' [ 'DomainWidth' 4 ]) []
 @
 -}
 configuration :: ConfigurationProperty -> BuildLabelledSpecs
@@ -8792,7 +8819,7 @@ See the
 for details.
 
 @
-detail ['DName' \"Species\", 'DmType' 'Nominal'] []
+'detail' ['DName' \"Species\", 'DmType' 'Nominal'] []
 @
 -}
 detail ::
@@ -8812,7 +8839,7 @@ The second parameter is a list of any previous channels to which this fill chann
 should be added.
 
 @
-fill [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'fill' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
 @
 
 Note that if both @fill@ and 'color' encodings are specified, @fill@ takes precedence.
@@ -8958,12 +8985,12 @@ Encode a hyperlink channel.
 
 @
 'encoding'
-  . hyperlink [ 'HName' \"Species\", 'HmType' 'Nominal' ]
+  . 'hyperlink' [ 'HName' \"Species\", 'HmType' 'Nominal' ]
 @
 
 @
 'encoding'
-  . hyperlink [ 'HString' \"http://www.imdb.com\" ]
+  . 'hyperlink' [ 'HString' \"http://www.imdb.com\" ]
 @
 
 For further details see the
@@ -9196,12 +9223,13 @@ impute fields key imProps ols =
 
 {-|
 
-Encode an opacity channel. The first parameter is a list of mark channel properties
-that characterise the way a data field is encoded by opacity. The second parameter
-is a list of any previous channels to which this opacity channel should be added.
+Encode an opacity channel. The first parameter is a list of mark
+channel properties that characterise the way a data field is encoded
+by opacity. The second parameter is a list of any previous channels to
+which this opacity channel should be added.
 
 @
-opacity [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
+'opacity' [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
 @
 
 See also 'fillOpacity'.
@@ -9220,8 +9248,8 @@ Encode an order channel.
 enc =
     'encoding'
         . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
-        . position 'Y' [ PName "gas", PmType Quantitative ]
-        . order [ 'OName' "year", 'OmType' 'Temporal', 'OSort' ['Descending'] ]
+        . 'position' 'Y' [ 'PName' "gas", 'PmType' 'Quantitative' ]
+        . 'order' [ 'OName' "year", 'OmType' 'Temporal', 'OSort' ['Descending'] ]
 @
 -}
 order ::
@@ -9321,9 +9349,9 @@ Create a single named selection that may be applied to a data query or transform
 @
 sel =
     'selection'
-        . select "view" 'Interval' [ 'BindScales' ] []
-        . select "myBrush" Interval []
-        . select "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
+        . 'select' "view" 'Interval' [ 'BindScales' ] []
+        . 'select' "myBrush" 'Interval' []
+        . 'select' "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
 @
 
 -}
