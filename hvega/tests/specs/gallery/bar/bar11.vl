@@ -1,0 +1,376 @@
+{
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "percentage_end": -18.4,
+                "value": 24,
+                "percentage_start": -19.1,
+                "type": "Strongly disagree",
+                "percentage": 0.7,
+                "question": "Q1"
+            },
+            {
+                "percentage_end": -9.2,
+                "value": 294,
+                "percentage_start": -18.4,
+                "type": "Disagree",
+                "percentage": 9.1,
+                "question": "Q1"
+            },
+            {
+                "percentage_end": 9.2,
+                "value": 594,
+                "percentage_start": -9.2,
+                "type": "Neither agree nor disagree",
+                "percentage": 18.5,
+                "question": "Q1"
+            },
+            {
+                "percentage_end": 69.2,
+                "value": 1927,
+                "percentage_start": 9.2,
+                "type": "Agree",
+                "percentage": 59.9,
+                "question": "Q1"
+            },
+            {
+                "percentage_end": 80.9,
+                "value": 376,
+                "percentage_start": 69.2,
+                "type": "Strongly agree",
+                "percentage": 11.7,
+                "question": "Q1"
+            },
+            {
+                "percentage_end": -18.2,
+                "value": 2,
+                "percentage_start": -36.4,
+                "type": "Strongly disagree",
+                "percentage": 18.2,
+                "question": "Q2"
+            },
+            {
+                "percentage_end": 0,
+                "value": 2,
+                "percentage_start": -18.2,
+                "type": "Disagree",
+                "percentage": 18.2,
+                "question": "Q2"
+            },
+            {
+                "percentage_end": 0,
+                "value": 0,
+                "percentage_start": 0,
+                "type": "Neither agree nor disagree",
+                "percentage": 0,
+                "question": "Q2"
+            },
+            {
+                "percentage_end": 63.6,
+                "value": 7,
+                "percentage_start": 0,
+                "type": "Agree",
+                "percentage": 63.6,
+                "question": "Q2"
+            },
+            {
+                "percentage_end": 63.6,
+                "value": 11,
+                "percentage_start": 63.6,
+                "type": "Strongly agree",
+                "percentage": 0,
+                "question": "Q2"
+            },
+            {
+                "percentage_end": -10,
+                "value": 2,
+                "percentage_start": -30,
+                "type": "Strongly disagree",
+                "percentage": 20,
+                "question": "Q3"
+            },
+            {
+                "percentage_end": -10,
+                "value": 0,
+                "percentage_start": -10,
+                "type": "Disagree",
+                "percentage": 0,
+                "question": "Q3"
+            },
+            {
+                "percentage_end": 10,
+                "value": 2,
+                "percentage_start": -10,
+                "type": "Neither agree nor disagree",
+                "percentage": 20,
+                "question": "Q3"
+            },
+            {
+                "percentage_end": 50,
+                "value": 4,
+                "percentage_start": 10,
+                "type": "Agree",
+                "percentage": 40,
+                "question": "Q3"
+            },
+            {
+                "percentage_end": 70,
+                "value": 2,
+                "percentage_start": 50,
+                "type": "Strongly agree",
+                "percentage": 20,
+                "question": "Q3"
+            },
+            {
+                "percentage_end": -15.6,
+                "value": 0,
+                "percentage_start": -15.6,
+                "type": "Strongly disagree",
+                "percentage": 0,
+                "question": "Q4"
+            },
+            {
+                "percentage_end": -3.1,
+                "value": 2,
+                "percentage_start": -15.6,
+                "type": "Disagree",
+                "percentage": 12.5,
+                "question": "Q4"
+            },
+            {
+                "percentage_end": 3.1,
+                "value": 1,
+                "percentage_start": -3.1,
+                "type": "Neither agree nor disagree",
+                "percentage": 6.3,
+                "question": "Q4"
+            },
+            {
+                "percentage_end": 46.9,
+                "value": 7,
+                "percentage_start": 3.1,
+                "type": "Agree",
+                "percentage": 43.8,
+                "question": "Q4"
+            },
+            {
+                "percentage_end": 84.4,
+                "value": 6,
+                "percentage_start": 46.9,
+                "type": "Strongly agree",
+                "percentage": 37.5,
+                "question": "Q4"
+            },
+            {
+                "percentage_end": -10.4,
+                "value": 0,
+                "percentage_start": -10.4,
+                "type": "Strongly disagree",
+                "percentage": 0,
+                "question": "Q5"
+            },
+            {
+                "percentage_end": -6.3,
+                "value": 1,
+                "percentage_start": -10.4,
+                "type": "Disagree",
+                "percentage": 4.2,
+                "question": "Q5"
+            },
+            {
+                "percentage_end": 6.3,
+                "value": 3,
+                "percentage_start": -6.3,
+                "type": "Neither agree nor disagree",
+                "percentage": 12.5,
+                "question": "Q5"
+            },
+            {
+                "percentage_end": 72.9,
+                "value": 16,
+                "percentage_start": 6.3,
+                "type": "Agree",
+                "percentage": 66.7,
+                "question": "Q5"
+            },
+            {
+                "percentage_end": 89.6,
+                "value": 4,
+                "percentage_start": 72.9,
+                "type": "Strongly agree",
+                "percentage": 16.7,
+                "question": "Q5"
+            },
+            {
+                "percentage_end": -12.5,
+                "value": 1,
+                "percentage_start": -18.8,
+                "type": "Strongly disagree",
+                "percentage": 6.3,
+                "question": "Q6"
+            },
+            {
+                "percentage_end": -6.3,
+                "value": 1,
+                "percentage_start": -12.5,
+                "type": "Disagree",
+                "percentage": 6.3,
+                "question": "Q6"
+            },
+            {
+                "percentage_end": 6.3,
+                "value": 2,
+                "percentage_start": -6.3,
+                "type": "Neither agree nor disagree",
+                "percentage": 12.5,
+                "question": "Q6"
+            },
+            {
+                "percentage_end": 62.5,
+                "value": 9,
+                "percentage_start": 6.3,
+                "type": "Agree",
+                "percentage": 56.3,
+                "question": "Q6"
+            },
+            {
+                "percentage_end": 81.3,
+                "value": 3,
+                "percentage_start": 62.5,
+                "type": "Strongly agree",
+                "percentage": 18.8,
+                "question": "Q6"
+            },
+            {
+                "percentage_end": -10,
+                "value": 0,
+                "percentage_start": -10,
+                "type": "Strongly disagree",
+                "percentage": 0,
+                "question": "Q7"
+            },
+            {
+                "percentage_end": -10,
+                "value": 0,
+                "percentage_start": -10,
+                "type": "Disagree",
+                "percentage": 0,
+                "question": "Q7"
+            },
+            {
+                "percentage_end": 10,
+                "value": 1,
+                "percentage_start": -10,
+                "type": "Neither agree nor disagree",
+                "percentage": 20,
+                "question": "Q7"
+            },
+            {
+                "percentage_end": 90,
+                "value": 4,
+                "percentage_start": 10,
+                "type": "Agree",
+                "percentage": 80,
+                "question": "Q7"
+            },
+            {
+                "percentage_end": 90,
+                "value": 0,
+                "percentage_start": 90,
+                "type": "Strongly agree",
+                "percentage": 0,
+                "question": "Q7"
+            },
+            {
+                "percentage_end": 0,
+                "value": 0,
+                "percentage_start": 0,
+                "type": "Strongly disagree",
+                "percentage": 0,
+                "question": "Q8"
+            },
+            {
+                "percentage_end": 0,
+                "value": 0,
+                "percentage_start": 0,
+                "type": "Disagree",
+                "percentage": 0,
+                "question": "Q8"
+            },
+            {
+                "percentage_end": 0,
+                "value": 0,
+                "percentage_start": 0,
+                "type": "Neither agree nor disagree",
+                "percentage": 0,
+                "question": "Q8"
+            },
+            {
+                "percentage_end": 0,
+                "value": 0,
+                "percentage_start": 0,
+                "type": "Agree",
+                "percentage": 0,
+                "question": "Q8"
+            },
+            {
+                "percentage_end": 100,
+                "value": 2,
+                "percentage_start": 0,
+                "type": "Strongly agree",
+                "percentage": 100,
+                "question": "Q8"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x2": {
+            "field": "percentage_end"
+        },
+        "color": {
+            "field": "type",
+            "scale": {
+                "domain": [
+                    "Strongly disagree",
+                    "Disagree",
+                    "Neither agree nor disagree",
+                    "Agree",
+                    "Strongly agree"
+                ],
+                "range": [
+                    "#c30d24",
+                    "#f3a583",
+                    "#cccccc",
+                    "#94c6da",
+                    "#1770ab"
+                ],
+                "type": "ordinal"
+            },
+            "type": "nominal",
+            "legend": {
+                "title": "Response"
+            }
+        },
+        "x": {
+            "field": "percentage_start",
+            "type": "quantitative",
+            "axis": {
+                "title": "Percentage"
+            }
+        },
+        "y": {
+            "field": "question",
+            "type": "nominal",
+            "axis": {
+                "minExtent": 60,
+                "offset": 5,
+                "domain": false,
+                "title": "Question",
+                "ticks": false
+            }
+        }
+    },
+    "description": "A diverging stacked bar chart for sentiments towards a set of eight questions, displayed as percentages with neutral responses straddling the 0% mark."
+}

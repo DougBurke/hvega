@@ -42,6 +42,7 @@ extra-source-files:  README.md
                      tests/specs/windowtransform/*vl
                      tests/specs/gallery/advanced/*vl
                      tests/specs/gallery/area/*vl
+                     tests/specs/gallery/bar/*vl
                      tests/specs/gallery/interaction/*vl
                      tests/specs/gallery/multi/*vl
 
@@ -92,6 +93,7 @@ test-suite test
                        WindowTransformTests
                        Gallery.Advanced
                        Gallery.Area
+                       Gallery.Bar
                        Gallery.Interaction
                        Gallery.Multi
 

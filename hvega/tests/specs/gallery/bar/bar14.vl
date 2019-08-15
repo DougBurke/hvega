@@ -1,0 +1,249 @@
+{
+    "transform": [
+        {
+            "as": "emoji",
+            "calculate": "{'cattle': '🐄', 'pigs': '🐖', 'sheep': '🐏'}[datum.animal]"
+        },
+        {
+            "window": [
+                {
+                    "op": "rank",
+                    "as": "rank"
+                }
+            ],
+            "groupby": [
+                "country",
+                "animal"
+            ]
+        }
+    ],
+    "height": 200,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "mark": {
+        "type": "text",
+        "baseline": "middle"
+    },
+    "data": {
+        "values": [
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 1
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 2
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 3
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 4
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 5
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 6
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 7
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 8
+            },
+            {
+                "country": "United States",
+                "animal": "cattle",
+                "col": 9
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 1
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 2
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 3
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 4
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 5
+            },
+            {
+                "country": "United States",
+                "animal": "pigs",
+                "col": 6
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 1
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 2
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 3
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 4
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 5
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 6
+            },
+            {
+                "country": "United States",
+                "animal": "sheep",
+                "col": 7
+            },
+            {
+                "country": "Great Britain",
+                "animal": "cattle",
+                "col": 1
+            },
+            {
+                "country": "Great Britain",
+                "animal": "cattle",
+                "col": 2
+            },
+            {
+                "country": "Great Britain",
+                "animal": "cattle",
+                "col": 3
+            },
+            {
+                "country": "Great Britain",
+                "animal": "pigs",
+                "col": 1
+            },
+            {
+                "country": "Great Britain",
+                "animal": "pigs",
+                "col": 2
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 1
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 2
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 3
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 4
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 5
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 6
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 7
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 8
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 9
+            },
+            {
+                "country": "Great Britain",
+                "animal": "sheep",
+                "col": 10
+            }
+        ]
+    },
+    "width": 800,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "size": {
+            "value": 65
+        },
+        "text": {
+            "field": "emoji",
+            "type": "nominal"
+        },
+        "row": {
+            "field": "country",
+            "header": {
+                "title": null
+            },
+            "type": "nominal"
+        },
+        "x": {
+            "field": "rank",
+            "type": "ordinal",
+            "axis": null
+        },
+        "y": {
+            "field": "animal",
+            "sort": null,
+            "type": "nominal",
+            "axis": null
+        }
+    },
+    "description": "Isotype bar chart using emojis for symbols"
+}

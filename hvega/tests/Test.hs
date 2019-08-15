@@ -66,6 +66,7 @@ import qualified WindowTransformTests as WT
 -- extend from the "tests" to gallery plots
 import qualified Gallery.Advanced as GADV
 import qualified Gallery.Area as GA
+import qualified Gallery.Bar as GB
 import qualified Gallery.Interaction as GI
 import qualified Gallery.Multi as GM
 
@@ -116,6 +117,7 @@ goldenTests = testGroup "tests"
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
   , toTests "GalleryAdvanced" (gallery "advanced") GADV.testSpecs
   , toTests "GalleryArea" (gallery "area") GA.testSpecs
+  , toTests "GalleryBar" (gallery "bar") GB.testSpecs
   , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
   , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
   ]
