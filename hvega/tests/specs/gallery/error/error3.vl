@@ -1,0 +1,46 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": "area",
+            "encoding": {
+                "opacity": {
+                    "value": 0.3
+                },
+                "y2": {
+                    "field": "Miles_per_Gallon",
+                    "aggregate": "ci1"
+                },
+                "y": {
+                    "field": "Miles_per_Gallon",
+                    "aggregate": "ci0",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Miles/Gallon"
+                    }
+                }
+            }
+        },
+        {
+            "mark": "line",
+            "encoding": {
+                "y": {
+                    "field": "Miles_per_Gallon",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "Year",
+            "timeUnit": "year",
+            "type": "temporal"
+        }
+    },
+    "description": "Line chart with confidence interval band."
+}

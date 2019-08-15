@@ -1,0 +1,51 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/barley.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": {
+                "type": "point",
+                "filled": true
+            },
+            "encoding": {
+                "color": {
+                    "value": "black"
+                },
+                "x": {
+                    "field": "yield",
+                    "scale": {
+                        "zero": false
+                    },
+                    "aggregate": "mean",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": "Barley Yield"
+                    }
+                }
+            }
+        },
+        {
+            "mark": "rule",
+            "encoding": {
+                "x2": {
+                    "field": "yield",
+                    "aggregate": "ci1"
+                },
+                "x": {
+                    "field": "yield",
+                    "aggregate": "ci0",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "y": {
+            "field": "variety",
+            "type": "ordinal"
+        }
+    },
+    "description": "Error bars showing confidence intervals"
+}
