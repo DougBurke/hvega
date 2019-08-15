@@ -49,6 +49,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/geo/*vl
                      tests/specs/gallery/interaction/*vl
                      tests/specs/gallery/multi/*vl
+                     tests/specs/gallery/repeat/*vl
 
 extra-doc-files:     images/example.png
                      images/intro.png
@@ -104,6 +105,7 @@ test-suite test
                        Gallery.Geo
                        Gallery.Interaction
                        Gallery.Multi
+                       Gallery.Repeat
 
   build-depends:       aeson >= 0.11 && < 1.5
                      , aeson-pretty == 0.8.*
