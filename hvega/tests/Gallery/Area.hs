@@ -11,13 +11,13 @@ import Graphics.Vega.VegaLite
 import Prelude hiding (filter, lookup)
 
 testSpecs :: [(String, VegaLite)]
-testSpecs = [ ( "area1", area1 )
-            , ( "area2", area2 )
-            , ( "area3", area3 )
-            , ( "area4", area4 )
-            , ( "area5", area5 )
-            , ( "area6", area6 )
-            , ( "area7", area7 )
+testSpecs = [ ("area1", area1)
+            , ("area2", area2)
+            , ("area3", area3)
+            , ("area4", area4)
+            , ("area5", area5)
+            , ("area6", area6)
+            , ("area7", area7)
             ]
 
 area1 :: VegaLite
@@ -222,9 +222,9 @@ area7 =
         enc2 =
             encoding
                 . position X [ PName "nx", PmType Quantitative, PAxis [] ]
-                . position X2 [ PName "nx2", PmType Quantitative ]
+                . position X2 [ PName "nx2" ]
                 . position Y [ PName "ny", PmType Quantitative, PAxis [] ]
-                . position Y2 [ PName "ny2", PmType Quantitative ]
+                . position Y2 [ PName "ny2" ]
                 . color [ MName "Origin", MmType Nominal, MLegend [] ]
                 . opacity [ MName "Cylinders", MmType Quantitative, MLegend [] ]
                 . tooltips
