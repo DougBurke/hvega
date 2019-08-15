@@ -74,6 +74,7 @@ import qualified Gallery.Geo as GG
 import qualified Gallery.Interaction as GI
 import qualified Gallery.Multi as GM
 import qualified Gallery.Repeat as GR
+import qualified Gallery.Scatter as GS
 
 -- The "golden" output is "tests/specs/<label>/<name>.vl"
 -- where label can now itself contain sub-directories, so should
@@ -130,6 +131,7 @@ goldenTests = testGroup "tests"
   , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
   , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
   , toTests "GalleryRepeat" (gallery "repeat") GR.testSpecs
+  , toTests "GalleryScatter" (gallery "scatter") GS.testSpecs
   ]
 
 main :: IO ()

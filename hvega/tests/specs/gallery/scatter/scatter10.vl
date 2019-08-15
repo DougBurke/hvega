@@ -1,0 +1,54 @@
+{
+    "transform": [
+        {
+            "filter": "datum.Entity !== 'All natural disasters'"
+        }
+    ],
+    "height": 400,
+    "mark": {
+        "strokeWidth": 1,
+        "opacity": 0.8,
+        "stroke": "black",
+        "type": "circle"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/disasters.csv"
+    },
+    "width": 600,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "Entity",
+            "type": "nominal",
+            "legend": null
+        },
+        "size": {
+            "field": "Deaths",
+            "scale": {
+                "range": [
+                    0,
+                    5000
+                ]
+            },
+            "type": "quantitative",
+            "legend": {
+                "title": "Annual Global Deaths"
+            }
+        },
+        "x": {
+            "field": "Year",
+            "type": "ordinal",
+            "axis": {
+                "labelAngle": 0
+            }
+        },
+        "y": {
+            "field": "Entity",
+            "type": "nominal",
+            "axis": {
+                "title": null
+            }
+        }
+    },
+    "description": "Visualization of global deaths from natural disasters. Copy of chart from https://ourworldindata.org/natural-catastrophes"
+}
