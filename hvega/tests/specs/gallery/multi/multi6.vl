@@ -1,0 +1,163 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "row_number",
+                    "as": "rowNumber"
+                }
+            ]
+        }
+    ],
+    "hconcat": [
+        {
+            "mark": "point",
+            "selection": {
+                "brush": {
+                    "type": "interval"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "grey",
+                    "condition": {
+                        "field": "Cylinders",
+                        "selection": "brush",
+                        "type": "ordinal"
+                    }
+                },
+                "x": {
+                    "field": "Horsepower",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "Miles_per_Gallon",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "brush"
+                    }
+                },
+                {
+                    "window": [
+                        {
+                            "op": "rank",
+                            "as": "rank"
+                        }
+                    ]
+                },
+                {
+                    "filter": {
+                        "field": "rank",
+                        "lt": 20
+                    }
+                }
+            ],
+            "mark": "text",
+            "title": "Engine power",
+            "encoding": {
+                "text": {
+                    "field": "Horsepower",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "rowNumber",
+                    "type": "ordinal",
+                    "axis": null
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "brush"
+                    }
+                },
+                {
+                    "window": [
+                        {
+                            "op": "rank",
+                            "as": "rank"
+                        }
+                    ]
+                },
+                {
+                    "filter": {
+                        "field": "rank",
+                        "lt": 20
+                    }
+                }
+            ],
+            "mark": "text",
+            "title": "Efficiency (mpg)",
+            "encoding": {
+                "text": {
+                    "field": "Miles_per_Gallon",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "rowNumber",
+                    "type": "ordinal",
+                    "axis": null
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "brush"
+                    }
+                },
+                {
+                    "window": [
+                        {
+                            "op": "rank",
+                            "as": "rank"
+                        }
+                    ]
+                },
+                {
+                    "filter": {
+                        "field": "rank",
+                        "lt": 20
+                    }
+                }
+            ],
+            "mark": "text",
+            "title": "Country of origin",
+            "encoding": {
+                "text": {
+                    "field": "Origin",
+                    "type": "nominal"
+                },
+                "y": {
+                    "field": "rowNumber",
+                    "type": "ordinal",
+                    "axis": null
+                }
+            }
+        }
+    ],
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "resolve": {
+        "legend": {
+            "color": "independent"
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Drag a rectangular brush to show (first 20) selected points in a table."
+}

@@ -1,0 +1,53 @@
+{
+    "height": 300,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "width": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "layer": [
+        {
+            "mark": "geoshape",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
+                "format": {
+                    "feature": "states",
+                    "type": "topojson"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "#eee"
+                }
+            }
+        },
+        {
+            "mark": "circle",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/airports.csv"
+            },
+            "encoding": {
+                "color": {
+                    "value": "steelblue"
+                },
+                "size": {
+                    "value": 5
+                },
+                "latitude": {
+                    "field": "latitude",
+                    "type": "quantitative"
+                },
+                "longitude": {
+                    "field": "longitude",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "description": "One dot per airport in the US overlayed on geoshape"
+}

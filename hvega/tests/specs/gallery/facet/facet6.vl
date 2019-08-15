@@ -1,0 +1,47 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/barley.json"
+    },
+    "spec": {
+        "mark": "point",
+        "encoding": {
+            "color": {
+                "field": "year",
+                "type": "nominal"
+            },
+            "x": {
+                "field": "yield",
+                "scale": {
+                    "zero": false
+                },
+                "aggregate": "median",
+                "type": "quantitative"
+            },
+            "y": {
+                "field": "variety",
+                "scale": {
+                    "rangeStep": 12
+                },
+                "sort": {
+                    "encoding": "x",
+                    "order": "descending"
+                },
+                "type": "ordinal"
+            }
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "columns": 2,
+    "facet": {
+        "field": "site",
+        "header": {
+            "title": null
+        },
+        "sort": {
+            "op": "median",
+            "field": "yield"
+        },
+        "type": "ordinal"
+    },
+    "description": "The Trellis display by Becker et al. helped establish small multiples as a 'powerful mechanism for understanding interactions in studies of how a response depends on explanatory variables'"
+}

@@ -1,0 +1,53 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+    },
+    "resolve": {
+        "scale": {
+            "y": "independent"
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "y": {
+                    "field": "precipitation",
+                    "aggregate": "mean",
+                    "type": "quantitative",
+                    "axis": {
+                        "grid": false
+                    }
+                }
+            }
+        },
+        {
+            "mark": "line",
+            "encoding": {
+                "color": {
+                    "value": "firebrick"
+                },
+                "y": {
+                    "field": "temp_max",
+                    "scale": {
+                        "zero": false
+                    },
+                    "aggregate": "mean",
+                    "type": "quantitative",
+                    "axis": {
+                        "grid": false
+                    }
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "date",
+            "timeUnit": "month",
+            "type": "ordinal"
+        }
+    },
+    "description": "Layered bar/line chart with dual axes"
+}

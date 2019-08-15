@@ -1,0 +1,39 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "count",
+                    "as": "cumulativeCount",
+                    "field": "count"
+                }
+            ],
+            "sort": [
+                {
+                    "field": "IMDB_Rating",
+                    "order": "ascending"
+                }
+            ],
+            "frame": [
+                null,
+                0
+            ]
+        }
+    ],
+    "mark": "area",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "IMDB_Rating",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "cumulativeCount",
+            "type": "quantitative"
+        }
+    },
+    "description": "Cumulative frequency distribution"
+}

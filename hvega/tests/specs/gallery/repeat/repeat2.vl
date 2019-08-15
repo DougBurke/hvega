@@ -1,0 +1,48 @@
+{
+    "transform": [
+        {
+            "filter": "datum.location === 'Seattle'"
+        }
+    ],
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/weather.csv"
+    },
+    "vconcat": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "timeUnit": "month",
+                    "type": "ordinal"
+                },
+                "y": {
+                    "field": "precipitation",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": "point",
+            "encoding": {
+                "size": {
+                    "aggregate": "count",
+                    "type": "quantitative"
+                },
+                "x": {
+                    "field": "temp_min",
+                    "bin": true,
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "temp_max",
+                    "bin": true,
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Two vertically concatenated charts that show a histogram of precipitation in Seattle and the relationship between min and max temperature"
+}

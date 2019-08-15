@@ -1,0 +1,56 @@
+{
+    "transform": [
+        {
+            "filter": {
+                "and": [
+                    {
+                        "field": "IMDB_Rating",
+                        "valid": true
+                    },
+                    {
+                        "field": "Rotten_Tomatoes_Rating",
+                        "valid": true
+                    }
+                ]
+            }
+        }
+    ],
+    "height": 200,
+    "config": {
+        "range": {
+            "heatmap": {
+                "scheme": "greenblue"
+            }
+        },
+        "view": {
+            "stroke": null
+        }
+    },
+    "mark": "rect",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "aggregate": "count",
+            "type": "quantitative"
+        },
+        "x": {
+            "field": "IMDB_Rating",
+            "bin": {
+                "maxbins": 60
+            },
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "Rotten_Tomatoes_Rating",
+            "bin": {
+                "maxbins": 40
+            },
+            "type": "quantitative"
+        }
+    },
+    "description": "'Binned heatmap' comparing movie ratings."
+}

@@ -1,0 +1,34 @@
+{
+    "repeat": {
+        "column": [
+            "Horsepower",
+            "Miles_per_Gallon",
+            "Acceleration"
+        ]
+    },
+    "spec": {
+        "mark": "bar",
+        "data": {
+            "url": "https://vega.github.io/vega-lite/data/cars.json"
+        },
+        "encoding": {
+            "color": {
+                "field": "Origin",
+                "type": "nominal"
+            },
+            "x": {
+                "field": {
+                    "repeat": "column"
+                },
+                "bin": true,
+                "type": "quantitative"
+            },
+            "y": {
+                "aggregate": "count",
+                "type": "quantitative"
+            }
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Horizontally repeated charts that show the histograms of different parameters of cars in different countries"
+}

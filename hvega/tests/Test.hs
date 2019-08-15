@@ -64,9 +64,21 @@ import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
 -- extend from the "tests" to gallery plots
-import qualified Gallery.Area as GA
 import qualified Gallery.Advanced as GADV
+import qualified Gallery.Area as GA
+import qualified Gallery.Bar as GB
+import qualified Gallery.Dist as GD
+import qualified Gallery.Error as GE
+import qualified Gallery.Facet as GF
+import qualified Gallery.Geo as GG
 import qualified Gallery.Interaction as GI
+import qualified Gallery.Label as GLBL
+import qualified Gallery.Layer as GLYR
+import qualified Gallery.Line as GLN
+import qualified Gallery.Multi as GM
+import qualified Gallery.Repeat as GR
+import qualified Gallery.Scatter as GS
+import qualified Gallery.Table as GTBL
 
 -- The "golden" output is "tests/specs/<label>/<name>.vl"
 -- where label can now itself contain sub-directories, so should
@@ -113,9 +125,21 @@ goldenTests = testGroup "tests"
   , toTests "Trail" "trail" TrT.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
-  , toTests "GalleryArea" (gallery "area") GA.testSpecs
   , toTests "GalleryAdvanced" (gallery "advanced") GADV.testSpecs
+  , toTests "GalleryArea" (gallery "area") GA.testSpecs
+  , toTests "GalleryBar" (gallery "bar") GB.testSpecs
+  , toTests "GalleryDist" (gallery "dist") GD.testSpecs
+  , toTests "GalleryError" (gallery "error") GE.testSpecs
+  , toTests "GalleryFacet" (gallery "facet") GF.testSpecs
+  , toTests "GalleryGeo" (gallery "geo") GG.testSpecs
   , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
+  , toTests "GalleryLabel" (gallery "label") GLBL.testSpecs
+  , toTests "GalleryLayer" (gallery "layer") GLYR.testSpecs
+  , toTests "GalleryLine" (gallery "line") GLN.testSpecs
+  , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
+  , toTests "GalleryRepeat" (gallery "repeat") GR.testSpecs
+  , toTests "GalleryScatter" (gallery "scatter") GS.testSpecs
+  , toTests "GalleryTable" (gallery "table") GTBL.testSpecs
   ]
 
 main :: IO ()

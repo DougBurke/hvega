@@ -1,0 +1,119 @@
+{
+    "height": 500,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "width": 700,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": {
+                "strokeWidth": 2,
+                "stroke": "rgb(251,247,238)",
+                "type": "geoshape"
+            },
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json",
+                "format": {
+                    "feature": "boroughs",
+                    "type": "topojson"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "#ddc"
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "as": "bLabel",
+                    "calculate": "indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name"
+                }
+            ],
+            "mark": "text",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/londonCentroids.json"
+            },
+            "encoding": {
+                "size": {
+                    "value": 8
+                },
+                "text": {
+                    "field": "bLabel",
+                    "type": "nominal"
+                },
+                "latitude": {
+                    "field": "cy",
+                    "type": "quantitative"
+                },
+                "opacity": {
+                    "value": 0.6
+                },
+                "longitude": {
+                    "field": "cx",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 2,
+                "type": "geoshape",
+                "filled": false
+            },
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/londonTubeLines.json",
+                "format": {
+                    "feature": "line",
+                    "type": "topojson"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "field": "id",
+                    "scale": {
+                        "domain": [
+                            "Bakerloo",
+                            "Central",
+                            "Circle",
+                            "District",
+                            "DLR",
+                            "Hammersmith & City",
+                            "Jubilee",
+                            "Metropolitan",
+                            "Northern",
+                            "Piccadilly",
+                            "Victoria",
+                            "Waterloo & City"
+                        ],
+                        "range": [
+                            "rgb(137,78,36)",
+                            "rgb(220,36,30)",
+                            "rgb(255,206,0)",
+                            "rgb(1,114,41)",
+                            "rgb(0,175,173)",
+                            "rgb(215,153,175)",
+                            "rgb(106,114,120)",
+                            "rgb(114,17,84)",
+                            "rgb(0,0,0)",
+                            "rgb(0,24,168)",
+                            "rgb(0,160,226)",
+                            "rgb(106,187,170)"
+                        ]
+                    },
+                    "type": "nominal",
+                    "legend": {
+                        "offset": 0,
+                        "orient": "bottom-right",
+                        "title": null
+                    }
+                }
+            }
+        }
+    ],
+    "description": "Geographic position of London underground lines"
+}

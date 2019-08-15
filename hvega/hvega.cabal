@@ -42,7 +42,19 @@ extra-source-files:  README.md
                      tests/specs/windowtransform/*vl
                      tests/specs/gallery/advanced/*vl
                      tests/specs/gallery/area/*vl
+                     tests/specs/gallery/bar/*vl
+                     tests/specs/gallery/dist/*vl
+                     tests/specs/gallery/error/*vl
+                     tests/specs/gallery/facet/*vl
+                     tests/specs/gallery/geo/*vl
                      tests/specs/gallery/interaction/*vl
+                     tests/specs/gallery/label/*vl
+                     tests/specs/gallery/layer/*vl
+                     tests/specs/gallery/line/*vl
+                     tests/specs/gallery/multi/*vl
+                     tests/specs/gallery/repeat/*vl
+                     tests/specs/gallery/scatter/*vl
+                     tests/specs/gallery/table/*vl
 
 extra-doc-files:     images/example.png
                      images/intro.png
@@ -89,9 +101,21 @@ test-suite test
                        TrailTests
                        ViewCompositionTests
                        WindowTransformTests
-                       Gallery.Area
                        Gallery.Advanced
+                       Gallery.Area
+                       Gallery.Bar
+                       Gallery.Dist
+                       Gallery.Error
+                       Gallery.Facet
+                       Gallery.Geo
                        Gallery.Interaction
+                       Gallery.Label
+                       Gallery.Layer
+                       Gallery.Line
+                       Gallery.Multi
+                       Gallery.Repeat
+                       Gallery.Scatter
+                       Gallery.Table
 
   build-depends:       aeson >= 0.11 && < 1.5
                      , aeson-pretty == 0.8.*

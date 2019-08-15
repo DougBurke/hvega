@@ -1,0 +1,60 @@
+{
+    "repeat": {
+        "row": [
+            "Horsepower",
+            "Acceleration",
+            "Miles_per_Gallon"
+        ],
+        "column": [
+            "Miles_per_Gallon",
+            "Acceleration",
+            "Horsepower"
+        ]
+    },
+    "spec": {
+        "mark": "point",
+        "data": {
+            "url": "https://vega.github.io/vega-lite/data/cars.json"
+        },
+        "selection": {
+            "myBrush": {
+                "resolve": "union",
+                "zoom": "wheel![event.shiftKey]",
+                "type": "interval",
+                "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+                "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!"
+            },
+            "grid": {
+                "bind": "scales",
+                "resolve": "global",
+                "zoom": "wheel![event.shiftKey]",
+                "type": "interval",
+                "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!"
+            }
+        },
+        "encoding": {
+            "color": {
+                "value": "grey",
+                "condition": {
+                    "field": "Origin",
+                    "selection": "myBrush",
+                    "type": "nominal"
+                }
+            },
+            "x": {
+                "field": {
+                    "repeat": "column"
+                },
+                "type": "quantitative"
+            },
+            "y": {
+                "field": {
+                    "repeat": "row"
+                },
+                "type": "quantitative"
+            }
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Scatterplot matrix"
+}

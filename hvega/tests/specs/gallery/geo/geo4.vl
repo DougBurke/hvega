@@ -1,0 +1,125 @@
+{
+    "height": 500,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "width": 800,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "layer": [
+        {
+            "mark": "geoshape",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
+                "format": {
+                    "feature": "states",
+                    "type": "topojson"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "#eee"
+                }
+            }
+        },
+        {
+            "mark": "circle",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/airports.csv"
+            },
+            "encoding": {
+                "color": {
+                    "value": "gray"
+                },
+                "size": {
+                    "value": 5
+                },
+                "latitude": {
+                    "field": "latitude",
+                    "type": "quantitative"
+                },
+                "longitude": {
+                    "field": "longitude",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "filter": {
+                        "equal": "SEA",
+                        "field": "origin"
+                    }
+                },
+                {
+                    "from": {
+                        "data": {
+                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
+                        },
+                        "key": "iata",
+                        "fields": [
+                            "latitude",
+                            "longitude"
+                        ]
+                    },
+                    "lookup": "origin"
+                },
+                {
+                    "as": "origin_latitude",
+                    "calculate": "datum.latitude"
+                },
+                {
+                    "as": "origin_longitude",
+                    "calculate": "datum.longitude"
+                },
+                {
+                    "from": {
+                        "data": {
+                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
+                        },
+                        "key": "iata",
+                        "fields": [
+                            "latitude",
+                            "longitude"
+                        ]
+                    },
+                    "lookup": "destination"
+                },
+                {
+                    "as": "dest_latitude",
+                    "calculate": "datum.latitude"
+                },
+                {
+                    "as": "dest_longitude",
+                    "calculate": "datum.longitude"
+                }
+            ],
+            "mark": "rule",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
+            },
+            "encoding": {
+                "latitude": {
+                    "field": "origin_latitude",
+                    "type": "quantitative"
+                },
+                "latitude2": {
+                    "field": "dest_latitude"
+                },
+                "longitude": {
+                    "field": "origin_longitude",
+                    "type": "quantitative"
+                },
+                "longitude2": {
+                    "field": "dest_longitude"
+                }
+            }
+        }
+    ],
+    "description": "Rules (line segments) connecting SEA to every airport reachable via direct flight"
+}

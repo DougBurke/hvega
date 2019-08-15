@@ -1,0 +1,96 @@
+{
+    "config": {
+        "range": {
+            "heatmap": {
+                "scheme": "greenblue"
+            }
+        },
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "vconcat": [
+        {
+            "height": 60,
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "IMDB_Rating",
+                    "bin": true,
+                    "type": "quantitative",
+                    "axis": null
+                },
+                "y": {
+                    "scale": {
+                        "domain": [
+                            0,
+                            1000
+                        ]
+                    },
+                    "aggregate": "count",
+                    "type": "quantitative",
+                    "axis": {
+                        "title": null
+                    }
+                }
+            }
+        },
+        {
+            "hconcat": [
+                {
+                    "mark": "rect",
+                    "encoding": {
+                        "color": {
+                            "aggregate": "count",
+                            "type": "quantitative"
+                        },
+                        "x": {
+                            "field": "IMDB_Rating",
+                            "bin": true,
+                            "type": "quantitative"
+                        },
+                        "y": {
+                            "field": "Rotten_Tomatoes_Rating",
+                            "bin": true,
+                            "type": "quantitative"
+                        }
+                    }
+                },
+                {
+                    "mark": "bar",
+                    "width": 60,
+                    "encoding": {
+                        "x": {
+                            "scale": {
+                                "domain": [
+                                    0,
+                                    1000
+                                ]
+                            },
+                            "aggregate": "count",
+                            "type": "quantitative",
+                            "axis": {
+                                "title": null
+                            }
+                        },
+                        "y": {
+                            "field": "Rotten_Tomatoes_Rating",
+                            "bin": true,
+                            "type": "quantitative",
+                            "axis": null
+                        }
+                    }
+                }
+            ],
+            "spacing": 15,
+            "bounds": "flush"
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "description": "Marginal histograms show the counts along the x and y dimension",
+    "spacing": 15,
+    "bounds": "flush"
+}

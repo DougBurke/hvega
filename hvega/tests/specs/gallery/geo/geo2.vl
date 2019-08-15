@@ -1,0 +1,41 @@
+{
+    "transform": [
+        {
+            "as": "digit",
+            "calculate": "substring(datum.zip_code, 0, 1)"
+        }
+    ],
+    "height": 300,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "mark": "circle",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/zipcodes.csv"
+    },
+    "width": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "encoding": {
+        "color": {
+            "field": "digit",
+            "type": "nominal"
+        },
+        "size": {
+            "value": 1
+        },
+        "latitude": {
+            "field": "latitude",
+            "type": "quantitative"
+        },
+        "longitude": {
+            "field": "longitude",
+            "type": "quantitative"
+        }
+    },
+    "description": "US zip codes: One dot per zipcode colored by first digit"
+}

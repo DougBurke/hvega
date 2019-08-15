@@ -1,0 +1,49 @@
+{
+    "transform": [
+        {
+            "as": "geo",
+            "from": {
+                "data": {
+                    "url": "https://vega.github.io/vega-lite/data/us-10m.json",
+                    "format": {
+                        "feature": "states",
+                        "type": "topojson"
+                    }
+                },
+                "key": "id"
+            },
+            "lookup": "id"
+        }
+    ],
+    "height": 300,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "mark": "geoshape",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/income.json"
+    },
+    "width": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "encoding": {
+        "color": {
+            "field": "pct",
+            "sort": "descending",
+            "type": "quantitative"
+        },
+        "shape": {
+            "field": "geo",
+            "type": "geojson"
+        },
+        "row": {
+            "field": "group",
+            "type": "nominal"
+        }
+    },
+    "description": "Income in the U.S. by state, faceted over income brackets"
+}

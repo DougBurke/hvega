@@ -1,0 +1,125 @@
+{
+    "height": 500,
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "width": 800,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "layer": [
+        {
+            "mark": "geoshape",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
+                "format": {
+                    "feature": "states",
+                    "type": "topojson"
+                }
+            },
+            "encoding": {
+                "color": {
+                    "value": "#eee"
+                }
+            }
+        },
+        {
+            "mark": "circle",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/airports.csv"
+            },
+            "encoding": {
+                "color": {
+                    "value": "gray"
+                },
+                "size": {
+                    "value": 5
+                },
+                "latitude": {
+                    "field": "latitude",
+                    "type": "quantitative"
+                },
+                "longitude": {
+                    "field": "longitude",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "transform": [
+                {
+                    "from": {
+                        "data": {
+                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
+                        },
+                        "key": "iata",
+                        "fields": [
+                            "latitude",
+                            "longitude"
+                        ]
+                    },
+                    "lookup": "airport"
+                }
+            ],
+            "mark": "line",
+            "data": {
+                "values": [
+                    {
+                        "airport": "SEA",
+                        "order": 1
+                    },
+                    {
+                        "airport": "SFO",
+                        "order": 2
+                    },
+                    {
+                        "airport": "LAX",
+                        "order": 3
+                    },
+                    {
+                        "airport": "LAS",
+                        "order": 4
+                    },
+                    {
+                        "airport": "DFW",
+                        "order": 5
+                    },
+                    {
+                        "airport": "DEN",
+                        "order": 6
+                    },
+                    {
+                        "airport": "ORD",
+                        "order": 7
+                    },
+                    {
+                        "airport": "JFK",
+                        "order": 8
+                    },
+                    {
+                        "airport": "ATL",
+                        "order": 9
+                    }
+                ]
+            },
+            "encoding": {
+                "latitude": {
+                    "field": "latitude",
+                    "type": "quantitative"
+                },
+                "longitude": {
+                    "field": "longitude",
+                    "type": "quantitative"
+                },
+                "order": {
+                    "field": "order",
+                    "type": "ordinal"
+                }
+            }
+        }
+    ],
+    "description": "Line drawn between airports in the U.S. simulating a flight itinerary"
+}

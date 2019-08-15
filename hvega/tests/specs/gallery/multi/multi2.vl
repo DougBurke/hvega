@@ -1,0 +1,70 @@
+{
+    "repeat": {
+        "column": [
+            "distance",
+            "delay",
+            "time"
+        ]
+    },
+    "spec": {
+        "transform": [
+            {
+                "as": "time",
+                "calculate": "hours(datum.date)"
+            }
+        ],
+        "data": {
+            "url": "https://vega.github.io/vega-lite/data/flights-2k.json",
+            "format": {
+                "parse": {
+                    "date": "date"
+                }
+            }
+        },
+        "layer": [
+            {
+                "mark": "bar",
+                "selection": {
+                    "myBrush": {
+                        "encodings": [
+                            "x"
+                        ],
+                        "type": "interval"
+                    }
+                }
+            },
+            {
+                "transform": [
+                    {
+                        "filter": {
+                            "selection": "myBrush"
+                        }
+                    }
+                ],
+                "mark": "bar",
+                "encoding": {
+                    "color": {
+                        "value": "goldenrod"
+                    }
+                }
+            }
+        ],
+        "encoding": {
+            "x": {
+                "field": {
+                    "repeat": "column"
+                },
+                "bin": {
+                    "maxbins": 20
+                },
+                "type": "quantitative"
+            },
+            "y": {
+                "aggregate": "count",
+                "type": "quantitative"
+            }
+        },
+        "description": "Cross-filter."
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json"
+}
