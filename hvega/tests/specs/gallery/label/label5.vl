@@ -1,0 +1,40 @@
+{
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "layer": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "timeUnit": "month",
+                    "type": "ordinal"
+                },
+                "y": {
+                    "field": "precipitation",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": "rule",
+            "encoding": {
+                "color": {
+                    "value": "red"
+                },
+                "size": {
+                    "value": 3
+                },
+                "y": {
+                    "field": "precipitation",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "description": "Monthly precipitation with mean value overlay"
+}

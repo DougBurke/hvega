@@ -48,6 +48,9 @@ extra-source-files:  README.md
                      tests/specs/gallery/facet/*vl
                      tests/specs/gallery/geo/*vl
                      tests/specs/gallery/interaction/*vl
+                     tests/specs/gallery/label/*vl
+                     tests/specs/gallery/layer/*vl
+                     tests/specs/gallery/line/*vl
                      tests/specs/gallery/multi/*vl
                      tests/specs/gallery/repeat/*vl
                      tests/specs/gallery/scatter/*vl
@@ -106,6 +109,9 @@ test-suite test
                        Gallery.Facet
                        Gallery.Geo
                        Gallery.Interaction
+                       Gallery.Label
+                       Gallery.Layer
+                       Gallery.Line
                        Gallery.Multi
                        Gallery.Repeat
                        Gallery.Scatter

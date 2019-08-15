@@ -1,0 +1,31 @@
+{
+    "mark": {
+        "point": true,
+        "type": "line"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/driving.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "miles",
+            "scale": {
+                "zero": false
+            },
+            "type": "quantitative"
+        },
+        "order": {
+            "field": "year",
+            "type": "temporal"
+        },
+        "y": {
+            "field": "gas",
+            "scale": {
+                "zero": false
+            },
+            "type": "quantitative"
+        }
+    },
+    "description": "A connected scatterplot can be created by customizing line order and adding point marker in the line mark definition."
+}

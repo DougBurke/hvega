@@ -1,0 +1,29 @@
+{
+    "mark": "trail",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "color": {
+            "field": "symbol",
+            "type": "nominal"
+        },
+        "size": {
+            "field": "price",
+            "type": "quantitative"
+        },
+        "x": {
+            "field": "date",
+            "type": "temporal",
+            "axis": {
+                "format": "%Y"
+            }
+        },
+        "y": {
+            "field": "price",
+            "type": "quantitative"
+        }
+    },
+    "description": "Stock prices of five tech companies over time double encoding price with vertical position and line thickness."
+}

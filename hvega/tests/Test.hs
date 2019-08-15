@@ -72,6 +72,9 @@ import qualified Gallery.Error as GE
 import qualified Gallery.Facet as GF
 import qualified Gallery.Geo as GG
 import qualified Gallery.Interaction as GI
+import qualified Gallery.Label as GLBL
+import qualified Gallery.Layer as GLYR
+import qualified Gallery.Line as GLN
 import qualified Gallery.Multi as GM
 import qualified Gallery.Repeat as GR
 import qualified Gallery.Scatter as GS
@@ -130,6 +133,9 @@ goldenTests = testGroup "tests"
   , toTests "GalleryFacet" (gallery "facet") GF.testSpecs
   , toTests "GalleryGeo" (gallery "geo") GG.testSpecs
   , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
+  , toTests "GalleryLabel" (gallery "label") GLBL.testSpecs
+  , toTests "GalleryLayer" (gallery "layer") GLYR.testSpecs
+  , toTests "GalleryLine" (gallery "line") GLN.testSpecs
   , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
   , toTests "GalleryRepeat" (gallery "repeat") GR.testSpecs
   , toTests "GalleryScatter" (gallery "scatter") GS.testSpecs
