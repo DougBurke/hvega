@@ -51,6 +51,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/multi/*vl
                      tests/specs/gallery/repeat/*vl
                      tests/specs/gallery/scatter/*vl
+                     tests/specs/gallery/table/*vl
 
 extra-doc-files:     images/example.png
                      images/intro.png
@@ -108,6 +109,7 @@ test-suite test
                        Gallery.Multi
                        Gallery.Repeat
                        Gallery.Scatter
+                       Gallery.Table
 
   build-depends:       aeson >= 0.11 && < 1.5
                      , aeson-pretty == 0.8.*
