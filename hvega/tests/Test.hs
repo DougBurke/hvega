@@ -102,8 +102,13 @@ toTests lbl dname tests = testGroup lbl
   | (tname, tspec) <- tests
   ]
 
-goldenTests :: TestTree
-goldenTests = testGroup "tests"
+-- these are placed in the "gallery" sub-directory
+toGTests :: String -> String -> [(String, VegaLite)] -> TestTree
+toGTests lbl dname = toTests lbl (gallery dname)
+
+
+baseTests :: TestTree
+baseTests = testGroup "base"
   [ toTests "Color" "color" ColT.testSpecs
   , toTests "Composite" "composite" CompT.testSpecs
   , toTests "Conditional" "conditional" CondT.testSpecs
@@ -125,22 +130,29 @@ goldenTests = testGroup "tests"
   , toTests "Trail" "trail" TrT.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
-  , toTests "GalleryAdvanced" (gallery "advanced") GADV.testSpecs
-  , toTests "GalleryArea" (gallery "area") GA.testSpecs
-  , toTests "GalleryBar" (gallery "bar") GB.testSpecs
-  , toTests "GalleryDist" (gallery "dist") GD.testSpecs
-  , toTests "GalleryError" (gallery "error") GE.testSpecs
-  , toTests "GalleryFacet" (gallery "facet") GF.testSpecs
-  , toTests "GalleryGeo" (gallery "geo") GG.testSpecs
-  , toTests "GalleryInteraction" (gallery "interaction") GI.testSpecs
-  , toTests "GalleryLabel" (gallery "label") GLBL.testSpecs
-  , toTests "GalleryLayer" (gallery "layer") GLYR.testSpecs
-  , toTests "GalleryLine" (gallery "line") GLN.testSpecs
-  , toTests "GalleryMulti" (gallery "multi") GM.testSpecs
-  , toTests "GalleryRepeat" (gallery "repeat") GR.testSpecs
-  , toTests "GalleryScatter" (gallery "scatter") GS.testSpecs
-  , toTests "GalleryTable" (gallery "table") GTBL.testSpecs
   ]
 
+galleryTests :: TestTree
+galleryTests = testGroup "Gallery"
+  [ toGTests "Advanced" "advanced" GADV.testSpecs
+  , toGTests "Area" "area" GA.testSpecs
+  , toGTests "Bar" "bar" GB.testSpecs
+  , toGTests "Dist" "dist" GD.testSpecs
+  , toGTests "Error" "error" GE.testSpecs
+  , toGTests "Facet" "facet" GF.testSpecs
+  , toGTests "Geo" "geo" GG.testSpecs
+  , toGTests "Interaction" "interaction" GI.testSpecs
+  , toGTests "Label" "label" GLBL.testSpecs
+  , toGTests "Layer" "layer" GLYR.testSpecs
+  , toGTests "Line" "line" GLN.testSpecs
+  , toGTests "Multi" "multi" GM.testSpecs
+  , toGTests "Repeat" "repeat" GR.testSpecs
+  , toGTests "Scatter" "scatter" GS.testSpecs
+  , toGTests "Table" "table" GTBL.testSpecs
+  ]
+
+allTests :: TestTree
+allTests = testGroup "Vega-Lite" [baseTests, galleryTests]
+
 main :: IO ()
-main = defaultMain goldenTests
+main = defaultMain allTests
