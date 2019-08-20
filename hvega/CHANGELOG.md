@@ -126,9 +126,13 @@ The `ArgMax` and `ArgMin` constructors of `Operation` now take an
 optional field name, to allow them to be used as part of an encoding
 aggregation (e.g. with `PAggregate`).
 
-Three new type aliases have been added: `Color`, `Opacity`, and
-`ZIndex`. These do not provide any new functionality, but may clash
-with symbols defined in other modules.
+The `ZIndex` type has been added: this provides constructors for the
+common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
+as a protection against future changes to the Vega-Lite specification.
+
+Two new type aliases have been added: `Color` and `Opacity`. These do
+not provide any new functionality, but may clash with symbols defined
+in other modules.
 
 ## 0.3.0.1
 

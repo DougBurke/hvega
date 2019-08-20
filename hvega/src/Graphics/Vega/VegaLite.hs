@@ -100,7 +100,7 @@ module Graphics.Vega.VegaLite
        , BuildLabelledSpecs
        , Color
        , Opacity
-       , ZIndex
+       , ZIndex(..)
        , combineSpecs
        , toHtml
        , toHtmlFile
@@ -591,6 +591,7 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Text as A
+import qualified Data.Aeson.Encoding as E
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -603,6 +604,10 @@ import Control.Arrow (first, second)
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
 import Data.Maybe (fromMaybe, mapMaybe)
 import Data.Monoid ((<>))
+
+-- added in base 4.8.0.0 / ghc 7.10.1
+import Numeric.Natural (Natural)
+
 
 -- Documentation
 
@@ -971,9 +976,13 @@ import Data.Monoid ((<>))
 --   optional field name, to allow them to be used as part of an encoding
 --   aggregation (e.g. with 'PAggregate').
 --
--- * Three new type aliases have been added: 'Color', 'Opacity', and
---   'ZIndex'. These do not provide any new functionality, but may clash
---   with symbols from other modules.
+-- * The 'ZIndex' type has been added: this provides constructors for the
+--   common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
+--   as a protection against future changes to the Vega-Lite specification.
+--
+-- * Two new type aliases have been added: 'Color' and 'Opacity'.
+--   These do not provide any new functionality, but may clash with symbols
+--   from other modules.
 --
 -- Note that the `VLProperty` type now exports its constructors, which
 -- may come in useful for those people who need to edit or augment the
@@ -1655,18 +1664,37 @@ type Opacity = Double
 
 {-|
 
-Convenience type-annotation label to indicate the "z index" value (which
-defines the relative depth of items in the visualization).
-
-A value of 1 means the item is drawn in front, and 0 behind it. There is
-__no__ attempt to validate that the user-supplied value falls in this range.
-
-It is left as an integer in case the schema is extended.
+At what "depth" (z index) is the item to be drawn (a relative depth
+for items in the visualization).
 
 @since 0.4.0.0
 -}
 
-type ZIndex = Int
+data ZIndex =
+  ZBack
+  -- ^ The item is drawn behind (this corresponds to the Vega Lite
+  --   @0@ value).
+  | ZFront
+  -- ^ The item is drawn in front (this corresponds to the Vega Lite
+  --   @1@ value).
+  | ZValue Natural
+  -- ^ This is provided in case there is any need to use a z index value
+  --   other than @0@ or @1@.
+
+
+-- Avoids the need to create a sepatate function, and may be useful
+-- for users who are tweaking the hvega output.
+--
+instance A.ToJSON ZIndex where
+  toJSON ZBack = A.Number 0
+  toJSON ZFront = A.Number 1
+  toJSON (ZValue z) = A.Number (fromIntegral z)
+  {-# INLINE toJSON #-}
+
+  toEncoding ZBack = E.int 0
+  toEncoding ZFront = E.int 1
+  toEncoding (ZValue z) = E.int (fromIntegral z)
+  {-# INLINE toEncoding #-}
 
 
 formatProperty :: Format -> [LabelledSpec]
@@ -4082,7 +4110,7 @@ axisProperty (AxTitleX x) = "titleX" .= x
 axisProperty (AxTitleY x) = "titleY" .= x
 axisProperty (AxValues vals) = "values" .= map toJSON vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
-axisProperty (AxZIndex n) = "zindex" .= n
+axisProperty (AxZIndex z) = "zindex" .= z
 
 
 -- | Indicates the horizontal alignment of text such as on an axis or legend.
@@ -5377,7 +5405,7 @@ legendProperty (LValues vals) =
   in "values" .= ls
 legendProperty (LeX x) = "legendX" .= x
 legendProperty (LeY x) = "legendY" .= x
-legendProperty (LZIndex n) = "zindex" .= n
+legendProperty (LZIndex z) = "zindex" .= z
 
 
 -- | A list of data values suitable for setting legend values.
@@ -6227,7 +6255,7 @@ titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
 titleConfigSpec (TStyle styles) = "style" .= styles
-titleConfigSpec (TZIndex n) = "zindex" .= n
+titleConfigSpec (TZIndex z) = "zindex" .= z
 
 -- | Specifies how the title anchor is positioned relative to the frame.
 --
