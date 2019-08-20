@@ -107,13 +107,6 @@ dataVals =
         . dataColumn "cat" cats
         . dataColumn "val" vals
 
-cfg :: [LabelledSpec] -> (VLProperty, VLSpec)
-cfg =
-    -- Styling to remove axis gridlines and labels
-    configure
-        . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-        . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
-        . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
 
 grid1 :: VegaLite
 grid1 =
@@ -126,6 +119,12 @@ grid1 =
 
         specByCatVal =
             asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
+
+        cfg = configure
+                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
+                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
+
     in
     toVegaLite
         [ cfg []
@@ -151,6 +150,11 @@ grid2 =
         specByCatVal =
             asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
 
+        cfg = configure
+                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
+                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
+
         trans =
             transform
                 . calculateAs "datum.row * 1000 + datum.col" "index"
@@ -165,9 +169,9 @@ grid2 =
         ]
 
 
--- TODO: columns Nothing maps to "columns": null, which is not to spec;
---       should it be "columns": 0?
-
+-- This has been changed from the Elm version so that it validates
+-- against the v3.4.0 specification.
+--
 grid3 :: VegaLite
 grid3 =
     let
@@ -180,6 +184,11 @@ grid3 =
         specByCatVal =
             asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
 
+        cfg = configure
+                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
+                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (FacetStyle [ FSpacing 80 ])
+
         trans =
             transform
                 . calculateAs "datum.row * 1000 + datum.col" "index"
@@ -188,7 +197,7 @@ grid3 =
         [ cfg []
         , dataVals []
         , trans []
-        , columns Nothing
+        , columns (Just 5)
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
