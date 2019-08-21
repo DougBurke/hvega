@@ -6,6 +6,8 @@
 
 module PositionTests (testSpecs) where
 
+import qualified Data.Text as T
+
 import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter)
@@ -16,38 +18,80 @@ testSpecs = [ ("position1", position1)
             , ("position3", position3)
             , ("position4", position4)
             , ("position5", position5)
+            , ("position6", position6)
+            , ("position7", position7)
             ]
 
 
-dataVals :: [DataColumn] -> Data
-dataVals =
+pOrdinal, pQuant :: PositionChannel
+pOrdinal = PmType Ordinal
+pQuant = PmType Quantitative
+
+pName :: T.Text -> PositionChannel
+pName = PName
+
+bar :: [MarkProperty] -> PropertySpec
+bar = mark Bar
+
+
+emptyData, someData :: [DataColumn] -> Data
+emptyData =
     dataFromColumns []
-        . dataColumn "empty" (Numbers [ 0 ])
+        . dataColumn "empty" (Numbers [0])
+
+someData =
+    dataFromColumns []
+        . dataColumn "cat" (Numbers [1, 2, 3, 4, 5])
+        . dataColumn "val" (Numbers [10, 20, 30, 20, 10])
+        . dataColumn "empty" (Numbers [0])
+
 
 position1 :: VegaLite
 position1 =
-    toVegaLite [ dataVals []
+    toVegaLite [ emptyData []
                , mark Circle [ MX 150, MY 150, MSize 200 ] ]
 
 position2 :: VegaLite
 position2 =
-    toVegaLite [ dataVals []
+    toVegaLite [ emptyData []
                , mark Bar [ MX 150, MY 150 ] ]
 
 
 position3 :: VegaLite
 position3 =
-    toVegaLite [ dataVals []
+    toVegaLite [ emptyData []
                , mark Bar [ MX 150, MY 150, MX2 200 ] ]
 
 
 position4 :: VegaLite
 position4 =
-    toVegaLite [ dataVals []
+    toVegaLite [ emptyData []
                , mark Bar [ MX 150, MY 150, MY2 200 ] ]
 
 
 position5 :: VegaLite
 position5 =
-    toVegaLite [ dataVals []
+    toVegaLite [ emptyData []
                , mark Bar [ MX 150, MY 150, MX2 200, MY2 200 ] ]
+
+
+position6 :: VegaLite
+position6 =
+    let
+        enc =
+            encoding
+                . position X [ pName "cat", pOrdinal ]
+                . position Y [ pName "val", pQuant ]
+    in
+    toVegaLite [ width 300, someData [], enc [], bar [ MWidth 20 ] ]
+
+
+position7 :: VegaLite
+position7 =
+    let
+        enc =
+            encoding
+                . position X [ pName "val", pQuant ]
+                . position Y [ pName "cat", pOrdinal ]
+    in
+    toVegaLite [ height 300, someData [], enc [], bar [ MHeight 20 ] ]

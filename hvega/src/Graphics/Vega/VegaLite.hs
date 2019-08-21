@@ -2161,7 +2161,11 @@ dataFromUrl url fmts =
 
 
 -- | Type of visual mark used to represent data in the visualization.
-
+--
+--   The properties of the mark can be changed with the 'MarkProperty'
+--   constructors - such as 'MHeight' and 'MWidth' -  although not all
+--   properties apply to all marks.
+--
 data Mark
     = Area
       -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
@@ -2494,6 +2498,10 @@ data MarkProperty
       -- ^ Font style (e.g. \"italic\") used by a text mark.
     | MFontWeight FontWeight
       -- ^ Font weight used by a text mark.
+    | MHeight Double
+      -- ^ Explicitly set the height of a mark. See also 'MWidth'.
+      --
+      --   @since 0.4.0.0
     | MHRef T.Text
       -- ^ Hyperlink to be associated with a mark making it a clickable
       --   hyperlink.
@@ -2583,12 +2591,13 @@ data MarkProperty
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
-    | MX Double
-      -- ^ X position of a mark.
+    | MWidth Double
+      -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
+      --   'MHeight'.
       --
       --   @since 0.4.0.0
-    | MY Double
-      -- ^ Y position of a mark.
+    | MX Double
+      -- ^ X position of a mark.
       --
       --   @since 0.4.0.0
     | MX2 Double
@@ -2596,21 +2605,25 @@ data MarkProperty
       --   lines and area marks).
       --
       --   @since 0.4.0.0
+    | MXOffset Double
+      -- ^ X position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2Offset Double
+      -- ^ X2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY Double
+      -- ^ Y position of a mark.
+      --
+      --   @since 0.4.0.0
     | MY2 Double
       -- ^ Y2 position of a mark. This is the secondary position for
       --   lines and area marks).
       --
       --   @since 0.4.0.0
-    | MXOffset Double
-      -- ^ X position offset of a mark.
-      --
-      --   @since 0.4.0.0
     | MYOffset Double
       -- ^ Y position offset of a mark.
-      --
-      --   @since 0.4.0.0
-    | MX2Offset Double
-      -- ^ X2 position offset of a mark.
       --
       --   @since 0.4.0.0
     | MY2Offset Double
@@ -2628,6 +2641,7 @@ markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
 markProperty (MFill col) = "fill" .= col
+markProperty (MHeight x) = "height" .= x
 markProperty (MStroke t) = "stroke" .= t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
@@ -2674,6 +2688,7 @@ markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
 markProperty (MX2 x) = "x2" .= x
