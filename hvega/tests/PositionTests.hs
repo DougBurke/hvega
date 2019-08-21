@@ -20,6 +20,10 @@ testSpecs = [ ("position1", position1)
             , ("position5", position5)
             , ("position6", position6)
             , ("position7", position7)
+            , ("position8", position8)
+            , ("position9", position9)
+            , ("position10", position10)
+            , ("position11", position11)
             ]
 
 
@@ -95,3 +99,26 @@ position7 =
                 . position Y [ pName "cat", pOrdinal ]
     in
     toVegaLite [ height 300, someData [], enc [], bar [ MHeight 20 ] ]
+
+
+barAlign :: Double -> VegaLite
+barAlign x =
+    let
+        enc =
+            encoding
+                . position X
+                    [ pName "cat"
+                    , pOrdinal
+                    , PScale [ SAlign x, SPaddingInner 0.5 ]
+                    ]
+                . position Y [ pName "val", pQuant ]
+    in
+    toVegaLite [ width 400, someData [], enc [], bar [] ]
+
+
+position8, position9, position10, position11, position12 :: VegaLite
+position8 = barAlign (-10)  -- test clamping
+position9 = barAlign 0.3
+position10 = barAlign 0.5
+position11 = barAlign 0.7
+position12 = barAlign 10    -- test clamping

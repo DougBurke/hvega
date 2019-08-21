@@ -989,7 +989,19 @@ import Numeric.Natural (Natural)
 -- may come in useful for those people who need to edit or augment the
 -- JSON Vega-Lite specification created by @hvega@.
 
---- helpers not in VegaLite.elm
+--- helpers
+
+-- This could be extended to any Ord type but specialize for now to Double
+clamped ::
+  Double
+  -- ^ minimum value allowed
+  -> Double
+  -- ^ maximum value allowed (must be > the minimum value)
+  -> Double
+  -- ^ user value
+  -> Double
+clamped xmin xmax x = max xmin (min xmax x)
+
 
 aggregate_ :: Operation -> LabelledSpec
 aggregate_ op = "aggregate" .= operationSpec op
@@ -3147,6 +3159,15 @@ a scale can be changed with the 'PSort' constructor.
 data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
+    | SAlign Double
+      -- ^ Alignemnt of the steps within the scale range. A value of
+      --   @0@ shifts the bands to an axis, @1@ away from the axis,
+      --   and @0.5@ is centered within the range.
+      --
+      --   The input is clamped so that values less than 0 are mapped
+      --   to 0 and greater than 1 to 1.
+      --
+      --   @since 0.4.0.0
     | SBase Double
       -- ^ The base to use for log scaling ('ScLog').
       --
@@ -3209,9 +3230,9 @@ data ScaleProperty
       --   Not all scales support @SZero@ and the default depends on the type of
       --   channel.
 
-
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
+scaleProperty (SAlign c) = "align" .= clamped 0 1 c
 scaleProperty (SBase x) = "base" .= x
 scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
