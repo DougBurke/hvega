@@ -6901,6 +6901,23 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
+    | FilterOpTrans MarkChannel Filter
+      -- ^ Combine a data-transformation operation with a filter before
+      --   converting into a boolean operation. This can be useful when
+      --   working with dates, such as the following exampe, which aggregates
+      --   a set of dates into years, and filters only those years between
+      --   2010 and 2017 (inclusive). The final expression is converted
+      --   back into a 'BooleanOp' with 'FCompose' (combined using
+      --   'Data.Function.&').
+      --
+      --   @
+      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2010] ['DTYear' 2017])
+      --           & 'FilterOpTrans' ('MTimeUnit' 'Year')
+      --           & 'FCompose'
+      --           )
+      --   @
+      --
+      --   @since 0.4.0.0
     | Selection T.Text  -- TODO: rename Selected?
       -- ^ Interactive selection that will be true or false as part of
       --   a logical composition.  For example: to filter a dataset so
@@ -6939,6 +6956,7 @@ data BooleanOp
 booleanOpSpec :: BooleanOp -> VLSpec
 booleanOpSpec (Expr expr) = toJSON expr
 booleanOpSpec (FilterOp f) = filterSpec f
+booleanOpSpec (FilterOpTrans tr f) = trFilterSpec tr f
 booleanOpSpec (SelectionName selName) = toJSON selName
 booleanOpSpec (Selection sel) = object ["selection" .= sel]
 booleanOpSpec (And operand1 operand2) = object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
@@ -6953,6 +6971,7 @@ Type of filtering operation. See the
 for details.
 
 These can also be included into a 'BooleanOp' expression using 'FilterOp'
+and 'FilterOpTrans'
 (as of version @0.4.0.0@).
 
 -}
@@ -7010,8 +7029,16 @@ data Filter
       -- ^ Filter a data stream so that only data in a given field contained in the given
       --   list of values are used.
     | FRange T.Text FilterRange
-      -- ^ Filter a data stream so that only data in a given field that are within the
-      --   given range are used.
+      -- ^ Filter a data stream so that only data in a given field
+      --   that are within the given range are used.
+      --
+      --   For example:
+      --
+      --   @
+      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2006] ['DTYear' 2016])
+      --   @
+      --
+      --   See 'FilterOpTrans' for more use cases.
     | FValid T.Text
       -- ^ Filter a data stream so that only valid data (i.e. not null or NaN) in a given
       --   field are used.
@@ -7019,22 +7046,20 @@ data Filter
       --   @since 0.4.0.0
 
 
-fop_ :: T.Text -> T.Text -> DataValue -> VLSpec
-fop_ field label val = object [field_ field, label .= dataValueSpec val]
+fop_ :: T.Text -> T.Text -> DataValue -> [LabelledSpec]
+fop_ field label val = [field_ field, label .= dataValueSpec val]
 
-filterSpec :: Filter -> VLSpec
-filterSpec (FExpr expr) = toJSON expr
-filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+filterProperty :: Filter -> [LabelledSpec]
 
-filterSpec (FEqual field val) = fop_ field "equal" val
-filterSpec (FLessThan field val) = fop_ field "lt" val
-filterSpec (FLessThanEq field val) = fop_ field "lte" val
-filterSpec (FGreaterThan field val) = fop_ field "gt" val
-filterSpec (FGreaterThanEq field val) = fop_ field "gte" val
+filterProperty (FEqual field val) = fop_ field "equal" val
+filterProperty (FLessThan field val) = fop_ field "lt" val
+filterProperty (FLessThanEq field val) = fop_ field "lte" val
+filterProperty (FGreaterThan field val) = fop_ field "gt" val
+filterProperty (FGreaterThanEq field val) = fop_ field "gte" val
 
-filterSpec (FSelection selName) = object ["selection" .= selName]
+filterProperty (FSelection selName) = ["selection" .= selName]
 
-filterSpec (FRange field vals) =
+filterProperty (FRange field vals) =
   let ans = case vals of
               NumberRange mn mx -> map toJSON [mn, mx]
               DateRange dMin dMax -> [process dMin, process dMax]
@@ -7042,18 +7067,30 @@ filterSpec (FRange field vals) =
       process [] = A.Null
       process dts = object (map dateTimeProperty dts)
 
-  in object [field_ field, "range" .= ans]
+  in [field_ field, "range" .= ans]
 
-filterSpec (FOneOf field vals) =
+filterProperty (FOneOf field vals) =
   let ans = case vals of
               Numbers xs -> map toJSON xs
               DateTimes dts -> map (object . map dateTimeProperty) dts
               Strings ss -> map toJSON ss
               Booleans bs -> map toJSON bs
 
-  in object [field_ field, "oneOf" .= ans]
+  in [field_ field, "oneOf" .= ans]
 
-filterSpec (FValid field) = object [field_ field, "valid" .= True]
+filterProperty (FValid field) = [field_ field, "valid" .= True]
+filterProperty _ = []  -- ignore FExpr and FCompose
+
+
+filterSpec :: Filter -> VLSpec
+filterSpec (FExpr expr) = toJSON expr
+filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+filterSpec f = object (filterProperty f)
+
+trFilterSpec :: MarkChannel -> Filter -> VLSpec
+trFilterSpec _ (FExpr expr) = toJSON expr
+trFilterSpec _ (FCompose boolExpr) = booleanOpSpec boolExpr
+trFilterSpec mchan fi = object (markChannelProperty mchan <> filterProperty fi)
 
 
 {-|
@@ -8904,8 +8941,8 @@ to a channel or field.
 @
 
 Filter operations can combine selections and data predicates with 'BooleanOp'
-expressions (and as of @0.4.0.0@, 'FilterOp' can be used to lift the
-'Filter' type into boolean expressions):
+expressions (and as of @0.4.0.0@, 'FilterOp' and 'FilterOpTrans'
+can be used to lift the 'Filter' type into boolean expressions):
 
 @
 'transform'
