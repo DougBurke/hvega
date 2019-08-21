@@ -152,7 +152,7 @@ facet6 =
     toVegaLite
         [ des
         , dvals []
-        , columns (Just 2)
+        , columns 2
         , facetFlow
             [ FName "site"
             , FmType Ordinal
