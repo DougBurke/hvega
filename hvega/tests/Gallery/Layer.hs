@@ -21,6 +21,7 @@ testSpecs = [ ("layer1", layer1)
             , ("layer4", layer4)
             , ("layer5", layer5)
             , ("layer6", layer6)
+            , ("layer7", layer7)
             ]
 
 layer1 :: VegaLite
@@ -386,3 +387,47 @@ layer6 =
         , dataFromUrl "https://vega.github.io/vega-lite/data/weather.json" []
         , layer [ spec1, spec2, spec3, spec4, spec5, spec6, spec7 ]
         ]
+
+
+-- From
+-- https://vega.github.io/vega-lite/examples/layer_line_rolling_mean_point_raw.html
+-- but slightly adjusted, to use ZIndex on one of the axes.
+--
+layer7 :: VegaLite
+layer7 =
+  let desc = "Plot showing a 30 day rolling average with raw values in the background."
+
+      wtrans = window
+               [([WAggregateOp Mean, WField "temp_max"], "rolling_mean")]
+               [WFrame (Just (-15)) (Just 15)]
+
+      allPoints = [ mark Point [MOpacity 0.3]
+                  , encoding
+                      . position X [ PName "date"
+                                   , PmType Temporal
+                                   , PTitle "Date"
+                                   , PAxis [ AxZIndex ZFront
+                                           , AxGridColor "orange"
+                                           , AxGridOpacity 0.8
+                                           ]
+                                   ]
+                      . position Y [PName "temp_max", PmType Quantitative, PTitle "Max Temperature"]
+                      $ []
+                  ]
+      avgPoints = [ mark Line [MColor "red", MSize 3]
+                  , encoding
+                      . position X [PName "date", PmType Temporal]
+                      . position Y [PName "rolling_mean", PmType Quantitative]
+                      $ []
+                  ]
+
+      layers = map asSpec [allPoints, avgPoints]
+
+  in toVegaLite
+     [ description desc
+     , height 300
+     , width 400
+     , dataFromUrl "data/seattle-weather.csv" []
+     , transform (wtrans [])
+     , layer layers
+     ]
