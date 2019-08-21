@@ -118,6 +118,7 @@ module Graphics.Vega.VegaLite
        , datasets
        , dataColumn
        , dataRow
+       , noData
        , Data
        , DataColumn
        , DataRow
@@ -1408,7 +1409,7 @@ data VLProperty
     | VLData
       -- ^ See 'dataFromColumns', 'dataFromJson', 'dataFromRows',
       --   'dataFromSource', 'dataFromUrl', 'dataName', 'dataSequence',
-      --   'dataSequenceAs', 'graticule', and 'sphere'.
+      --   'dataSequenceAs', 'graticule', 'noData', and 'sphere'.
     | VLDatasets
       -- ^ See 'datasets'.
     | VLDescription
@@ -1792,6 +1793,14 @@ datasets namedData =
         in fromMaybe din (convert din >>= extract')
 
   in (VLDatasets, object specs)
+
+
+-- | This is for composed specifications, and it tells the visualization to
+--   ignore the data from the parent.
+--
+--   @since 0.4.0.0
+noData :: Data
+noData = (VLData, A.Null)
 
 
 {-|

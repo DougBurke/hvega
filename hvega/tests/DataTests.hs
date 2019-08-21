@@ -49,14 +49,19 @@ testSpecs = [ ("data1", data1)
             , ("sequence2", sequence2)
             , ("filter1", filter1)
             , ("filter2", filter2)
+            , ("annotate1", annotate1)
             ]
 
 
--- We do not provide this in hvega, so define it here to make copying
+-- We do not provide these in hvega, so define them here to make copying
 -- the Elm tests over easier.
 --
-pQuant :: PositionChannel
+pOrdinal, pQuant :: PositionChannel
+pOrdinal = PmType Ordinal
 pQuant = PmType Quantitative
+
+pName :: T.Text -> PositionChannel
+pName = PName
 
 
 showData :: (VLProperty, VLSpec) -> VegaLite
@@ -576,3 +581,25 @@ filter2 =
                 . position Y [ PName "b", PmType Quantitative ]
     in
     toVegaLite [ dvals [], trans [], enc [], mark Bar [] ]
+
+
+annotate1 :: VegaLite
+annotate1 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "a" (Strings [ "A", "B", "C", "D", "E" ])
+                . dataColumn "b" (Numbers [ 28, 55, 43, 91, 81 ])
+
+        enc =
+            encoding
+                . position X [ pName "a", pOrdinal ]
+                . position Y [ pName "b", pQuant ]
+
+        specBars =
+            asSpec [ enc [], mark Bar [] ]
+
+        specText =
+            asSpec [ noData, mark Text [ MText "Test" ] ]
+    in
+    toVegaLite [ dvals [], layer [ specBars, specText ] ]
