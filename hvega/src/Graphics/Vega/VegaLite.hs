@@ -934,6 +934,11 @@ import Numeric.Natural (Natural)
 --   are invalid. The 'AxTitleLimit' (new in this release) and
 --   'TitleLimit' constructors should be used instead.
 --
+-- * 'AxisProperty': the 'AxValues' constructor has been changed from
+--   accepting a list of doubles to 'DataValues'. The 'AxDates'
+--   constructor has been deprecated and 'AxValues' should be used
+--   instead.
+--
 -- * There have been significant changes to the 'LegendConfig' type: the
 --   @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
 --   @GradientWidth@, and @SymbolColor@ constructors have been removed;
@@ -4116,10 +4121,27 @@ data AxisProperty
       -- ^ The Y coordinate of the axis title, relative to the axis group.
       --
       --   @since 0.4.0.0
-    | AxValues [Double]
-      -- ^ Numeric values to appear along the axis.
+    | AxValues DataValues
+      -- ^ Set the explicit tick, grid, and label values along an axis.
+      --
+      --   The following three examples are for an axis displaying a
+      --   quantitative, categorical, and temporal field respectively.
+      --
+      --   @
+      --   'PAxis' ['AxValues' ('Numbers' [2, 3, 5, 7, 11, 13, 17])]
+      --   'PAxis' ['AxValues' ('Strings' ["cats", "dogs", "elephants"])]
+      --   'PAxis' ['AxValues' ('DateTimes' [ ['DTYear' 2019, 'DTMonth' 'Mar', 'DTDate' 31]
+      --                              , ['DTYear' 2019, 'DTMonth' 'Jun', 'DTDate' 30]
+      --                              , ['DTYear' 2019, 'DTMonth' 'Sep', 'DTDate' 30]
+      --                              ])]
+      --   @
+      --
+      --   Changed in @0.4.0.0@ to take 'DataValues' rather than @[Double]@.
     | AxDates [[DateTime]]
       -- ^ The dates or times to appear along the axis.
+      --
+      --   As of version @0.4.0.0@, this is deprecated. The 'AxValues'
+      --   constructir should be used instead.
     | AxZIndex ZIndex
       -- ^ The z-index of the axis, relative to the chart marks.
 
@@ -4191,7 +4213,7 @@ axisProperty (AxTitleOpacity x) = "titleOpacity" .= x
 axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
 axisProperty (AxTitleX x) = "titleX" .= x
 axisProperty (AxTitleY x) = "titleY" .= x
-axisProperty (AxValues vals) = "values" .= map toJSON vals
+axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
 axisProperty (AxZIndex z) = "zindex" .= z
 

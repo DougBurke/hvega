@@ -16,7 +16,7 @@ testSpecs = [ ("axis1", axis1)
             , ("axis2", axis2)
             , ("axis3", axis3)
             , ("axis4", axis4)
-            -- , ("axis5", axis5)  require improved AxValues support
+            , ("axis5", axis5)
             , ("axis6", axis6)
             -- , ("axis7", axis7)  require AxLabelExpr support (VL 4)
             -- , ("axis8", axis8)  require AxLabelExpr support (VL 4)
@@ -37,11 +37,12 @@ pName = PName
 
 simpleData :: [DataColumn] -> Data
 simpleData =
-  let xs = map fromIntegral [1::Int .. 100]
+  let xvals = map fromIntegral xs
+      xs = [1::Int .. 100]
   in dataFromColumns []
-       . dataColumn "x" (Numbers xs)
+       . dataColumn "x" (Numbers xvals)
        . dataColumn "catX" (Strings (map (T.pack . show) xs))
-       . dataColumn "y" (Numbers xs)
+       . dataColumn "y" (Numbers xvals)
 
 
 temporalData :: [DataColumn] -> Data
@@ -99,25 +100,23 @@ axis4 =
   let enc = encoding
               . position X [ pName "x"
                            , pQuant
-                           , PAxis [AxValues [1, 25, 39, 90]]
+                           , PAxis [AxValues (Numbers [1, 25, 39, 90])]
                            ]
               . position Y [ pName "y", pQuant ]
     in
     toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
 
 
-{-
 axis5 :: VegaLite
 axis5 =
   let enc = encoding
               . position X [ pName "catX"
                            , pOrdinal
-                           , PAxis [AxValues ["1", "25", "39", "dummy", "90"]]
+                           , PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])]
                            ]
               . position Y [ pName "y", pQuant ]
     in
     toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
--}
 
 
 axis6 :: VegaLite
@@ -125,7 +124,7 @@ axis6 =
   let enc = encoding
               . position X [ pName "date"
                            , pTemporal
-                           , PAxis [AxDates axDates]
+                           , PAxis [AxValues (DateTimes axDates)]
                            ]
               . position Y [ pName "y", pQuant ]
 
