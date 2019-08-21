@@ -43,11 +43,21 @@ testSpecs = [ ("data1", data1)
             , ("impute8", impute8)
             , ("sample1", sample1)
             , ("bin1", bin1)
+            , ("bin2", bin2)
+            , ("bin3", bin3)
             , ("sequence1", sequence1)
             , ("sequence2", sequence2)
             , ("filter1", filter1)
             , ("filter2", filter2)
             ]
+
+
+-- We do not provide this in hvega, so define it here to make copying
+-- the Elm tests over easier.
+--
+pQuant :: PositionChannel
+pQuant = PmType Quantitative
+
 
 showData :: (VLProperty, VLSpec) -> VegaLite
 showData dvals =
@@ -453,6 +463,37 @@ bin1 =
                 . position Y [ PName "count", PmType Quantitative ]
     in
     toVegaLite [ dvals [], enc [], mark Bar [] ]
+
+
+bin2 :: VegaLite
+bin2 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "x" (Numbers [ 10.6, 12.1, 9.4, 11.5, 12.6, 10.7, 11.6, 7.7, 12, 10.6, 16.5, 8.7, 7.6, 10.2, 10, 9.8, 11, 9, 10.4, 11.6, 11.2, 11.1, 11.7, 12.1, 9.9, 8.9, 10.9, 14.6, 11.4, 12.1 ])
+
+        enc =
+            encoding
+                . position X [ PName "x", pQuant, PBin [] ]
+                . position Y [ PAggregate Count, pQuant ]
+    in
+    toVegaLite [ width 300, dvals [], enc [], mark Bar [] ]
+
+
+bin3 :: VegaLite
+bin3 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "x" (Numbers [ 10.6, 12.1, 9.4, 11.5, 12.6, 10.7, 11.6, 7.7, 12, 10.6, 16.5, 8.7, 7.6, 10.2, 10, 9.8, 11, 9, 10.4, 11.6, 11.2, 11.1, 11.7, 12.1, 9.9, 8.9, 10.9, 14.6, 11.4, 12.1, 12.2, 11.3, 13.1, 14.3, 9.8, 12.7, 9.2, 8.7, 11.3, 6.5, 11.1, 8.9, 11.8, 10.5, 12.8, 11.1, 11.2, 7, 12.4, 11.3, 8.3, 12.4, 12.1, 9.4, 8.6, 11.1, 8.9, 8.4, 10.5, 9.9, 6.5, 8.2, 12.7, 7.7, 11.1, 8.1, 8.1, 10.7, 9.8, 11.2, 11.2 ])
+
+        enc =
+            encoding
+                . position X [ PName "x", pQuant, PBin [ BinAnchor 0.5 ] ]
+                . position Y [ PAggregate Count, pQuant ]
+    in
+    toVegaLite [ width 300, dvals [], enc [], mark Bar [] ]
+
 
 sequence1 :: VegaLite
 sequence1 =
