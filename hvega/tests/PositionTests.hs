@@ -24,6 +24,7 @@ testSpecs = [ ("position1", position1)
             , ("position9", position9)
             , ("position10", position10)
             , ("position11", position11)
+            , ("position12", position12)
             ]
 
 
