@@ -50,6 +50,7 @@ testSpecs = [ ("data1", data1)
             , ("filter1", filter1)
             , ("filter2", filter2)
             , ("annotate1", annotate1)
+            , ("null1", null1)
             ]
 
 
@@ -603,3 +604,23 @@ annotate1 =
             asSpec [ noData, mark Text [ MText "Test" ] ]
     in
     toVegaLite [ dvals [], layer [ specBars, specText ] ]
+
+
+-- See https://vega.github.io/vega-lite/examples/line_skip_invalid_mid_overlay.html
+null1 :: VegaLite
+null1 =
+  toVegaLite [ mark Line [MPoint (PMMarker [])]
+             , encoding
+                 . position X [pName "x", pQuant]
+                 . position Y [pName "y", pQuant]
+                 $ []
+             , dataFromRows []
+                 . dataRow [("x", Number 1), ("y", Number 10)]
+                 . dataRow [("x", Number 2), ("y", Number 30)]
+                 . dataRow [("x", Number 3), ("y", NullValue)]
+                 . dataRow [("x", Number 4), ("y", Number 15)]
+                 . dataRow [("x", Number 5), ("y", NullValue)]
+                 . dataRow [("x", Number 6), ("y", Number 40)]
+                 . dataRow [("x", Number 7), ("y", Number 20)]
+                 $ []
+             ]

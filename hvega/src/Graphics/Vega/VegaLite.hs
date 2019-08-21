@@ -2039,13 +2039,30 @@ data DataValue
     | DateTime [DateTime]
     | Number Double
     | Str T.Text
-
+    | NullValue
+      -- ^ Create a JavaScript @null@ value. This can be useful when
+      --   explictly recoding a value as undefined, such as in the following
+      --   example:
+      --
+      --   @
+      --   'dataFromRows' []
+      --     . 'dataRow' [("x", 'Number' 1), ("y", 'String' "good")]
+      --     . 'dataRow' [("x", 'Number' 2), ("y", 'NullValue')]
+      --     . 'dataRow' [("x", 'Number' 3), ("y", 'String' "bad")]
+      --   @
+      --
+      --   For more-complex data sources - such as lists of defined
+      --   and un-specified values, it is suggested that 'dataFromJson'
+      --   be used rather than 'dataFromRows' or 'dataFromColumns'.
+      --
+      --   @since 0.4.0.0
 
 dataValueSpec :: DataValue -> VLSpec
 dataValueSpec (Boolean b) = toJSON b
 dataValueSpec (DateTime dt) = object (map dateTimeProperty dt)
 dataValueSpec (Number x) = toJSON x
 dataValueSpec (Str t) = toJSON t
+dataValueSpec NullValue = A.Null
 
 
 {-|
@@ -2054,6 +2071,9 @@ A list of data values. This is used when a function or constructor
 can accept lists of different types (e.g. either a list of numbers
 or a list of strings), such as:
 'dataColumn', 'CustomSort', 'FOneOf', or 'ImKeyVals'.
+
+If your data contains undefined values then it is suggested that
+you convert it to JSON (e.g. 'Value') and then use 'dataFromJson'.
 
 -}
 data DataValues
