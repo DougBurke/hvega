@@ -130,9 +130,9 @@ The `ZIndex` type has been added: this provides constructors for the
 common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
 as a protection against future changes to the Vega-Lite specification.
 
-Two new type aliases have been added: `Color` and `Opacity`. These do
-not provide any new functionality, but may clash with symbols defined
-in other modules.
+Three new type aliases have been added: `Angle`, `Color`, and
+`Opacity`. These do not provide any new functionality - other than
+documentation - but may clash with symbols defined in other modules.
 
 ## 0.3.0.1
 

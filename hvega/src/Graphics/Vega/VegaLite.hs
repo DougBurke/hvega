@@ -98,6 +98,7 @@ module Graphics.Vega.VegaLite
        , PropertySpec
        , LabelledSpec
        , BuildLabelledSpecs
+       , Angle
        , Color
        , Opacity
        , ZIndex(..)
@@ -981,9 +982,9 @@ import Numeric.Natural (Natural)
 --   common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
 --   as a protection against future changes to the Vega-Lite specification.
 --
--- * Two new type aliases have been added: 'Color' and 'Opacity'.
---   These do not provide any new functionality, but may clash with symbols
---   from other modules.
+-- * Three new type aliases have been added: 'Angle', 'Color', and 'Opacity'.
+--   These do not provide any new functionality - other than documentation -
+--   but may clash with symbols from other modules.
 --
 -- Note that the `VLProperty` type now exports its constructors, which
 -- may come in useful for those people who need to edit or augment the
@@ -1641,7 +1642,7 @@ type Data = (VLProperty, VLSpec)
 {-|
 
 Convenience type-annotation label to indicate a color value.
-There is __no__ attempt to validate that the user-supplied input
+There is __no attempt__ to validate that the user-supplied input
 is a valid color.
 
 Any supported HTML color specification can be used, such as:
@@ -1663,7 +1664,7 @@ type Color = T.Text
 {-|
 
 Convenience type-annotation label to indicate an opacity value, which
-lies in the range 0 to 1 inclusive. There is __no__ attempt to validate
+lies in the range 0 to 1 inclusive. There is __no attempt__ to validate
 that the user-supplied value falls in this range.
 
 A value of 0 indicates fully transparent (see through), and 1 is
@@ -1673,6 +1674,20 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate an angle, which is measured
+in degrees from the horizontal (so anti-clockwise).
+
+The value should be in the range 0 to 360, inclusive, but __no attempt__ is
+made to enforce this.
+
+@since 0.4.0.0
+-}
+
+type Angle = Double
 
 
 {-|
@@ -2459,8 +2474,8 @@ supported in @hvega@.
 data MarkProperty
     = MAlign HAlign
       -- ^ Horizontal alignment of a text mark.
-    | MAngle Double
-      -- ^ Rotation angle, in degrees, of a text mark.
+    | MAngle Angle
+      -- ^ Rotation angle of a text mark.
     | MBandSize Double
       -- ^ Band size of a bar mark.
     | MBaseline VAlign
@@ -2591,8 +2606,9 @@ data MarkProperty
     | MText T.Text
       -- ^ Placeholder text for a text mark for when a text channel is not specified.
     | MTheta Double
-      -- ^ Polar coordinate angle (clockwise from north in radians) of a text mark from
-      --   the origin determined by its x and y properties.
+      -- ^ Polar coordinate angle (clockwise from north in radians)
+      --   of a text mark from the origin (determined by its
+      --   x and y properties).
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
@@ -3897,7 +3913,7 @@ data AxisProperty
       -- ^ The horizontal alignment for labels.
       --
       --   @since 0.4.0.0
-    | AxLabelAngle Double
+    | AxLabelAngle Angle
       -- ^ The angle at which to draw labels.
     | AxLabelBaseline VAlign
       -- ^ The vertical alignment for labels.
@@ -4034,7 +4050,7 @@ data AxisProperty
       -- ^ The text anchor ppsition for placing axis titles.
       --
       --   @since 0.4.0.0
-    | AxTitleAngle Double
+    | AxTitleAngle Angle
       -- ^ The angle of the axis title.
     | AxTitleBaseline VAlign
       -- ^ The vertical alignment of the axis title.
@@ -6247,7 +6263,7 @@ For further details see the
 data TitleConfig
     = TAnchor APosition
       -- ^ Default anchor position when placing titles.
-    | TAngle Double
+    | TAngle Angle
       -- ^ Default angle when orientating titles.
     | TBaseline VAlign
       -- ^ Default vertical alignment when placing titles.
@@ -6698,7 +6714,7 @@ data AxisConfig
       -- ^ The horizontal alignment for labels.
       --
       --   @since 0.4.0.0
-    | LabelAngle Double
+    | LabelAngle Angle
       -- ^ The angle at which to draw labels.
     | LabelBaseline VAlign
       -- ^ The vertical alignment for labels.
@@ -6806,7 +6822,7 @@ data AxisConfig
       -- ^ The text anchor ppsition for placing axis titles.
       --
       --   @since 0.4.0.0
-    | TitleAngle Double
+    | TitleAngle Angle
       -- ^ The angle of the axis title.
     | TitleBaseline VAlign
       -- ^ The vertical alignment of the axis title.
@@ -7400,7 +7416,7 @@ data HeaderProperty
       -- ^ The anchor position for the labels.
       --
       -- @since 0.4.0.0
-    | HLabelAngle Double
+    | HLabelAngle Angle
       -- ^ The angle to draw the labels.
       --
       -- @since 0.4.0.0
@@ -7436,7 +7452,7 @@ data HeaderProperty
       -- ^ The anchor position for the title.
       --
       -- @since 0.4.0.0
-    | HTitleAngle Double
+    | HTitleAngle Angle
       -- ^ The angle to draw the title.
       --
       -- @since 0.4.0.0
