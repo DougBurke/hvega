@@ -47,6 +47,7 @@ import qualified DataTests as DT
 import qualified FillStrokeTests as FST
 import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
+import qualified InteractionTests as IT
 import qualified LegendTests as LT
 import qualified NullTests as NT
 import qualified PositionTests as PT
@@ -116,6 +117,7 @@ baseTests = testGroup "base"
   , toTests "FillStroke" "fillstroke" FST.testSpecs
   , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs
+  , toTests "Interaction" "interaction" IT.testSpecs
   , toTests "Legend" "legend" LT.testSpecs
   , toTests "Null" "null" NT.testSpecs
   , toTests "Position" "position" PT.testSpecs
