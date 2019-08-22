@@ -11,20 +11,22 @@ Stability   : unstable
 Portability : OverloadedStrings, TupleSections
 
 This is a port of the
-<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm Vega Lite module>,
-written by Jo Wood of the giCentre at the City University of London. It was
-originally based on version @2.2.1@ but it has been updated to match later versions.
-This module allows users to create a Vega-Lite specification, targeting
-version 3 of the <https://vega.github.io/schema/vega-lite/v3.json JSON schema>.
-The ihaskell-hvega module provides an easy way to embed Vega-Lite
+<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm
+Vega Lite module>, written by Jo Wood of the giCentre at the City
+University of London. It was originally based on version @2.2.1@ but
+it has been updated to match later versions.  This module allows users
+to create a Vega-Lite specification, targeting __version 3__ of the
+<https://vega.github.io/schema/vega-lite/v3.json JSON schema>.  The
+ihaskell-hvega module provides an easy way to embed Vega-Lite
 visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
-Although this is based on the Elm module, there are differences, such as using
-type constructors rather than functions for many properties - such as
-@PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ - and the return
-value of 'toVegaLite'. The intention is to keep close to the Elm module, but it is more
-a guide than an absolute requirement!
+Although this is based on the Elm module, there are differences, such
+as using type constructors rather than functions for many properties -
+such as @PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ -
+and the return value of 'toVegaLite'. The intention is to keep close
+to the Elm module, but it is more a guide than an absolute
+requirement!
 
 Note that this module exports several symbols that are exported
 by the Prelude, such as 'filter', 'lookup',
@@ -91,6 +93,8 @@ module Graphics.Vega.VegaLite
          -- * Creating a Vega-Lite Specification
 
          toVegaLite
+       , toVegaLiteSchema
+       , vlSchema2, vlSchema3, vlSchema4, vlSchema
        , fromVL
        , VLProperty(..)
        , VLSpec
@@ -604,7 +608,7 @@ import Control.Arrow (first, second)
 
 -- Aeson's Value type conflicts with the Number type
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
 import Data.Monoid ((<>))
 
 -- added in base 4.8.0.0 / ghc 7.10.1
@@ -914,7 +918,15 @@ import Numeric.Natural (Natural)
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
--- constructors. It also removed or changed the following symbols:
+-- constructors, including:
+--
+-- * 'toVegaLiteSchema' has been added to allow you to specify a
+--   different Vega-Lite schema. 'toVegaLite' uses version 3 but
+--   version 4 is being worked on as I type this. The 'vlSchema'
+--   function has been added, along with 'vlSchema4', 'vlSchema3',
+--   and 'vlSchema2' values.
+--
+-- This release also removed or changed the following symbols:
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
 --   represented a Vega, rather than Vega-Lite, property. The @xSort@
@@ -1126,32 +1138,90 @@ newtype VegaLite =
   --   > let vlSpec = fromVL vl
   --   > Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
   --
-  -- Note that there is __no__ validation done to ensure that the output matches
-  -- the Vega Lite schema. That is, it is possible to create an invalid visualization
-  -- with this module (e.g. missing a data source or referring to an undefined
-  -- field).
+  --   Note that there is __no__ validation done to ensure that the
+  --   output matches the Vega Lite schema. That is, it is possible to
+  --   create an invalid visualization with this module (e.g. missing a
+  --   data source or referring to an undefined field).
   }
 
 -- | The Vega-Lite specification is represented as JSON.
 type VLSpec = Value
 
-vlSchemaName :: T.Text
-vlSchemaName = "https://vega.github.io/schema/vega-lite/v3.json"
+baseSchema :: T.Text
+baseSchema = "https://vega.github.io/schema/vega-lite/"
+
+-- | The latest version 2 Vega-Lite schema (equivalent to
+--   @'vlSchema' 2 Nothing Nothing Nothing@).
+vlSchema2 :: T.Text
+vlSchema2 = vlSchema 2 Nothing Nothing Nothing
+
+-- | The latest version 3 Vega-Lite schema (equivalent to
+--   @'vlSchema' 3 Nothing Nothing Nothing@).
+vlSchema3 :: T.Text
+vlSchema3 = vlSchema 3 Nothing Nothing Nothing
+
+-- | The latest version 4 Vega-Lite schema (equivalent to
+--   @'vlSchema' 4 Nothing Nothing Nothing@).
+vlSchema4 :: T.Text
+vlSchema4 = vlSchema 4 Nothing Nothing Nothing
+
+-- | Create the Vega-Lite schema for an arbitrary version. See
+--   <https://github.com/vega/schema> for more information on naming
+--   and availability.
+--
+--   There is no validation of the input values.
+--
+--   At the time of writing the latest version 4 schema - which
+--   is @https://vega.github.io/schema/vega-lite/v4.0.0-beta.0.json@ -
+--   can be specified as
+--
+--   @vlSchema 4 (Just 0) (Just 0) (Just "-beta.0")@
+--
+--   whereas
+--
+--   @vlSchema 4 Nothing Nothing Nothing@
+--
+--   refers to the latest version.
+--
+vlSchema ::
+  Natural
+  -- ^ The major version
+  -> Maybe Natural
+  -- ^ The minor version
+  -> Maybe Natural
+  -- ^ The \"micro\" version
+  -> Maybe T.Text
+  -- ^ Anything beyond "major.minor.micro" (e.g. \"-beta.0").
+  -> T.Text
+  -- ^ The Vega-Lite Schema
+vlSchema major mminor mmicro mextra =
+  let versions = [ pure (showNat major)
+                 , showNat <$> mminor
+                 , showNat <$> mmicro
+                 ]
+      version = T.intercalate "." (catMaybes versions)
+
+  in baseSchema <> "v" <> version <> fromMaybe "" mextra <> ".json"
+
+
+showNat :: Natural -> T.Text
+showNat = T.pack . show
+
 
 {-|
 
-Convert a list of Vega-Lite specifications into a single JSON object that may be
-passed to Vega-Lite for graphics generation. Commonly these will include at least
-a data, mark, and encoding specification.
+Convert a list of Vega-Lite specifications into a single JSON object
+that may be passed to Vega-Lite for graphics generation. Commonly
+these will include at least a data, mark, and encoding specification.
 
-While simple properties like 'mark' may be provided directly, it is usually clearer
-to label more complex ones such as encodings as separate expressions. This becomes
-increasingly helpful for visualizations that involve composition of layers, repeats
-and facets.
+While simple properties like 'mark' may be provided directly, it is
+usually clearer to label more complex ones such as encodings as
+separate expressions. This becomes increasingly helpful for
+visualizations that involve composition of layers, repeats and facets.
 
-Specifications can be built up by chaining a series of functions (such as 'dataColumn'
-or 'position' in the example below). Functional composition using the '.' operator
-allows this to be done compactly.
+Specifications can be built up by chaining a series of functions (such
+as 'dataColumn' or 'position' in the example below). Functional
+composition using the '.' operator allows this to be done compactly.
 
 @
 let dat = 'dataFromColumns' []
@@ -1171,6 +1241,9 @@ in which case please [report an issue](https://github.com/DougBurke/hvega/issues
 are several minor issues I have reported against version 3.3.0 of the
 Vega-Lite schema).
 
+Use 'toVegaLiteSchema' if you need to create a Vega-Lite specification
+which uses a different version of the schema.
+
 -}
 
 -- TODO:
@@ -1183,9 +1256,26 @@ Vega-Lite schema).
 --    if so what direction, anything else?)
 
 toVegaLite :: [PropertySpec] -> VegaLite
-toVegaLite vals =
-  let kvals = ("$schema" .= vlSchemaName)
-              : map toProp vals
+toVegaLite = toVegaLiteSchema vlSchema3
+
+
+{-|
+A version of 'toVegaLite' that allows you to change the Vega-Lite
+schema version of the visualization.
+
+@
+'toVegaLiteSchema' 'vlSchema4' props
+@
+-}
+
+toVegaLiteSchema ::
+  T.Text
+  -- ^ The schema to use (e.g. 'vlSchema4' or created with 'vlSchema').
+  -> [PropertySpec]
+  -- ^ The visualization.
+  -> VegaLite
+toVegaLiteSchema schema props =
+  let kvals = ("$schema" .= schema) : map toProp props
       toProp = first vlPropertyLabel
 
   in VL { fromVL = object kvals }

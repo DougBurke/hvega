@@ -63,6 +63,14 @@ in part because this would complicate the API, but also because the
 Vega-Lite specification is changing (e.g. I reported several issues with
 specification during development of this release).
 
+### New functions, symbols, and types
+
+`toVegaLiteSchema` has been added to allow you to specify a
+different Vega-Lite schema. `toVegaLite` uses version 3 but
+version 4 is being worked on as I type this. The `vlSchema`
+function has been added, along with `vlSchema4`, `vlSchema3`,
+and `vlSchema2` values.
+
 ### Breaking Changes
 
 The `SReverse` construtor was removed from `ScaleProperty` as it
