@@ -43,11 +43,27 @@ testSpecs = [ ("data1", data1)
             , ("impute8", impute8)
             , ("sample1", sample1)
             , ("bin1", bin1)
+            , ("bin2", bin2)
+            , ("bin3", bin3)
             , ("sequence1", sequence1)
             , ("sequence2", sequence2)
             , ("filter1", filter1)
             , ("filter2", filter2)
+            , ("annotate1", annotate1)
+            , ("null1", null1)
             ]
+
+
+-- We do not provide these in hvega, so define them here to make copying
+-- the Elm tests over easier.
+--
+pOrdinal, pQuant :: PositionChannel
+pOrdinal = PmType Ordinal
+pQuant = PmType Quantitative
+
+pName :: T.Text -> PositionChannel
+pName = PName
+
 
 showData :: (VLProperty, VLSpec) -> VegaLite
 showData dvals =
@@ -454,6 +470,37 @@ bin1 =
     in
     toVegaLite [ dvals [], enc [], mark Bar [] ]
 
+
+bin2 :: VegaLite
+bin2 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "x" (Numbers [ 10.6, 12.1, 9.4, 11.5, 12.6, 10.7, 11.6, 7.7, 12, 10.6, 16.5, 8.7, 7.6, 10.2, 10, 9.8, 11, 9, 10.4, 11.6, 11.2, 11.1, 11.7, 12.1, 9.9, 8.9, 10.9, 14.6, 11.4, 12.1 ])
+
+        enc =
+            encoding
+                . position X [ PName "x", pQuant, PBin [] ]
+                . position Y [ PAggregate Count, pQuant ]
+    in
+    toVegaLite [ width 300, dvals [], enc [], mark Bar [] ]
+
+
+bin3 :: VegaLite
+bin3 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "x" (Numbers [ 10.6, 12.1, 9.4, 11.5, 12.6, 10.7, 11.6, 7.7, 12, 10.6, 16.5, 8.7, 7.6, 10.2, 10, 9.8, 11, 9, 10.4, 11.6, 11.2, 11.1, 11.7, 12.1, 9.9, 8.9, 10.9, 14.6, 11.4, 12.1, 12.2, 11.3, 13.1, 14.3, 9.8, 12.7, 9.2, 8.7, 11.3, 6.5, 11.1, 8.9, 11.8, 10.5, 12.8, 11.1, 11.2, 7, 12.4, 11.3, 8.3, 12.4, 12.1, 9.4, 8.6, 11.1, 8.9, 8.4, 10.5, 9.9, 6.5, 8.2, 12.7, 7.7, 11.1, 8.1, 8.1, 10.7, 9.8, 11.2, 11.2 ])
+
+        enc =
+            encoding
+                . position X [ PName "x", pQuant, PBin [ BinAnchor 0.5 ] ]
+                . position Y [ PAggregate Count, pQuant ]
+    in
+    toVegaLite [ width 300, dvals [], enc [], mark Bar [] ]
+
+
 sequence1 :: VegaLite
 sequence1 =
     let
@@ -535,3 +582,45 @@ filter2 =
                 . position Y [ PName "b", PmType Quantitative ]
     in
     toVegaLite [ dvals [], trans [], enc [], mark Bar [] ]
+
+
+annotate1 :: VegaLite
+annotate1 =
+    let
+        dvals =
+            dataFromColumns []
+                . dataColumn "a" (Strings [ "A", "B", "C", "D", "E" ])
+                . dataColumn "b" (Numbers [ 28, 55, 43, 91, 81 ])
+
+        enc =
+            encoding
+                . position X [ pName "a", pOrdinal ]
+                . position Y [ pName "b", pQuant ]
+
+        specBars =
+            asSpec [ enc [], mark Bar [] ]
+
+        specText =
+            asSpec [ noData, mark Text [ MText "Test" ] ]
+    in
+    toVegaLite [ dvals [], layer [ specBars, specText ] ]
+
+
+-- See https://vega.github.io/vega-lite/examples/line_skip_invalid_mid_overlay.html
+null1 :: VegaLite
+null1 =
+  toVegaLite [ mark Line [MPoint (PMMarker [])]
+             , encoding
+                 . position X [pName "x", pQuant]
+                 . position Y [pName "y", pQuant]
+                 $ []
+             , dataFromRows []
+                 . dataRow [("x", Number 1), ("y", Number 10)]
+                 . dataRow [("x", Number 2), ("y", Number 30)]
+                 . dataRow [("x", Number 3), ("y", NullValue)]
+                 . dataRow [("x", Number 4), ("y", Number 15)]
+                 . dataRow [("x", Number 5), ("y", NullValue)]
+                 . dataRow [("x", Number 6), ("y", Number 40)]
+                 . dataRow [("x", Number 7), ("y", Number 20)]
+                 $ []
+             ]

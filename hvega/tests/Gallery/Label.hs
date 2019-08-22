@@ -106,7 +106,10 @@ label3 =
                 . position X
                     [ PName "scaled_date"
                     , PmType Quantitative
-                    , PAxis [ AxTitle "Year into decade", AxTickCount 10, AxValues [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ] ]
+                    , PAxis [ AxTitle "Year into decade"
+                            , AxTickCount 10
+                            , AxValues (Numbers [1, 2, 3, 4, 5, 6, 7, 8, 9])
+                            ]
                     ]
                 . position Y
                     [ PName "CO2"

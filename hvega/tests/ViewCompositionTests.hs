@@ -163,7 +163,7 @@ grid2 =
         [ cfg []
         , dataVals []
         , trans []
-        , columns (Just 5)
+        , columns 5
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
@@ -197,7 +197,7 @@ grid3 =
         [ cfg []
         , dataVals []
         , trans []
-        , columns (Just 5)
+        , columns 5
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
@@ -219,7 +219,7 @@ grid4 =
             asSpec [ carData [], mark Bar [], enc [] ]
     in
     toVegaLite
-        [ columns (Just 3)
+        [ columns 3
         , repeatFlow [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
         , specification spec
         ]

@@ -26,6 +26,7 @@ testSpecs = [ ("default", defaultCfg)
             , ("mark2", markCfg2)
             , ("padding", paddingCfg)
             , ("vbTest", vbTest)
+            , ("axisCfg1", axisCfg1)
             ]
 
 singleVis :: ([a] -> (VLProperty, VLSpec)) -> VegaLite
@@ -214,3 +215,15 @@ paddingCfg =
         . configuration (Autosize [ AFit ])
         . configuration (Padding (PEdges 90 60 30 0))
         & singleVis
+
+
+axisCfg1 :: VegaLite
+axisCfg1 =
+    configure
+       . configuration (Axis [ TitleFontStyle "italic"
+                             , TitleFont "serif"
+                             , LabelFontStyle "bold"
+                             , LabelFont "serif"
+                             , TitleAnchor AEnd
+                             ])
+       & singleVis

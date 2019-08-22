@@ -19,6 +19,7 @@ extra-source-files:  README.md
                      default.nix
                      shell.nix
                      hvega.nix
+                     tests/specs/axis/*vl
                      tests/specs/color/*vl
                      tests/specs/composite/*vl
                      tests/specs/conditional/*vl
@@ -27,6 +28,7 @@ extra-source-files:  README.md
                      tests/specs/fillstroke/*vl
                      tests/specs/geo/*vl
                      tests/specs/hyperlink/*vl
+                     tests/specs/interaction/*vl
                      tests/specs/legend/*vl
                      tests/specs/null/*vl
                      tests/specs/position/*vl
@@ -80,7 +82,8 @@ test-suite test
   type:                exitcode-stdio-1.0
   hs-source-dirs:      tests/
   main-is:             Test.hs
-  other-modules:       ColorTests
+  other-modules:       AxisTests
+                       ColorTests
                        CompositeTests
                        ConditionalTests
                        ConfigTests
@@ -88,6 +91,7 @@ test-suite test
                        FillStrokeTests
                        GeoTests
                        HyperlinkTests
+                       InteractionTests
                        LegendTests
                        NullTests
                        PositionTests

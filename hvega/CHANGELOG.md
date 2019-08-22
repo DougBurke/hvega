@@ -33,8 +33,9 @@ type has added `XError`, `XError2`, `YError`, and `YError2`
 constructors. The `MarkErrorExtent` type was added.  Some of these
 changes were provided by Adam Conner-Sax.
 
-The `BooleanOp` type has gained the `FilterOp` constructor which
-lets you use a `Filter` expression as part of a boolean operation.
+The `BooleanOp` type has gained the `FilterOp` and `FilterOpTrans`
+constructors which lets you use `Filter` expressions as part of a
+boolean operation.
 
 The `VLProperty` type now exports its constructors, to support users
 who may need to tweak or augment the JSON Vega-Lite specification
@@ -82,7 +83,12 @@ removed (from `AxisProperty` and `AxisConfig` respectively) as they
 are invalid. The `AxTitleLimit` (new in this release) and
 `TitleLimit` constructors should be used instead.
 
-There have been a number of changes to the `LegendConfig` type: the
+`AxisProperty`: the `AxValues` constructor has been changed from
+accepting a list of doubles to `DataValues`. The `AxDates`
+constructor has been deprecated and `AxValues` should be used
+instead.
+
+There have been significant changes to the `LegendConfig` type: the
 `EntryPadding`, `GradientHeight`, `GradientLabelBaseline`,
 `GradientWIdth`, and `SymbolColor` constructors have been removed;
 the renaming constructors have been renamed so they all begin with
@@ -130,9 +136,9 @@ The `ZIndex` type has been added: this provides constructors for the
 common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
 as a protection against future changes to the Vega-Lite specification.
 
-Two new type aliases have been added: `Color` and `Opacity`. These do
-not provide any new functionality, but may clash with symbols defined
-in other modules.
+Three new type aliases have been added: `Angle`, `Color`, and
+`Opacity`. These do not provide any new functionality - other than
+documentation - but may clash with symbols defined in other modules.
 
 ## 0.3.0.1
 

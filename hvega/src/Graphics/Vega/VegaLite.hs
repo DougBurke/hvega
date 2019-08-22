@@ -98,6 +98,7 @@ module Graphics.Vega.VegaLite
        , PropertySpec
        , LabelledSpec
        , BuildLabelledSpecs
+       , Angle
        , Color
        , Opacity
        , ZIndex(..)
@@ -118,6 +119,7 @@ module Graphics.Vega.VegaLite
        , datasets
        , dataColumn
        , dataRow
+       , noData
        , Data
        , DataColumn
        , DataRow
@@ -932,6 +934,11 @@ import Numeric.Natural (Natural)
 --   are invalid. The 'AxTitleLimit' (new in this release) and
 --   'TitleLimit' constructors should be used instead.
 --
+-- * 'AxisProperty': the 'AxValues' constructor has been changed from
+--   accepting a list of doubles to 'DataValues'. The 'AxDates'
+--   constructor has been deprecated and 'AxValues' should be used
+--   instead.
+--
 -- * There have been significant changes to the 'LegendConfig' type: the
 --   @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@,
 --   @GradientWidth@, and @SymbolColor@ constructors have been removed;
@@ -980,15 +987,27 @@ import Numeric.Natural (Natural)
 --   common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
 --   as a protection against future changes to the Vega-Lite specification.
 --
--- * Two new type aliases have been added: 'Color' and 'Opacity'.
---   These do not provide any new functionality, but may clash with symbols
---   from other modules.
+-- * Three new type aliases have been added: 'Angle', 'Color', and 'Opacity'.
+--   These do not provide any new functionality - other than documentation -
+--   but may clash with symbols from other modules.
 --
 -- Note that the `VLProperty` type now exports its constructors, which
 -- may come in useful for those people who need to edit or augment the
 -- JSON Vega-Lite specification created by @hvega@.
 
---- helpers not in VegaLite.elm
+--- helpers
+
+-- This could be extended to any Ord type but specialize for now to Double
+clamped ::
+  Double
+  -- ^ minimum value allowed
+  -> Double
+  -- ^ maximum value allowed (must be > the minimum value)
+  -> Double
+  -- ^ user value
+  -> Double
+clamped xmin xmax x = max xmin (min xmax x)
+
 
 aggregate_ :: Operation -> LabelledSpec
 aggregate_ op = "aggregate" .= operationSpec op
@@ -1408,7 +1427,7 @@ data VLProperty
     | VLData
       -- ^ See 'dataFromColumns', 'dataFromJson', 'dataFromRows',
       --   'dataFromSource', 'dataFromUrl', 'dataName', 'dataSequence',
-      --   'dataSequenceAs', 'graticule', and 'sphere'.
+      --   'dataSequenceAs', 'graticule', 'noData', and 'sphere'.
     | VLDatasets
       -- ^ See 'datasets'.
     | VLDescription
@@ -1559,13 +1578,15 @@ data Format
       --   'TopojsonFeature', the corresponding geo data are returned as a single unified mesh,
       --   not as individual GeoJSON features.
     | Parse [(T.Text, DataType)]
-      -- ^ Parsing rules when processing some data text, specified as a list of tuples
-      --   in the form @(fieldname, datatype)@. Useful when automatic type inference needs
-      --   to be overridden, for example when converting strings to numbers:
+      -- ^ Parsing rules when processing some data text, specified as
+      --   a list of tuples in the form @(fieldname,
+      --   datatype)@. Useful when automatic type inference needs to
+      --   be overridden, for example when converting integers representing
+      --   years into dates and strings into numbers:
       --
       -- @
       -- 'dataFromUrl' \"myDataFile.csv\"
-      --    [ 'Parse' [ ( \"x\", 'FoNumber' ), ( "\y\", 'FoNumber' ) ] ]
+      --    [ 'Parse' [ ( \"year\", 'FoDate' \"%Y\" ), ( "\y\", 'FoNumber' ) ] ]
       -- @
 
 
@@ -1628,7 +1649,7 @@ type Data = (VLProperty, VLSpec)
 {-|
 
 Convenience type-annotation label to indicate a color value.
-There is __no__ attempt to validate that the user-supplied input
+There is __no attempt__ to validate that the user-supplied input
 is a valid color.
 
 Any supported HTML color specification can be used, such as:
@@ -1650,7 +1671,7 @@ type Color = T.Text
 {-|
 
 Convenience type-annotation label to indicate an opacity value, which
-lies in the range 0 to 1 inclusive. There is __no__ attempt to validate
+lies in the range 0 to 1 inclusive. There is __no attempt__ to validate
 that the user-supplied value falls in this range.
 
 A value of 0 indicates fully transparent (see through), and 1 is
@@ -1660,6 +1681,20 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate an angle, which is measured
+in degrees from the horizontal (so anti-clockwise).
+
+The value should be in the range 0 to 360, inclusive, but __no attempt__ is
+made to enforce this.
+
+@since 0.4.0.0
+-}
+
+type Angle = Double
 
 
 {-|
@@ -1792,6 +1827,14 @@ datasets namedData =
         in fromMaybe din (convert din >>= extract')
 
   in (VLDatasets, object specs)
+
+
+-- | This is for composed specifications, and it tells the visualization to
+--   ignore the data from the parent.
+--
+--   @since 0.4.0.0
+noData :: Data
+noData = (VLData, A.Null)
 
 
 {-|
@@ -2001,13 +2044,30 @@ data DataValue
     | DateTime [DateTime]
     | Number Double
     | Str T.Text
-
+    | NullValue
+      -- ^ Create a JavaScript @null@ value. This can be useful when
+      --   explictly recoding a value as undefined, such as in the following
+      --   example:
+      --
+      --   @
+      --   'dataFromRows' []
+      --     . 'dataRow' [("x", 'Number' 1), ("y", 'String' "good")]
+      --     . 'dataRow' [("x", 'Number' 2), ("y", 'NullValue')]
+      --     . 'dataRow' [("x", 'Number' 3), ("y", 'String' "bad")]
+      --   @
+      --
+      --   For more-complex data sources - such as lists of defined
+      --   and un-specified values, it is suggested that 'dataFromJson'
+      --   be used rather than 'dataFromRows' or 'dataFromColumns'.
+      --
+      --   @since 0.4.0.0
 
 dataValueSpec :: DataValue -> VLSpec
 dataValueSpec (Boolean b) = toJSON b
 dataValueSpec (DateTime dt) = object (map dateTimeProperty dt)
 dataValueSpec (Number x) = toJSON x
 dataValueSpec (Str t) = toJSON t
+dataValueSpec NullValue = A.Null
 
 
 {-|
@@ -2016,6 +2076,9 @@ A list of data values. This is used when a function or constructor
 can accept lists of different types (e.g. either a list of numbers
 or a list of strings), such as:
 'dataColumn', 'CustomSort', 'FOneOf', or 'ImKeyVals'.
+
+If your data contains undefined values then it is suggested that
+you convert it to JSON (e.g. 'Value') and then use 'dataFromJson'.
 
 -}
 data DataValues
@@ -2152,7 +2215,11 @@ dataFromUrl url fmts =
 
 
 -- | Type of visual mark used to represent data in the visualization.
-
+--
+--   The properties of the mark can be changed with the 'MarkProperty'
+--   constructors - such as 'MHeight' and 'MWidth' -  although not all
+--   properties apply to all marks.
+--
 data Mark
     = Area
       -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
@@ -2434,8 +2501,8 @@ supported in @hvega@.
 data MarkProperty
     = MAlign HAlign
       -- ^ Horizontal alignment of a text mark.
-    | MAngle Double
-      -- ^ Rotation angle, in degrees, of a text mark.
+    | MAngle Angle
+      -- ^ Rotation angle of a text mark.
     | MBandSize Double
       -- ^ Band size of a bar mark.
     | MBaseline VAlign
@@ -2485,6 +2552,10 @@ data MarkProperty
       -- ^ Font style (e.g. \"italic\") used by a text mark.
     | MFontWeight FontWeight
       -- ^ Font weight used by a text mark.
+    | MHeight Double
+      -- ^ Explicitly set the height of a mark. See also 'MWidth'.
+      --
+      --   @since 0.4.0.0
     | MHRef T.Text
       -- ^ Hyperlink to be associated with a mark making it a clickable
       --   hyperlink.
@@ -2562,8 +2633,9 @@ data MarkProperty
     | MText T.Text
       -- ^ Placeholder text for a text mark for when a text channel is not specified.
     | MTheta Double
-      -- ^ Polar coordinate angle (clockwise from north in radians) of a text mark from
-      --   the origin determined by its x and y properties.
+      -- ^ Polar coordinate angle (clockwise from north in radians)
+      --   of a text mark from the origin (determined by its
+      --   x and y properties).
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
@@ -2574,12 +2646,13 @@ data MarkProperty
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
-    | MX Double
-      -- ^ X position of a mark.
+    | MWidth Double
+      -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
+      --   'MHeight'.
       --
       --   @since 0.4.0.0
-    | MY Double
-      -- ^ Y position of a mark.
+    | MX Double
+      -- ^ X position of a mark.
       --
       --   @since 0.4.0.0
     | MX2 Double
@@ -2587,21 +2660,25 @@ data MarkProperty
       --   lines and area marks).
       --
       --   @since 0.4.0.0
+    | MXOffset Double
+      -- ^ X position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MX2Offset Double
+      -- ^ X2 position offset of a mark.
+      --
+      --   @since 0.4.0.0
+    | MY Double
+      -- ^ Y position of a mark.
+      --
+      --   @since 0.4.0.0
     | MY2 Double
       -- ^ Y2 position of a mark. This is the secondary position for
       --   lines and area marks).
       --
       --   @since 0.4.0.0
-    | MXOffset Double
-      -- ^ X position offset of a mark.
-      --
-      --   @since 0.4.0.0
     | MYOffset Double
       -- ^ Y position offset of a mark.
-      --
-      --   @since 0.4.0.0
-    | MX2Offset Double
-      -- ^ X2 position offset of a mark.
       --
       --   @since 0.4.0.0
     | MY2Offset Double
@@ -2619,6 +2696,7 @@ markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
 markProperty (MFill col) = "fill" .= col
+markProperty (MHeight x) = "height" .= x
 markProperty (MStroke t) = "stroke" .= t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
@@ -2665,6 +2743,7 @@ markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
 markProperty (MX2 x) = "x2" .= x
@@ -3123,6 +3202,15 @@ a scale can be changed with the 'PSort' constructor.
 data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
+    | SAlign Double
+      -- ^ Alignemnt of the steps within the scale range. A value of
+      --   @0@ shifts the bands to an axis, @1@ away from the axis,
+      --   and @0.5@ is centered within the range.
+      --
+      --   The input is clamped so that values less than 0 are mapped
+      --   to 0 and greater than 1 to 1.
+      --
+      --   @since 0.4.0.0
     | SBase Double
       -- ^ The base to use for log scaling ('ScLog').
       --
@@ -3185,9 +3273,9 @@ data ScaleProperty
       --   Not all scales support @SZero@ and the default depends on the type of
       --   channel.
 
-
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
+scaleProperty (SAlign c) = "align" .= clamped 0 1 c
 scaleProperty (SBase x) = "base" .= x
 scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
@@ -3852,7 +3940,7 @@ data AxisProperty
       -- ^ The horizontal alignment for labels.
       --
       --   @since 0.4.0.0
-    | AxLabelAngle Double
+    | AxLabelAngle Angle
       -- ^ The angle at which to draw labels.
     | AxLabelBaseline VAlign
       -- ^ The vertical alignment for labels.
@@ -3986,10 +4074,10 @@ data AxisProperty
     | AxTitleAlign HAlign
       -- ^ The horizontal alignment of the axis title.
     | AxTitleAnchor APosition
-      -- ^ The text anchor ppsition for placing axis titles.
+      -- ^ The text anchor position for placing axis titles.
       --
       --   @since 0.4.0.0
-    | AxTitleAngle Double
+    | AxTitleAngle Angle
       -- ^ The angle of the axis title.
     | AxTitleBaseline VAlign
       -- ^ The vertical alignment of the axis title.
@@ -4033,10 +4121,27 @@ data AxisProperty
       -- ^ The Y coordinate of the axis title, relative to the axis group.
       --
       --   @since 0.4.0.0
-    | AxValues [Double]
-      -- ^ Numeric values to appear along the axis.
+    | AxValues DataValues
+      -- ^ Set the explicit tick, grid, and label values along an axis.
+      --
+      --   The following three examples are for an axis displaying a
+      --   quantitative, categorical, and temporal field respectively.
+      --
+      --   @
+      --   'PAxis' ['AxValues' ('Numbers' [2, 3, 5, 7, 11, 13, 17])]
+      --   'PAxis' ['AxValues' ('Strings' ["cats", "dogs", "elephants"])]
+      --   'PAxis' ['AxValues' ('DateTimes' [ ['DTYear' 2019, 'DTMonth' 'Mar', 'DTDate' 31]
+      --                              , ['DTYear' 2019, 'DTMonth' 'Jun', 'DTDate' 30]
+      --                              , ['DTYear' 2019, 'DTMonth' 'Sep', 'DTDate' 30]
+      --                              ])]
+      --   @
+      --
+      --   Changed in @0.4.0.0@ to take 'DataValues' rather than @[Double]@.
     | AxDates [[DateTime]]
       -- ^ The dates or times to appear along the axis.
+      --
+      --   As of version @0.4.0.0@, this is deprecated. The 'AxValues'
+      --   constructir should be used instead.
     | AxZIndex ZIndex
       -- ^ The z-index of the axis, relative to the chart marks.
 
@@ -4108,7 +4213,7 @@ axisProperty (AxTitleOpacity x) = "titleOpacity" .= x
 axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
 axisProperty (AxTitleX x) = "titleX" .= x
 axisProperty (AxTitleY x) = "titleY" .= x
-axisProperty (AxValues vals) = "values" .= map toJSON vals
+axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
 axisProperty (AxZIndex z) = "zindex" .= z
 
@@ -6202,7 +6307,7 @@ For further details see the
 data TitleConfig
     = TAnchor APosition
       -- ^ Default anchor position when placing titles.
-    | TAngle Double
+    | TAngle Angle
       -- ^ Default angle when orientating titles.
     | TBaseline VAlign
       -- ^ Default vertical alignment when placing titles.
@@ -6653,7 +6758,7 @@ data AxisConfig
       -- ^ The horizontal alignment for labels.
       --
       --   @since 0.4.0.0
-    | LabelAngle Double
+    | LabelAngle Angle
       -- ^ The angle at which to draw labels.
     | LabelBaseline VAlign
       -- ^ The vertical alignment for labels.
@@ -6758,10 +6863,10 @@ data AxisConfig
     | TitleAlign HAlign
       -- ^ The horizontal alignment of the axis title.
     | TitleAnchor APosition
-      -- ^ The text anchor ppsition for placing axis titles.
+      -- ^ The text anchor position for placing axis titles.
       --
       --   @since 0.4.0.0
-    | TitleAngle Double
+    | TitleAngle Angle
       -- ^ The angle of the axis title.
     | TitleBaseline VAlign
       -- ^ The vertical alignment of the axis title.
@@ -6901,6 +7006,23 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
+    | FilterOpTrans MarkChannel Filter
+      -- ^ Combine a data-transformation operation with a filter before
+      --   converting into a boolean operation. This can be useful when
+      --   working with dates, such as the following exampe, which aggregates
+      --   a set of dates into years, and filters only those years between
+      --   2010 and 2017 (inclusive). The final expression is converted
+      --   back into a 'BooleanOp' with 'FCompose' (combined using
+      --   'Data.Function.&').
+      --
+      --   @
+      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2010] ['DTYear' 2017])
+      --           & 'FilterOpTrans' ('MTimeUnit' 'Year')
+      --           & 'FCompose'
+      --           )
+      --   @
+      --
+      --   @since 0.4.0.0
     | Selection T.Text  -- TODO: rename Selected?
       -- ^ Interactive selection that will be true or false as part of
       --   a logical composition.  For example: to filter a dataset so
@@ -6939,6 +7061,7 @@ data BooleanOp
 booleanOpSpec :: BooleanOp -> VLSpec
 booleanOpSpec (Expr expr) = toJSON expr
 booleanOpSpec (FilterOp f) = filterSpec f
+booleanOpSpec (FilterOpTrans tr f) = trFilterSpec tr f
 booleanOpSpec (SelectionName selName) = toJSON selName
 booleanOpSpec (Selection sel) = object ["selection" .= sel]
 booleanOpSpec (And operand1 operand2) = object ["and" .= [booleanOpSpec operand1, booleanOpSpec operand2]]
@@ -6953,6 +7076,7 @@ Type of filtering operation. See the
 for details.
 
 These can also be included into a 'BooleanOp' expression using 'FilterOp'
+and 'FilterOpTrans'
 (as of version @0.4.0.0@).
 
 -}
@@ -7010,8 +7134,16 @@ data Filter
       -- ^ Filter a data stream so that only data in a given field contained in the given
       --   list of values are used.
     | FRange T.Text FilterRange
-      -- ^ Filter a data stream so that only data in a given field that are within the
-      --   given range are used.
+      -- ^ Filter a data stream so that only data in a given field
+      --   that are within the given range are used.
+      --
+      --   For example:
+      --
+      --   @
+      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2006] ['DTYear' 2016])
+      --   @
+      --
+      --   See 'FilterOpTrans' for more use cases.
     | FValid T.Text
       -- ^ Filter a data stream so that only valid data (i.e. not null or NaN) in a given
       --   field are used.
@@ -7019,22 +7151,20 @@ data Filter
       --   @since 0.4.0.0
 
 
-fop_ :: T.Text -> T.Text -> DataValue -> VLSpec
-fop_ field label val = object [field_ field, label .= dataValueSpec val]
+fop_ :: T.Text -> T.Text -> DataValue -> [LabelledSpec]
+fop_ field label val = [field_ field, label .= dataValueSpec val]
 
-filterSpec :: Filter -> VLSpec
-filterSpec (FExpr expr) = toJSON expr
-filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+filterProperty :: Filter -> [LabelledSpec]
 
-filterSpec (FEqual field val) = fop_ field "equal" val
-filterSpec (FLessThan field val) = fop_ field "lt" val
-filterSpec (FLessThanEq field val) = fop_ field "lte" val
-filterSpec (FGreaterThan field val) = fop_ field "gt" val
-filterSpec (FGreaterThanEq field val) = fop_ field "gte" val
+filterProperty (FEqual field val) = fop_ field "equal" val
+filterProperty (FLessThan field val) = fop_ field "lt" val
+filterProperty (FLessThanEq field val) = fop_ field "lte" val
+filterProperty (FGreaterThan field val) = fop_ field "gt" val
+filterProperty (FGreaterThanEq field val) = fop_ field "gte" val
 
-filterSpec (FSelection selName) = object ["selection" .= selName]
+filterProperty (FSelection selName) = ["selection" .= selName]
 
-filterSpec (FRange field vals) =
+filterProperty (FRange field vals) =
   let ans = case vals of
               NumberRange mn mx -> map toJSON [mn, mx]
               DateRange dMin dMax -> [process dMin, process dMax]
@@ -7042,18 +7172,30 @@ filterSpec (FRange field vals) =
       process [] = A.Null
       process dts = object (map dateTimeProperty dts)
 
-  in object [field_ field, "range" .= ans]
+  in [field_ field, "range" .= ans]
 
-filterSpec (FOneOf field vals) =
+filterProperty (FOneOf field vals) =
   let ans = case vals of
               Numbers xs -> map toJSON xs
               DateTimes dts -> map (object . map dateTimeProperty) dts
               Strings ss -> map toJSON ss
               Booleans bs -> map toJSON bs
 
-  in object [field_ field, "oneOf" .= ans]
+  in [field_ field, "oneOf" .= ans]
 
-filterSpec (FValid field) = object [field_ field, "valid" .= True]
+filterProperty (FValid field) = [field_ field, "valid" .= True]
+filterProperty _ = []  -- ignore FExpr and FCompose
+
+
+filterSpec :: Filter -> VLSpec
+filterSpec (FExpr expr) = toJSON expr
+filterSpec (FCompose boolExpr) = booleanOpSpec boolExpr
+filterSpec f = object (filterProperty f)
+
+trFilterSpec :: MarkChannel -> Filter -> VLSpec
+trFilterSpec _ (FExpr expr) = toJSON expr
+trFilterSpec _ (FCompose boolExpr) = booleanOpSpec boolExpr
+trFilterSpec mchan fi = object (markChannelProperty mchan <> filterProperty fi)
 
 
 {-|
@@ -7318,7 +7460,7 @@ data HeaderProperty
       -- ^ The anchor position for the labels.
       --
       -- @since 0.4.0.0
-    | HLabelAngle Double
+    | HLabelAngle Angle
       -- ^ The angle to draw the labels.
       --
       -- @since 0.4.0.0
@@ -7354,7 +7496,7 @@ data HeaderProperty
       -- ^ The anchor position for the title.
       --
       -- @since 0.4.0.0
-    | HTitleAngle Double
+    | HTitleAngle Angle
       -- ^ The angle to draw the title.
       --
       -- @since 0.4.0.0
@@ -8803,24 +8945,21 @@ column fFields ols =
 
 {-|
 
-The maximum number of columns to include in a view composition flow layout. If the
-number of faceted small multiples exceeds this number, flow moves to the next row.
-Only applies to flow layouts generated by 'vlConcat', 'facetFlow', and 'repeatFlow'.
+The maximum number of columns to include in a view composition flow
+layout. If the number of faceted small multiples exceeds this number,
+flow moves to the next row.  Only applies to flow layouts generated by
+'vlConcat', 'facetFlow', and 'repeatFlow'.
 
 @since 0.4.0.0
 
 -}
 
--- TODO: it appears that columns does not accept a Null, so should it
---       be 0? If so then do we need the Maybe here?
-
 columns ::
-  Maybe Int
-  -- ^ If @Nothing@ then faceted small multiples will be arranged in a
-  --   single row.
+  Natural
+  -- ^ A value of 0 means that a single row will be used (which is also
+  --   the default behavior).
   -> PropertySpec
-columns (Just cols) = (VLColumns, toJSON cols)
-columns Nothing = (VLColumns, A.Null)
+columns cols = (VLColumns, toJSON cols)
 
 
 {-|
@@ -8904,8 +9043,8 @@ to a channel or field.
 @
 
 Filter operations can combine selections and data predicates with 'BooleanOp'
-expressions (and as of @0.4.0.0@, 'FilterOp' can be used to lift the
-'Filter' type into boolean expressions):
+expressions (and as of @0.4.0.0@, 'FilterOp' and 'FilterOpTrans'
+can be used to lift the 'Filter' type into boolean expressions):
 
 @
 'transform'
@@ -9075,26 +9214,37 @@ lookup key1 (_, spec) key2 fields ols =
 
 {-|
 
-Perform an object lookup between two data sources. This allows you to find
-values in one data source based on the values in another (like a relational
-join).
+Perform an object lookup between two data sources. This allows you to
+find values in one data source based on the values in another (like a
+relational join).  Unlike 'lookup', this function returns the entire
+set of field values from the secondary data source when keys
+match. Those fields are stored as an object with the name provided in
+the fourth parameter.
 
-Unlike 'lookup', this function returns the entire set of field values from the
-secondary data source when keys match. Those fields are stored as an object with
-the name provided in the fourth parameter.
-
-See the
-<https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
-for further details.
-
-In the following example, @personDetails@ would reference all the field values in
-@lookup_people.csv@ for each row where the value in the @name@ column in that
-file matches the value of @person@ in the primary data source.
+In the following example, @personDetails@ would reference all the
+field values in @lookup_people.csv@ for each row where the value in
+the @name@ column in that file matches the value of @person@ in the
+primary data source.
 
 @
 'transform'
     . 'lookupAs' "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
 @
+
+If the data contained columns called @age@ and @height@ then they would
+then be accessed as @personDetails.age@ and @personDetails.height@ - for
+example:
+
+@
+'encoding'
+  . 'position' X ['PName' "personDetails.age", 'PmType' 'Temporal', 'PTimeUnit' 'Year', 'PTitle' \"Age\"]
+  . 'position' Y ['PName' "personDetails.height", 'PmType' 'Quantitative', 'PTitle' \"Height\"]
+@
+
+See the
+<https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
+for further details.
+
 -}
 lookupAs ::
   T.Text
@@ -9587,10 +9737,22 @@ tooltips tDefs ols =
 data TooltipContent
   = TTEncoding
     -- ^ Tooltips are generated by the encoding (this is the default).
+    --
+    --   For example:
+    --
+    --   @'mark' 'Circle' ['MTooltip' 'TTEncoding']@
   | TTData
-    -- ^ Tooltips are based on the data values.
+    -- ^ Tooltips are generated by all fields in the underlying data.
+    --
+    --   For example:
+    --
+    --   @'mark' 'Circle' ['MTooltip' 'TTData']@
   | TTNone
     -- ^ Disable tooltips.
+    --
+    --   For example:
+    --
+    --   @'mark' 'Circle' ['MTooltip' 'TTNone']@
 
 
 -- Note that TTNone is special cased by markProperty

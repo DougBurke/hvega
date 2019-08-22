@@ -38,9 +38,7 @@ import Graphics.Vega.VegaLite
 
 -- Test specifications
 --
--- The commented-out tests are those which we currently don't support
--- in hvega.
---
+import qualified AxisTests as AxT
 import qualified ColorTests as ColT
 import qualified CompositeTests as CompT
 import qualified ConditionalTests as CondT
@@ -49,6 +47,7 @@ import qualified DataTests as DT
 import qualified FillStrokeTests as FST
 import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
+import qualified InteractionTests as IT
 import qualified LegendTests as LT
 import qualified NullTests as NT
 import qualified PositionTests as PT
@@ -109,7 +108,8 @@ toGTests lbl dname = toTests lbl (gallery dname)
 
 baseTests :: TestTree
 baseTests = testGroup "base"
-  [ toTests "Color" "color" ColT.testSpecs
+  [ toTests "Axis" "axis" AxT.testSpecs
+  , toTests "Color" "color" ColT.testSpecs
   , toTests "Composite" "composite" CompT.testSpecs
   , toTests "Conditional" "conditional" CondT.testSpecs
   , toTests "Config" "config" ConfT.testSpecs
@@ -117,6 +117,7 @@ baseTests = testGroup "base"
   , toTests "FillStroke" "fillstroke" FST.testSpecs
   , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs
+  , toTests "Interaction" "interaction" IT.testSpecs
   , toTests "Legend" "legend" LT.testSpecs
   , toTests "Null" "null" NT.testSpecs
   , toTests "Position" "position" PT.testSpecs

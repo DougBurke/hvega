@@ -1,0 +1,44 @@
+{
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "empty": 0,
+                "cat": 1,
+                "val": 10
+            },
+            {
+                "cat": 2,
+                "val": 20
+            },
+            {
+                "cat": 3,
+                "val": 30
+            },
+            {
+                "cat": 4,
+                "val": 20
+            },
+            {
+                "cat": 5,
+                "val": 10
+            }
+        ]
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "x": {
+            "field": "cat",
+            "scale": {
+                "paddingInner": 0.5,
+                "align": 0.3
+            },
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "val",
+            "type": "quantitative"
+        }
+    }
+}
