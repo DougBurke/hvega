@@ -7,49 +7,18 @@ Thanks to (in no order): Matthew Pickering (mpickering),
 Adam Conner-Sax (adamConnerSax), and Jo Wood (jwoLondon).
 
 This is a large release, in that it greatly-improves the functionality
-of hvega (more-closely aligning it with version 3.3.0 of the Vega-Lite
+of hvega (more-closely aligning it with version 3.4.0 of the Vega-Lite
 specification), but does provide a number of **breaking changes** (a
 number of functions and constructors have either been removed or had
 some combination of being renamed, argument types have changed, or the
 number of arguments has been changed). The documentation has also
 seen a number of additions and improvements.
 
-### Added functionality
-
 A large number of functions, data types, and constructors for data
 types have been added, based on version 1.12.0 (and the development
 version of the next release) of the elm-vegalite module. Thanks to Jo
-Wood for doing all the work! The documentation indicates new symbols
-with the `since 0.4.0.0` label. Some of the changes are listed below,
-and in the 'Breaking Changes' section below.
-
-The `Mark` type has gained `Boxplot`, `ErrorBar`, `ErrorBand`, and
-`Trail` constructors. The `MarkProperty` type has gained `MBorders`,
-`MBox`, `MExtent`, `MHRef`, `MLine`, `MMedian`, `MOrder`, `MOutliers`,
-`MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`, `MStrokeMiterLimit`,
-`MTicks`, `MTooltip`, `MX`, `MY`, `MX2`, `MY2`, `MXOffset`,
-`MYOffset`, `MX2Offset`, and `MY2Offset` constructors. The `Position`
-type has added `XError`, `XError2`, `YError`, and `YError2`
-constructors. The `MarkErrorExtent` type was added.  Some of these
-changes were provided by Adam Conner-Sax.
-
-The `BooleanOp` type has gained the `FilterOp` and `FilterOpTrans`
-constructors which lets you use `Filter` expressions as part of a
-boolean operation.
-
-The `VLProperty` type now exports its constructors, to support users
-who may need to tweak or augment the JSON Vega-Lite specification
-created by `hvega` (see [issue
-17](https://github.com/DougBurke/hvega/issues/17)).
-
-### Improved testing
-
-Added a test suite based on the Elm Vega-Lite tests (based entirely on
-the work of Jo Wood).
-
-The IPython notebooks have been expanded to cover recent changes in the
-[Vega-Lite gallery](https://vega.github.io/vega-lite/examples/), and
-include validation of the output (to check against the expected output).
+Wood for doing all the work! The Haddock documentation indicates new
+symbols with the `since 0.4.0.0` label.
 
 ### Bug fixes
 
@@ -57,21 +26,245 @@ Corrected the serialization of the `datasets` function, reported by
 Matthew Pickering as [issue
 29](https://github.com/DougBurke/hvega/issues/17).
 
-Improved the output to better-match the Vega Lite 3.3.0 specification.
+Improved the output to better-match the Vega Lite 3.4.0 specification.
 Note that hvega does not guarantee that it always creates valid output,
 in part because this would complicate the API, but also because the
 Vega-Lite specification is changing (e.g. I reported several issues with
-specification during development of this release).
+version 3.3.0 of the specification during development of this release,
+some of which have been addressed in the 3.4.0 version).
 
 ### New functions, symbols, and types
 
-`toVegaLiteSchema` has been added to allow you to specify a
-different Vega-Lite schema. `toVegaLite` uses version 3 but
-version 4 is being worked on as I type this. The `vlSchema`
-function has been added, along with `vlSchema4`, `vlSchema3`,
-and `vlSchema2` values.
+The error-related types and functions discussed below are based on
+changes provided by Adam Conner-Sax.
+
+`toVegaLiteSchema` has been added to allow you to specify a different
+Vega-Lite schema. `toVegaLite` uses version 3 but version 4 is being
+worked on as I type this. The `vlSchema` function has been added,
+along with `vlSchema4`, `vlSchema3`, and `vlSchema2` values.
+
+The `VLProperty` type now exports its constructors, to support users
+who may need to tweak or augment the JSON Vega-Lite specification
+created by `hvega` (see [issue
+17](https://github.com/DougBurke/hvega/issues/17)). It has also gained
+several new constructors and associated functions, which are given in
+brackets after the constructor: `VLAlign` (`align`); `VLBounds`
+(`bounds`); `VLCenter` (`center`, `centerRC`); `VLColumns`
+(`columns`); `VLConcat` (`vlConcat`); `VLSpacing` (`alignRC`,
+`spacing`, `spacingRC`); `VLUserMetadata` (`usermetadata`); and
+`VLViewBackground` (`viewBackground`). It is expected that you will be
+using the functions rather the constructors!
+
+The `ZIndex` type has been added: this provides constructors for the
+common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
+as a protection against future changes to the Vega-Lite specification.
+
+Three new type aliases have been added: `Angle`, `Color`, and
+`Opacity`. These do not provide any new functionality but do
+document intent.
+
+The `noData` function has been added to let compositions define the
+source of the data (whether it is from the parent or not), and data
+sources can be named with `dataName`. Data can be created with
+`dataSequence`, `dataSequenceAs`, and `sphere`. Graticules can be
+created with `graticule`.  The `NullValue` type has been added to
+`DataValue` to support data sources that are missing elements, but for
+more-complex cases it is suggested that you create your data as an
+Aeson Value and then use `dataFromJson`. Support for data imputation
+(creating new values based on existing data) has been added, as
+discussed below.
+
+The alignment, size, and composition of plots can be defined and
+changed with `align`, `alignRC`, `bounds`, `center`, `centerRC`,
+`columns`, `spacing`, and `spacingRC`.
+
+Plots can be combined and arranged with: `facet`, `facetFlow`,
+`repeat`, `repeatFlow`, and `vlConcat`
+
+New functions for use in a `transform`: `flatten`, `flattenAs`,
+`fold`, `foldAs`, `impute`, and `stack`.
+
+New functions for use with `encoding`: `fillOpacity`, `strokeOpacity`,
+`strokeWidth`,
+
+The ability to arrange specifications has added the "flow" option
+(aka "repeat"). This is seen in the addition of the `Flow` constructor
+to the `Arrangement` type - which is used with `ByRepeatOp`,
+`HRepeat`, `MRepeat`, `ORepeat`, `PRepeat`, and `TRepeat`.
+
+The `Mark` type has gained `Boxplot`, `ErrorBar`, `ErrorBand`, and
+`Trail` constructors. The `MarkProperty` type has gained `MBorders`,
+`MBox`, `MExtent`, `MHeight`, `MHRef`, `MLine`, `MMedian`, `MOrder`,
+`MOutliers`, `MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`,
+`MStrokeMiterLimit`, `MTicks`, `MTooltip`, `MWidth`, `MX`, `MX2`,
+`MXOffset`, `MX2Offset`, `MY`, `MY2`, `MYOffset`, and `MY2Offset`
+constructors.
+
+The `Position` type has added `XError`, `XError2`, `YError`, and
+`YError2` constructors.
+
+The `MarkErrorExtent` type was added.
+
+The `BooleanOp` type has gained the `FilterOp` and `FilterOpTrans`
+constructors which lets you use `Filter` expressions as part of a
+boolean operation. The `Filter` type has also gained expresiveness,
+with the `FLessThan`, `FLessThanEq`, `FGreaterThan`, `FGreaterThanEq`,
+and `FValid`.
+
+The `Format` type has gained the `DSV` constructor, which allow you
+to specify the separator character for column data.
+
+The MarkChannel type has been expanded to include: `MBinned`, `MSort`,
+`MTitle`, and `MNoTitle`. The PositionChannel type has added
+`PHeight`, `PWidth`, `PNumber`, `PBinned`, `PImpute`, `PTitle`, and
+`PNoTitle` constructors.
+
+The LineMarker and PointMarker types have been added for use with
+`MLine` and `MPoint` respectively (both from `MarkProperty`).
+
+The ability to define the binning property with 
+`binAs`, `DBin`, `FBin`, `HBin`, `MBin`, `OBin`, `PBin`, and `TBin` has
+been expanded by adding the `AlreadyBinned` and `BinAnchor`
+constructors to `BinProperty`, as well as changing the `Divide`
+constructor (as described below).
+
+The `StrokeCap` and `StrokeJoin` types has been added. These are used
+with `MStrokeCap`, `VBStrokeCap`, and `ViewStrokeCap` and
+`MStrokeJoin`, `VBStrokeJoin`, and `ViewStrokeJoin` respectively.
+
+The `StackProperty` constructor has been added with the `StOffset`
+and `StSort` constructors. As discussed below this is a breaking change
+since the old StackProperty type has been renamed to `StackOffset`.
+
+The `ScaleProperty` type has seen significant enhancement, by adding
+the constructors: `SAlign`, `SBase`, `SBins`, `SConstant` and
+`SExponent`.  THe `Scale` tye has added `ScSymLog` `ScQuantile`,
+`ScQuantize`, and `ScThreshold`.
+
+The `SortProperty` type has new constructors: `CustomSort`,
+`ByRepeatOp`, `ByFieldOp`, and `ByChannel`. See the breaking-changes
+section below for the constructors that were removed.
+
+The `AxisProperty` type has seen significant additions, including:
+`AxBandPosition`, `AxDomainColor`, `AxDomainDash`,
+`AxDomainDashOffset`, `AxDomainOpacity`, `AxDomainWidth`,
+`AxFormatAsNum`, `AxFormatAsTemporal`, `AxGridColor`, `AxGridDash`,
+`AxGridDashOffset`, `AxGridOpacity`, `AxGridWidth`, `AxLabelAlign`,
+`AxLabelBaseline`, `AxLabelBound`, `AxLabelColor`, `AxLabelFlush`,
+`AxLabelFlushOffset`, `AxLabelFont`, `AxLabelFontSize`,
+`AxLabelFontStyle`, `AxLabelFontWeight`, `AxLabelLimit`,
+`AxLabelOpacity`, `AxLabelSeparation`, `AxTickColor`, `AxTickDash`,
+`AxTickDashOffset`, `AxTickExtra`, `AxTickMinStep`, `AxTickOffset`,
+`AxTickOpacity`, `AxTickRound`, `AxTickWidth`, `AxNoTitle`,
+`AxTitleAnchor`, `AxTitleBaseline`, `AxTitleColor`, `AxTitleFont`,
+`AxTitleFontSize`, `AxTitleFontStyle`, `AxTitleFontWeight`,
+`AxTitleLimit`, `AxTitleOpacity`, `AxTitleX`, and `AxTitleY`.
+
+The `AxisConfig` has seen a similar enhancement, and looks similar
+to the above apart from the constructors do not start with 'Ax'.
+
+The `LegendConfig` type has been significantly expanded and, as
+discussed in the Breaking Changes section, changed. It has gained:
+`LeClipHeight`, `LeColumnPadding`, `LeColumns`, `LeGradientDirection`,
+`LeGradientHorizontalMaxLength`, `LeGradientHorizontalMinLength`,
+`LeGradientLength`, `LeGradientOpacity`, `LeGradientThickness`,
+`LeGradientVerticalMaxLength`, `LeGradientVerticalMinLength`,
+`LeGridAlign`, `LeLabelFontStyle`, `LeLabelFontWeight`,
+`LeLabelOpacity`, `LeLabelOverlap`, `LeLabelPadding`,
+`LeLabelSeparation`, `LeLayout`, `LeLeX`, `LeLeY`, `LeRowPadding`,
+`LeSymbolBaseFillColor`, `LeSymbolBaseStrokeColor`, `LeSymbolDash`,
+`LeSymbolDashOffset`, `LeSymbolDirection`, `LeSymbolFillColor`,
+`LeSymbolOffset`, `LeSymbolOpacity`, `LeSymbolStrokeColor`, `LeTitle`,
+`LeNoTitle`, `LeTitleAnchor`, `LeTitleFontStyle`, `LeTitleOpacity`,
+and `LeTitleOrient`.
+
+The `LegendOrientation` type has gained `LOTop` and `LOBottom`.
+
+The `LegendLayout` and `BaseLegendLayout` types are new, and used
+with `LeLayout` to define the legent orient group.
+
+The `LegendProperty` type gained: `LClipHeight`, `LColumnPadding`,
+`LColumns`, `LCornerRadius`, `LDirection`, `LFillColor`,
+`LFormatAsNum`, `LFormatAsTemporal`, `LGradientLength`,
+`LGradientOpacity`, `LGradientStrokeColor`, `LGradientStrokeWidth`,
+`LGradientThickness`, `LGridAlign`, `LLabelAlign`, `LLabelBaseline`,
+`LLabelColor`, `LLabelFont`, `LLabelFontSize`, `LLabelFontStyle`,
+`LLabelFontWeight`, `LLabelLimit`, `LLabelOffset`, `LLabelOpacity`,
+`LLabelOverlap`, `LLabelPadding`, `LLabelSeparation`, `LRowPadding`,
+`LStrokeColor`, `LSymbolDash`, `LSymbolDashOffset`,
+`LSymbolFillColor`, `LSymbolOffset`, `LSymbolOpacity`, `LSymbolSize`,
+`LSymbolStrokeColor`, `LSymbolStrokeWidth`, `LSymbolType`,
+`LTickMinStep`, `LNoTitle`, `LTitleAlign`, `LTitleAnchor`,
+`LTitleBaseline`, `LTitleColor`, `LTitleFont`, `LTitleFontSize`,
+`LTitleFontStyle`, `LTitleFontWeight`, `LTitleLimit`, `LTitleOpacity`,
+`LTitleOrient`, `LTitlePadding`, `LeX`, and `LeY`.
+
+`Projection` has gained the `Identity` constructor. The
+`ProjectionProperty` type has gained `PrScale`, `PrTranslate`,
+`PrReflectX`, and `PrReflectY`. The `GraticuleProperty` type was
+added to configure the appearance of graticules created with
+`graticule`.
+
+The `CompositionAlignment` type was added and is used with `align`,
+`alignRC`, `LeGridAlign`, and `LGridAlign`.
+
+The `Bounds` type was added for use with `bounds`.
+
+The `ImputeProperty` and `ImMethod` types were added for use with
+`impute` and `PImpute`.
+
+The `ScaleConfig` type has gained `SCBarBandPaddingInner`,
+`SCBarBandPaddingOuter`, `SCRectBandPaddingInner`, and
+`SCRectBandPaddingOuter`.
+
+The `SelectionProperty` type has gained `Clear` and `SInit`.
+
+The Channel type has gained: `ChLongitude`, `ChLongitude2`,
+`ChLatitude`, `ChLatitude2`, `ChFill`, `ChFillOpacity`, `ChHref`,
+`ChKey`, `ChStroke`, `ChStrokeOpacity`.  `ChStrokeWidth`, `ChText`,
+and `ChTooltip`.
+
+The `TitleConfig` type has gained: `TFontStyle`, `TFrame`, `TStyle`,
+and `TZIndex`.
+
+The `TitleFrame` type is new and used with `TFrame` from `TitleConfig`.
+
+The `ViewBackground` type is new and used with `viewBackground`.
+
+The `ViewConfig` type has gained `ViewCornerRadius`, `ViewOpacity`,
+`ViewStrokeCap`, `ViewStrokeJoin`, and `ViewStrokeMiterLimit`.
+
+The `ConfigurationProperty` type, used with `configuration`, has
+gained `ConcatStyle`, `FacetStyle`, `GeoshapeStyle`, `HeaderStyle`,
+`NamedStyles`, and `TrailStyle` constructors.
+
+The `ConcatConfig` type was added for use with the `ConcatStyle`,
+and the `FacetConfig` type for the `FacetStyle`
+configuration settings.
+
+The `HeaderProperty` type has gained: `HFormatAsNum`,
+`HFormatAsTemporal`, `HNoTitle`, `HLabelAlign`, `HLabelAnchor`,
+`HLabelAngle`, `HLabelColor`, `HLabelFont`, `HLabelFontSize`,
+`HLabelLimit`, `HLabelOrient`, `HLabelPadding`, `HTitleAlign`,
+`HTitleAnchor`, `HTitleAngle`, `HTitleBaseline`, `HTitleColor`,
+`HTitleFont`, `HTitleFontSize`, `HTitleFontWeight`, `HTitleLimit`,
+`HTitleOrient`, and `HTitlePadding`.
+
+The `HyperlinkChannel` type has gained `HBinned`.
+
+The `FacetChannel` type has gained `FSort`, `FTitle`, and `FNoTitle`.
+
+The `TextChannel` type has gained `TBinned`, `TFormatAsNum`,
+`TFormatAsTemporal`, `TTitle`, and `TNoTitle`.
+
+The `TooltipContent` type was added, for use with `MTooltip`.
 
 ### Breaking Changes
+
+Some of these are repeated from above.
+
+The `title` function now takes a second argument, a list of `TitleConfig`
+values for configuring the appearance of the title.
 
 The `SReverse` construtor was removed from `ScaleProperty` as it
 represented a Vega, rather than Vega-Lite, property. The `xSort`
@@ -133,20 +326,20 @@ The `TitleConfig` type has gained the following constructors:
 `TFontStyle`, `TFrame`, `TStyle`, and `TZIndex`. The `TitleFrame`
 type was added for use with `TFrame`.
 
-The `title` function now takes a second argument, a list of `TitleConfig`
-values for configuring the appearance of the title.
-
 The `ArgMax` and `ArgMin` constructors of `Operation` now take an
 optional field name, to allow them to be used as part of an encoding
 aggregation (e.g. with `PAggregate`).
 
-The `ZIndex` type has been added: this provides constructors for the
-common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
-as a protection against future changes to the Vega-Lite specification.
+The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
 
-Three new type aliases have been added: `Angle`, `Color`, and
-`Opacity`. These do not provide any new functionality - other than
-documentation - but may clash with symbols defined in other modules.
+### Improved testing
+
+Added a test suite based on the Elm Vega-Lite tests (based entirely on
+the work of Jo Wood).
+
+The IPython notebooks have been expanded to cover recent changes in the
+[Vega-Lite gallery](https://vega.github.io/vega-lite/examples/), and
+include validation of the output (to check against the expected output).
 
 ## 0.3.0.1
 

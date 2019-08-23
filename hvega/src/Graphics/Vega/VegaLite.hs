@@ -920,13 +920,233 @@ import Numeric.Natural (Natural)
 -- The @0.4.0.0@ release added a large number of functions, types, and
 -- constructors, including:
 --
--- * 'toVegaLiteSchema' has been added to allow you to specify a
---   different Vega-Lite schema. 'toVegaLite' uses version 3 but
---   version 4 is being worked on as I type this. The 'vlSchema'
---   function has been added, along with 'vlSchema4', 'vlSchema3',
---   and 'vlSchema2' values.
+-- 'toVegaLiteSchema' has been added to allow you to specify a
+-- different Vega-Lite schema. 'toVegaLite' uses version 3 but
+-- version 4 is being worked on as I type this. The 'vlSchema'
+-- function has been added, along with 'vlSchema4', 'vlSchema3',
+-- and 'vlSchema2' values.
 --
--- This release also removed or changed the following symbols:
+-- The 'VLProperty' type now exports its constructors, to support users
+-- who may need to tweak or augment the JSON Vega-Lite specification
+-- created by @hvega@: see [issue
+-- 17](https://github.com/DougBurke/hvega/issues/17). It has also gained
+-- several new constructors and associated functions, which are given in
+-- brackets after the constructor: 'VLAlign' ('align'); 'VLBounds'
+-- ('bounds'); 'VLCenter' ('center', 'centerRC'); 'VLColumns'
+-- ('columns'); 'VLConcat' ('vlConcat'); 'VLSpacing' ('alignRC',
+-- 'spacing', 'spacingRC'); 'VLUserMetadata' ('usermetadata'); and
+-- 'VLViewBackground' ('viewBackground'). It is expected that you will be
+-- using the functions rather the constructors!
+-- 
+-- The 'ZIndex' type has been added: this provides constructors for the
+-- common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
+-- as a protection against future changes to the Vega-Lite specification.
+-- 
+-- Three new type aliases have been added: 'Angle', 'Color', and
+-- 'Opacity'. These do not provide any new functionality but do
+-- document intent.
+-- 
+-- The 'noData' function has been added to let compositions define the
+-- source of the data (whether it is from the parent or not), and data
+-- sources can be named with 'dataName'. Data can be created with
+-- 'dataSequence', 'dataSequenceAs', and 'sphere'. Graticules can be
+-- created with 'graticule'.  The 'NullValue' type has been added to
+-- 'DataValue' to support data sources that are missing elements, but for
+-- more-complex cases it is suggested that you create your data as an
+-- Aeson Value and then use 'dataFromJson'. Support for data imputation
+-- (creating new values based on existing data) has been added, as
+-- discussed below.
+-- 
+-- The alignment, size, and composition of plots can be defined and
+-- changed with 'align', 'alignRC', 'bounds', 'center', 'centerRC',
+-- 'columns', 'spacing', and 'spacingRC'.
+-- 
+-- Plots can be combined and arranged with: 'facet', 'facetFlow',
+-- 'repeat', 'repeatFlow', and 'vlConcat'
+-- 
+-- New functions for use in a 'transform': 'flatten', 'flattenAs',
+-- 'fold', 'foldAs', 'impute', and 'stack'.
+-- 
+-- New functions for use with 'encoding': 'fillOpacity', 'strokeOpacity',
+-- 'strokeWidth',
+-- 
+-- The ability to arrange specifications has added the "flow" option
+-- (aka "repeat"). This is seen in the addition of the 'Flow' constructor
+-- to the 'Arrangement' type - which is used with 'ByRepeatOp',
+-- 'HRepeat', 'MRepeat', 'ORepeat', 'PRepeat', and 'TRepeat'.
+-- 
+-- The 'Mark' type has gained 'Boxplot', 'ErrorBar', 'ErrorBand', and
+-- 'Trail' constructors. The 'MarkProperty' type has gained 'MBorders',
+-- 'MBox', 'MExtent', 'MHeight', 'MHRef', 'MLine', 'MMedian', 'MOrder',
+-- 'MOutliers', 'MPoint', 'MRule', 'MStrokeCap', 'MStrokeJoin',
+-- 'MStrokeMiterLimit', 'MTicks', 'MTooltip', 'MWidth', 'MX', 'MX2',
+-- 'MXOffset', 'MX2Offset', 'MY', 'MY2', 'MYOffset', and 'MY2Offset'
+-- constructors.
+-- 
+-- The 'Position' type has added 'XError', 'XError2', 'YError', and
+-- 'YError2' constructors.
+-- 
+-- The 'MarkErrorExtent' type was added.
+-- 
+-- The 'BooleanOp' type has gained the 'FilterOp' and 'FilterOpTrans'
+-- constructors which lets you use 'Filter' expressions as part of a
+-- boolean operation. The 'Filter' type has also gained expresiveness,
+-- with the 'FLessThan', 'FLessThanEq', 'FGreaterThan', 'FGreaterThanEq',
+-- and 'FValid'.
+-- 
+-- The 'Format' type has gained the 'DSV' constructor, which allow you
+-- to specify the separator character for column data.
+-- 
+-- The MarkChannel type has been expanded to include: 'MBinned', 'MSort',
+-- 'MTitle', and 'MNoTitle'. The PositionChannel type has added
+-- 'PHeight', 'PWidth', 'PNumber', 'PBinned', 'PImpute', 'PTitle', and
+-- 'PNoTitle' constructors.
+-- 
+-- The LineMarker and PointMarker types have been added for use with
+-- 'MLine' and 'MPoint' respectively (both from 'MarkProperty').
+-- 
+-- The ability to define the binning property with 
+-- 'binAs', 'DBin', 'FBin', 'HBin', 'MBin', 'OBin', 'PBin', and 'TBin' has
+-- been expanded by adding the 'AlreadyBinned' and 'BinAnchor'
+-- constructors to 'BinProperty', as well as changing the 'Divide'
+-- constructor (as described below).
+-- 
+-- The 'StrokeCap' and 'StrokeJoin' types has been added. These are used
+-- with 'MStrokeCap', 'VBStrokeCap', and 'ViewStrokeCap' and
+-- 'MStrokeJoin', 'VBStrokeJoin', and 'ViewStrokeJoin' respectively.
+-- 
+-- The 'StackProperty' constructor has been added with the 'StOffset'
+-- and 'StSort' constructors. As discussed below this is a breaking change
+-- since the old StackProperty type has been renamed to 'StackOffset'.
+-- 
+-- The 'ScaleProperty' type has seen significant enhancement, by adding
+-- the constructors: 'SAlign', 'SBase', 'SBins', 'SConstant' and
+-- 'SExponent'.  THe 'Scale' tye has added 'ScSymLog' 'ScQuantile',
+-- 'ScQuantize', and 'ScThreshold'.
+-- 
+-- The 'SortProperty' type has new constructors: 'CustomSort',
+-- 'ByRepeatOp', 'ByFieldOp', and 'ByChannel'. See the breaking-changes
+-- section below for the constructors that were removed.
+-- 
+-- The 'AxisProperty' type has seen significant additions, including:
+-- 'AxBandPosition', 'AxDomainColor', 'AxDomainDash',
+-- 'AxDomainDashOffset', 'AxDomainOpacity', 'AxDomainWidth',
+-- 'AxFormatAsNum', 'AxFormatAsTemporal', 'AxGridColor', 'AxGridDash',
+-- 'AxGridDashOffset', 'AxGridOpacity', 'AxGridWidth', 'AxLabelAlign',
+-- 'AxLabelBaseline', 'AxLabelBound', 'AxLabelColor', 'AxLabelFlush',
+-- 'AxLabelFlushOffset', 'AxLabelFont', 'AxLabelFontSize',
+-- 'AxLabelFontStyle', 'AxLabelFontWeight', 'AxLabelLimit',
+-- 'AxLabelOpacity', 'AxLabelSeparation', 'AxTickColor', 'AxTickDash',
+-- 'AxTickDashOffset', 'AxTickExtra', 'AxTickMinStep', 'AxTickOffset',
+-- 'AxTickOpacity', 'AxTickRound', 'AxTickWidth', 'AxNoTitle',
+-- 'AxTitleAnchor', 'AxTitleBaseline', 'AxTitleColor', 'AxTitleFont',
+-- 'AxTitleFontSize', 'AxTitleFontStyle', 'AxTitleFontWeight',
+-- 'AxTitleLimit', 'AxTitleOpacity', 'AxTitleX', and 'AxTitleY'.
+-- 
+-- The 'AxisConfig' has seen a similar enhancement, and looks similar
+-- to the above apart from the constructors do not start with @Ax@.
+-- 
+-- The 'LegendConfig' type has been significantly expanded and, as
+-- discussed in the Breaking Changes section, changed. It has gained:
+-- 'LeClipHeight', 'LeColumnPadding', 'LeColumns', 'LeGradientDirection',
+-- 'LeGradientHorizontalMaxLength', 'LeGradientHorizontalMinLength',
+-- 'LeGradientLength', 'LeGradientOpacity', 'LeGradientThickness',
+-- 'LeGradientVerticalMaxLength', 'LeGradientVerticalMinLength',
+-- 'LeGridAlign', 'LeLabelFontStyle', 'LeLabelFontWeight',
+-- 'LeLabelOpacity', 'LeLabelOverlap', 'LeLabelPadding',
+-- 'LeLabelSeparation', 'LeLayout', 'LeLeX', 'LeLeY', 'LeRowPadding',
+-- 'LeSymbolBaseFillColor', 'LeSymbolBaseStrokeColor', 'LeSymbolDash',
+-- 'LeSymbolDashOffset', 'LeSymbolDirection', 'LeSymbolFillColor',
+-- 'LeSymbolOffset', 'LeSymbolOpacity', 'LeSymbolStrokeColor', 'LeTitle',
+-- 'LeNoTitle', 'LeTitleAnchor', 'LeTitleFontStyle', 'LeTitleOpacity',
+-- and 'LeTitleOrient'.
+-- 
+-- The 'LegendOrientation' type has gained 'LOTop' and 'LOBottom'.
+-- 
+-- The 'LegendLayout' and 'BaseLegendLayout' types are new, and used
+-- with 'LeLayout' to define the legent orient group.
+-- 
+-- The 'LegendProperty' type gained: 'LClipHeight', 'LColumnPadding',
+-- 'LColumns', 'LCornerRadius', 'LDirection', 'LFillColor',
+-- 'LFormatAsNum', 'LFormatAsTemporal', 'LGradientLength',
+-- 'LGradientOpacity', 'LGradientStrokeColor', 'LGradientStrokeWidth',
+-- 'LGradientThickness', 'LGridAlign', 'LLabelAlign', 'LLabelBaseline',
+-- 'LLabelColor', 'LLabelFont', 'LLabelFontSize', 'LLabelFontStyle',
+-- 'LLabelFontWeight', 'LLabelLimit', 'LLabelOffset', 'LLabelOpacity',
+-- 'LLabelOverlap', 'LLabelPadding', 'LLabelSeparation', 'LRowPadding',
+-- 'LStrokeColor', 'LSymbolDash', 'LSymbolDashOffset',
+-- 'LSymbolFillColor', 'LSymbolOffset', 'LSymbolOpacity', 'LSymbolSize',
+-- 'LSymbolStrokeColor', 'LSymbolStrokeWidth', 'LSymbolType',
+-- 'LTickMinStep', 'LNoTitle', 'LTitleAlign', 'LTitleAnchor',
+-- 'LTitleBaseline', 'LTitleColor', 'LTitleFont', 'LTitleFontSize',
+-- 'LTitleFontStyle', 'LTitleFontWeight', 'LTitleLimit', 'LTitleOpacity',
+-- 'LTitleOrient', 'LTitlePadding', 'LeX', and 'LeY'.
+-- 
+-- 'Projection' has gained the 'Identity' constructor. The
+-- 'ProjectionProperty' type has gained 'PrScale', 'PrTranslate',
+-- 'PrReflectX', and 'PrReflectY'. The 'GraticuleProperty' type was
+-- added to configure the appearance of graticules created with
+-- 'graticule'.
+-- 
+-- The 'CompositionAlignment' type was added and is used with 'align',
+-- 'alignRC', 'LeGridAlign', and 'LGridAlign'.
+-- 
+-- The 'Bounds' type was added for use with 'bounds'.
+-- 
+-- The 'ImputeProperty' and 'ImMethod' types were added for use with
+-- 'impute' and 'PImpute'.
+-- 
+-- The 'ScaleConfig' type has gained 'SCBarBandPaddingInner',
+-- 'SCBarBandPaddingOuter', 'SCRectBandPaddingInner', and
+-- 'SCRectBandPaddingOuter'.
+-- 
+-- The 'SelectionProperty' type has gained 'Clear' and 'SInit'.
+-- 
+-- The Channel type has gained: 'ChLongitude', 'ChLongitude2',
+-- 'ChLatitude', 'ChLatitude2', 'ChFill', 'ChFillOpacity', 'ChHref',
+-- 'ChKey', 'ChStroke', 'ChStrokeOpacity'.  'ChStrokeWidth', 'ChText',
+-- and 'ChTooltip'.
+-- 
+-- The 'TitleConfig' type has gained: 'TFontStyle', 'TFrame', 'TStyle',
+-- and 'TZIndex'.
+-- 
+-- The 'TitleFrame' type is new and used with 'TFrame' from 'TitleConfig'.
+-- 
+-- The 'ViewBackground' type is new and used with 'viewBackground'.
+-- 
+-- The 'ViewConfig' type has gained 'ViewCornerRadius', 'ViewOpacity',
+-- 'ViewStrokeCap', 'ViewStrokeJoin', and 'ViewStrokeMiterLimit'.
+-- 
+-- The 'ConfigurationProperty' type, used with 'configuration', has
+-- gained 'ConcatStyle', 'FacetStyle', 'GeoshapeStyle', 'HeaderStyle',
+-- 'NamedStyles', and 'TrailStyle' constructors.
+-- 
+-- The 'ConcatConfig' type was added for use with the 'ConcatStyle',
+-- and the 'FacetConfig' type for the 'FacetStyle'
+-- configuration settings.
+-- 
+-- The 'HeaderProperty' type has gained: 'HFormatAsNum',
+-- 'HFormatAsTemporal', 'HNoTitle', 'HLabelAlign', 'HLabelAnchor',
+-- 'HLabelAngle', 'HLabelColor', 'HLabelFont', 'HLabelFontSize',
+-- 'HLabelLimit', 'HLabelOrient', 'HLabelPadding', 'HTitleAlign',
+-- 'HTitleAnchor', 'HTitleAngle', 'HTitleBaseline', 'HTitleColor',
+-- 'HTitleFont', 'HTitleFontSize', 'HTitleFontWeight', 'HTitleLimit',
+-- 'HTitleOrient', and 'HTitlePadding'.
+-- 
+-- The 'HyperlinkChannel' type has gained 'HBinned'.
+-- 
+-- The 'FacetChannel' type has gained 'FSort', 'FTitle', and 'FNoTitle'.
+-- 
+-- The 'TextChannel' type has gained 'TBinned', 'TFormatAsNum',
+-- 'TFormatAsTemporal', 'TTitle', and 'TNoTitle'.
+-- 
+-- The 'TooltipContent' type was added, for use with 'MTooltip'.
+-- 
+-- There are a number of __breaking changes__ in this release (some
+-- of which were mentioned above):
+--
+-- * The 'title' function now takes a second argument, a list of 'TitleConfig'
+--   values for configuring the appearance of the title.
 --
 -- * The @SReverse@ constructor was removed from 'ScaleProperty' as it
 --   represented a Vega, rather than Vega-Lite, property. The @xSort@
@@ -967,9 +1187,9 @@ import Numeric.Natural (Natural)
 --
 -- * The @LEntryPadding@ constructor of 'LegendProperty' was removed.
 --
--- * The arguments to the `MDataCondition`, `TDataCondition`, and
---   `HDataCondition` constructors - of `MarkChannel`, `TextChannel`,
---   and `HyperlinkChannel` respectively - have changed to support
+-- * The arguments to the 'MDataCondition', 'TDataCondition', and
+--   'HDataCondition' constructors - of 'MarkChannel', 'TextChannel',
+--   and 'HyperlinkChannel' respectively - have changed to support
 --   accepting multiple expressions.
 --
 -- * The @MarkOrientation@ type has been renamed 'Orientation'.
@@ -988,24 +1208,12 @@ import Numeric.Natural (Natural)
 --   'TFontStyle', 'TFrame', 'TStyle', and 'TZIndex'. The 'TitleFrame'
 --   type was added for use with 'TFrame'.
 --
--- * The 'title' function now takes a second argument, a list of 'TitleConfig'
---   values for configuring the appearance of the title.
---
 -- * The 'ArgMax' and 'ArgMin' constructors of 'Operation' now take an
 --   optional field name, to allow them to be used as part of an encoding
 --   aggregation (e.g. with 'PAggregate').
 --
--- * The 'ZIndex' type has been added: this provides constructors for the
---   common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
---   as a protection against future changes to the Vega-Lite specification.
---
--- * Three new type aliases have been added: 'Angle', 'Color', and 'Opacity'.
---   These do not provide any new functionality - other than documentation -
---   but may clash with symbols from other modules.
---
--- Note that the `VLProperty` type now exports its constructors, which
--- may come in useful for those people who need to edit or augment the
--- JSON Vega-Lite specification created by @hvega@.
+-- * The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
+
 
 --- helpers
 
@@ -1345,7 +1553,7 @@ the exception of the data specification which is usually defined outside of any 
 layer. Whereas for repeated and faceted specs, the entire specification is provided.
 
 @
-spec1 = asSpec [ enc1 [], `mark` `Line` [] ]
+spec1 = asSpec [ enc1 [], 'mark' 'Line' [] ]
 @
 -}
 asSpec :: [PropertySpec] -> VLSpec
@@ -2546,6 +2754,7 @@ markChannelProperty MNoTitle = ["title" .= A.Null]
 {-|
 
 Appearance of a line marker that is overlaid on an area mark.
+For use with 'MLine'.
 
 @since 0.4.0.0
 
@@ -2556,7 +2765,6 @@ data LineMarker
     -- ^ No line marker.
   | LMMarker [MarkProperty]
     -- ^ The properties of a line marker overlain on an area mark.
-    --   Used with 'MLine'.
     --
     --   Use an empty list to use a filled point with default properties.
 
@@ -2844,7 +3052,10 @@ markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
 
 
--- | @since 0.4.0.0
+-- | How are strokes capped? This is used with 'MStrokeCap', 'VBStrokeCap',
+--   and `ViewStrokeCap'.
+--
+--   @since 0.4.0.0
 
 data StrokeCap
     = CButt
@@ -2861,7 +3072,11 @@ strokeCapLabel CRound = "round"
 strokeCapLabel CSquare = "square"
 
 
--- | @since 0.4.0.0
+-- | How are strokes joined? This is used with 'MStrokeJoin', 'VBStrokeJoin',
+--   and `ViewStrokeJoin'.
+--
+--
+--   @since 0.4.0.0
 
 data StrokeJoin
     = JMiter
@@ -2922,9 +3137,9 @@ data Position
     | Y2
     | XError
       -- ^ @since 0.4.0.0
-    | YError
-      -- ^ @since 0.4.0.0
     | XError2
+      -- ^ @since 0.4.0.0
+    | YError
       -- ^ @since 0.4.0.0
     | YError2
       -- ^ @since 0.4.0.0
@@ -2961,6 +3176,9 @@ data Measurement
 Type of binning property to customise. See the
 <https://vega.github.io/vega-lite/docs/bin.html Vega-Lite documentation> for
 more details.
+
+This is used with: 'binAs', 'DBin', 'FBin', 'HBin', 'MBin', 'OBin',
+'PBin', and 'TBin'.
 
 -}
 
@@ -5232,7 +5450,7 @@ legendOrientLabel LOBottomRight = "bottom-right"
 
 {- |
 
-/Highly experimental/
+/Highly experimental/ and used with 'LeLayout'.
 
 @since 0.4.0.0
 
@@ -5287,7 +5505,7 @@ toBLSpec = object . map baseLegendLayoutSpec
 
 {- |
 
-/Highly experimental/
+/Highly experimental/ and used with constructors from 'LegendLayout'.
 
 @since 0.4.0.0
 
@@ -5631,6 +5849,7 @@ paddingSpec (PEdges l t r b) =
 
 
 -- | The properties of a point marker on a line or area mark.
+--   For use with 'MPoint'.
 --
 --   @since 0.4.0.0
 
@@ -5642,7 +5861,6 @@ data PointMarker
     -- ^ No marker to be shown.
     | PMMarker [MarkProperty]
     -- ^ The properties of the marks to be shown at the points.
-    --   Used with 'MPoint'.
     --
     --   Use an empty list to use a filled point with default properties.
 
@@ -5743,7 +5961,8 @@ data ClipRect
       --   of a rectangular clip.
 
 
--- | Specifies the alignment of compositions.
+-- | Specifies the alignment of compositions. It is used with:
+--   'align', 'alignRC', 'LeGridAlign', and 'LGridAlign'.
 --
 --   @since 0.4.0.0
 
@@ -6160,33 +6379,33 @@ data Channel
     | ChY2
     | ChLongitude
       -- ^ @since 0.4.0.0
-    | ChLatitude
-      -- ^ @since 0.4.0.0
     | ChLongitude2
+      -- ^ @since 0.4.0.0
+    | ChLatitude
       -- ^ @since 0.4.0.0
     | ChLatitude2
       -- ^ @since 0.4.0.0
     | ChColor
     | ChFill
       -- ^ @since 0.3.0.0
+    | ChFillOpacity
+      -- ^ @since 0.4.0.0
+    | ChHref
+      -- ^ @since 0.4.0.0
+    | ChKey
+      -- ^ @since 0.4.0.0
     | ChStroke
       -- ^ @since 0.3.0.0
+    | ChStrokeOpacity
+      -- ^ @since 0.4.0.0
     | ChStrokeWidth
       -- ^ @since 0.4.0.0
     | ChOpacity
     | ChShape
     | ChSize
-    | ChFillOpacity
-      -- ^ @since 0.4.0.0
-    | ChStrokeOpacity
-      -- ^ @since 0.4.0.0
     | ChText
       -- ^ @since 0.4.0.0
     | ChTooltip
-      -- ^ @since 0.4.0.0
-    | ChHref
-      -- ^ @since 0.4.0.0
-    | ChKey
       -- ^ @since 0.4.0.0
 
 
@@ -8095,7 +8314,9 @@ centerRC ::
 centerRC cRow cCol = (VLCenter, object ["row" .= cRow, "col" .= cCol])
 
 
--- | @since 0.4.0.0
+-- | This is used with 'bounds' to define the extent of a sub plot.
+--
+--   @since 0.4.0.0
 
 data Bounds
   = Full
@@ -9352,7 +9573,9 @@ lookupAs key1 (_, spec) key2 asName ols =
   ("lookupAs" .= [toJSON key1, spec, toJSON key2, toJSON asName]) : ols
 
 
--- | @since 0.4.0.0
+-- | This is used with `impute` and `PImpute`.
+--
+--   @since 0.4.0.0
 
 data ImputeProperty
     = ImFrame (Maybe Int) (Maybe Int)
@@ -9822,7 +10045,9 @@ tooltips tDefs ols =
   ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols
 
 
--- | @since 0.4.0.0
+-- | This is used with 'MTooltip'.
+--
+--   @since 0.4.0.0
 
 data TooltipContent
   = TTEncoding
