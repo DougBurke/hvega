@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
+
 {-|
 Module      : Graphics.Vega.VegaLite
 Copyright   : (c) Douglas Burke, 2018-2019
@@ -2807,6 +2808,9 @@ data MarkProperty
       -- ^ Vertical alignment of a text mark.
     | MBinSpacing Double
       -- ^ Offset between bars for a binned field using a bar mark.
+      --
+      --   The ideal value for this is either @0@ (preferred by statisticians)
+      --   or @1@ (the Vega-Lite default value, D3 example style).
     | MBorders [MarkProperty]
       -- ^ Border properties for an errorband mark.
       --
@@ -4173,6 +4177,7 @@ The @AxTitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 'AxTitleLimit' constructor should be used instead.
 
 -}
+{-# DEPRECATED AxDates "Please change AxDates to AxValues" #-}
 data AxisProperty
     = AxBandPosition Double
       -- ^ An interpolation fraction indicating where, for @band@ scales, axis ticks should
@@ -4449,7 +4454,7 @@ data AxisProperty
       -- ^ The dates or times to appear along the axis.
       --
       --   As of version @0.4.0.0@, this is deprecated. The 'AxValues'
-      --   constructir should be used instead.
+      --   constructor should be used instead.
     | AxZIndex ZIndex
       -- ^ The z-index of the axis, relative to the chart marks.
 
