@@ -1034,7 +1034,8 @@ import Numeric.Natural (Natural)
 -- 'AxDomainDashOffset', 'AxDomainOpacity', 'AxDomainWidth',
 -- 'AxFormatAsNum', 'AxFormatAsTemporal', 'AxGridColor', 'AxGridDash',
 -- 'AxGridDashOffset', 'AxGridOpacity', 'AxGridWidth', 'AxLabelAlign',
--- 'AxLabelBaseline', 'AxLabelBound', 'AxLabelColor', 'AxLabelFlush',
+-- 'AxLabelBaseline', 'AxLabelNoBound', 'AxLabelBound', 'AxLabelBoundValue',
+-- 'AxLabelColor', 'AxLabelNoFlush', 'AxLabelFlush', 'AxLabelFlushValue',
 -- 'AxLabelFlushOffset', 'AxLabelFont', 'AxLabelFontSize',
 -- 'AxLabelFontStyle', 'AxLabelFontWeight', 'AxLabelLimit',
 -- 'AxLabelOpacity', 'AxLabelSeparation', 'AxTickColor', 'AxTickDash',
@@ -4259,24 +4260,52 @@ data AxisProperty
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | AxLabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | AxLabelNoBound
+      -- ^ No boundary overlap check is applied to labels. This is the
+      --   default behavior.
+      --
+      --   See also 'AxLabelBound' and 'AxLabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelBound
+      -- ^ Labels are hidden if they exceed the axis range by more than 1
+      --   pixel.
+      --
+      --   See also 'AxLabelNoBound' and 'AxLabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelBoundValue Double
+      -- ^ Labels are hidden if they exceed the axis range by more than
+      --   the given number of pixels.
+      --
+      --   See also 'AxLabelNoBound' and 'AxLabelBound'.
       --
       --   @since 0.4.0.0
     | AxLabelColor Color
       -- ^ The label color.
       --
       --   @since 0.4.0.0
-    | AxLabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
-      --   labels will be left- and right- aligned for the first and last
-      --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+    | AxLabelNoFlush
+      -- ^ The labels are not aligned flush to the scale. This is the
+      --   default for non-continuous X scales.
+      --
+      --   See also 'AxLabelFlush' and 'AxLabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlush
+      -- ^ The first and last axis labels are aligned flush to the scale
+      --   range.
+      --
+      --   See also 'AxLabelNoFlush' and 'AxLabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlushValue Double
+      -- ^ The labels are aligned flush, and the parameter determines
+      --   the extra offset, in pixels, to apply to the first and last
+      --   labels. This can help the labels better group (visually) with
+      --   the corresponding axis ticks.
+      --
+      --   See also 'AxLabelNoFlush' and 'AxLabelFlush'.
       --
       --   @since 0.4.0.0
     | AxLabelFlushOffset Double
@@ -4480,9 +4509,13 @@ axisProperty (AxLabels b) = "labels" .= b
 axisProperty (AxLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisProperty (AxLabelAngle a) = "labelAngle" .= a
 axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisProperty (AxLabelBound mx) = "labelBound" .= mxToValue mx
+axisProperty AxLabelNoBound = "labelBound" .= False
+axisProperty AxLabelBound = "labelBound" .= True
+axisProperty (AxLabelBoundValue x) = "labelBound" .= x
 axisProperty (AxLabelColor s) = "labelColor" .= s
-axisProperty (AxLabelFlush mx) = "labelFlush" .= mxToValue mx
+axisProperty AxLabelNoFlush = "labelFlush" .= False
+axisProperty AxLabelFlush = "labelFlush" .= True
+axisProperty (AxLabelFlushValue x) = "labelFlush" .= x
 axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .= x
 axisProperty (AxLabelFont s) = "labelFont" .= s
 axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
@@ -7078,22 +7111,50 @@ data AxisConfig
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | LabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | LabelNoBound
+      -- ^ No boundary overlap check is applied to labels. This is the
+      --   default behavior.
+      --
+      --   See also 'LabelBound' and 'LabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelBound
+      -- ^ Labels are hidden if they exceed the axis range by more than 1
+      --   pixel.
+      --
+      --   See also 'LabelNoBound' and 'LabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelBoundValue Double
+      -- ^ Labels are hidden if they exceed the axis range by more than
+      --   the given number of pixels.
+      --
+      --   See also 'LabelNoBound' and 'LabelBound'.
       --
       --   @since 0.4.0.0
     | LabelColor Color
       -- ^ The label color.
-    | LabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
-      --   labels will be left- and right- aligned for the first and last
-      --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+    | LabelNoFlush
+      -- ^ The labels are not aligned flush to the scale. This is the
+      --   default for non-continuous X scales.
+      --
+      --   See also 'LabelFlush' and 'LabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelFlush
+      -- ^ The first and last axis labels are aligned flush to the scale
+      --   range.
+      --
+      --   See also 'LabelNoFlush' and 'LabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelFlushValue Double
+      -- ^ The labels are aligned flush, and the parameter determines
+      --   the extra offset, in pixels, to apply to the first and last
+      --   labels. This can help the labels better group (visually) with
+      --   the corresponding axis ticks.
+      --
+      --   See also 'LabelNoFlush' and 'LabelFlush'.
       --
       --   @since 0.4.0.0
     | LabelFlushOffset Double
@@ -7210,14 +7271,6 @@ data AxisConfig
       -- ^ The Y coordinate of the axis title, relative to the axis group.
 
 
--- Using an equality test here isn't ideal, but I am just following the
--- Elm code for now.
---
-mxToValue :: Maybe Double -> Value
-mxToValue (Just x) | x == 1 = toJSON True
-                   | otherwise = toJSON x
-mxToValue Nothing = toJSON False
-
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
@@ -7236,8 +7289,12 @@ axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisConfigProperty (LabelBound mx) = "labelBound" .= mxToValue mx
-axisConfigProperty (LabelFlush mx) = "labelFlush" .= mxToValue mx
+axisConfigProperty LabelNoBound = "labelBound" .= False
+axisConfigProperty LabelBound = "labelBound" .= True
+axisConfigProperty (LabelBoundValue x) = "labelBound" .= x
+axisConfigProperty LabelNoFlush = "labelFlush" .= False
+axisConfigProperty LabelFlush = "labelFlush" .= True
+axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
 axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f

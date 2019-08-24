@@ -150,15 +150,17 @@ The `AxisProperty` type has seen significant additions, including:
 `AxDomainDashOffset`, `AxDomainOpacity`, `AxDomainWidth`,
 `AxFormatAsNum`, `AxFormatAsTemporal`, `AxGridColor`, `AxGridDash`,
 `AxGridDashOffset`, `AxGridOpacity`, `AxGridWidth`, `AxLabelAlign`,
-`AxLabelBaseline`, `AxLabelBound`, `AxLabelColor`, `AxLabelFlush`,
-`AxLabelFlushOffset`, `AxLabelFont`, `AxLabelFontSize`,
-`AxLabelFontStyle`, `AxLabelFontWeight`, `AxLabelLimit`,
-`AxLabelOpacity`, `AxLabelSeparation`, `AxTickColor`, `AxTickDash`,
-`AxTickDashOffset`, `AxTickExtra`, `AxTickMinStep`, `AxTickOffset`,
-`AxTickOpacity`, `AxTickRound`, `AxTickWidth`, `AxNoTitle`,
-`AxTitleAnchor`, `AxTitleBaseline`, `AxTitleColor`, `AxTitleFont`,
-`AxTitleFontSize`, `AxTitleFontStyle`, `AxTitleFontWeight`,
-`AxTitleLimit`, `AxTitleOpacity`, `AxTitleX`, and `AxTitleY`.
+`AxLabelBaseline`, `AxLabelNoBound`, `AxLabelBound`,
+`AxLabelBoundValue`, `AxLabelColor`, `AxLabelNoFlush`, `AxLabelFlush`,
+`AxLabelFlushValue`, `AxLabelFlushOffset`, `AxLabelFont`,
+`AxLabelFontSize`, `AxLabelFontStyle`, `AxLabelFontWeight`,
+`AxLabelLimit`, `AxLabelOpacity`, `AxLabelSeparation`, `AxTickColor`,
+`AxTickDash`, `AxTickDashOffset`, `AxTickExtra`, `AxTickMinStep`,
+`AxTickOffset`, `AxTickOpacity`, `AxTickRound`, `AxTickWidth`,
+`AxNoTitle`, `AxTitleAnchor`, `AxTitleBaseline`, `AxTitleColor`,
+`AxTitleFont`, `AxTitleFontSize`, `AxTitleFontStyle`,
+`AxTitleFontWeight`, `AxTitleLimit`, `AxTitleOpacity`, `AxTitleX`, and
+`AxTitleY`.
 
 The `AxisConfig` has seen a similar enhancement, and looks similar
 to the above apart from the constructors do not start with 'Ax'.
