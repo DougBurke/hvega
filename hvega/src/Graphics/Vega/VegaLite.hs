@@ -345,7 +345,7 @@ module Graphics.Vega.VegaLite
          --
          -- $marklegends
 
-       , Legend(..)
+       , LegendType(..)
        , LegendProperty(..)
        , LegendOrientation(..)
        , LegendValues(..)
@@ -1143,7 +1143,11 @@ import Numeric.Natural (Natural)
 -- 'TFormatAsTemporal', 'TTitle', and 'TNoTitle'.
 -- 
 -- The 'TooltipContent' type was added, for use with 'MTooltip'.
--- 
+--
+-- The 'Symbol' type has gained: 'SymArrow', 'SymStroke',
+-- 'SymTriangle', 'SymTriangleLeft', 'SymTriangleRight', and
+-- 'SymWedge'.
+--
 -- There are a number of __breaking changes__ in this release (some
 -- of which were mentioned above):
 --
@@ -1215,7 +1219,14 @@ import Numeric.Natural (Natural)
 --   aggregation (e.g. with 'PAggregate').
 --
 -- * The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
-
+--
+-- * The constructors for the 'Symbol' type now all start with @Sym@, so
+--   @Cross@, @Diamond@, @TriangleUp@, @TriangleDown@, and @Path@ have
+--   been renamed to 'SymCross', 'SymDiamond', 'SymTriangleUp',
+--   'SymTriangleDown', and 'SymPath', respectively.
+--
+-- * The `Legend` type has been renamed `LegendType` and its constructors
+--   have been renamed 'GradientLegend' and 'SymbolLegend'.
 
 --- helpers
 
@@ -5017,34 +5028,72 @@ markErrorExtentLSpec ExRange            = extent_ "min-max"
 markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
--- | Identifies the type of symbol.
-
+-- | Identifies the type of symbol used with the 'Point' mark type.
+--   It is used with 'MShape', 'LeSymbolType', and 'LSymbolType'.
+--
+--   In version @0.4.0.0@ all constructors were changed to start
+--   with @Sym@.
+--
 data Symbol
     = SymCircle
       -- ^ Specify a circular symbol for a shape mark.
     | SymSquare
       -- ^ Specify a square symbol for a shape mark.
-    | Cross
+    | SymCross
       -- ^ Specify a cross symbol for a shape mark.
-    | Diamond
+    | SymDiamond
       -- ^ Specify a diamond symbol for a shape mark.
-    | TriangleUp
+    | SymTriangleUp
       -- ^ Specify an upward-triangular symbol for a shape mark.
-    | TriangleDown
+    | SymTriangleDown
       -- ^ Specify a downward-triangular symbol for a shape mark.
-    | Path T.Text
+    | SymTriangleRight
+      -- ^ Specify an right-facing triangular symbol for a shape mark.
+      --
+      --   @since 0.4.0.0
+    | SymTriangleLeft
+      -- ^ Specify an left-facing triangular symbol for a shape mark.
+      --
+      --   @since 0.4.0.0
+    | SymStroke
+      -- ^ The line symbol.
+      --
+      --  @since 0.4.0.0
+    | SymArrow
+      -- ^ Centered directional shape.
+      --
+      --  @since 0.4.0.0
+    | SymTriangle
+      -- ^ Centered directional shape. It is not clear what difference
+      --   this is to 'SymTriangleUp'.
+      --
+      --  @since 0.4.0.0
+    | SymWedge
+      -- ^ Centered directional shape.
+      --
+      --  @since 0.4.0.0
+    | SymPath T.Text
       -- ^ A custom symbol shape as an
       --   [SVG path description](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
+      --
+      --   For correct sizing, the path should be defined within a square
+      --   bounding box, defined on an axis of -1 to 1 for both dimensions.
 
 
 symbolLabel :: Symbol -> T.Text
 symbolLabel SymCircle = "circle"
 symbolLabel SymSquare = "square"
-symbolLabel Cross = "cross"
-symbolLabel Diamond = "diamond"
-symbolLabel TriangleUp = "triangle-up"
-symbolLabel TriangleDown = "triangle-down"
-symbolLabel (Path svgPath) = svgPath
+symbolLabel SymCross = "cross"
+symbolLabel SymDiamond = "diamond"
+symbolLabel SymTriangleUp = "triangle-up"
+symbolLabel SymTriangleDown = "triangle-down"
+symbolLabel SymTriangleRight = "triangle-right"
+symbolLabel SymTriangleLeft = "triangle-left"
+symbolLabel SymStroke = "stroke"
+symbolLabel SymArrow = "arrow"
+symbolLabel SymTriangle = "triangle"
+symbolLabel SymWedge = "wedge"
+symbolLabel (SymPath svgPath) = svgPath
 
 
 {-|
@@ -5121,18 +5170,21 @@ fieldTitleLabel Function = "functional"
 fieldTitleLabel Plain = "plain"
 
 
--- | Indicates the type of legend to create.
-
-data Legend
-    = Gradient
+-- | Indicates the type of legend to create. It is used with 'LType'.
+--
+--   Prior to version @0.4.0.0.0@ this was called @Legend@ and the
+--   constructors did not end in @Legend@.
+--
+data LegendType
+    = GradientLegend
       -- ^ Typically used for continuous quantitative data.
-    | Symbol
+    | SymbolLegend
       -- ^ Typically used for categorical data.
 
 
-legendLabel :: Legend -> T.Text
-legendLabel Gradient = "gradient"
-legendLabel Symbol = "symbol"
+legendLabel :: LegendType -> T.Text
+legendLabel GradientLegend = "gradient"
+legendLabel SymbolLegend = "symbol"
 
 
 {-|
@@ -5772,7 +5824,7 @@ data LegendProperty
       -- ^ The padding, in pixels, between title and legend.
       --
       --   @since 0.4.0.0
-    | LType Legend
+    | LType LegendType
       -- ^ The type of the legend.
     | LValues LegendValues
       -- ^ Explicitly set the visible legend values.

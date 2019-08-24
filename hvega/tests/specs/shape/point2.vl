@@ -1,0 +1,34 @@
+{
+    "transform": [
+        {
+            "as": "YearOfManufacture",
+            "calculate": "year(datum.Year)"
+        },
+        {
+            "filter": "datum.YearOfManufacture == 1970"
+        }
+    ],
+    "mark": {
+        "shape": "cross",
+        "type": "point",
+        "filled": true
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "encoding": {
+        "opacity": {
+            "value": 0.6
+        },
+        "x": {
+            "field": "Horsepower",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "type": "quantitative"
+        }
+    },
+    "description": "cross-filled"
+}

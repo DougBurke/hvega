@@ -261,6 +261,9 @@ The `TextChannel` type has gained `TBinned`, `TFormatAsNum`,
 
 The `TooltipContent` type was added, for use with `MTooltip`.
 
+The `Symbol` type has gained: `SymArrow`, `SymStroke`, `SymTriangle`,
+`SymTriangleLeft`, `SymTriangleRight`, and `SymWedge`.
+
 ### Breaking Changes
 
 Some of these are repeated from above.
@@ -332,7 +335,15 @@ The `ArgMax` and `ArgMin` constructors of `Operation` now take an
 optional field name, to allow them to be used as part of an encoding
 aggregation (e.g. with `PAggregate`).
 
-The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
+The "z index" value has changed from an 'Int' to the 'ZIndex' type.
+
+The constructors for the `Symbol` type now all start with `Sym`, so
+`Cross`, `Diamond`, `TriangleUp`, `TriangleDown`, and `Path` have been
+renamed to `SymCross`, `SymDiamond`, `SymTriangleUp`,
+`SymTriangleDown`, and `SymPath`, respectively.
+
+The `Legend` type has been renamed `LegendType` and its constructors
+have been renamed 'GradientLegend' and 'SymbolLegend'.
 
 ### Improved testing
 
