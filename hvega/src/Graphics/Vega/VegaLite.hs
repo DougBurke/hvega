@@ -85,7 +85,8 @@ The produced JSON can then be processed with vega-lite, which renders the follow
 This can be achieved in a JupyterLab session with the @vlShow@ function,
 provided by @ihaskell-vega@, or 'toHtmlFile' can be used to write out a page of
 HTML that includes pointer to JavaScript files which will display a Vega-Lite
-specification.
+specification (there are also functions which provide more control over
+the embedding).
 
 -}
 
@@ -110,6 +111,8 @@ module Graphics.Vega.VegaLite
        , combineSpecs
        , toHtml
        , toHtmlFile
+       , toHtmlWith
+       , toHtmlFileWith
 
          -- * Creating the Data Specification
          --
@@ -925,7 +928,11 @@ import Numeric.Natural (Natural)
 -- different Vega-Lite schema. 'toVegaLite' uses version 3 but
 -- version 4 is being worked on as I type this. The 'vlSchema'
 -- function has been added, along with 'vlSchema4', 'vlSchema3',
--- and 'vlSchema2' values.
+-- and 'vlSchema2' values. The 'toHtmlWith' and 'toHtmlFileWith'
+-- functions have been added to support more control over the
+-- embedding of the Vega-Lite visualizations, and the versions of
+-- the required Javascript libraries used by the @toHtmlXXX@ routines
+-- has been updated.
 --
 -- The 'VLProperty' type now exports its constructors, to support users
 -- who may need to tweak or augment the JSON Vega-Lite specification
@@ -1521,41 +1528,90 @@ combineSpecs = object
 
 {-|
 
-Converts VegaLite to html Text. Uses Vega-Embed.
+Converts VegaLite to html Text. Uses Vega-Embed with the
+default options. See 'toHtmlWith' for more control.
 
 @since 0.2.1.0
 -}
 toHtml :: VegaLite -> TL.Text
-toHtml vl = TL.unlines
-  [ "<!DOCTYPE html>"
-  , "<html>"
-  , "<head>"
-  , "  <!-- Import Vega 5 & Vega-Lite 3 (does not have to be from CDN) -->"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega@3\"></script>"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@2\"></script>"
-  , "  <!-- Import vega-embed -->"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-embed@3\"></script>"
-  , "</head>"
-  , "<body>"
-  , "<div id=\"vis\"></div>"
-  , "<script type=\"text/javascript\">"
-  , ("  var spec = " <> (A.encodeToLazyText $ fromVL vl) <> ";")
-  , "  vegaEmbed(\'#vis\', spec).then(function(result) {"
-  , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
-  , "  }).catch(console.error);"
-  , "</script>"
-  , "</body>"
-  , "</html>"
-  ]
+toHtml = toHtmlWith Nothing
 
 {-|
 
-Converts VegaLite to an html file. Uses Vega-Embed.
+Converts VegaLite to an html file. Uses Vega-Embed with the
+default options. See 'toHtmlFileWith' for more control.
 
 @since 0.2.1.0
 -}
 toHtmlFile :: FilePath -> VegaLite -> IO ()
 toHtmlFile file = TL.writeFile file . toHtml
+
+{-|
+
+Converts VegaLite to html Text. Uses Vega-Embed and is for when
+some control is needed over the output: 'toHtml' is a simpler
+form which just uses the default Vega-Embed options.
+
+The render you use to view the output file must support Javascript,
+since it is needed to create the visualization from the Vega-Lite
+specification. The Vega and Vega-Lite Javascript versions are pegged
+to 5 and 3, but no limit is applied to the Vega-Embed library.
+
+@since 0.4.0.0
+-}
+toHtmlWith ::
+  Maybe Value
+  -- ^ The options to pass to the Vega-Embed @embed@ routine. See
+  --   <https://github.com/vega/vega-embed#options> for the
+  --   supported options.
+  -> VegaLite
+  -- ^ The Vega-Lite specification to display.
+  -> TL.Text
+toHtmlWith mopts vl =
+  let spec = A.encodeToLazyText (fromVL vl)
+      opts = maybe "" (\o -> "," <> A.encodeToLazyText o) mopts
+
+  in TL.unlines
+    [ "<!DOCTYPE html>"
+    , "<html>"
+    , "<head>"
+      -- versions are fixed at vega 5, vega-lite 3
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega@5\"></script>"
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@3\"></script>"
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-embed\"></script>"
+    , "</head>"
+    , "<body>"
+    , "<div id=\"vis\"></div>"
+    , "<script type=\"text/javascript\">"
+    , ("  var spec = " <> spec <> ";")
+    , "  vegaEmbed(\'#vis\', spec" <> opts <> ").then(function(result) {"
+    , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
+    , "  }).catch(console.error);"
+    , "</script>"
+    , "</body>"
+    , "</html>"
+    ]
+
+{-|
+
+Converts VegaLite to an html file. Uses Vega-Embed and is for when
+some control is needed over the output: 'toHtmlFile' is a simpler
+form which just uses the default Vega-Embed options.
+
+@since 0.4.0.0
+-}
+toHtmlFileWith ::
+  Maybe Value
+  -- ^ The options to pass to the Vega-Embed @embed@ routine. See
+  --   <https://github.com/vega/vega-embed#options> for the
+  --   supported options.
+  -> FilePath
+  -- ^ The output file name (it will be over-written if it already exists).
+  -> VegaLite
+  -- ^ The Vega-Lite specification to display.
+  -> IO ()
+toHtmlFileWith mopts file = TL.writeFile file . toHtmlWith mopts
+
 
 {-|
 

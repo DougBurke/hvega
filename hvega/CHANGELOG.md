@@ -41,7 +41,11 @@ changes provided by Adam Conner-Sax.
 `toVegaLiteSchema` has been added to allow you to specify a different
 Vega-Lite schema. `toVegaLite` uses version 3 but version 4 is being
 worked on as I type this. The `vlSchema` function has been added,
-along with `vlSchema4`, `vlSchema3`, and `vlSchema2` values.
+along with `vlSchema4`, `vlSchema3`, and `vlSchema2` values. The
+`toHtmlWith` and `toHtmlFileWith` functions have been added to support
+more control over the embedding of the Vega-Lite visualizations, and
+the versions of the required Javascript libraries used by the
+`toHtmlXXX` routines has been updated.
 
 The `VLProperty` type now exports its constructors, to support users
 who may need to tweak or augment the JSON Vega-Lite specification
