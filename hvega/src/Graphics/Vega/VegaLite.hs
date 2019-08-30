@@ -3206,7 +3206,11 @@ data Position
     = X
     | Y
     | X2
+    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
+    --    marks.
     | Y2
+    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
+    --    marks.
     | XError
       -- ^ @since 0.4.0.0
     | XError2
@@ -3268,7 +3272,7 @@ data BinProperty
       --
       --   @since 0.4.0.0
     | Base Double
-      -- ^ The number base to ude for automatic bin determination.
+      -- ^ The number base to use for automatic bin determination.
       --
       --   Default is @10@.
     | Divide [Double]
@@ -3583,7 +3587,7 @@ data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
     | SAlign Double
-      -- ^ Alignemnt of the steps within the scale range. A value of
+      -- ^ Alignment of the steps within the scale range. A value of
       --   @0@ shifts the bands to an axis, @1@ away from the axis,
       --   and @0.5@ is centered within the range.
       --
@@ -5613,7 +5617,7 @@ data LegendLayout
   | LeLBottomLeft [BaseLegendLayout]
   | LeLBottomRight [BaseLegendLayout]
   | LeLBounds Bounds
-    -- ^ The bounds calculation to ude for legend orient group layout.
+    -- ^ The bounds calculation to use for legend orient group layout.
   | LeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
   | LeLDirection Orientation
@@ -7502,7 +7506,7 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
-    | Selection T.Text  -- TODO: rename Selected?
+    | Selection T.Text  -- TODO: rename Selected since collides with Selection type
       -- ^ Interactive selection that will be true or false as part of
       --   a logical composition.  For example: to filter a dataset so
       --   that only items selected interactively and that have a
