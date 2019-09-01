@@ -78,7 +78,7 @@ We can inspect how the encoded JSON looks like in an GHCi session:
 > "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v3.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
 @
 
-The produced JSON can then be processed with vega-lite, which renders the following image :
+The produced JSON can then be processed with vega-lite, which renders the following image:
 
 <<images/example.png>>
 
@@ -986,7 +986,7 @@ import Numeric.Natural (Natural)
 -- The 'Mark' type has gained 'Boxplot', 'ErrorBar', 'ErrorBand', and
 -- 'Trail' constructors. The 'MarkProperty' type has gained 'MBorders',
 -- 'MBox', 'MExtent', 'MHeight', 'MHRef', 'MLine', 'MMedian', 'MOrder',
--- 'MOutliers', 'MPoint', 'MRule', 'MStrokeCap', 'MStrokeJoin',
+-- 'MOutliers', 'MNoOutliers', 'MPoint', 'MRule', 'MStrokeCap', 'MStrokeJoin',
 -- 'MStrokeMiterLimit', 'MTicks', 'MTooltip', 'MWidth', 'MX', 'MX2',
 -- 'MXOffset', 'MX2Offset', 'MY', 'MY2', 'MYOffset', and 'MY2Offset'
 -- constructors.
@@ -1277,6 +1277,7 @@ header_ hps = "header" .= object (map headerProperty hps)
 impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
+-- TODO: should this turn an empty list into true?
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
 mprops_ f mps = f .= object (map markProperty mps)
 
@@ -2599,8 +2600,9 @@ data Mark
       -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
       --   for showing summaries of statistical distributions.
       --
-      --   By default, just box and whiskers are shown, but ticks and outliers
-      --   can be specified explicitly. For example:
+      --   Tick marks can be added using 'MTicks' and outliers turned
+      --   off with 'MNoOutliers' or configured with 'MOutliers'.
+      --   For example:
       --
       --   @
       --   'mark' Boxplot
@@ -2609,6 +2611,10 @@ data Mark
       --       , 'MOutliers' [ 'MColor' \"firebrick\" ]
       --   ]
       --   @
+      --
+      --   The range of the box plot is controlled with 'MExtent' with
+      --   the 'IqrScale' or 'ExRange' options (the default is
+      --   @IqrScale 1.5@).
       --
       --   @since 0.4.0.0
     | Circle
@@ -2880,11 +2886,11 @@ data MarkProperty
       --   The ideal value for this is either @0@ (preferred by statisticians)
       --   or @1@ (the Vega-Lite default value, D3 example style).
     | MBorders [MarkProperty]
-      -- ^ Border properties for an errorband mark.
+      -- ^ Border properties for an 'ErrorBand' mark.
       --
       --   @since 0.4.0.0
     | MBox [MarkProperty]
-      -- ^ Box-symbol properties for the boxplot mark.
+      -- ^ Box-symbol properties for a 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MClip Bool
@@ -2903,7 +2909,8 @@ data MarkProperty
     | MdY Double
       -- ^ Vertical offset between a text mark and its anchor.
     | MExtent MarkErrorExtent
-      -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
+      -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
+      --   'ErrorBand' marks.
       --
       --   @since 0.4.0.0
     | MFill T.Text
@@ -2938,7 +2945,7 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MMedian [MarkProperty]
-      -- ^ Median-line properties for the boxplot mark.
+      -- ^ Median-line properties for the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MOpacity Opacity
@@ -2952,7 +2959,11 @@ data MarkProperty
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
-      -- ^ Outlier symbol properties for the boxplot mark.
+      -- ^ Outlier symbol properties for the 'Boxplot' mark.
+      --
+      --   @since 0.4.0.0
+    | MNoOutliers
+      -- ^ Do not draw outliers with the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MPoint PointMarker
@@ -2962,7 +2973,7 @@ data MarkProperty
     | MRadius Double
       -- ^ Polar coordinate radial offset of a text mark from its origin.
     | MRule [MarkProperty]
-      -- ^ Rule (main line) properties for the errorbar and boxplot marks.
+      -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
       --
       --   @since 0.4.0.0
     | MShape Symbol
@@ -3009,7 +3020,7 @@ data MarkProperty
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
-      -- ^ Tick properties for the errorbar or boxplot mark.
+      -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MTooltip TooltipContent
@@ -3085,7 +3096,9 @@ markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= orientationSpec orient
+markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
 markProperty (MOutliers mps) = mprops_ "outliers" mps
+markProperty MNoOutliers = "outliers" .= False
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
@@ -3212,17 +3225,37 @@ data Position
     -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
     --    marks.
     | XError
-      -- ^ @since 0.4.0.0
+      -- ^ Indicates that the 'X' channel represents the mid-point and
+      --   the 'XError' channel gives the offset. If 'XError2' is not
+      --   defined then this channel value is applied symmetrically.
+      --
+      --   @since 0.4.0.0
     | XError2
-      -- ^ @since 0.4.0.0
+      -- ^ Used to support asymmetric error ranges defined as 'XError'
+      --   and 'XError2'. One of 'XError' or 'XError2' channels must
+      --   contain positive values and the other negative values.
+      --
+      --   @since 0.4.0.0
     | YError
-      -- ^ @since 0.4.0.0
+      -- ^ Indicates that the 'Y' channel represents the mid-point and
+      --   the 'YError' channel gives the offset. If 'YError2' is not
+      --   defined then this channel value is applied symmetrically.
+      --
+      --   @since 0.4.0.0
     | YError2
-      -- ^ @since 0.4.0.0
+      -- ^ Used to support asymmetric error ranges defined as 'YError'
+      --   and 'YError2'. One of 'YError' or 'YError2' channels must
+      --   contain positive values and the other negative values.
+      --
+      --   @since 0.4.0.0
     | Longitude
+      -- ^ The longitude value for projections.
     | Latitude
+      -- ^ The latitude value for projections.
     | Longitude2
+      -- ^ A second longitude coordinate.
     | Latitude2
+      -- ^ A second longitude coordinate.
 
 
 {-|
@@ -5070,7 +5103,7 @@ data MarkErrorExtent
     -- ^ Band extent between the minimum and maximum values in a distribution.
   | IqrScale Double
     -- ^ A scaling of the interquartile range to be used as whiskers in a
-    --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
+    --   'Boxplot'. For example @IqrScale 1.5@  would extend whiskers to
     --   ±1.5x the IQR from the mean.
 
 -- This is a little different from the other calls since I wanted to
@@ -5689,7 +5722,7 @@ baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 {-|
 
-Legend properties. For more detail see the
+Legend properties, set with 'MLegend'. For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#legend-properties Vega-Lite documentation>.
 
 The @LEntryPadding@ constructor was removed in @0.4.0.0@.
@@ -5971,7 +6004,9 @@ legendProperty (LeY x) = "legendY" .= x
 legendProperty (LZIndex z) = "zindex" .= z
 
 
--- | A list of data values suitable for setting legend values.
+-- | A list of data values suitable for setting legend values, used with
+--   'LValues'.
+
 
 data LegendValues
     = LDateTimes [[DateTime]]

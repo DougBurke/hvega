@@ -99,7 +99,7 @@ to the `Arrangement` type - which is used with `ByRepeatOp`,
 The `Mark` type has gained `Boxplot`, `ErrorBar`, `ErrorBand`, and
 `Trail` constructors. The `MarkProperty` type has gained `MBorders`,
 `MBox`, `MExtent`, `MHeight`, `MHRef`, `MLine`, `MMedian`, `MOrder`,
-`MOutliers`, `MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`,
+`MOutliers`, `MNoOutliers`, `MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`,
 `MStrokeMiterLimit`, `MTicks`, `MTooltip`, `MWidth`, `MX`, `MX2`,
 `MXOffset`, `MX2Offset`, `MY`, `MY2`, `MYOffset`, and `MY2Offset`
 constructors.
