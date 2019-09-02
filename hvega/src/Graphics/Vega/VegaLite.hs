@@ -12,8 +12,8 @@ Stability   : unstable
 Portability : OverloadedStrings, TupleSections
 
 This is a port of the
-<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm
-Vega Lite module>, written by Jo Wood of the giCentre at the City
+<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm Vega Lite module>,
+written by Jo Wood of the giCentre at the City
 University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 3__ of the
@@ -28,6 +28,11 @@ such as @PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ -
 and the return value of 'toVegaLite'. The intention is to keep close
 to the Elm module, but it is more a guide than an absolute
 requirement!
+
+Please see "Graphics.Vega.Tutorials.VegaLite" for an introduction
+to using @hvega@ to create visualizations.
+
+== Example
 
 Note that this module exports several symbols that are exported
 by the Prelude, such as 'filter', 'lookup',
@@ -45,8 +50,6 @@ import Prelude hiding (filter, lookup, repeat)
 @
 
 In the following example, we'll assume the latter.
-
-== Example
 
 Let's say we have the following plot declaration in a module:
 
@@ -82,7 +85,10 @@ The produced JSON can then be processed with vega-lite, which renders the follow
 
 <<images/example.png>>
 
-This can be achieved in a JupyterLab session with the @vlShow@ function,
+which can also be
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEC2CGBOBrSAuMxIGMD2Abb8qUALgKay6QA0U2ADrJgJbECeRADAHQAsNkbOqSKQARgkgBfKuCgATWMVhFQECJABuFAK6kAzkQDastekh6l8YiIBMHAIz2AtBwDMTmwFZqUHNoB21mg2rtImahgWCEFQdo4uPC42PljYATE8nmGmEJGWMZBxzhyJ9sn8foFEoeEAujKmkABmBHAxGAzwesJoedEiCmQoAOQApACaTqPQU3LDUpKy2VAAJHqYABakcCIbxMR0eigA9McapADmsFwXLBvaolxM2MfrW3Bnl7BOuCykZ64uAArPTYfzUWSQUj+HByJj+C4qcKQAAeSJyUCaTFIuDkIiiVghGIErCEIjI0DoBAoRJykFgKKYBl6AhYuB6UAAkjDSHRiM9-GBBsJFqZlup2CysTi8WhUukUoIOZAAI7aWCBFiKJjnKRLBpQcSYRAXeBpfyyqAAdw2f1pkDk+kw8CYfIFIgAgmBzvBWGBSCjmPyEWBxPAwJt+gbUv4sYjeotJEA displayed in the Vega Editor>.
+
+Output can be achieved in a Jupyter Lab session with the @vlShow@ function,
 provided by @ihaskell-vega@, or 'toHtmlFile' can be used to write out a page of
 HTML that includes pointer to JavaScript files which will display a Vega-Lite
 specification (there are also functions which provide more control over
@@ -107,7 +113,7 @@ module Graphics.Vega.VegaLite
        , Angle
        , Color
        , Opacity
-       , ZIndex(..)
+       , ZIndex
        , combineSpecs
        , toHtml
        , toHtmlFile
@@ -601,7 +607,6 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Text as A
-import qualified Data.Aeson.Encoding as E
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -946,12 +951,8 @@ import Numeric.Natural (Natural)
 -- 'VLViewBackground' ('viewBackground'). It is expected that you will be
 -- using the functions rather the constructors!
 -- 
--- The 'ZIndex' type has been added: this provides constructors for the
--- common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
--- as a protection against future changes to the Vega-Lite specification.
--- 
--- Three new type aliases have been added: 'Angle', 'Color', and
--- 'Opacity'. These do not provide any new functionality but do
+-- Four new type aliases have been added: 'Angle', 'Color', 'Opacity',
+-- and 'ZIndex'. These do not provide any new functionality but do
 -- document intent.
 -- 
 -- The 'noData' function has been added to let compositions define the
@@ -2069,36 +2070,45 @@ type Angle = Double
 {-|
 
 At what "depth" (z index) is the item to be drawn (a relative depth
-for items in the visualization).
+for items in the visualization). The standard values are @0@ for
+back and @1@ for front, but other values can be used if you want
+to ensure a certain layering of items.
+
+The following example is taken from a discussion with
+<https://github.com/gicentre/elm-vegalite/issues/15#issuecomment-524527125 Jo Wood>:
+
+@
+let dcols = 'dataFromColumns' []
+              . 'dataColumn' "x" ('Numbers' [ 20, 10 ])
+              . 'dataColumn' "y" ('Numbers' [ 10, 20 ])
+              . 'dataColumn' "cat" ('Strings' [ "a", "b" ])
+
+    axis lbl z = [ 'PName' lbl, 'PmType' 'Quantitative', 'PAxis' [ 'AxZIndex' z ] ]
+    enc = 'encoding'
+            . 'position' 'X' (axis "x" 2)
+            . 'position' 'Y' (axis "y" 1)
+            . 'color' [ 'MName' "cat", 'MmType' 'Nominal', 'MLegend' [] ]
+
+    cfg = 'configure'
+            . 'configuration' ('Axis' [ 'GridWidth' 8 ])
+            . 'configuration' ('AxisX' [ 'GridColor' "red" ])
+            . 'configuration' ('AxisY' [ 'GridColor' "blue" ])
+
+in 'toVegaLite' [ cfg []
+              , dcols []
+              , enc []
+              , 'mark' 'Circle' [ 'MSize' 5000, 'MOpacity' 1 ]
+              ]
+@
+
+<<images/zindex.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABBYEQMYPYDsBmBLA5lAXGUk-QEMAPFAZwE0sdx9ao0AnFAEwGE4AbOBqqAIw4BXAKZQatAL4AacfijEyADSq5acxi3Zce2KA2HMxasNNl55JUirNr6TZgHUWAFwAWVABw2IE2afMAtgQMANbWxlCkKABeotgArAAMyTIRcAAOBDAozgCeVACMqbZ56XHQ2QwwHKJ+xRBQzATOBOG2AG4EQsJW2ADa3viqxnQwzbyt9SPmRFQATIlT0w352AWJg3j+y8PLDWPOvHxQS8tQs2uLm7arYAvXPoMAunWyUAAkpDCuwkG8rs5nOlSJgAPSg9rCNAEAB0aByrkEfBhKDgoK+PyCEKhBAAtBwcsIIQBmGEAK1IiBOb2ECHgzBQCAw2F25ng2ja0ygqGEHEMugO1L2UFK5SgCDgAUZXSFZxqaFp-LACEEHA4g22dAu1GFPL5vFmpzoot4AEdBAQEM4cs0UJDZVyFL0dXtIFBoozmMJtXMHiYNUboLdWbY9UqoPlA+YTbpzZbrS1rfao26nZzXe7Pd7Cn7fMY85BfL4gA View the visualization in the Vega Editor>
 
 @since 0.4.0.0
 -}
 
-data ZIndex =
-  ZBack
-  -- ^ The item is drawn behind (this corresponds to the Vega Lite
-  --   @0@ value).
-  | ZFront
-  -- ^ The item is drawn in front (this corresponds to the Vega Lite
-  --   @1@ value).
-  | ZValue Natural
-  -- ^ This is provided in case there is any need to use a z index value
-  --   other than @0@ or @1@.
-
-
--- Avoids the need to create a sepatate function, and may be useful
--- for users who are tweaking the hvega output.
---
-instance A.ToJSON ZIndex where
-  toJSON ZBack = A.Number 0
-  toJSON ZFront = A.Number 1
-  toJSON (ZValue z) = A.Number (fromIntegral z)
-  {-# INLINE toJSON #-}
-
-  toEncoding ZBack = E.int 0
-  toEncoding ZFront = E.int 1
-  toEncoding (ZValue z) = E.int (fromIntegral z)
-  {-# INLINE toEncoding #-}
+type ZIndex = Natural
 
 
 formatProperty :: Format -> [LabelledSpec]

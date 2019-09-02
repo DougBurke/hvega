@@ -63,8 +63,8 @@ The `ZIndex` type has been added: this provides constructors for the
 common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
 as a protection against future changes to the Vega-Lite specification.
 
-Three new type aliases have been added: `Angle`, `Color`, and
-`Opacity`. These do not provide any new functionality but do
+Four new type aliases have been added: `Angle`, `Color`, `Opacity`,
+and `ZIndex`. These do not provide any new functionality but do
 document intent.
 
 The `noData` function has been added to let compositions define the

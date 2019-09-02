@@ -406,7 +406,7 @@ layer7 =
                       . position X [ PName "date"
                                    , PmType Temporal
                                    , PTitle "Date"
-                                   , PAxis [ AxZIndex ZFront
+                                   , PAxis [ AxZIndex 1
                                            , AxGridColor "orange"
                                            , AxGridOpacity 0.8
                                            ]

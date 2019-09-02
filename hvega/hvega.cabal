@@ -60,6 +60,7 @@ extra-source-files:  README.md
 
 extra-doc-files:     images/example.png
                      images/intro.png
+                     images/zindex.png
                      images/vl/stripplot.png
                      images/vl/stripplotwithbackground.png
                      images/vl/stripploty.png
