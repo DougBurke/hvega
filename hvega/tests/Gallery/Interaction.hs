@@ -6,6 +6,8 @@
 --
 module Gallery.Interaction (testSpecs) where
 
+import qualified Data.Text as T
+
 import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, lookup)
@@ -21,8 +23,15 @@ testSpecs = [ ("interaction1", interaction1)
             , ("interaction8", interaction8)
             , ("interaction9", interaction9)
             , ("interaction10", interaction10)
+            , ("interaction11a", interaction11a)
+            , ("interaction11b", interaction11b)
+            , ("interaction11c", interaction11c)
+            , ("interaction11d", interaction11d)
             ]
 
+
+pQuant :: T.Text -> [PositionChannel]
+pQuant n = [ PName n, PmType Quantitative ]
 
 
 interaction1 :: VegaLite
@@ -430,3 +439,45 @@ interaction10 =
         , enc []
         , layer [ spec1, spec2, spec3 ]
         ]
+
+
+-- From https://vega.github.io/vega-lite/examples/interactive_brush.html
+-- and added to test SInitInterval
+--
+initInterval :: Maybe (DataValue, DataValue) -> Maybe (DataValue, DataValue) -> VegaLite
+initInterval mx my =
+  let desc = "Drag out a rectangular brush to hughlight points."
+
+      sel = selection
+              . select "brush" Interval [ SInitInterval mx my ]
+
+      enc = encoding
+              . position X (pQuant "Horsepower")
+              . position Y (pQuant "Miles_per_Gallon")
+              . color [ MSelectionCondition
+                          (SelectionName "brush")
+                          [ MName "Cylinders", MmType Ordinal ]
+                          [ MString "grey" ]
+                      ]
+
+  in toVegaLite
+     [ description desc
+     , dataFromUrl "data/cars.json" []
+     , mark Point []
+     , enc []
+     , sel []
+     ]
+
+
+xInit, yInit :: (DataValue, DataValue)
+xInit = (Number 55, Number 160)
+yInit = (Number 13, Number 37)
+
+-- Note: interaction11a is invalid according to the Vega Lite 3.4.0
+--       specification.
+--
+interaction11a, interaction11b, interaction11c, interaction11d :: VegaLite
+interaction11a = initInterval Nothing Nothing
+interaction11b = initInterval (Just xInit) Nothing
+interaction11c = initInterval Nothing (Just yInit)
+interaction11d = initInterval (Just xInit) (Just yInit)

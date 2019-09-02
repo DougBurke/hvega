@@ -223,7 +223,8 @@ The `ScaleConfig` type has gained `SCBarBandPaddingInner`,
 `SCBarBandPaddingOuter`, `SCRectBandPaddingInner`, and
 `SCRectBandPaddingOuter`.
 
-The `SelectionProperty` type has gained `Clear` and `SInit`.
+The `SelectionProperty` type has gained `Clear`, `SInit`, and
+`SInitInterval`.
 
 The Channel type has gained: `ChLongitude`, `ChLongitude2`,
 `ChLatitude`, `ChLatitude2`, `ChFill`, `ChFillOpacity`, `ChHref`,

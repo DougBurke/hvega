@@ -1109,7 +1109,8 @@ import Numeric.Natural (Natural)
 -- 'SCBarBandPaddingOuter', 'SCRectBandPaddingInner', and
 -- 'SCRectBandPaddingOuter'.
 -- 
--- The 'SelectionProperty' type has gained 'Clear' and 'SInit'.
+-- The 'SelectionProperty' type has gained 'Clear', 'SInit', and
+-- 'SInitInterval'.
 -- 
 -- The Channel type has gained: 'ChLongitude', 'ChLongitude2',
 -- 'ChLatitude', 'ChLatitude2', 'ChFill', 'ChFillOpacity', 'ChHref',
@@ -6481,23 +6482,48 @@ data SelectionProperty
       --
       --   @sel = 'selection' . 'select' \"mySelection\" 'Multi' ['Encodings' ['ChColor']]@
     | SInit [(T.Text, DataValue)]
-      -- ^ Initialise one or more selections with values from bound fields. For example,
+      -- ^ Initialise one or more selections with values from bound fields.
+      --   See also 'SInitInterval'.
       --
-      -- @
-      -- 'selection'
-      --     . 'select' \"CylYr\"
-      --         'Single'
-      --         [ 'Fields' [\"Cylinders\", \"Year\"]
-      --         , 'SInit'
-      --             [ (\"Cylinders\", 'Number' 4)
-      --             , (\"Year\", 'Number' 1977)
-      --             ]
-      --         , 'Bind'
-      --             [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
-      --             , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
-      --             ]
-      --         ]
-      -- @
+      --   For example,
+      --
+      --   @
+      --   'selection'
+      --       . 'select' \"CylYr\"
+      --           'Single'
+      --           [ 'Fields' [\"Cylinders\", \"Year\"]
+      --           , 'SInit'
+      --               [ (\"Cylinders\", 'Number' 4)
+      --               , (\"Year\", 'Number' 1977)
+      --               ]
+      --           , 'Bind'
+      --               [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
+      --               , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
+      --               ]
+      --           ]
+      --   @
+      --
+      --   @since 0.4.0.0
+    | SInitInterval (Maybe (DataValue, DataValue)) (Maybe (DataValue, DataValue))
+      -- ^ Initialize the domain extent of an interval selection. See
+      --   also 'SInit'.
+      --
+      --   The parameters refer to the x and y axes, given in the order
+      --   @(minimum, maximum)@ for each axis. If an axis is set to
+      --   @Nothing@ then the selection is projected over that
+      --   dimension. At least one of the two arguments should be
+      --   set (i.e. not @Nothing@).
+      --
+      --   @
+      --   'select' \"mySelection\"
+      --          'Interval'
+      --          [ 'SInitInterval'
+      --              (Just ( 'DateTime' ['DTYear' 2013]
+      --                    , 'DateTime' ['DTYear' 2015]
+      --                    )
+      --              (Just ('Number' 40, 'Number' 80))
+      --          ]
+      --   @
       --
       --   @since 0.4.0.0
     | ResolveSelections SelectionResolution
@@ -6540,6 +6566,14 @@ selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
 selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
 selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) iVals)
+-- This is invalid according to the specification
+selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
+selectionProperty (SInitInterval mx my) =
+  let conv (_, Nothing) = Nothing
+      conv (lbl, (Just (lo, hi))) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
+
+  in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
+
 selectionProperty (On e) = "on" .= e
 selectionProperty (Clear e) = "clear" .= if T.null e then toJSON False else toJSON e
 selectionProperty Empty = "empty" .= fromT "none"
