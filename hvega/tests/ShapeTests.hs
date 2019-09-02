@@ -31,6 +31,13 @@ testSpecs = [ ("defNominal", scatter1)
             , ("custom3", scatter14)
             , ("custom4", scatter15)
             , ("isotype1", personGrid)
+            , ("point1", point1)
+            , ("point2", point2)
+            , ("point3", point3)
+            , ("point4", point4)
+            , ("point5", point5)
+            , ("point6", point6)
+            , ("point7", point7)
             ]
 
 
@@ -50,6 +57,26 @@ chart des enc =
             . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
             . opacity [ MNumber 0.6 ]
             . enc
+          )
+            []
+        ]
+
+
+pointChart :: T.Text -> Bool -> Symbol -> VegaLite
+pointChart des filled sym =
+    toVegaLite
+        [ description des
+        , dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+        , (transform
+            . calculateAs "year(datum.Year)" "YearOfManufacture"
+            . filter (FExpr "datum.YearOfManufacture == 1970")
+          )
+            []
+        , mark Point [ MFilled filled, MShape sym ]
+        , (encoding
+            . position X [ PName "Horsepower", PmType Quantitative ]
+            . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+            . opacity [ MNumber 0.6 ]
           )
             []
         ]
@@ -260,3 +287,32 @@ personGrid =
         , enc []
         , sel []
         ]
+
+
+point1 :: VegaLite
+point1 = pointChart "square-unfilled" False SymSquare
+
+
+point2 :: VegaLite
+point2 = pointChart "cross-filled" True SymCross
+
+
+point3 :: VegaLite
+point3 = pointChart "diamond-unfilled" False SymDiamond
+
+
+-- not going to try all the triangles
+point4 :: VegaLite
+point4 = pointChart "triangle-unfilled" False SymTriangle
+
+
+point5 :: VegaLite
+point5 = pointChart "stroke-unfilled" False SymStroke
+
+
+point6 :: VegaLite
+point6 = pointChart "arrow-filled" True SymArrow
+
+
+point7 :: VegaLite
+point7 = pointChart "wedge-unfilled" False SymWedge

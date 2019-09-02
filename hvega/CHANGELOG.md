@@ -41,7 +41,11 @@ changes provided by Adam Conner-Sax.
 `toVegaLiteSchema` has been added to allow you to specify a different
 Vega-Lite schema. `toVegaLite` uses version 3 but version 4 is being
 worked on as I type this. The `vlSchema` function has been added,
-along with `vlSchema4`, `vlSchema3`, and `vlSchema2` values.
+along with `vlSchema4`, `vlSchema3`, and `vlSchema2` values. The
+`toHtmlWith` and `toHtmlFileWith` functions have been added to support
+more control over the embedding of the Vega-Lite visualizations, and
+the versions of the required Javascript libraries used by the
+`toHtmlXXX` routines has been updated.
 
 The `VLProperty` type now exports its constructors, to support users
 who may need to tweak or augment the JSON Vega-Lite specification
@@ -59,8 +63,8 @@ The `ZIndex` type has been added: this provides constructors for the
 common options - `ZFront` and `ZBack` - and a fall-through (`ZValue`)
 as a protection against future changes to the Vega-Lite specification.
 
-Three new type aliases have been added: `Angle`, `Color`, and
-`Opacity`. These do not provide any new functionality but do
+Four new type aliases have been added: `Angle`, `Color`, `Opacity`,
+and `ZIndex`. These do not provide any new functionality but do
 document intent.
 
 The `noData` function has been added to let compositions define the
@@ -95,7 +99,7 @@ to the `Arrangement` type - which is used with `ByRepeatOp`,
 The `Mark` type has gained `Boxplot`, `ErrorBar`, `ErrorBand`, and
 `Trail` constructors. The `MarkProperty` type has gained `MBorders`,
 `MBox`, `MExtent`, `MHeight`, `MHRef`, `MLine`, `MMedian`, `MOrder`,
-`MOutliers`, `MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`,
+`MOutliers`, `MNoOutliers`, `MPoint`, `MRule`, `MStrokeCap`, `MStrokeJoin`,
 `MStrokeMiterLimit`, `MTicks`, `MTooltip`, `MWidth`, `MX`, `MX2`,
 `MXOffset`, `MX2Offset`, `MY`, `MY2`, `MYOffset`, and `MY2Offset`
 constructors.
@@ -150,15 +154,17 @@ The `AxisProperty` type has seen significant additions, including:
 `AxDomainDashOffset`, `AxDomainOpacity`, `AxDomainWidth`,
 `AxFormatAsNum`, `AxFormatAsTemporal`, `AxGridColor`, `AxGridDash`,
 `AxGridDashOffset`, `AxGridOpacity`, `AxGridWidth`, `AxLabelAlign`,
-`AxLabelBaseline`, `AxLabelBound`, `AxLabelColor`, `AxLabelFlush`,
-`AxLabelFlushOffset`, `AxLabelFont`, `AxLabelFontSize`,
-`AxLabelFontStyle`, `AxLabelFontWeight`, `AxLabelLimit`,
-`AxLabelOpacity`, `AxLabelSeparation`, `AxTickColor`, `AxTickDash`,
-`AxTickDashOffset`, `AxTickExtra`, `AxTickMinStep`, `AxTickOffset`,
-`AxTickOpacity`, `AxTickRound`, `AxTickWidth`, `AxNoTitle`,
-`AxTitleAnchor`, `AxTitleBaseline`, `AxTitleColor`, `AxTitleFont`,
-`AxTitleFontSize`, `AxTitleFontStyle`, `AxTitleFontWeight`,
-`AxTitleLimit`, `AxTitleOpacity`, `AxTitleX`, and `AxTitleY`.
+`AxLabelBaseline`, `AxLabelNoBound`, `AxLabelBound`,
+`AxLabelBoundValue`, `AxLabelColor`, `AxLabelNoFlush`, `AxLabelFlush`,
+`AxLabelFlushValue`, `AxLabelFlushOffset`, `AxLabelFont`,
+`AxLabelFontSize`, `AxLabelFontStyle`, `AxLabelFontWeight`,
+`AxLabelLimit`, `AxLabelOpacity`, `AxLabelSeparation`, `AxTickColor`,
+`AxTickDash`, `AxTickDashOffset`, `AxTickExtra`, `AxTickMinStep`,
+`AxTickOffset`, `AxTickOpacity`, `AxTickRound`, `AxTickWidth`,
+`AxNoTitle`, `AxTitleAnchor`, `AxTitleBaseline`, `AxTitleColor`,
+`AxTitleFont`, `AxTitleFontSize`, `AxTitleFontStyle`,
+`AxTitleFontWeight`, `AxTitleLimit`, `AxTitleOpacity`, `AxTitleX`, and
+`AxTitleY`.
 
 The `AxisConfig` has seen a similar enhancement, and looks similar
 to the above apart from the constructors do not start with 'Ax'.
@@ -217,7 +223,8 @@ The `ScaleConfig` type has gained `SCBarBandPaddingInner`,
 `SCBarBandPaddingOuter`, `SCRectBandPaddingInner`, and
 `SCRectBandPaddingOuter`.
 
-The `SelectionProperty` type has gained `Clear` and `SInit`.
+The `SelectionProperty` type has gained `Clear`, `SInit`, and
+`SInitInterval`.
 
 The Channel type has gained: `ChLongitude`, `ChLongitude2`,
 `ChLatitude`, `ChLatitude2`, `ChFill`, `ChFillOpacity`, `ChHref`,
@@ -258,6 +265,9 @@ The `TextChannel` type has gained `TBinned`, `TFormatAsNum`,
 `TFormatAsTemporal`, `TTitle`, and `TNoTitle`.
 
 The `TooltipContent` type was added, for use with `MTooltip`.
+
+The `Symbol` type has gained: `SymArrow`, `SymStroke`, `SymTriangle`,
+`SymTriangleLeft`, `SymTriangleRight`, and `SymWedge`.
 
 ### Breaking Changes
 
@@ -330,7 +340,15 @@ The `ArgMax` and `ArgMin` constructors of `Operation` now take an
 optional field name, to allow them to be used as part of an encoding
 aggregation (e.g. with `PAggregate`).
 
-The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
+The "z index" value has changed from an 'Int' to the 'ZIndex' type.
+
+The constructors for the `Symbol` type now all start with `Sym`, so
+`Cross`, `Diamond`, `TriangleUp`, `TriangleDown`, and `Path` have been
+renamed to `SymCross`, `SymDiamond`, `SymTriangleUp`,
+`SymTriangleDown`, and `SymPath`, respectively.
+
+The `Legend` type has been renamed `LegendType` and its constructors
+have been renamed 'GradientLegend' and 'SymbolLegend'.
 
 ### Improved testing
 

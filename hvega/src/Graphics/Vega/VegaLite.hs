@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
+
 {-|
 Module      : Graphics.Vega.VegaLite
 Copyright   : (c) Douglas Burke, 2018-2019
@@ -11,8 +12,8 @@ Stability   : unstable
 Portability : OverloadedStrings, TupleSections
 
 This is a port of the
-<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm
-Vega Lite module>, written by Jo Wood of the giCentre at the City
+<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm Vega Lite module>,
+written by Jo Wood of the giCentre at the City
 University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 3__ of the
@@ -27,6 +28,11 @@ such as @PName \"HorsePower\"@ rather than @pName \"HorsePower\"@ -
 and the return value of 'toVegaLite'. The intention is to keep close
 to the Elm module, but it is more a guide than an absolute
 requirement!
+
+Please see "Graphics.Vega.Tutorials.VegaLite" for an introduction
+to using @hvega@ to create visualizations.
+
+== Example
 
 Note that this module exports several symbols that are exported
 by the Prelude, such as 'filter', 'lookup',
@@ -44,8 +50,6 @@ import Prelude hiding (filter, lookup, repeat)
 @
 
 In the following example, we'll assume the latter.
-
-== Example
 
 Let's say we have the following plot declaration in a module:
 
@@ -77,14 +81,18 @@ We can inspect how the encoded JSON looks like in an GHCi session:
 > "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https://vega.github.io/schema/vega-lite/v3.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
 @
 
-The produced JSON can then be processed with vega-lite, which renders the following image :
+The produced JSON can then be processed with vega-lite, which renders the following image:
 
 <<images/example.png>>
 
-This can be achieved in a JupyterLab session with the @vlShow@ function,
+which can also be
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEC2CGBOBrSAuMxIGMD2Abb8qUALgKay6QA0U2ADrJgJbECeRADAHQAsNkbOqSKQARgkgBfKuCgATWMVhFQECJABuFAK6kAzkQDastekh6l8YiIBMHAIz2AtBwDMTmwFZqUHNoB21mg2rtImahgWCEFQdo4uPC42PljYATE8nmGmEJGWMZBxzhyJ9sn8foFEoeEAujKmkABmBHAxGAzwesJoedEiCmQoAOQApACaTqPQU3LDUpKy2VAAJHqYABakcCIbxMR0eigA9McapADmsFwXLBvaolxM2MfrW3Bnl7BOuCykZ64uAArPTYfzUWSQUj+HByJj+C4qcKQAAeSJyUCaTFIuDkIiiVghGIErCEIjI0DoBAoRJykFgKKYBl6AhYuB6UAAkjDSHRiM9-GBBsJFqZlup2CysTi8WhUukUoIOZAAI7aWCBFiKJjnKRLBpQcSYRAXeBpfyyqAAdw2f1pkDk+kw8CYfIFIgAgmBzvBWGBSCjmPyEWBxPAwJt+gbUv4sYjeotJEA displayed in the Vega Editor>.
+
+Output can be achieved in a Jupyter Lab session with the @vlShow@ function,
 provided by @ihaskell-vega@, or 'toHtmlFile' can be used to write out a page of
 HTML that includes pointer to JavaScript files which will display a Vega-Lite
-specification.
+specification (there are also functions which provide more control over
+the embedding).
 
 -}
 
@@ -105,10 +113,12 @@ module Graphics.Vega.VegaLite
        , Angle
        , Color
        , Opacity
-       , ZIndex(..)
+       , ZIndex
        , combineSpecs
        , toHtml
        , toHtmlFile
+       , toHtmlWith
+       , toHtmlFileWith
 
          -- * Creating the Data Specification
          --
@@ -344,7 +354,7 @@ module Graphics.Vega.VegaLite
          --
          -- $marklegends
 
-       , Legend(..)
+       , LegendType(..)
        , LegendProperty(..)
        , LegendOrientation(..)
        , LegendValues(..)
@@ -597,7 +607,6 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Text as A
-import qualified Data.Aeson.Encoding as E
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -924,7 +933,11 @@ import Numeric.Natural (Natural)
 -- different Vega-Lite schema. 'toVegaLite' uses version 3 but
 -- version 4 is being worked on as I type this. The 'vlSchema'
 -- function has been added, along with 'vlSchema4', 'vlSchema3',
--- and 'vlSchema2' values.
+-- and 'vlSchema2' values. The 'toHtmlWith' and 'toHtmlFileWith'
+-- functions have been added to support more control over the
+-- embedding of the Vega-Lite visualizations, and the versions of
+-- the required Javascript libraries used by the @toHtmlXXX@ routines
+-- has been updated.
 --
 -- The 'VLProperty' type now exports its constructors, to support users
 -- who may need to tweak or augment the JSON Vega-Lite specification
@@ -938,12 +951,8 @@ import Numeric.Natural (Natural)
 -- 'VLViewBackground' ('viewBackground'). It is expected that you will be
 -- using the functions rather the constructors!
 -- 
--- The 'ZIndex' type has been added: this provides constructors for the
--- common options - 'ZFront' and 'ZBack' - and a fall-through ('ZValue')
--- as a protection against future changes to the Vega-Lite specification.
--- 
--- Three new type aliases have been added: 'Angle', 'Color', and
--- 'Opacity'. These do not provide any new functionality but do
+-- Four new type aliases have been added: 'Angle', 'Color', 'Opacity',
+-- and 'ZIndex'. These do not provide any new functionality but do
 -- document intent.
 -- 
 -- The 'noData' function has been added to let compositions define the
@@ -978,7 +987,7 @@ import Numeric.Natural (Natural)
 -- The 'Mark' type has gained 'Boxplot', 'ErrorBar', 'ErrorBand', and
 -- 'Trail' constructors. The 'MarkProperty' type has gained 'MBorders',
 -- 'MBox', 'MExtent', 'MHeight', 'MHRef', 'MLine', 'MMedian', 'MOrder',
--- 'MOutliers', 'MPoint', 'MRule', 'MStrokeCap', 'MStrokeJoin',
+-- 'MOutliers', 'MNoOutliers', 'MPoint', 'MRule', 'MStrokeCap', 'MStrokeJoin',
 -- 'MStrokeMiterLimit', 'MTicks', 'MTooltip', 'MWidth', 'MX', 'MX2',
 -- 'MXOffset', 'MX2Offset', 'MY', 'MY2', 'MYOffset', and 'MY2Offset'
 -- constructors.
@@ -1033,7 +1042,8 @@ import Numeric.Natural (Natural)
 -- 'AxDomainDashOffset', 'AxDomainOpacity', 'AxDomainWidth',
 -- 'AxFormatAsNum', 'AxFormatAsTemporal', 'AxGridColor', 'AxGridDash',
 -- 'AxGridDashOffset', 'AxGridOpacity', 'AxGridWidth', 'AxLabelAlign',
--- 'AxLabelBaseline', 'AxLabelBound', 'AxLabelColor', 'AxLabelFlush',
+-- 'AxLabelBaseline', 'AxLabelNoBound', 'AxLabelBound', 'AxLabelBoundValue',
+-- 'AxLabelColor', 'AxLabelNoFlush', 'AxLabelFlush', 'AxLabelFlushValue',
 -- 'AxLabelFlushOffset', 'AxLabelFont', 'AxLabelFontSize',
 -- 'AxLabelFontStyle', 'AxLabelFontWeight', 'AxLabelLimit',
 -- 'AxLabelOpacity', 'AxLabelSeparation', 'AxTickColor', 'AxTickDash',
@@ -1100,7 +1110,8 @@ import Numeric.Natural (Natural)
 -- 'SCBarBandPaddingOuter', 'SCRectBandPaddingInner', and
 -- 'SCRectBandPaddingOuter'.
 -- 
--- The 'SelectionProperty' type has gained 'Clear' and 'SInit'.
+-- The 'SelectionProperty' type has gained 'Clear', 'SInit', and
+-- 'SInitInterval'.
 -- 
 -- The Channel type has gained: 'ChLongitude', 'ChLongitude2',
 -- 'ChLatitude', 'ChLatitude2', 'ChFill', 'ChFillOpacity', 'ChHref',
@@ -1141,7 +1152,11 @@ import Numeric.Natural (Natural)
 -- 'TFormatAsTemporal', 'TTitle', and 'TNoTitle'.
 -- 
 -- The 'TooltipContent' type was added, for use with 'MTooltip'.
--- 
+--
+-- The 'Symbol' type has gained: 'SymArrow', 'SymStroke',
+-- 'SymTriangle', 'SymTriangleLeft', 'SymTriangleRight', and
+-- 'SymWedge'.
+--
 -- There are a number of __breaking changes__ in this release (some
 -- of which were mentioned above):
 --
@@ -1213,7 +1228,14 @@ import Numeric.Natural (Natural)
 --   aggregation (e.g. with 'PAggregate').
 --
 -- * The \"z index" value has changed from an 'Int' to the 'ZIndex' type.
-
+--
+-- * The constructors for the 'Symbol' type now all start with @Sym@, so
+--   @Cross@, @Diamond@, @TriangleUp@, @TriangleDown@, and @Path@ have
+--   been renamed to 'SymCross', 'SymDiamond', 'SymTriangleUp',
+--   'SymTriangleDown', and 'SymPath', respectively.
+--
+-- * The `Legend` type has been renamed `LegendType` and its constructors
+--   have been renamed 'GradientLegend' and 'SymbolLegend'.
 
 --- helpers
 
@@ -1257,6 +1279,7 @@ header_ hps = "header" .= object (map headerProperty hps)
 impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
+-- TODO: should this turn an empty list into true?
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
 mprops_ f mps = f .= object (map markProperty mps)
 
@@ -1508,41 +1531,90 @@ combineSpecs = object
 
 {-|
 
-Converts VegaLite to html Text. Uses Vega-Embed.
+Converts VegaLite to html Text. Uses Vega-Embed with the
+default options. See 'toHtmlWith' for more control.
 
 @since 0.2.1.0
 -}
 toHtml :: VegaLite -> TL.Text
-toHtml vl = TL.unlines
-  [ "<!DOCTYPE html>"
-  , "<html>"
-  , "<head>"
-  , "  <!-- Import Vega 5 & Vega-Lite 3 (does not have to be from CDN) -->"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega@3\"></script>"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@2\"></script>"
-  , "  <!-- Import vega-embed -->"
-  , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-embed@3\"></script>"
-  , "</head>"
-  , "<body>"
-  , "<div id=\"vis\"></div>"
-  , "<script type=\"text/javascript\">"
-  , ("  var spec = " <> (A.encodeToLazyText $ fromVL vl) <> ";")
-  , "  vegaEmbed(\'#vis\', spec).then(function(result) {"
-  , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
-  , "  }).catch(console.error);"
-  , "</script>"
-  , "</body>"
-  , "</html>"
-  ]
+toHtml = toHtmlWith Nothing
 
 {-|
 
-Converts VegaLite to an html file. Uses Vega-Embed.
+Converts VegaLite to an html file. Uses Vega-Embed with the
+default options. See 'toHtmlFileWith' for more control.
 
 @since 0.2.1.0
 -}
 toHtmlFile :: FilePath -> VegaLite -> IO ()
 toHtmlFile file = TL.writeFile file . toHtml
+
+{-|
+
+Converts VegaLite to html Text. Uses Vega-Embed and is for when
+some control is needed over the output: 'toHtml' is a simpler
+form which just uses the default Vega-Embed options.
+
+The render you use to view the output file must support Javascript,
+since it is needed to create the visualization from the Vega-Lite
+specification. The Vega and Vega-Lite Javascript versions are pegged
+to 5 and 3, but no limit is applied to the Vega-Embed library.
+
+@since 0.4.0.0
+-}
+toHtmlWith ::
+  Maybe Value
+  -- ^ The options to pass to the Vega-Embed @embed@ routine. See
+  --   <https://github.com/vega/vega-embed#options> for the
+  --   supported options.
+  -> VegaLite
+  -- ^ The Vega-Lite specification to display.
+  -> TL.Text
+toHtmlWith mopts vl =
+  let spec = A.encodeToLazyText (fromVL vl)
+      opts = maybe "" (\o -> "," <> A.encodeToLazyText o) mopts
+
+  in TL.unlines
+    [ "<!DOCTYPE html>"
+    , "<html>"
+    , "<head>"
+      -- versions are fixed at vega 5, vega-lite 3
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega@5\"></script>"
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@3\"></script>"
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-embed\"></script>"
+    , "</head>"
+    , "<body>"
+    , "<div id=\"vis\"></div>"
+    , "<script type=\"text/javascript\">"
+    , ("  var spec = " <> spec <> ";")
+    , "  vegaEmbed(\'#vis\', spec" <> opts <> ").then(function(result) {"
+    , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
+    , "  }).catch(console.error);"
+    , "</script>"
+    , "</body>"
+    , "</html>"
+    ]
+
+{-|
+
+Converts VegaLite to an html file. Uses Vega-Embed and is for when
+some control is needed over the output: 'toHtmlFile' is a simpler
+form which just uses the default Vega-Embed options.
+
+@since 0.4.0.0
+-}
+toHtmlFileWith ::
+  Maybe Value
+  -- ^ The options to pass to the Vega-Embed @embed@ routine. See
+  --   <https://github.com/vega/vega-embed#options> for the
+  --   supported options.
+  -> FilePath
+  -- ^ The output file name (it will be over-written if it already exists).
+  -> VegaLite
+  -- ^ The Vega-Lite specification to display.
+  -> IO ()
+toHtmlFileWith mopts file = TL.writeFile file . toHtmlWith mopts
+
 
 {-|
 
@@ -1998,36 +2070,45 @@ type Angle = Double
 {-|
 
 At what "depth" (z index) is the item to be drawn (a relative depth
-for items in the visualization).
+for items in the visualization). The standard values are @0@ for
+back and @1@ for front, but other values can be used if you want
+to ensure a certain layering of items.
+
+The following example is taken from a discussion with
+<https://github.com/gicentre/elm-vegalite/issues/15#issuecomment-524527125 Jo Wood>:
+
+@
+let dcols = 'dataFromColumns' []
+              . 'dataColumn' "x" ('Numbers' [ 20, 10 ])
+              . 'dataColumn' "y" ('Numbers' [ 10, 20 ])
+              . 'dataColumn' "cat" ('Strings' [ "a", "b" ])
+
+    axis lbl z = [ 'PName' lbl, 'PmType' 'Quantitative', 'PAxis' [ 'AxZIndex' z ] ]
+    enc = 'encoding'
+            . 'position' 'X' (axis "x" 2)
+            . 'position' 'Y' (axis "y" 1)
+            . 'color' [ 'MName' "cat", 'MmType' 'Nominal', 'MLegend' [] ]
+
+    cfg = 'configure'
+            . 'configuration' ('Axis' [ 'GridWidth' 8 ])
+            . 'configuration' ('AxisX' [ 'GridColor' "red" ])
+            . 'configuration' ('AxisY' [ 'GridColor' "blue" ])
+
+in 'toVegaLite' [ cfg []
+              , dcols []
+              , enc []
+              , 'mark' 'Circle' [ 'MSize' 5000, 'MOpacity' 1 ]
+              ]
+@
+
+<<images/zindex.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABBYEQMYPYDsBmBLA5lAXGUk-QEMAPFAZwE0sdx9ao0AnFAEwGE4AbOBqqAIw4BXAKZQatAL4AacfijEyADSq5acxi3Zce2KA2HMxasNNl55JUirNr6TZgHUWAFwAWVABw2IE2afMAtgQMANbWxlCkKABeotgArAAMyTIRcAAOBDAozgCeVACMqbZ56XHQ2QwwHKJ+xRBQzATOBOG2AG4EQsJW2ADa3viqxnQwzbyt9SPmRFQATIlT0w352AWJg3j+y8PLDWPOvHxQS8tQs2uLm7arYAvXPoMAunWyUAAkpDCuwkG8rs5nOlSJgAPSg9rCNAEAB0aByrkEfBhKDgoK+PyCEKhBAAtBwcsIIQBmGEAK1IiBOb2ECHgzBQCAw2F25ng2ja0ygqGEHEMugO1L2UFK5SgCDgAUZXSFZxqaFp-LACEEHA4g22dAu1GFPL5vFmpzoot4AEdBAQEM4cs0UJDZVyFL0dXtIFBoozmMJtXMHiYNUboLdWbY9UqoPlA+YTbpzZbrS1rfao26nZzXe7Pd7Cn7fMY85BfL4gA View the visualization in the Vega Editor>
 
 @since 0.4.0.0
 -}
 
-data ZIndex =
-  ZBack
-  -- ^ The item is drawn behind (this corresponds to the Vega Lite
-  --   @0@ value).
-  | ZFront
-  -- ^ The item is drawn in front (this corresponds to the Vega Lite
-  --   @1@ value).
-  | ZValue Natural
-  -- ^ This is provided in case there is any need to use a z index value
-  --   other than @0@ or @1@.
-
-
--- Avoids the need to create a sepatate function, and may be useful
--- for users who are tweaking the hvega output.
---
-instance A.ToJSON ZIndex where
-  toJSON ZBack = A.Number 0
-  toJSON ZFront = A.Number 1
-  toJSON (ZValue z) = A.Number (fromIntegral z)
-  {-# INLINE toJSON #-}
-
-  toEncoding ZBack = E.int 0
-  toEncoding ZFront = E.int 1
-  toEncoding (ZValue z) = E.int (fromIntegral z)
-  {-# INLINE toEncoding #-}
+type ZIndex = Natural
 
 
 formatProperty :: Format -> [LabelledSpec]
@@ -2530,8 +2611,9 @@ data Mark
       -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
       --   for showing summaries of statistical distributions.
       --
-      --   By default, just box and whiskers are shown, but ticks and outliers
-      --   can be specified explicitly. For example:
+      --   Tick marks can be added using 'MTicks' and outliers turned
+      --   off with 'MNoOutliers' or configured with 'MOutliers'.
+      --   For example:
       --
       --   @
       --   'mark' Boxplot
@@ -2540,6 +2622,10 @@ data Mark
       --       , 'MOutliers' [ 'MColor' \"firebrick\" ]
       --   ]
       --   @
+      --
+      --   The range of the box plot is controlled with 'MExtent' with
+      --   the 'IqrScale' or 'ExRange' options (the default is
+      --   @IqrScale 1.5@).
       --
       --   @since 0.4.0.0
     | Circle
@@ -2807,12 +2893,15 @@ data MarkProperty
       -- ^ Vertical alignment of a text mark.
     | MBinSpacing Double
       -- ^ Offset between bars for a binned field using a bar mark.
+      --
+      --   The ideal value for this is either @0@ (preferred by statisticians)
+      --   or @1@ (the Vega-Lite default value, D3 example style).
     | MBorders [MarkProperty]
-      -- ^ Border properties for an errorband mark.
+      -- ^ Border properties for an 'ErrorBand' mark.
       --
       --   @since 0.4.0.0
     | MBox [MarkProperty]
-      -- ^ Box-symbol properties for the boxplot mark.
+      -- ^ Box-symbol properties for a 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MClip Bool
@@ -2831,7 +2920,8 @@ data MarkProperty
     | MdY Double
       -- ^ Vertical offset between a text mark and its anchor.
     | MExtent MarkErrorExtent
-      -- ^ Extent of whiskers used in a boxplot, error bars, or error bands.
+      -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
+      --   'ErrorBand' marks.
       --
       --   @since 0.4.0.0
     | MFill T.Text
@@ -2866,7 +2956,7 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MMedian [MarkProperty]
-      -- ^ Median-line properties for the boxplot mark.
+      -- ^ Median-line properties for the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MOpacity Opacity
@@ -2880,7 +2970,11 @@ data MarkProperty
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
-      -- ^ Outlier symbol properties for the boxplot mark.
+      -- ^ Outlier symbol properties for the 'Boxplot' mark.
+      --
+      --   @since 0.4.0.0
+    | MNoOutliers
+      -- ^ Do not draw outliers with the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MPoint PointMarker
@@ -2890,7 +2984,7 @@ data MarkProperty
     | MRadius Double
       -- ^ Polar coordinate radial offset of a text mark from its origin.
     | MRule [MarkProperty]
-      -- ^ Rule (main line) properties for the errorbar and boxplot marks.
+      -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
       --
       --   @since 0.4.0.0
     | MShape Symbol
@@ -2937,7 +3031,7 @@ data MarkProperty
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
-      -- ^ Tick properties for the errorbar or boxplot mark.
+      -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
       --
       --   @since 0.4.0.0
     | MTooltip TooltipContent
@@ -3013,7 +3107,9 @@ markProperty (MLine lm) = "line" .= lineMarkerSpec lm
 markProperty (MTension x) = "tension" .= x
 markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= orientationSpec orient
+markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
 markProperty (MOutliers mps) = mprops_ "outliers" mps
+markProperty MNoOutliers = "outliers" .= False
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
@@ -3134,19 +3230,43 @@ data Position
     = X
     | Y
     | X2
+    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
+    --    marks.
     | Y2
+    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
+    --    marks.
     | XError
-      -- ^ @since 0.4.0.0
+      -- ^ Indicates that the 'X' channel represents the mid-point and
+      --   the 'XError' channel gives the offset. If 'XError2' is not
+      --   defined then this channel value is applied symmetrically.
+      --
+      --   @since 0.4.0.0
     | XError2
-      -- ^ @since 0.4.0.0
+      -- ^ Used to support asymmetric error ranges defined as 'XError'
+      --   and 'XError2'. One of 'XError' or 'XError2' channels must
+      --   contain positive values and the other negative values.
+      --
+      --   @since 0.4.0.0
     | YError
-      -- ^ @since 0.4.0.0
+      -- ^ Indicates that the 'Y' channel represents the mid-point and
+      --   the 'YError' channel gives the offset. If 'YError2' is not
+      --   defined then this channel value is applied symmetrically.
+      --
+      --   @since 0.4.0.0
     | YError2
-      -- ^ @since 0.4.0.0
+      -- ^ Used to support asymmetric error ranges defined as 'YError'
+      --   and 'YError2'. One of 'YError' or 'YError2' channels must
+      --   contain positive values and the other negative values.
+      --
+      --   @since 0.4.0.0
     | Longitude
+      -- ^ The longitude value for projections.
     | Latitude
+      -- ^ The latitude value for projections.
     | Longitude2
+      -- ^ A second longitude coordinate.
     | Latitude2
+      -- ^ A second longitude coordinate.
 
 
 {-|
@@ -3196,7 +3316,7 @@ data BinProperty
       --
       --   @since 0.4.0.0
     | Base Double
-      -- ^ The number base to ude for automatic bin determination.
+      -- ^ The number base to use for automatic bin determination.
       --
       --   Default is @10@.
     | Divide [Double]
@@ -3511,7 +3631,7 @@ data ScaleProperty
     = SType Scale
       -- ^ Type of scaling to apply.
     | SAlign Double
-      -- ^ Alignemnt of the steps within the scale range. A value of
+      -- ^ Alignment of the steps within the scale range. A value of
       --   @0@ shifts the bands to an axis, @1@ away from the axis,
       --   and @0.5@ is centered within the range.
       --
@@ -4173,6 +4293,7 @@ The @AxTitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 'AxTitleLimit' constructor should be used instead.
 
 -}
+{-# DEPRECATED AxDates "Please change AxDates to AxValues" #-}
 data AxisProperty
     = AxBandPosition Double
       -- ^ An interpolation fraction indicating where, for @band@ scales, axis ticks should
@@ -4254,24 +4375,52 @@ data AxisProperty
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | AxLabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | AxLabelNoBound
+      -- ^ No boundary overlap check is applied to labels. This is the
+      --   default behavior.
+      --
+      --   See also 'AxLabelBound' and 'AxLabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelBound
+      -- ^ Labels are hidden if they exceed the axis range by more than 1
+      --   pixel.
+      --
+      --   See also 'AxLabelNoBound' and 'AxLabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelBoundValue Double
+      -- ^ Labels are hidden if they exceed the axis range by more than
+      --   the given number of pixels.
+      --
+      --   See also 'AxLabelNoBound' and 'AxLabelBound'.
       --
       --   @since 0.4.0.0
     | AxLabelColor Color
       -- ^ The label color.
       --
       --   @since 0.4.0.0
-    | AxLabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
-      --   labels will be left- and right- aligned for the first and last
-      --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+    | AxLabelNoFlush
+      -- ^ The labels are not aligned flush to the scale. This is the
+      --   default for non-continuous X scales.
+      --
+      --   See also 'AxLabelFlush' and 'AxLabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlush
+      -- ^ The first and last axis labels are aligned flush to the scale
+      --   range.
+      --
+      --   See also 'AxLabelNoFlush' and 'AxLabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | AxLabelFlushValue Double
+      -- ^ The labels are aligned flush, and the parameter determines
+      --   the extra offset, in pixels, to apply to the first and last
+      --   labels. This can help the labels better group (visually) with
+      --   the corresponding axis ticks.
+      --
+      --   See also 'AxLabelNoFlush' and 'AxLabelFlush'.
       --
       --   @since 0.4.0.0
     | AxLabelFlushOffset Double
@@ -4449,7 +4598,7 @@ data AxisProperty
       -- ^ The dates or times to appear along the axis.
       --
       --   As of version @0.4.0.0@, this is deprecated. The 'AxValues'
-      --   constructir should be used instead.
+      --   constructor should be used instead.
     | AxZIndex ZIndex
       -- ^ The z-index of the axis, relative to the chart marks.
 
@@ -4475,9 +4624,13 @@ axisProperty (AxLabels b) = "labels" .= b
 axisProperty (AxLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisProperty (AxLabelAngle a) = "labelAngle" .= a
 axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisProperty (AxLabelBound mx) = "labelBound" .= mxToValue mx
+axisProperty AxLabelNoBound = "labelBound" .= False
+axisProperty AxLabelBound = "labelBound" .= True
+axisProperty (AxLabelBoundValue x) = "labelBound" .= x
 axisProperty (AxLabelColor s) = "labelColor" .= s
-axisProperty (AxLabelFlush mx) = "labelFlush" .= mxToValue mx
+axisProperty AxLabelNoFlush = "labelFlush" .= False
+axisProperty AxLabelFlush = "labelFlush" .= True
+axisProperty (AxLabelFlushValue x) = "labelFlush" .= x
 axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .= x
 axisProperty (AxLabelFont s) = "labelFont" .= s
 axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
@@ -4961,7 +5114,7 @@ data MarkErrorExtent
     -- ^ Band extent between the minimum and maximum values in a distribution.
   | IqrScale Double
     -- ^ A scaling of the interquartile range to be used as whiskers in a
-    --   boxplot. For example @IqrScale 1.5@  would extend whiskers to
+    --   'Boxplot'. For example @IqrScale 1.5@  would extend whiskers to
     --   ±1.5x the IQR from the mean.
 
 -- This is a little different from the other calls since I wanted to
@@ -4979,34 +5132,72 @@ markErrorExtentLSpec ExRange            = extent_ "min-max"
 markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 
--- | Identifies the type of symbol.
-
+-- | Identifies the type of symbol used with the 'Point' mark type.
+--   It is used with 'MShape', 'LeSymbolType', and 'LSymbolType'.
+--
+--   In version @0.4.0.0@ all constructors were changed to start
+--   with @Sym@.
+--
 data Symbol
     = SymCircle
       -- ^ Specify a circular symbol for a shape mark.
     | SymSquare
       -- ^ Specify a square symbol for a shape mark.
-    | Cross
+    | SymCross
       -- ^ Specify a cross symbol for a shape mark.
-    | Diamond
+    | SymDiamond
       -- ^ Specify a diamond symbol for a shape mark.
-    | TriangleUp
+    | SymTriangleUp
       -- ^ Specify an upward-triangular symbol for a shape mark.
-    | TriangleDown
+    | SymTriangleDown
       -- ^ Specify a downward-triangular symbol for a shape mark.
-    | Path T.Text
+    | SymTriangleRight
+      -- ^ Specify an right-facing triangular symbol for a shape mark.
+      --
+      --   @since 0.4.0.0
+    | SymTriangleLeft
+      -- ^ Specify an left-facing triangular symbol for a shape mark.
+      --
+      --   @since 0.4.0.0
+    | SymStroke
+      -- ^ The line symbol.
+      --
+      --  @since 0.4.0.0
+    | SymArrow
+      -- ^ Centered directional shape.
+      --
+      --  @since 0.4.0.0
+    | SymTriangle
+      -- ^ Centered directional shape. It is not clear what difference
+      --   this is to 'SymTriangleUp'.
+      --
+      --  @since 0.4.0.0
+    | SymWedge
+      -- ^ Centered directional shape.
+      --
+      --  @since 0.4.0.0
+    | SymPath T.Text
       -- ^ A custom symbol shape as an
       --   [SVG path description](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
+      --
+      --   For correct sizing, the path should be defined within a square
+      --   bounding box, defined on an axis of -1 to 1 for both dimensions.
 
 
 symbolLabel :: Symbol -> T.Text
 symbolLabel SymCircle = "circle"
 symbolLabel SymSquare = "square"
-symbolLabel Cross = "cross"
-symbolLabel Diamond = "diamond"
-symbolLabel TriangleUp = "triangle-up"
-symbolLabel TriangleDown = "triangle-down"
-symbolLabel (Path svgPath) = svgPath
+symbolLabel SymCross = "cross"
+symbolLabel SymDiamond = "diamond"
+symbolLabel SymTriangleUp = "triangle-up"
+symbolLabel SymTriangleDown = "triangle-down"
+symbolLabel SymTriangleRight = "triangle-right"
+symbolLabel SymTriangleLeft = "triangle-left"
+symbolLabel SymStroke = "stroke"
+symbolLabel SymArrow = "arrow"
+symbolLabel SymTriangle = "triangle"
+symbolLabel SymWedge = "wedge"
+symbolLabel (SymPath svgPath) = svgPath
 
 
 {-|
@@ -5083,18 +5274,21 @@ fieldTitleLabel Function = "functional"
 fieldTitleLabel Plain = "plain"
 
 
--- | Indicates the type of legend to create.
-
-data Legend
-    = Gradient
+-- | Indicates the type of legend to create. It is used with 'LType'.
+--
+--   Prior to version @0.4.0.0.0@ this was called @Legend@ and the
+--   constructors did not end in @Legend@.
+--
+data LegendType
+    = GradientLegend
       -- ^ Typically used for continuous quantitative data.
-    | Symbol
+    | SymbolLegend
       -- ^ Typically used for categorical data.
 
 
-legendLabel :: Legend -> T.Text
-legendLabel Gradient = "gradient"
-legendLabel Symbol = "symbol"
+legendLabel :: LegendType -> T.Text
+legendLabel GradientLegend = "gradient"
+legendLabel SymbolLegend = "symbol"
 
 
 {-|
@@ -5467,7 +5661,7 @@ data LegendLayout
   | LeLBottomLeft [BaseLegendLayout]
   | LeLBottomRight [BaseLegendLayout]
   | LeLBounds Bounds
-    -- ^ The bounds calculation to ude for legend orient group layout.
+    -- ^ The bounds calculation to use for legend orient group layout.
   | LeLCenter Bool
     -- ^ A flag to center legends within a shared orient group.
   | LeLDirection Orientation
@@ -5539,7 +5733,7 @@ baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 {-|
 
-Legend properties. For more detail see the
+Legend properties, set with 'MLegend'. For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#legend-properties Vega-Lite documentation>.
 
 The @LEntryPadding@ constructor was removed in @0.4.0.0@.
@@ -5734,7 +5928,7 @@ data LegendProperty
       -- ^ The padding, in pixels, between title and legend.
       --
       --   @since 0.4.0.0
-    | LType Legend
+    | LType LegendType
       -- ^ The type of the legend.
     | LValues LegendValues
       -- ^ Explicitly set the visible legend values.
@@ -5821,7 +6015,9 @@ legendProperty (LeY x) = "legendY" .= x
 legendProperty (LZIndex z) = "zindex" .= z
 
 
--- | A list of data values suitable for setting legend values.
+-- | A list of data values suitable for setting legend values, used with
+--   'LValues'.
+
 
 data LegendValues
     = LDateTimes [[DateTime]]
@@ -6296,23 +6492,48 @@ data SelectionProperty
       --
       --   @sel = 'selection' . 'select' \"mySelection\" 'Multi' ['Encodings' ['ChColor']]@
     | SInit [(T.Text, DataValue)]
-      -- ^ Initialise one or more selections with values from bound fields. For example,
+      -- ^ Initialise one or more selections with values from bound fields.
+      --   See also 'SInitInterval'.
       --
-      -- @
-      -- 'selection'
-      --     . 'select' \"CylYr\"
-      --         'Single'
-      --         [ 'Fields' [\"Cylinders\", \"Year\"]
-      --         , 'SInit'
-      --             [ (\"Cylinders\", 'Number' 4)
-      --             , (\"Year\", 'Number' 1977)
-      --             ]
-      --         , 'Bind'
-      --             [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
-      --             , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
-      --             ]
-      --         ]
-      -- @
+      --   For example,
+      --
+      --   @
+      --   'selection'
+      --       . 'select' \"CylYr\"
+      --           'Single'
+      --           [ 'Fields' [\"Cylinders\", \"Year\"]
+      --           , 'SInit'
+      --               [ (\"Cylinders\", 'Number' 4)
+      --               , (\"Year\", 'Number' 1977)
+      --               ]
+      --           , 'Bind'
+      --               [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
+      --               , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
+      --               ]
+      --           ]
+      --   @
+      --
+      --   @since 0.4.0.0
+    | SInitInterval (Maybe (DataValue, DataValue)) (Maybe (DataValue, DataValue))
+      -- ^ Initialize the domain extent of an interval selection. See
+      --   also 'SInit'.
+      --
+      --   The parameters refer to the x and y axes, given in the order
+      --   @(minimum, maximum)@ for each axis. If an axis is set to
+      --   @Nothing@ then the selection is projected over that
+      --   dimension. At least one of the two arguments should be
+      --   set (i.e. not @Nothing@).
+      --
+      --   @
+      --   'select' \"mySelection\"
+      --          'Interval'
+      --          [ 'SInitInterval'
+      --              (Just ( 'DateTime' ['DTYear' 2013]
+      --                    , 'DateTime' ['DTYear' 2015]
+      --                    )
+      --              (Just ('Number' 40, 'Number' 80))
+      --          ]
+      --   @
       --
       --   @since 0.4.0.0
     | ResolveSelections SelectionResolution
@@ -6355,6 +6576,14 @@ selectionProperty :: SelectionProperty -> LabelledSpec
 selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
 selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
 selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) iVals)
+-- This is invalid according to the specification
+selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
+selectionProperty (SInitInterval mx my) =
+  let conv (_, Nothing) = Nothing
+      conv (lbl, (Just (lo, hi))) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
+
+  in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
+
 selectionProperty (On e) = "on" .= e
 selectionProperty (Clear e) = "clear" .= if T.null e then toJSON False else toJSON e
 selectionProperty Empty = "empty" .= fromT "none"
@@ -7073,22 +7302,50 @@ data AxisConfig
       -- ^ The vertical alignment for labels.
       --
       --   @since 0.4.0.0
-    | LabelBound (Maybe Double)  -- XXXXX don't like Maybe Double here
-      -- ^ Should labels be hidden if they exceed the axis range? If @Nothing@
-      --   then no check is made, otherwise it gives the maximum number of
-      --   pixels by which the label bounding box can extend beyond the axis.
+    | LabelNoBound
+      -- ^ No boundary overlap check is applied to labels. This is the
+      --   default behavior.
+      --
+      --   See also 'LabelBound' and 'LabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelBound
+      -- ^ Labels are hidden if they exceed the axis range by more than 1
+      --   pixel.
+      --
+      --   See also 'LabelNoBound' and 'LabelBoundValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelBoundValue Double
+      -- ^ Labels are hidden if they exceed the axis range by more than
+      --   the given number of pixels.
+      --
+      --   See also 'LabelNoBound' and 'LabelBound'.
       --
       --   @since 0.4.0.0
     | LabelColor Color
       -- ^ The label color.
-    | LabelFlush (Maybe Double)   -- XXXXX as with labelbound
-      -- ^ The label alignment at the start or end of the axis. If
-      --   @Nothing@ then no adjustment is made. A value of @Just 1@ means that the
-      --   labels will be left- and right- aligned for the first and last
-      --   label (horizontal axis), or bottom and top text baselines are
-      --   aligned for a vertical axis. Other numeric values indicate additonal
-      --   space added, in pixels, which can someties help the labels better visually
-      --   group with the corresponding tick marks.
+    | LabelNoFlush
+      -- ^ The labels are not aligned flush to the scale. This is the
+      --   default for non-continuous X scales.
+      --
+      --   See also 'LabelFlush' and 'LabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelFlush
+      -- ^ The first and last axis labels are aligned flush to the scale
+      --   range.
+      --
+      --   See also 'LabelNoFlush' and 'LabelFlushValue'.
+      --
+      --   @since 0.4.0.0
+    | LabelFlushValue Double
+      -- ^ The labels are aligned flush, and the parameter determines
+      --   the extra offset, in pixels, to apply to the first and last
+      --   labels. This can help the labels better group (visually) with
+      --   the corresponding axis ticks.
+      --
+      --   See also 'LabelNoFlush' and 'LabelFlush'.
       --
       --   @since 0.4.0.0
     | LabelFlushOffset Double
@@ -7205,14 +7462,6 @@ data AxisConfig
       -- ^ The Y coordinate of the axis title, relative to the axis group.
 
 
--- Using an equality test here isn't ideal, but I am just following the
--- Elm code for now.
---
-mxToValue :: Maybe Double -> Value
-mxToValue (Just x) | x == 1 = toJSON True
-                   | otherwise = toJSON x
-mxToValue Nothing = toJSON False
-
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
@@ -7231,8 +7480,12 @@ axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisConfigProperty (LabelBound mx) = "labelBound" .= mxToValue mx
-axisConfigProperty (LabelFlush mx) = "labelFlush" .= mxToValue mx
+axisConfigProperty LabelNoBound = "labelBound" .= False
+axisConfigProperty LabelBound = "labelBound" .= True
+axisConfigProperty (LabelBoundValue x) = "labelBound" .= x
+axisConfigProperty LabelNoFlush = "labelFlush" .= False
+axisConfigProperty LabelFlush = "labelFlush" .= True
+axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
 axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
@@ -7332,7 +7585,7 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
-    | Selection T.Text  -- TODO: rename Selected?
+    | Selection T.Text  -- TODO: rename Selected since collides with Selection type
       -- ^ Interactive selection that will be true or false as part of
       --   a logical composition.  For example: to filter a dataset so
       --   that only items selected interactively and that have a
@@ -9086,7 +9339,7 @@ The third parameter is a list of transformations to which this is added.
 @
 
 For details, see the
-[Vega-Lite join aggregate documentation](https://vega.github.io/vega-lite/docs/joinaggregate.html)
+<https://vega.github.io/vega-lite/docs/joinaggregate.html Vega-Lite join aggregate documentation>.
 
 See also 'aggregate'.
 

@@ -60,15 +60,67 @@ extra-source-files:  README.md
 
 extra-doc-files:     images/example.png
                      images/intro.png
+                     images/zindex.png
+                     images/vl/stripplot.png
+                     images/vl/stripplotwithbackground.png
+                     images/vl/stripploty.png
+                     images/vl/stripplotwithcolor.png
+                     images/vl/stripplotwithcolorordinal.png
+                     images/vl/parallaxhistogram.png
+                     images/vl/gmaghistogram.png
+                     images/vl/yloghistogram.png
+                     images/vl/gmaghistogramwithcolor.png
+                     images/vl/gmaglinewithcolor.png
+                     images/vl/yhistogram.png
+                     images/vl/pointplot.png
+                     images/vl/posplot.png
+                     images/vl/skyplot.png
+                     images/vl/smallmultiples.png
+                     images/vl/smallmultiples2.png
+                     images/vl/baseplot.png
+                     images/vl/layeredplot.png
+                     images/vl/layereddiversion.png
+                     images/vl/concatenatedplot.png
+                     images/vl/concatenatedplot2.png
+                     images/vl/repeatplot.png
+                     images/vl/splomplot.png
+                     images/vl/singleselection.png
+                     images/vl/nearestselection.png
+                     images/vl/multiselection.png
+                     images/vl/eventselection.png
+                     images/vl/intervalselection.png
+                     images/vl/intervalselectiony.png
+                     images/vl/transformselection.png
+                     images/vl/widgetselection.png
+                     images/vl/bindscales.png
+                     images/vl/coordinatedviews.png
+                     images/vl/coordinatedviews2.png
+                     images/vl/contextandfocus.png
+                     images/vl/crossfilter.png
+                     images/vl/errormanual.png
+                     images/vl/errormanual-zoomed.png
+                     images/vl/errorauto.png
+                     images/vl/errorbars.png
+                     images/vl/errorband.png
+                     images/vl/errorbox.png
+                     images/vl/comparingerrors.png
+                     images/vl/combinedplot.png
+                     images/vl/combinedplot-selected.png
+
 cabal-version:       >= 1.18
 
 source-repository head
   type:     git
   location: https://github.com/DougBurke/hvega
 
+flag tools
+  description: Build associated tools (in general you won't need this)
+  default:     False
+
 library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
+                       Graphics.Vega.Tutorials.VegaLite
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5
                      , text == 1.2.*
@@ -131,6 +183,26 @@ test-suite test
                      , tasty-golden >= 2.2 && < 2.4
                      , text == 1.2.*
                      , hvega
+
+  default-language:    Haskell2010
+  ghc-options:         -Wall
+
+
+executable    playtutorial
+  hs-source-dirs:      tools/
+  main-is:             PlayTutorial.hs
+
+  if flag(tools)
+    build-depends:     aeson
+                     , aeson-pretty == 0.8.*
+                     , base
+                     , bytestring
+                     , directory
+                     , filepath
+                     , hvega
+                     , text
+  else
+    buildable:         False
 
   default-language:    Haskell2010
   ghc-options:         -Wall

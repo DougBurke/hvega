@@ -20,6 +20,7 @@ testSpecs = [ ("axis1", axis1)
             , ("axis6", axis6)
             -- , ("axis7", axis7)  require AxLabelExpr support (VL 4)
             -- , ("axis8", axis8)  require AxLabelExpr support (VL 4)
+            , ("zorder", zorder)
             ]
 
 
@@ -162,3 +163,31 @@ axis8 =
     toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
 
 -}
+
+
+-- From
+-- https://github.com/gicentre/elm-vegalite/issues/15#issuecomment-524527125
+--
+zorder :: VegaLite
+zorder =
+  let dcols = dataFromColumns []
+              . dataColumn "x" (Numbers [ 20, 10 ])
+              . dataColumn "y" (Numbers [ 10, 20 ])
+              . dataColumn "cat" (Strings [ "a", "b" ])
+
+      axis lbl z = [ PName lbl, PmType Quantitative, PAxis [ AxZIndex z ] ]
+      enc = encoding
+            . position X (axis "x" 2)
+            . position Y (axis "y" 1)
+            . color [ MName "cat", MmType Nominal, MLegend [] ]
+
+      cfg = configure
+            . configuration (Axis [ GridWidth 8 ])
+            . configuration (AxisX [ GridColor "red" ])
+            . configuration (AxisY [ GridColor "blue" ])
+
+  in toVegaLite [ cfg []
+                , dcols []
+                , enc []
+                , mark Circle [ MSize 5000, MOpacity 1 ]
+                ]
