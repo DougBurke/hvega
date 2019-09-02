@@ -107,7 +107,7 @@ extra-doc-files:     images/example.png
                      images/vl/combinedplot.png
                      images/vl/combinedplot-selected.png
 
-cabal-version:       >= 1.18
+cabal-version:       1.18
 
 source-repository head
   type:     git
