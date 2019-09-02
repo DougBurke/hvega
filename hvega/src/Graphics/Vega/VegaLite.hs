@@ -9295,7 +9295,7 @@ The third parameter is a list of transformations to which this is added.
 @
 
 For details, see the
-[Vega-Lite join aggregate documentation](https://vega.github.io/vega-lite/docs/joinaggregate.html)
+<https://vega.github.io/vega-lite/docs/joinaggregate.html Vega-Lite join aggregate documentation>.
 
 See also 'aggregate'.
 
