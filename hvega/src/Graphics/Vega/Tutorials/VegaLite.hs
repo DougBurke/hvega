@@ -78,15 +78,18 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- $stripplot-mmtype
 
   , stripPlotWithColorOrdinal
-  
-  -- * Adding an axis and summing up data
+
+  -- * Adding an axis
   --
-  -- $singleview-histogram
+  -- $add-axis
+
+  , parallaxBreakdown
+
+  -- ** Creating a value to plot: aggregating data
+  --
+  -- $histogram
   
   , simpleHistogram
-
-  -- ** Histograms
-  
   , parallaxHistogram
   , gmagHistogram
   
@@ -651,15 +654,62 @@ stripPlotWithColorOrdinal =
      , enc []
      ]
 
--- $singleview-histogram
+-- $add-axis
 -- While the strip plot shows the range of parallaxes, it is hard to
 -- make out the distribution of values, since the ticks overlap. Even
 -- changing the opacity of the ticks - by adding an encoding channel
 -- like @'opacity' [ 'MNumber' 0.6 ]@, or by setting the 'MOpacity'
--- property of the 'mark' - only helps so much. So, we
--- would like to bin up the parallax values, and report the number
--- of stars in each bin (i.e. aggregate the data). That is, create
--- a histogram of the data.
+-- property of the 'mark' - only helps so much. Adding a second
+-- axis is easy to do, so let's see how the parallax distribution
+-- varies with cluster membership.
+
+
+{-|
+
+The 'stripPlotWithColor' visualization can be changed to show two
+variables just by adding a second position declaration:
+
+<<images/vl/parallaxbreakdown.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEC2CGBOBrSAuKAXAlgY2QGnCgBNZ1ZUxQIJIBXeAGwsgAt10AHAZxQHpf4sAO4A6AOaZ0LWgCNaXAKbxsAewB26BRpGrovACIraYgEL1EC3iwBuCsbF5wum+Fdv3eJMr3uZYAWlgAgDYARmDA0IAGfzIZBgVQ2BE1FX8WBVgiJRF0LmtIAmooADMVeDh0CmBIDgRFasgAcTgxZjVaaBklQqgOBgAPds7u+F7IBQB9fqG0SA6unoBfJcIloqgAEi5sDLhmNk4efndkiSlZEUwVXh29h1P-BklLawBmEQArLnVCwgm1KoiJg1G00FRqJBVAxyo0SpgFAwiMwAMIMeQucboACeHAU7RU0BBsCY60INFmlHJkPhiORcxmf2KNBxeOYAEdaLANJJSJhbEzmZBYANMFxGlh0AlmAAFBAkhgisAACicAEpIKtimTipBsXCEUjUejnD08Bhcfi5qkiWoSZq1hsoep4WDKKslkA Open this visualization in the Vega Editor>
+
+@
+let enc = encoding
+            . position X [ PName \"plx\", PmType Quantitative, PAxis [ AxTitle \"Parallax (mas)\" ] ]
+            . position Y [ PName \"Cluster\", PmType Nominal ]
+            . color [ MName \"Cluster\", MmType Nominal ]
+
+in toVegaLite
+    [ gaiaData
+    , mark Tick []
+    , enc []
+    ]
+@
+
+I have left the color-encoding in, as it makes it easier to compare to
+'stripPlotWithColor', even though it replicates the information provided
+by the position of the mark on the Y axis.
+
+-}
+
+parallaxBreakdown :: VegaLite
+parallaxBreakdown =
+  let enc = encoding
+            . position X [ PName "plx", PmType Quantitative, PAxis [ AxTitle "Parallax (mas)" ] ]
+            . position Y [ PName "Cluster", PmType Nominal ]
+            . color [ MName "Cluster", MmType Nominal ]
+
+  in toVegaLite
+     [ gaiaData
+     , mark Tick []
+     , enc []
+     ]
+
+
+-- $histogram
+-- We can also \"create\" data to be plotted, by aggregating data. In this
+-- case we can create a histogram showing the number of stars with the
+-- same parallax value (well, a range of parallaxes).
 
 {-|
 

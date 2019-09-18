@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.4.1.0
+
+Updated the tutorial, adding in a new plot to introduce the addition
+of a second axis to the visualization (`parallaxBreakdown`).
+
 ## 0.4.0.0
 
 Thanks to (in no order): Matthew Pickering (mpickering),
