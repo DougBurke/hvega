@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
@@ -9,7 +10,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings, TupleSections
+Portability : CPP, OverloadedStrings, TupleSections
 
 This is a port of the
 <http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm Vega Lite module>,
@@ -618,7 +619,10 @@ import Control.Arrow (first, second)
 -- Aeson's Value type conflicts with the Number type
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
 import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+
+#if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
+#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
