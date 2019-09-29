@@ -1590,7 +1590,7 @@ toHtmlWith mopts vl =
     , "<body>"
     , "<div id=\"vis\"></div>"
     , "<script type=\"text/javascript\">"
-    , ("  var spec = " <> spec <> ";")
+    , "  var spec = " <> spec <> ";"
     , "  vegaEmbed(\'#vis\', spec" <> opts <> ").then(function(result) {"
     , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
     , "  }).catch(console.error);"
@@ -6584,7 +6584,7 @@ selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) i
 selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
 selectionProperty (SInitInterval mx my) =
   let conv (_, Nothing) = Nothing
-      conv (lbl, (Just (lo, hi))) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
+      conv (lbl, Just (lo, hi)) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
 
   in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
 
@@ -7978,7 +7978,7 @@ resolveProperty res =
         RLegend chRules -> ("legend", chRules)
         RScale chRules -> ("scale", chRules)
 
-      ans = map (\(ch, rule) -> (channelLabel ch .= resolutionLabel rule)) rls
+      ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
   in (nme, object ans)
 
 
@@ -10299,7 +10299,7 @@ tooltips ::
   -- ^ A separate list of properties for each channel.
   -> BuildLabelledSpecs
 tooltips tDefs ols =
-  ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols
+  ("tooltip" .= toJSON (map (object . concatMap textChannelProperty) tDefs)) : ols
 
 
 -- | This is used with 'MTooltip'.
