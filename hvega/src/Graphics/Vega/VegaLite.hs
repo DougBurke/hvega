@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
@@ -9,7 +10,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings, TupleSections
+Portability : CPP, OverloadedStrings, TupleSections
 
 This is a port of the
 <http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest Elm Vega Lite module>,
@@ -618,7 +619,10 @@ import Control.Arrow (first, second)
 -- Aeson's Value type conflicts with the Number type
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
 import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+
+#if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
+#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
@@ -1586,7 +1590,7 @@ toHtmlWith mopts vl =
     , "<body>"
     , "<div id=\"vis\"></div>"
     , "<script type=\"text/javascript\">"
-    , ("  var spec = " <> spec <> ";")
+    , "  var spec = " <> spec <> ";"
     , "  vegaEmbed(\'#vis\', spec" <> opts <> ").then(function(result) {"
     , "  // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view"
     , "  }).catch(console.error);"
@@ -6580,7 +6584,7 @@ selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) i
 selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
 selectionProperty (SInitInterval mx my) =
   let conv (_, Nothing) = Nothing
-      conv (lbl, (Just (lo, hi))) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
+      conv (lbl, Just (lo, hi)) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
 
   in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
 
@@ -7974,7 +7978,7 @@ resolveProperty res =
         RLegend chRules -> ("legend", chRules)
         RScale chRules -> ("scale", chRules)
 
-      ans = map (\(ch, rule) -> (channelLabel ch .= resolutionLabel rule)) rls
+      ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
   in (nme, object ans)
 
 
@@ -10295,7 +10299,7 @@ tooltips ::
   -- ^ A separate list of properties for each channel.
   -> BuildLabelledSpecs
 tooltips tDefs ols =
-  ("tooltip" .= toJSON (map (object . (concatMap textChannelProperty)) tDefs)) : ols
+  ("tooltip" .= toJSON (map (object . concatMap textChannelProperty) tDefs)) : ols
 
 
 -- | This is used with 'MTooltip'.

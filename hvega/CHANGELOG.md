@@ -1,6 +1,12 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.4.1.1
+
+Avoid a build warning about importing <> from Data.Monoid in GHC 8.8.1
+by using the CPP sledge-hammer. Relaxed the bounds on containers so
+that the tests can be built on stack LTS 9.21 (GHC 8.0.2).
+
 ## 0.4.1.0
 
 Updated the tutorial, adding in a new plot to introduce the addition
