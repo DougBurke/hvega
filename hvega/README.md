@@ -1,12 +1,24 @@
 # hvega
 
-Support the creation of [Vega-Lite](https://vega.github.io/vega-lite/)
-visualizations in Haskell. This code is released under the BSD3 license.
+Create [Vega-Lite](https://vega.github.io/vega-lite/) visualizations in
+Haskell. It targets version 3 of the Vega-Lite specification. Note that
+the module does not include a viewer for these visualizations (which are
+JSON files), but does provide several helper functions, such as
+[toHtmlFile](https://hackage.haskell.org/package/hvega/docs/Graphics-Vega-VegaLite.html#v:toHtmlFile),
+which create HTML that can be viewed
+with a browser to display the visualization. Other approaches include
+automatic display in IHaskell notebooks - with the
+[ihaskell-vega](https://hackage.haskell.org/package/ihaskell-hvega)
+package - or use of external viewers such as
+[Vega View](https://hackage.haskell.org/package/vega-view) and
+[Vega-Desktop](https://github.com/vega/vega-desktop).
 
 It is based on an early version (2.2.1) of the
 [Elm Vega library](http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite),
 which is released under a BSD3 license by Jo Wood of the giCentre at the
 City University of London.
+
+This code is released under the BSD3 license.
 
 ## Example
 
@@ -29,12 +41,19 @@ When viewed with a Vega-Lite aware viewer, the resultant plot is
 
 ## Documentation
 
-The [Elm Vega documentation](http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1)
-can be used as a guide to using this module. The
+A tutorial is provided as part of the module: it is based, as is
+so much of the module, on the
+[Elm Vega walk through](https://github.com/gicentre/elm-vegalite/tree/master/docs/walkthrough).
+The tutorial
+is [available on hackage](https://hackage.haskell.org/package/hvega/docs/Graphics-Vega-Tutorials-VegaLite.html) - and includes the plot outputs -
+and the plots it creates are also available by importing the
+`Graphics.Vega.Tutorials.VegaLite` module.
+
+The
 [Vega-Lite Example Gallery](https://vega.github.io/vega-lite/examples/) has
 been converted to an
 [IHaskell notebook](https://github.com/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb)
-Uunfortunately the plots created by VegaEmbed **do not appear**
+Uunfortunately the plots created by VegaEmbed **do not always appear**
 in the notebook when viewed with either GitHub's viewer or
 [ipynb viewer](http://nbviewer.jupyter.org/github/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb),
 but things seem much better when using Jupyter Lab (rather than
