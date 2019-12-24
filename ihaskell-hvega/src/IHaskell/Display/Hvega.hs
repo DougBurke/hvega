@@ -48,7 +48,7 @@ then it can be displayed automatically in Jupyter Lab by
 where @vlShow@ should be imported automatically by IHaskell.
 -}
 
-module IHaskell.Display.Hvega (vlShow) where
+module IHaskell.Display.Hvega (vlShow, VegaLiteLab) where
 
 import qualified Data.Text.Lazy as LT
 
@@ -76,8 +76,8 @@ import IHaskell.Display (IHaskellDisplay(..), Display(..)
 --   since the JavaScript @fs@ module may not be loaded.
 --
 instance IHaskellDisplay VegaLite where
-  display vl = 
-  
+  display vl =
+
     let -- Note: need to look in the package.json files for these packages
         -- to find the "full name" (the contents of the jsdelivr key),
         -- since requirejs does seem to like appending .js to everything.
@@ -109,7 +109,7 @@ instance IHaskellDisplay VegaLite where
                    <> "ndiv.innerHTML = "
                    <> "'Awesome Vega-Lite visualization to appear here';"
                    <> "element[0].appendChild(ndiv);"
-                
+
         js = LT.unpack (encodeToLazyText (fromVL vl))
 
         -- Use the div element we have just created for the plot.
@@ -121,9 +121,9 @@ instance IHaskellDisplay VegaLite where
                <> "function (error) { ndiv.innerHTML = "
                <> "'There was an error: ' + error; });"
                <> "});"
-                      
+
         ds = [javascript (config <> makeDiv <> plot)]
-             
+
     in pure (Display ds)
 
 -- | A wrapper around 'VegaLite' so that we can write a 'Display'
