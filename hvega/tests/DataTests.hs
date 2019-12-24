@@ -268,13 +268,13 @@ flatten1 =
         dvals =
             dataFromJson
                 (A.toJSON (map A.object
-                    [ [ ( "key" .= ("alpha" :: String) )
-                      , ( "foo" .= [ 1 :: Int, 2 ] )
-                      , ( "bar" .= [ "A" :: String, "B" ] )
+                    [ [ "key" .= ("alpha" :: String)
+                      , "foo" .= [ 1 :: Int, 2 ]
+                      , "bar" .= [ "A" :: String, "B" ]
                       ]
-                    , [ ( "key" .= ("beta" :: String) )
-                      , ( "foo" .= [ 3 :: Int, 4, 5 ] )
-                      , ( "bar" .= [ "C" :: String, "D" ] )
+                    , [ "key" .= ("beta" :: String)
+                      , "foo" .= [ 3 :: Int, 4, 5 ]
+                      , "bar" .= [ "C" :: String, "D" ]
                       ]
                     ])
                 )
