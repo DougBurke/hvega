@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -7,7 +8,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 Allow VegaLite visualizations to be displayed directly in Jupyter notebooks
 or Jupyter Lab. For the moment they are handled separately, in that the Jupyter
@@ -52,7 +53,10 @@ module IHaskell.Display.Hvega (vlShow) where
 import qualified Data.Text.Lazy as LT
 
 import Data.Aeson.Text (encodeToLazyText)
+
+#if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite (VegaLite, fromVL)
 
