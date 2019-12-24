@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 --
@@ -7,7 +8,9 @@ module CompositeTests (testSpecs) where
 
 import qualified Data.Text as T
 
+#if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite
 

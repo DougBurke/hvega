@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 --
@@ -7,7 +8,9 @@ module GeoTests (testSpecs) where
 
 import qualified Data.Text as T
 
+#if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite
 
@@ -63,7 +66,7 @@ defaultSize2 :: VegaLite
 defaultSize2 =
     toVegaLite
         [ description "Default map size with view width and height specified in config."
-        , configure $ configuration (View [ ViewWidth 500, ViewHeight 300 ]) $ []
+        , configure $ configuration (View [ ViewWidth 500, ViewHeight 300 ]) []
         , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "counties" ]
         , mark Geoshape []
@@ -442,7 +445,7 @@ mapComp2 =
             asSpec [ width 300, height 300, projection [ PrType Orthographic ], layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) $ []
+        [ configure $ configuration (View [ ViewStroke Nothing ]) []
         , hConcat [ globe, globe, globe ]
         ]
 
@@ -473,7 +476,9 @@ mapComp3 =
             asSpec [ layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) $ [], hConcat [ rotatedSpec (-65), rotatedSpec 115, rotatedSpec (-65) ] ]
+        [ configure $ configuration (View [ ViewStroke Nothing ]) []
+        , hConcat [ rotatedSpec (-65), rotatedSpec 115, rotatedSpec (-65) ]
+        ]
 
 
 mapComp4 :: VegaLite
@@ -511,7 +516,9 @@ mapComp4 =
             asSpec [ layer [ seaSpec, graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) $ [], hConcat [ rotatedSpec 0, rotatedSpec (-40) ] ]
+        [ configure $ configuration (View [ ViewStroke Nothing ]) []
+        , hConcat [ rotatedSpec 0, rotatedSpec (-40) ]
+        ]
 
 
 dotMap1 :: VegaLite
@@ -530,7 +537,7 @@ dotMap1 =
         , height 300
         , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/zipcodes.csv" []
-        , transform $ calculateAs "substring(datum.zip_code, 0, 1)" "digit" $ []
+        , transform $ calculateAs "substring(datum.zip_code, 0, 1)" "digit" []
         , mark Circle []
         , enc []
         ]

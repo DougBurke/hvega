@@ -78,21 +78,17 @@ columns4 =
         ]
         []
 
--- is this in the prelude
-repeatN :: Int -> a -> [a]
-repeatN n = take n . P.repeat
-
 dataVals :: [DataColumn] -> Data
 dataVals =
     let
         rows =
-            Numbers $ concatMap (repeatN (3 * 5)) [ 1, 2, 3, 4 ]
+            Numbers $ concatMap (P.replicate (3 * 5)) [ 1, 2, 3, 4 ]
 
         cols =
-            Numbers $ concat $ repeatN 4 $ concatMap (repeatN 3) [ 1, 2, 3, 4, 5 ]
+            Numbers $ concat $ P.replicate 4 $ concatMap (P.replicate 3) [ 1, 2, 3, 4, 5 ]
 
         cats =
-            Numbers $ concat $ repeatN (4 * 5) [ 1, 2, 3 ]
+            Numbers $ concat $ P.replicate (4 * 5) [ 1, 2, 3 ]
 
         vals =
             Numbers $ [ 30, 15, 12, 25, 30, 25, 10, 28, 11, 18, 24, 16, 10, 10, 10 ]
