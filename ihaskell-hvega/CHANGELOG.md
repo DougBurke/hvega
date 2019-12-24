@@ -1,9 +1,23 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
-## 0.2.0.3
+## 0.2.1.0
 
-Updated the supported `hvega` range to include version 0.4.
+THe module now exports the `VegaLiteLab` type (provided by Alexey
+Kuleshevich (lehins). This type is used to support display in Jupyter
+Lab as well as notebooks, and is a somewhat experimental feature.
+
+The module now builds without warnings on GHC 8.8.1.
+
+This release has been marked as compatible with version 0.4 of `hvega`,
+but **care should be taken** as it is possible to create visualizations
+that either do not display correctly, or do not display at all: these
+are visualizations that take advantages of Vega-Lite functionality
+not supported by the Javascript display code (presumably because
+of our use of an old Vega-Lite mimetype version in IHaskell; this
+will hopefuly be addressed once a version of IHaskell is released
+with support for
+[custom mimetypes](https://github.com/gibiansky/IHaskell/issues/1089)).
 
 ## 0.2.0.2
 
