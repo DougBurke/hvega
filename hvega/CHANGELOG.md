@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.4.1.2
+
+Documentation fix (rendering of a URL), provided by Alexey Kuleshevich
+(lehins).
+
 ## 0.4.1.1
 
 Avoid a build warning about importing <> from Data.Monoid in GHC 8.8.1
