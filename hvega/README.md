@@ -13,7 +13,7 @@ package - or use of external viewers such as
 [Vega View](https://hackage.haskell.org/package/vega-view) and
 [Vega-Desktop](https://github.com/vega/vega-desktop).
 
-It is based on an early version (2.2.1) of the
+It started off being a copy on an early version (2.2.1) of the
 [Elm Vega library](http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite),
 which is released under a BSD3 license by Jo Wood of the giCentre at the
 City University of London.
@@ -53,7 +53,7 @@ The
 [Vega-Lite Example Gallery](https://vega.github.io/vega-lite/examples/) has
 been converted to an
 [IHaskell notebook](https://github.com/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb)
-Uunfortunately the plots created by VegaEmbed **do not always appear**
+Unfortunately the plots created by VegaEmbed **do not always appear**
 in the notebook when viewed with either GitHub's viewer or
 [ipynb viewer](http://nbviewer.jupyter.org/github/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb),
 but things seem much better when using Jupyter Lab (rather than
