@@ -4,7 +4,8 @@ For the latest version of this document, please see
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich
-(lehins).
+(lehins). The tests should now build without warning in GHC 8.8.1 (CPP
+to the rescue again!).
 
 ## 0.4.1.1
 
