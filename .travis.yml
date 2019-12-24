@@ -9,14 +9,20 @@
 sudo: true
 language: haskell
 
-dist: bionic
-addons
-  apt:
-    sources:
-      - ppa:hvr/ghc
-    packages:
-    - ghc
-    - cabal
+# I tried this because of what-turned-out-to-be transient failures
+# with Travis (it couldn't download GHC 8.8.1). However, with the
+# following change the tests no longer ran, and it's not clear to
+# me if that's because there's something wrong below or not, so
+# I am removing it for now.
+#
+# dist: bionic
+# addons
+#   apt:
+#     sources:
+#       - ppa:hvr/ghc
+#     packages:
+#     - ghc
+#     - cabal
 
 git:
   depth: 5
