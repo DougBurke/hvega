@@ -9,6 +9,15 @@
 sudo: true
 language: haskell
 
+dist: bionic
+addons
+  apt:
+    sources:
+      - ppa:hvr/ghc
+    packages:
+    - ghc
+    - cabal
+
 git:
   depth: 5
 

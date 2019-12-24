@@ -8,10 +8,12 @@ visualizations in
 
 This code is released under the BSD3 license.
 
-It is an almost-direct copy of version 2.2.1 of the
+The `hvega` package started of as an almost-direct copy of version 2.2.1 of the
 [Elm Vega library](http://package.elm-lang.org/packages/gicentre/elm-vega/2.2.1/VegaLite),
-which is released under a BSD3 license by Jo Wood of the giCentre at the
-City University of London.
+which was released under a BSD3 license by Jo Wood of the giCentre at the
+City University of London. The two have diverged somewhat since (mainly
+that `hvega` still uses data types as its primary control structure
+whilst the Elm version has moved to functions).
 
 # Installation
 
@@ -23,14 +25,18 @@ The packages are available on [hackage](https://hackage.haskell.org/):
 There is a top-level `stack.yaml` which builds both `hvega` and
 `ihaskell-hvega` using [Stack](https://docs.haskellstack.org/en/stable/README/).
 There is also a `shell.nix` file for development with
-[Nix](https://nixos.org/nix/), although this is not guaranteed to work
-as I have not yet fully integrated Nix into my life.
+[Nix](https://nixos.org/nix/). At the present time (Devember 2019)
+I don't make any guarantees about either method (in particular
+for `ihaskell-vega`).
 
 # Testing
 
-This would be nice. The IHaskell notebook
-`notebooks/VegaLiteGallery.ipynb` is used as a manual test case, but
-automated tests would be ideal.
+There is basic testing of the output of `hvega`, and the module also
+contains a
+[tutorial](https://hackage.haskell.org/package/hvega/docs/Graphics-Vega-Tutorials-VegaLite.html)
+which contains plots you can view; e.g. with
+[Vega View](https://hackage.haskell.org/package/vega-view) or
+[Vega-Desktop](https://github.com/vega/vega-desktop).
 
 The [`notebooks/` directory](https://github.com/DougBurke/hvega/tree/master/notebooks) contains a (very small, very random) sample
 of notebooks experimenting with `hvega`. I recommend using
@@ -38,7 +44,9 @@ of notebooks experimenting with `hvega`. I recommend using
 to view these.
 
 There is also a
-[Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb).
+[Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb),
+and the Monad-Bayes blog series by tweag.io
+which [starts here](https://www.tweag.io/posts/2019-09-20-monad-bayes-1.html).
 
 # Development
 

@@ -4,8 +4,10 @@
 }:
 mkDerivation {
   pname = "hvega";
-  version = "0.4.0.0";
+  version = "0.4.1.2";
   src = ./.;
+  isLibrary = true;
+  isExecutable = true;
   libraryHaskellDepends = [
     aeson base text unordered-containers vector
   ];
