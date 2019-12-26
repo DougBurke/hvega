@@ -18,23 +18,7 @@ not directly exported to the user.
 -}
 
 module Graphics.Vega.VegaLite.Core
-       (
-         toVegaLite
-       , toVegaLiteSchema
-       , vlSchema2, vlSchema3, vlSchema4, vlSchema
-       , fromVL
-       , VLProperty(..)
-       , VLSpec
-       , VegaLite
-       , PropertySpec
-       , LabelledSpec
-       , BuildLabelledSpecs
-       , Angle
-       , Color
-       , Opacity
-       , ZIndex
-       , combineSpecs
-       , toHtml
+       ( toHtml
        , toHtmlFile
        , toHtmlWith
        , toHtmlFileWith
@@ -303,11 +287,11 @@ import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TL
 import qualified Data.Vector as V
 
-import Control.Arrow (first, second)
+import Control.Arrow (second)
 
 -- Aeson's Value type conflicts with the Number type
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
-import Data.Maybe (catMaybes, fromMaybe, mapMaybe)
+import Data.Maybe (fromMaybe, mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -315,6 +299,22 @@ import Data.Monoid ((<>))
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
+
+import Graphics.Vega.VegaLite.Specification
+  ( fromVL
+  , VLProperty(..)
+  , VLSpec
+  , VegaLite
+  , PropertySpec
+  , LabelledSpec
+  , BuildLabelledSpecs
+  , Angle
+  , Color
+  , Opacity
+  , ZIndex
+  , asSpec
+  , specification
+  )
 
 
 --- helpers
@@ -435,179 +435,6 @@ fromT = toJSON
 fromF :: Double -> VLSpec
 fromF = toJSON
 
----------
-
-
--- | A Vega Lite visualization, created by
---   'toVegaLite'. The contents can be extracted with 'fromVL'.
---
-newtype VegaLite =
-  VL {
-  fromVL :: VLSpec
-  -- ^ Extract the specification for passing to a VegaLite visualizer.
-  --
-  --   > let vlSpec = fromVL vl
-  --   > Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
-  --
-  --   Note that there is __no__ validation done to ensure that the
-  --   output matches the Vega Lite schema. That is, it is possible to
-  --   create an invalid visualization with this module (e.g. missing a
-  --   data source or referring to an undefined field).
-  }
-
--- | The Vega-Lite specification is represented as JSON.
-type VLSpec = Value
-
-baseSchema :: T.Text
-baseSchema = "https://vega.github.io/schema/vega-lite/"
-
--- | The latest version 2 Vega-Lite schema (equivalent to
---   @'vlSchema' 2 Nothing Nothing Nothing@).
-vlSchema2 :: T.Text
-vlSchema2 = vlSchema 2 Nothing Nothing Nothing
-
--- | The latest version 3 Vega-Lite schema (equivalent to
---   @'vlSchema' 3 Nothing Nothing Nothing@).
-vlSchema3 :: T.Text
-vlSchema3 = vlSchema 3 Nothing Nothing Nothing
-
--- | The latest version 4 Vega-Lite schema (equivalent to
---   @'vlSchema' 4 Nothing Nothing Nothing@).
-vlSchema4 :: T.Text
-vlSchema4 = vlSchema 4 Nothing Nothing Nothing
-
--- | Create the Vega-Lite schema for an arbitrary version. See
---   <https://github.com/vega/schema> for more information on naming
---   and availability.
---
---   There is no validation of the input values.
---
---   At the time of writing the latest version 4 schema - which
---   is @https://vega.github.io/schema/vega-lite/v4.0.0-beta.0.json@ -
---   can be specified as
---
---   @vlSchema 4 (Just 0) (Just 0) (Just "-beta.0")@
---
---   whereas
---
---   @vlSchema 4 Nothing Nothing Nothing@
---
---   refers to the latest version.
---
-vlSchema ::
-  Natural
-  -- ^ The major version
-  -> Maybe Natural
-  -- ^ The minor version
-  -> Maybe Natural
-  -- ^ The \"micro\" version
-  -> Maybe T.Text
-  -- ^ Anything beyond "major.minor.micro" (e.g. \"-beta.0").
-  -> T.Text
-  -- ^ The Vega-Lite Schema
-vlSchema major mminor mmicro mextra =
-  let versions = [ pure (showNat major)
-                 , showNat <$> mminor
-                 , showNat <$> mmicro
-                 ]
-      version = T.intercalate "." (catMaybes versions)
-
-  in baseSchema <> "v" <> version <> fromMaybe "" mextra <> ".json"
-
-
-showNat :: Natural -> T.Text
-showNat = T.pack . show
-
-
-{-|
-
-Convert a list of Vega-Lite specifications into a single JSON object
-that may be passed to Vega-Lite for graphics generation. Commonly
-these will include at least a data, mark, and encoding specification.
-
-While simple properties like 'mark' may be provided directly, it is
-usually clearer to label more complex ones such as encodings as
-separate expressions. This becomes increasingly helpful for
-visualizations that involve composition of layers, repeats and facets.
-
-Specifications can be built up by chaining a series of functions (such
-as 'dataColumn' or 'position' in the example below). Functional
-composition using the '.' operator allows this to be done compactly.
-
-@
-let dat = 'dataFromColumns' []
-          . 'dataColumn' "a" ('Strings' [ \"C", \"C", \"D", \"D", \"E", \"E" ])
-          . 'dataColumn' "b" ('Numbers' [ 2, 7, 1, 2, 6, 8 ])
-
-    enc = 'encoding'
-          . 'position' 'X' [ 'PName' "a", 'PmType' 'Nominal' ]
-          . 'position' 'Y' [ 'PName' "b", 'PmType' 'Quantitative', 'PAggregate' 'Mean' ]
-
-in 'toVegaLite' [ dat [], 'mark' 'Bar' [], enc [] ]
-@
-
-The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>,
-although there are some differences, in part because of bugs in @hvega@ -
-in which case please [report an issue](https://github.com/DougBurke/hvega/issues) - but also because of issues with the Vega-Lite spec (for instance there
-are several minor issues I have reported against version 3.3.0 of the
-Vega-Lite schema).
-
-Use 'toVegaLiteSchema' if you need to create a Vega-Lite specification
-which uses a different version of the schema.
-
--}
-
--- TODO:
---    Should the input data, or converted to VLSpec, be stored
---    without the $schema key, so it can be easily combined with
---    other visualizations?
---
---    Could we make VegaLite a Semigroup so you can easily combine
---    specifications? However, what would that mean (concatenation,
---    if so what direction, anything else?)
-
-toVegaLite :: [PropertySpec] -> VegaLite
-toVegaLite = toVegaLiteSchema vlSchema3
-
-
-{-|
-A version of 'toVegaLite' that allows you to change the Vega-Lite
-schema version of the visualization.
-
-@
-'toVegaLiteSchema' 'vlSchema4' props
-@
--}
-
-toVegaLiteSchema ::
-  T.Text
-  -- ^ The schema to use (e.g. 'vlSchema4' or created with 'vlSchema').
-  -> [PropertySpec]
-  -- ^ The visualization.
-  -> VegaLite
-toVegaLiteSchema schema props =
-  let kvals = ("$schema" .= schema) : map toProp props
-      toProp = first vlPropertyLabel
-
-  in VL { fromVL = object kvals }
-
-
-{-|
-
-Combines a list of labelled specifications into a single specification.
-This is useful when you wish to create
-a single page with multiple visulizualizations.
-
-@
-'combineSpecs'
-    [ ( "vis1", myFirstVis )
-    , ( "vis2", mySecondVis )
-    , ( "vis3", myOtherVis )
-    ]
-@
--}
-combineSpecs :: [LabelledSpec] -> VLSpec
-combineSpecs = object
 
 {-|
 
@@ -698,22 +525,6 @@ toHtmlFileWith mopts file = TL.writeFile file . toHtmlWith mopts
 
 {-|
 
-Create a specification sufficient to define an element in a composed visualization
-such as a superposed layer or juxtaposed facet. Typically a layer will contain a
-full set of specifications that define a visualization with
-the exception of the data specification which is usually defined outside of any one
-layer. Whereas for repeated and faceted specs, the entire specification is provided.
-
-@
-spec1 = asSpec [ enc1 [], 'mark' 'Line' [] ]
-@
--}
-asSpec :: [PropertySpec] -> VLSpec
-asSpec = object . map (first vlPropertyLabel)
-
-
-{-|
-
 Specifies a list of geo features to be used in a geoShape specification.
 Each feature object in this collection can be created with the 'geometry'
 function.
@@ -787,181 +598,6 @@ opAs Count _ label =
   object [ op_ Count, "as" .= label ]
 opAs op field label =
   object [ op_ op, field_ field, "as" .= label ]
-
-
-{-|
-
-Top-level Vega-Lite properties. These are the ones that define the core of the
-visualization grammar. All properties are created by functions which can be
-arranged into seven broad groups:
-
-[Data Properties] These relate to the input data to be visualized. Generated by
-'dataFromColumns', 'dataFromRows', 'dataFromUrl', 'dataFromSource',
-'dataFromJson', 'dataSequence', 'sphere', and 'graticule'.
-
-[Transform Properties] These indicate that some transformation of input data should
-be applied before encoding them visually. Generated by 'transform'
-and 'projection' they can include data transformations such as 'filter',
-'binAs' and 'calculateAs' and geo transformations of longitude, latitude coordinates
-used by marks such as 'Geoshape', 'Point', and 'Line'.
-
-[Mark Properties] These relate to the symbols used to visualize data items. They
-are generated by 'mark', and include types such as 'Circle', 'Bar', and 'Line'.
-
-[Encoding Properties] These specify which data elements are mapped to which mark characteristics
-(known as /channels/). Generated by 'encoding', they include encodings
-such as 'position', 'color', 'size', 'shape', 'text', 'hyperlink', and
-'order'.
-
-[Composition Properties] These allow visualization views to be combined to form more
-complex visualizations. Generated by 'layer', 'repeat', 'repeatFlow', 'facet', 'facetFlow',
-'vlConcat', 'columns', 'hConcat', 'vConcat', 'asSpec', and 'resolve'.
-
-[Interaction Properties] These allow interactions such as clicking, dragging and others
-generated via a GUI or data stream to influence the visualization. Generated by
-'selection'.
-
-[Supplementary and Configuration Properties] These provide a means to add metadata and
-styling to one or more visualizations. Generated by 'name', 'title', 'description',
-'background', 'height', 'width', 'padding', 'autosize', 'viewBackground',
-and 'configure'.
-
-Prior to @0.4.0.0@ this was an opaque data type, as the constructors
-were not exported. It is suggested that you do not import the
-constructors to @VLProperty@ unless you need to transform the
-Vega-Lite code in some manner (e.g. because @hvega@ is missing needed
-functionality or is buggy).
-
-Note that there is only a very-limited attempt to enforce the Vega-Lite
-Schema (e.g. to ensure the required components are provided).
-
--}
-
--- based on schema 3.3.0 #/definitions/TopLevelSpec
--- which accepts one of
---    #/definitions/TopLevelUnitSpec
---    #/definitions/TopLevelFacetSpec
---    #/definitions/TopLevelLayerSpec
---    #/definitions/TopLevelRepeatSpec
---    #/definitions/TopLevelConcatSpec
---    #/definitions/TopLevelVConcatSpec
---    #/definitions/TopLevelHConcatSpec
-
-data VLProperty
-    = VLAlign
-      -- ^ See 'align'.
-      --
-      --   @since 0.4.0.0
-    | VLAutosize
-      -- ^ See 'autosize'.
-    | VLBackground
-      -- ^ See 'background'.
-    | VLBounds
-      -- ^ See 'bounds'.
-      --
-      --   @since 0.4.0.0
-    | VLCenter
-      -- ^ See 'center' and 'centerRC'.
-      --
-      --   @since 0.4.0.0
-    | VLColumns
-      -- ^ See 'columns'.
-      --
-      --   @since 0.4.0.0
-    | VLConcat
-      -- ^ See 'vlConcat'.
-      --
-      --   @since 0.4.0.0
-    | VLConfig
-      -- ^ See 'configure'.
-    | VLData
-      -- ^ See 'dataFromColumns', 'dataFromJson', 'dataFromRows',
-      --   'dataFromSource', 'dataFromUrl', 'dataName', 'dataSequence',
-      --   'dataSequenceAs', 'graticule', 'noData', and 'sphere'.
-    | VLDatasets
-      -- ^ See 'datasets'.
-    | VLDescription
-      -- ^ See 'description'.
-    | VLEncoding
-      -- ^ See 'encoding'.
-    | VLFacet
-      -- ^ See 'facet' and 'facetFlow'.
-    | VLHConcat
-      -- ^ See 'hConcat'.
-    | VLHeight
-      -- ^ See 'height'.
-    | VLLayer
-      -- ^ See 'layer'.
-    | VLMark
-      -- ^ See 'mark'.
-    | VLName
-      -- ^ See 'name'.
-    | VLPadding
-      -- ^ See 'padding'.
-    | VLProjection
-      -- ^ See 'projection'.
-    | VLRepeat
-      -- ^ See 'repeat' and 'repeatFlow'.
-    | VLResolve
-      -- ^ See 'resolve'.
-    | VLSelection
-      -- ^ See 'selection'.
-    | VLSpacing
-      -- ^ See 'alignRC', 'spacing', and 'spacingRC'.
-      --
-      --   @since 0.4.0.0
-    | VLSpecification
-      -- ^ See 'specification'.
-    | VLTitle
-      -- ^ See 'title'.
-    | VLTransform
-      -- ^ See 'transform'.
-    | VLUserMetadata
-      -- ^ see 'usermetadata'.
-      --
-      --   @since 0.4.0.0
-    | VLVConcat
-      -- ^ See 'vConcat'.
-    | VLViewBackground
-      -- ^ See 'viewBackground'.
-      --
-      --   @since 0.4.0.0
-    | VLWidth
-      -- ^ See 'width'.
-
-
-vlPropertyLabel :: VLProperty -> T.Text
-vlPropertyLabel VLAlign = "align"
-vlPropertyLabel VLAutosize = "autosize"
-vlPropertyLabel VLBackground = "background"
-vlPropertyLabel VLBounds = "bounds"
-vlPropertyLabel VLCenter = "center"
-vlPropertyLabel VLColumns = "columns"
-vlPropertyLabel VLConcat = "concat"
-vlPropertyLabel VLConfig = "config"
-vlPropertyLabel VLData = "data"
-vlPropertyLabel VLDatasets = "datasets"
-vlPropertyLabel VLDescription = "description"
-vlPropertyLabel VLEncoding = "encoding"
-vlPropertyLabel VLFacet = "facet"
-vlPropertyLabel VLHConcat = "hconcat"
-vlPropertyLabel VLHeight = "height"
-vlPropertyLabel VLLayer = "layer"
-vlPropertyLabel VLMark = "mark"
-vlPropertyLabel VLName = "name"
-vlPropertyLabel VLPadding = "padding"
-vlPropertyLabel VLProjection = "projection"
-vlPropertyLabel VLRepeat = "repeat"
-vlPropertyLabel VLResolve = "resolve"
-vlPropertyLabel VLSelection = "selection"
-vlPropertyLabel VLSpacing = "spacing"
-vlPropertyLabel VLSpecification = "spec"
-vlPropertyLabel VLTitle = "title"
-vlPropertyLabel VLTransform = "transform"
-vlPropertyLabel VLUserMetadata = "usermeta"
-vlPropertyLabel VLVConcat = "vconcat"
-vlPropertyLabel VLViewBackground = "view"
-vlPropertyLabel VLWidth = "width"
 
 
 {-|
@@ -1042,29 +678,6 @@ data Format
 
 {-|
 
-A convenience type-annotation label. It is the same as 'Data'.
-
-@since 0.4.0.0
--}
-type PropertySpec = (VLProperty, VLSpec)
-
-{-|
-
-Represents a named Vega-Lite specification, usually generated by a
-function in this module. You shouldn't need to create @LabelledSpec@
-tuples directly, but they can be useful for type annotations.
--}
-type LabelledSpec = (T.Text, VLSpec)
-
-{-|
-
-Represent those functions which can be chained together using function
-composition to append new specifications onto an existing list.
--}
-type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
-
-{-|
-
 Represents a single column of data. Used when generating inline data with
 'dataColumn' and 'dataFromColumns'.
 -}
@@ -1094,101 +707,6 @@ but kept separate to help better-document code.
 
 -}
 type Data = (VLProperty, VLSpec)
-
-
-{-|
-
-Convenience type-annotation label to indicate a color value.
-There is __no attempt__ to validate that the user-supplied input
-is a valid color.
-
-Any supported HTML color specification can be used, such as:
-
-@
-\"#eee\"
-\"#734FD8\"
-\"crimson\"
-\"rgb(255,204,210)\"
-\"hsl(180, 50%, 50%)\"
-@
-
-@since 0.4.0.0
--}
-
-type Color = T.Text
-
-
-{-|
-
-Convenience type-annotation label to indicate an opacity value, which
-lies in the range 0 to 1 inclusive. There is __no attempt__ to validate
-that the user-supplied value falls in this range.
-
-A value of 0 indicates fully transparent (see through), and 1 is
-fully opaque (does not show anything it is on top of).
-
-@since 0.4.0.0
--}
-
-type Opacity = Double
-
-
-{-|
-
-Convenience type-annotation label to indicate an angle, which is measured
-in degrees from the horizontal (so anti-clockwise).
-
-The value should be in the range 0 to 360, inclusive, but __no attempt__ is
-made to enforce this.
-
-@since 0.4.0.0
--}
-
-type Angle = Double
-
-
-{-|
-
-At what "depth" (z index) is the item to be drawn (a relative depth
-for items in the visualization). The standard values are @0@ for
-back and @1@ for front, but other values can be used if you want
-to ensure a certain layering of items.
-
-The following example is taken from a discussion with
-<https://github.com/gicentre/elm-vegalite/issues/15#issuecomment-524527125 Jo Wood>:
-
-@
-let dcols = 'dataFromColumns' []
-              . 'dataColumn' "x" ('Numbers' [ 20, 10 ])
-              . 'dataColumn' "y" ('Numbers' [ 10, 20 ])
-              . 'dataColumn' "cat" ('Strings' [ "a", "b" ])
-
-    axis lbl z = [ 'PName' lbl, 'PmType' 'Quantitative', 'PAxis' [ 'AxZIndex' z ] ]
-    enc = 'encoding'
-            . 'position' 'X' (axis "x" 2)
-            . 'position' 'Y' (axis "y" 1)
-            . 'color' [ 'MName' "cat", 'MmType' 'Nominal', 'MLegend' [] ]
-
-    cfg = 'configure'
-            . 'configuration' ('Axis' [ 'GridWidth' 8 ])
-            . 'configuration' ('AxisX' [ 'GridColor' "red" ])
-            . 'configuration' ('AxisY' [ 'GridColor' "blue" ])
-
-in 'toVegaLite' [ cfg []
-              , dcols []
-              , enc []
-              , 'mark' 'Circle' [ 'MSize' 5000, 'MOpacity' 1 ]
-              ]
-@
-
-<<images/zindex.png>>
-
-<https://vega.github.io/editor/#/url/vega-lite/N4KABBYEQMYPYDsBmBLA5lAXGUk-QEMAPFAZwE0sdx9ao0AnFAEwGE4AbOBqqAIw4BXAKZQatAL4AacfijEyADSq5acxi3Zce2KA2HMxasNNl55JUirNr6TZgHUWAFwAWVABw2IE2afMAtgQMANbWxlCkKABeotgArAAMyTIRcAAOBDAozgCeVACMqbZ56XHQ2QwwHKJ+xRBQzATOBOG2AG4EQsJW2ADa3viqxnQwzbyt9SPmRFQATIlT0w352AWJg3j+y8PLDWPOvHxQS8tQs2uLm7arYAvXPoMAunWyUAAkpDCuwkG8rs5nOlSJgAPSg9rCNAEAB0aByrkEfBhKDgoK+PyCEKhBAAtBwcsIIQBmGEAK1IiBOb2ECHgzBQCAw2F25ng2ja0ygqGEHEMugO1L2UFK5SgCDgAUZXSFZxqaFp-LACEEHA4g22dAu1GFPL5vFmpzoot4AEdBAQEM4cs0UJDZVyFL0dXtIFBoozmMJtXMHiYNUboLdWbY9UqoPlA+YTbpzZbrS1rfao26nZzXe7Pd7Cn7fMY85BfL4gA View the visualization in the Vega Editor>
-
-@since 0.4.0.0
--}
-
-type ZIndex = Natural
 
 
 formatProperty :: Format -> [LabelledSpec]
@@ -1259,7 +777,7 @@ let toJS = Data.Aeson.toJSON
 
     enc = ...
 
-in 'toVegaLite'
+in 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'datasets' [ ( \"myData\", dvals [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
     , 'dataFromSource' \"myData\" []
     , 'mark' 'Bar' []
@@ -1470,7 +988,7 @@ may be used. For more general cases of json creation, consider 'Data.Aeson.encod
 @
 let geojson =
         'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
-in 'toVegaLite'
+in 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 200
     , 'height' 200
     , 'dataFromJson' geojson []
@@ -1633,7 +1151,7 @@ parameter or an empty list to use the default formatting. See the
 for details.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'datasets' [ ( "myData", dvals [] ),  ( "myJson", 'dataFromJson' json [] ) ]
     , 'dataFromSource' "myData" []
     , 'mark' 'Bar' []
@@ -1796,7 +1314,7 @@ for the second parameter.
 @
 let dvals = 'dataFromUrl' \"city.json\" ['TopojsonFeature' \"boroughs\"] []
     markOpts = 'mark' 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
-in 'toVegaLite' [dvals, markOpts]
+in 'Graphics.Vega.VegaLite.toVegaLite' [dvals, markOpts]
 @
 -}
 mark :: Mark -> [MarkProperty] -> PropertySpec
@@ -3143,7 +2661,7 @@ data PositionChannel
       -- spec =
       --    'asSpec' [ dataVals [], 'mark' 'Tick' [], enc [] ]
       --
-      -- 'toVegaLite'
+      -- 'Graphics.Vega.VegaLite.toVegaLite'
       --    [ 'repeatFlow' [ \"Horsepower\", \"Miles_per_Gallon\", \"Acceleration\"]
       --    , 'specification' spec
       --    ]
@@ -3293,7 +2811,7 @@ string such as @\"#ffe\"@ or @\"rgb(200,20,150)\"@. If not specified the backgro
 be transparent.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'background' "rgb(251,247,238)"
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
@@ -3310,7 +2828,7 @@ background colour = (VLBackground, toJSON colour)
 Provides an optional description to be associated with the visualization.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'description' "Population change of key regions since 1900"
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
@@ -3338,7 +2856,7 @@ usermetadata o = (VLUserMetadata, A.Object o)
 Provide an optional title to be displayed in the visualization.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'title' "Population Growth" ['TColor' \"orange\"]
     , 'dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
@@ -4323,7 +3841,7 @@ Declare the way the view is sized. See the
 for details.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 250
     , 'height' 300
     , 'autosize' [ 'AFit', 'APadding', 'AResize' ]
@@ -6920,7 +6438,7 @@ Generate a data source that is a sphere for bounding global geographic data.
 The sphere will be subject to whatever projection is specified for the view.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'sphere'
     , 'projection' [ 'PrType' 'Orthographic' ]
     , 'mark' 'Geoshape' [ 'MFill' "aliceblue" ]
@@ -6947,7 +6465,7 @@ let proj = 'projection' [ 'PrType' 'Orthographic' ]
             [ 'graticule' [ 'GrStep' (5, 5) ]
             , 'mark' 'Geoshape' [ 'MFilled' False, 'MStrokeWidth' 0.3 ]
             ]
-in 'toVegaLite' [ proj, 'layer' [ sphereSpec, gratSpec ] ]
+in 'Graphics.Vega.VegaLite.toVegaLite' [ proj, 'layer' [ sphereSpec, gratSpec ] ]
 @
 
 @since 0.4.0.0
@@ -7726,7 +7244,7 @@ See the
 for further details.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Ordinal' ]
             , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Ordinal' ]
             ]
@@ -7753,7 +7271,7 @@ Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
     , 'specification' spec
     ]
@@ -7775,7 +7293,7 @@ will be calculated based on the content of the visualization. See
 setting.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'height' 300
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
@@ -7811,7 +7329,7 @@ concatConfigProperty (ConcatSpacing x) = "spacing" .= x
 Assigns a list of specifications to be juxtaposed horizontally in a visualization.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'dataFromUrl' "data/driving.json" []
     , hConcat [ spec1, spec2 ]
     ]
@@ -7826,7 +7344,7 @@ hConcat specs = (VLHConcat, toJSON specs)
 Assigns a list of specifications to superposed layers in a visualization.
 
 @
-'toVegaLite' ['dataFromUrl' "data/driving.json" [], layer [spec1, spec2]]
+'Graphics.Vega.VegaLite.toVegaLite' ['dataFromUrl' "data/driving.json" [], layer [spec1, spec2]]
 @
 
 A complete example showing @layer@ in use:
@@ -7840,7 +7358,7 @@ let dvals = 'dataFromColumns' []
              . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
              . 'text' ['TName' \"a\", 'TmType' 'Nominal']
 
-    in 'toVegaLite' [ dvals []
+    in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals []
                   , enc []
                   , 'layer' [ 'asSpec' ['mark' 'Bar' []]
                           , 'asSpec' ['mark' 'Text' ['MdY' (-8)]]
@@ -7858,7 +7376,7 @@ layer specs = (VLLayer, toJSON specs)
 Provides an optional name to be associated with the visualization.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'name' \"PopGrowth\"
     , 'dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
@@ -7878,7 +7396,7 @@ interpreted will depend on the 'autosize' properties. See the
 for details.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
     , 'padding' ('PEdges' 20 10 5 15)
     , 'dataFromUrl' "data/population.json" []
@@ -7908,7 +7426,7 @@ See the
 for further details.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'repeat' ['ColumnFields' [\"Cat\", \"Dog\", \"Fish\"]]
     , 'specification' ('asSpec' spec)
     ]
@@ -7933,7 +7451,7 @@ Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'repeatFlow' [ \"Cat\", \"Dog\", \"Fish\" ]
     , 'specification' ('asSpec' spec)
     ]
@@ -7961,7 +7479,7 @@ type.
 let res = 'resolve'
             . 'resolution' ('RLegend' [('ChColor', 'Independent')])
 
-in 'toVegaLite'
+in 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'dataFromUrl' \"data/movies.json\" []
     , 'vConcat' [heatSpec, barSpec]
     , res []
@@ -7987,7 +7505,7 @@ let dvals = 'dataFromColumns' []
     res = 'resolve'
             . 'resolution' ('RScale' [('ChY', 'Independent')])
 
-in 'toVegaLite' [dvals [], res [], 'layer' [specBar, specLine]]
+in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], res [], 'layer' [specBar, specLine]]
 @
 
 -}
@@ -8013,21 +7531,6 @@ sel =
 
 selection :: [LabelledSpec] -> PropertySpec
 selection sels = (VLSelection, object sels)
-
-
-{-|
-
-Defines a specification object for use with faceted and repeated small multiples.
-
-@
-'toVegaLite'
-    [ 'facet' [ 'RowBy' [ 'FName' \"Origin\", 'FmType' 'Nominal' ] ]
-    , 'specification' spec
-    ]
-@
--}
-specification :: VLSpec -> PropertySpec
-specification spec = (VLSpecification, spec)
 
 
 {-|
@@ -8203,7 +7706,7 @@ transform transforms =
 Assigns a list of specifications to be juxtaposed vertically in a visualization.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'dataFromUrl' "data/driving.json" []
     , 'vConcat' [ spec1, spec2 ]
     ]
@@ -8221,7 +7724,7 @@ will be calculated based on the content of the visualization. See
 setting.
 
 @
-'toVegaLite'
+'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
     , 'dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
@@ -8574,7 +8077,7 @@ let dvals = 'dataFromUrl' \"crimeData.csv\"
                          , 'PAggregate' 'Sum']
             . 'column' ['FName' \"crimeType\", 'FmType' 'Nominal']
 
-    in 'toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
+    in 'Graphics.Vega.VegaLite.toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
 @
 -}
 column ::
@@ -9016,7 +8519,7 @@ let dvals = 'dataFromColumns' []
             . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
             . 'color' ['MName' \"c\", 'MmType' 'Nominal']
 
-    in 'toVegaLite' [dvals [], trans [], enc [], 'mark' 'Line' []]
+    in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], trans [], enc [], 'mark' 'Line' []]
 @
 
 @since 0.4.0.0
@@ -9154,7 +8657,7 @@ let dvals = 'dataFromUrl' \"crimeData.csv\"
                          ]
             . 'row' ['FName' \"crimeType\", 'FmType' 'Nominal']
 
-in 'toVegaLite' ['height' 80, dvals [], 'mark' 'Bar' [], enc []]
+in 'Graphics.Vega.VegaLite.toVegaLite' ['height' 80, dvals [], 'mark' 'Bar' [], enc []]
 @
 
 -}

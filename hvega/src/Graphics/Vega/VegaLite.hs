@@ -604,6 +604,8 @@ module Graphics.Vega.VegaLite
 import Prelude ()
 
 import qualified Graphics.Vega.VegaLite.Core as VL
+import qualified Graphics.Vega.VegaLite.Specification as VL
+
 
 -- Documentation
 
