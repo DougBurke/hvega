@@ -40,7 +40,6 @@ import Graphics.Vega.VegaLite.Core
   , TitleConfig
   , ViewConfig(..)
   , Padding
-  , ProjectionProperty
   , StackOffset
   , FieldTitleProperty(..)
   , LegendLayout(..)
@@ -62,11 +61,13 @@ import Graphics.Vega.VegaLite.Core
   , stackOffset
   , titleConfigSpec
   , autosizeProperty
-  , projectionProperty
   , paddingSpec
   , header_
   , mprops_
-  
+  )
+import Graphics.Vega.VegaLite.Geometry
+  ( ProjectionProperty
+  , projectionProperty
   )
 import Graphics.Vega.VegaLite.Selection
   ( Selection
