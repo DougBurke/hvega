@@ -40,9 +40,11 @@ import Data.Maybe (mapMaybe)
 
 import Graphics.Vega.VegaLite.Core
   ( Channel
-  , DataValue
   , fromT
   , channelLabel
+  )
+import Graphics.Vega.VegaLite.Data
+  ( DataValue
   , dataValueSpec
   )
 import Graphics.Vega.VegaLite.Specification

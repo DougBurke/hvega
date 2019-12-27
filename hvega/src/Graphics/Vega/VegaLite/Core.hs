@@ -248,13 +248,9 @@ module Graphics.Vega.VegaLite.Core
 
        , ConcatConfig(..)
 
-       , DataValue(..)
-       , DataValues(..)
-
        -- not for external export
        , fromT
        , channelLabel
-       , dataValueSpec
        , anchorLabel
        , sideLabel
        , hAlignLabel
@@ -301,6 +297,12 @@ import Data.Monoid ((<>))
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
 
+import Graphics.Vega.VegaLite.Data
+  ( DataValue(..)
+  , DataValues(..)
+  , dataValueSpec
+  , dataValuesSpecs
+  )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(..)
   , VLSpec
@@ -918,70 +920,6 @@ dataFromJson vlspec fmts =
                           object (concatMap formatProperty fmts)) ]
   in (VLData, js)
 
-
-{-|
-
-A single data value. This is used when a function or constructor
-can accept values of different types (e.g. either a number or a string),
-such as:
-'dataRow', 'geometry', many constructors of the 'Filter' type,
-'ImNewValue', and 'Graphics.Vega.VegaLite.SInit'.
-
--}
-data DataValue
-    = Boolean Bool
-    | DateTime [DateTime]
-    | Number Double
-    | Str T.Text
-    | NullValue
-      -- ^ Create a JavaScript @null@ value. This can be useful when
-      --   explictly recoding a value as undefined, such as in the following
-      --   example:
-      --
-      --   @
-      --   'dataFromRows' []
-      --     . 'dataRow' [("x", 'Number' 1), ("y", 'String' "good")]
-      --     . 'dataRow' [("x", 'Number' 2), ("y", 'NullValue')]
-      --     . 'dataRow' [("x", 'Number' 3), ("y", 'String' "bad")]
-      --   @
-      --
-      --   For more-complex data sources - such as lists of defined
-      --   and un-specified values, it is suggested that 'dataFromJson'
-      --   be used rather than 'dataFromRows' or 'dataFromColumns'.
-      --
-      --   @since 0.4.0.0
-
-dataValueSpec :: DataValue -> VLSpec
-dataValueSpec (Boolean b) = toJSON b
-dataValueSpec (DateTime dt) = object (map dateTimeProperty dt)
-dataValueSpec (Number x) = toJSON x
-dataValueSpec (Str t) = toJSON t
-dataValueSpec NullValue = A.Null
-
-
-{-|
-
-A list of data values. This is used when a function or constructor
-can accept lists of different types (e.g. either a list of numbers
-or a list of strings), such as:
-'dataColumn', 'CustomSort', 'FOneOf', or 'ImKeyVals'.
-
-If your data contains undefined values then it is suggested that
-you convert it to JSON (e.g. 'Value') and then use 'dataFromJson'.
-
--}
-data DataValues
-    = Booleans [Bool]
-    | DateTimes [[DateTime]]
-    | Numbers [Double]
-    | Strings [T.Text]
-
-
-dataValuesSpecs :: DataValues -> [VLSpec]
-dataValuesSpecs (Booleans bs) = map toJSON bs
-dataValuesSpecs (DateTimes dtss) = map (object . map dateTimeProperty) dtss
-dataValuesSpecs (Numbers xs) = map toJSON xs
-dataValuesSpecs (Strings ss) = map toJSON ss
 
 {-|
 

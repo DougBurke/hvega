@@ -124,6 +124,7 @@ library
                        Graphics.Vega.Tutorials.VegaLite
   other-modules:       Graphics.Vega.VegaLite.Configuration
                        Graphics.Vega.VegaLite.Core
+                       Graphics.Vega.VegaLite.Data
                        Graphics.Vega.VegaLite.Output
                        Graphics.Vega.VegaLite.Selection
                        Graphics.Vega.VegaLite.Specification
