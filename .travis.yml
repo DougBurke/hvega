@@ -35,18 +35,21 @@ cache:
   - "$HOME/.stack"
   - "$TRAVIS_BUILD_DIR/.stack-work"
 
+# The stack test takes longer, presumably because of what needs to be
+# downloaded, so run this first.
+#
 matrix:
   include:
+
+  # Stack
+  - ghc: 8.6.5
+    env: STACK_YAML="$TRAVIS_BUILD_DIR/hvega/stack.yaml"
 
   # Cabal
   - ghc: 8.2.2
   - ghc: 8.4.4
   - ghc: 8.6.5
   - ghc: 8.8.1
-
-  # Stack
-  - ghc: 8.6.5
-    env: STACK_YAML="$TRAVIS_BUILD_DIR/hvega/stack.yaml"
 
 install:
   - |
