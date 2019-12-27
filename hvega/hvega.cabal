@@ -122,8 +122,10 @@ library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
                        Graphics.Vega.Tutorials.VegaLite
-  other-modules:       Graphics.Vega.VegaLite.Core
+  other-modules:       Graphics.Vega.VegaLite.Configuration
+                       Graphics.Vega.VegaLite.Core
                        Graphics.Vega.VegaLite.Output
+                       Graphics.Vega.VegaLite.Selection
                        Graphics.Vega.VegaLite.Specification
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5

@@ -603,8 +603,10 @@ module Graphics.Vega.VegaLite
 --
 import Prelude ()
 
+import qualified Graphics.Vega.VegaLite.Configuration as VL
 import qualified Graphics.Vega.VegaLite.Core as VL
 import qualified Graphics.Vega.VegaLite.Output as VL
+import qualified Graphics.Vega.VegaLite.Selection as VL
 import qualified Graphics.Vega.VegaLite.Specification as VL
 
 

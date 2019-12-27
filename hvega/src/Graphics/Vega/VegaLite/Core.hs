@@ -207,16 +207,6 @@ module Graphics.Vega.VegaLite.Core
 
        , HeaderProperty(..)
 
-       , selection
-       , select
-       , Selection(..)
-       , SelectionProperty(..)
-       , Binding(..)
-       , InputProperty(..)
-       , SelectionMarkProperty(..)
-
-       , SelectionResolution(..)
-
        , BooleanOp(..)
 
        , name
@@ -236,8 +226,6 @@ module Graphics.Vega.VegaLite.Core
        , ViewBackground(..)
 
        , configure
-       , configuration
-       , ConfigurationProperty(..)
 
        , AxisConfig(..)
 
@@ -268,7 +256,33 @@ module Graphics.Vega.VegaLite.Core
        , DayName(..)
        , TimeUnit(..)
 
-        )
+       -- not for external export
+       , fromT
+       , channelLabel
+       , dataValueSpec
+       , anchorLabel
+       , sideLabel
+       , hAlignLabel
+       , vAlignLabel
+       , strokeCapLabel
+       , strokeJoinLabel
+       , overlapStrategyLabel
+       , fontWeightSpec
+       , schemeProperty
+       , orientationSpec
+       , boundsSpec
+       , symbolLabel
+       , legendOrientLabel
+       , compositionAlignmentSpec
+       , stackOffset
+       , titleConfigSpec
+       , autosizeProperty
+       , projectionProperty
+       , paddingSpec
+       , header_
+       , mprops_
+
+       )
     where
 
 -- VegaLite uses these symbols.
@@ -368,11 +382,6 @@ mtype_ m = "type" .= measurementLabel m
 scaleProp_ :: [ScaleProperty] -> LabelledSpec
 scaleProp_ [] = "scale" .= A.Null
 scaleProp_ sps = "scale" .= object (map scaleProperty sps)
-
-scaleConfig_ :: [ScaleConfig] -> LabelledSpec
--- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
-scaleConfig_ scs = "scale" .= object (map scaleConfigProperty scs)
-
 
 legendProp_ :: [LegendProperty] -> LabelledSpec
 legendProp_ [] = "legend" .= A.Null
@@ -916,7 +925,7 @@ A single data value. This is used when a function or constructor
 can accept values of different types (e.g. either a number or a string),
 such as:
 'dataRow', 'geometry', many constructors of the 'Filter' type,
-'ImNewValue', and 'SInit'.
+'ImNewValue', and 'Graphics.Vega.VegaLite.SInit'.
 
 -}
 data DataValue
@@ -2768,7 +2777,7 @@ Provide an optional title to be displayed in the visualization.
 @
 
 Prior to @0.4.0.0@ there was no way to set the title options
-(other than using 'configuration' with 'TitleStyle').
+(other than using 'Graphics.Vega.VegaLite.configuration' with 'Graphics.Vega.VegaLite.TitleStyle').
 
 -}
 title ::
@@ -2786,7 +2795,7 @@ title s topts = (VLTitle,
 {-|
 
 Axis customisation properties. These are used for customising individual axes.
-To configure all axes, use 'AxisConfig' with a 'configuration' instead. See the
+To configure all axes, use 'AxisConfig' with a 'Graphics.Vega.VegaLite.configuration' instead. See the
 <https://vega.github.io/vega-lite/docs/axis.html#axis-properties Vega-Lite documentation>
 for more details.
 
@@ -3769,12 +3778,6 @@ data FieldTitleProperty
       -- ^ Just use the field name without any extra text.
 
 
-fieldTitleLabel :: FieldTitleProperty -> T.Text
-fieldTitleLabel Verbal = "verbal"
-fieldTitleLabel Function = "functional"
-fieldTitleLabel Plain = "plain"
-
-
 -- | Indicates the type of legend to create. It is used with 'LType'.
 --
 --   Prior to version @0.4.0.0.0@ this was called @Legend@ and the
@@ -4036,77 +4039,6 @@ data LegendConfig
       -- ^ The padding, in pixels, between title and legend.
 
 
-legendConfigProperty :: LegendConfig -> LabelledSpec
-legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
-legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
-legendConfigProperty (LeColumns n) = "columns" .= n
-legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
-legendConfigProperty (LeFillColor s) = "fillColor" .= s
-legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
-legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
-legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
-legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
-legendConfigProperty (LeGradientLabelOffset x) = "gradientLabelOffset" .= x
-legendConfigProperty (LeGradientLength x) = "gradientLength" .= x
-legendConfigProperty (LeGradientOpacity x) = "gradientOpacity" .= x
-legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= s
-legendConfigProperty (LeGradientStrokeWidth x) = "gradientStrokeWidth" .= x
-legendConfigProperty (LeGradientThickness x) = "gradientThickness" .= x
-legendConfigProperty (LeGradientVerticalMaxLength x) = "gradientVerticalMaxLength" .= x
-legendConfigProperty (LeGradientVerticalMinLength x) = "gradientVerticalMinLength" .= x
-legendConfigProperty (LeGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
-legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
-legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-legendConfigProperty (LeLabelColor s) = "labelColor" .= s
-legendConfigProperty (LeLabelFont s) = "labelFont" .= s
-legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
-legendConfigProperty (LeLabelFontStyle s) = "labelFontStyle" .= s
-legendConfigProperty (LeLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
-legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
-legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
-legendConfigProperty (LeLabelOpacity x) = "labelOapcity" .= x
-legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
-legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
-legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
-legendConfigProperty (LeLayout ll) = "layout" .= object (map legendLayoutSpec ll)
-legendConfigProperty (LeLeX x) = "legendX" .= x
-legendConfigProperty (LeLeY x) = "legendY" .= x
-legendConfigProperty (LeOffset x) = "offset" .= x
-legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
-legendConfigProperty (LePadding x) = "padding" .= x
-legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
-legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
-legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
-legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= xs
-legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
-legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
-legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
-legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
-legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
-legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
-legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
-legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
-legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
-legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
-legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= s
-legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
-legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
-legendConfigProperty (LeTitle s) = "title" .= s
-legendConfigProperty LeNoTitle = "title" .= A.Null
-legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
-legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
-legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-legendConfigProperty (LeTitleColor s) = "titleColor" .= s
-legendConfigProperty (LeTitleFont s) = "titleFont" .= s
-legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
-legendConfigProperty (LeTitleFontStyle s) = "titleFontStyle" .= s
-legendConfigProperty (LeTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
-legendConfigProperty (LeTitleLimit x) = "titleLimit" .= x
-legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
-legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
-legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
-
-
 {-|
 
 Indicates the legend orientation. See the
@@ -4178,26 +4110,6 @@ data LegendLayout
   | LeLTopRight [BaseLegendLayout]
 
 
-legendLayoutSpec :: LegendLayout -> LabelledSpec
-legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
-legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
-legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
-legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
-legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
-legendLayoutSpec (LeLCenter b) = "center" .= b
-legendLayoutSpec (LeLDirection o) = "direction" .= orientationSpec o
-legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
-legendLayoutSpec (LeLMargin x) = "margin" .= x
-legendLayoutSpec (LeLOffset x) = "offset" .= x
-legendLayoutSpec (LeLRight bl) = "right" .= toBLSpec bl
-legendLayoutSpec (LeLTop bl) = "top" .= toBLSpec bl
-legendLayoutSpec (LeLTopLeft bl) = "top-left" .= toBLSpec bl
-legendLayoutSpec (LeLTopRight bl) = "top-right" .= toBLSpec bl
-
-
-toBLSpec :: [BaseLegendLayout] -> VLSpec
-toBLSpec = object . map baseLegendLayoutSpec
-
 {- |
 
 /Highly experimental/ and used with constructors from 'LegendLayout'.
@@ -4221,15 +4133,6 @@ data BaseLegendLayout
     -- ^ The margin, in pixels, between legends within an orient group.
   | BLeLOffset Double
     -- ^ The offset, in pixels, from the chart body for a legend orient group.
-
-
-baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
-baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
-baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
-baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
-baseLegendLayoutSpec (BLeLDirection o) = "direction" .= orientationSpec o
-baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
-baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 
 {-|
@@ -4815,19 +4718,6 @@ data RangeConfig
     | RSymbol T.Text
 
 
-rangeConfigProperty :: RangeConfig -> LabelledSpec
-rangeConfigProperty rangeCfg =
-  let (l, n) = case rangeCfg of
-        RCategory nme -> ("category", nme)
-        RDiverging nme -> ("diverging", nme)
-        RHeatmap nme -> ("heatmap", nme)
-        ROrdinal nme -> ("ordinal", nme)
-        RRamp nme -> ("ramp", nme)
-        RSymbol nme -> ("symbol", nme)
-
-  in l .= object [schemeProperty n []]
-
-
 {-|
 
 Scale configuration property. These are used to configure all scales.
@@ -4897,207 +4787,6 @@ data ScaleConfig
       -- ^ Whether or not to use the source data range before aggregation.
 
 
-scaleConfigProperty :: ScaleConfig -> LabelledSpec
-scaleConfigProperty (SCBandPaddingInner x) = "bandPaddingInner" .= x
-scaleConfigProperty (SCBandPaddingOuter x) = "bandPaddingOuter" .= x
-scaleConfigProperty (SCBarBandPaddingInner x) = "barBandPaddingInner" .= x
-scaleConfigProperty (SCBarBandPaddingOuter x) = "barBandPaddingOuter" .= x
-scaleConfigProperty (SCRectBandPaddingInner x) = "rectBandPaddingInner" .= x
-scaleConfigProperty (SCRectBandPaddingOuter x) = "rectBandPaddingOuter" .= x
-scaleConfigProperty (SCClamp b) = "clamp" .= b
-scaleConfigProperty (SCMaxBandSize x) = "maxBandSize" .= x
-scaleConfigProperty (SCMinBandSize x) = "minBandSize" .= x
-scaleConfigProperty (SCMaxFontSize x) = "maxFontSize" .= x
-scaleConfigProperty (SCMinFontSize x) = "minFontSize" .= x
-scaleConfigProperty (SCMaxOpacity x) = "maxOpacity" .= x
-scaleConfigProperty (SCMinOpacity x) = "minOpacity" .= x
-scaleConfigProperty (SCMaxSize x) = "maxSize" .= x
-scaleConfigProperty (SCMinSize x) = "minSize" .= x
-scaleConfigProperty (SCMaxStrokeWidth x) = "maxStrokeWidth" .= x
-scaleConfigProperty (SCMinStrokeWidth x) = "minStrokeWidth" .= x
-scaleConfigProperty (SCPointPadding x) = "pointPadding" .= x
-scaleConfigProperty (SCRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
-scaleConfigProperty (SCRound b) = "round" .= b
-scaleConfigProperty (SCTextXRangeStep x) = "textXRangeStep" .= x
-scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
-
-
--- | Indicates the type of selection to be generated by the user.
-
-data Selection
-    = Single
-      -- ^ Allows one mark at a time to be selected.
-    | Multi
-      -- ^ Allows multiple items to be selected (e.g. with
-      --   shift-click).
-    | Interval
-      -- ^ Allows a bounding rectangle to be dragged by the user,
-      --   selecting all items which intersect it.
-
-
-selectionLabel :: Selection -> T.Text
-selectionLabel Single = "single"
-selectionLabel Multi = "multi"
-selectionLabel Interval = "interval"
-
-
-{-|
-
-Properties for customising the nature of the selection. See the
-<https://vega.github.io/vega-lite/docs/selection.html#selection-properties Vega-Lite documentation>
-for details.
-
-For use with 'select' and 'SelectionStyle'.
--}
-data SelectionProperty
-    = Empty
-      -- ^ Make a selection empty by default when nothing selected.
-    | BindScales
-      -- ^ Enable two-way binding between a selection and the scales used
-      --   in the same view. This is commonly used for zooming and panning
-      --   by binding selection to position scaling:
-      --
-      --   @sel = 'selection' . 'select' \"mySelection\" 'Interval' ['BindScales']@
-    | On T.Text
-      -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
-      --   that triggers a selection, or the empty string (which sets the property to @false@).
-    | Clear T.Text
-      -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
-      --   that can clear a selection. For example, to allow a zoomed/panned view to be reset
-      --   on shift-click:
-      --
-      -- @
-      -- 'selection'
-      --     . 'select' \"myZoomPan\"
-      --         'Interval'
-      --         ['BindScales', 'Clear' \"click[event.shiftKey]\"]
-      -- @
-      --
-      --   To remove the default clearing behaviour of a selection, provide an empty string
-      --   rather than an event stream selector.
-      --
-      --   @since 0.4.0.0
-    | Translate T.Text
-      -- ^ Translation selection transformation used for panning a view. See the
-      --   [Vega-Lite translate documentation](https://vega.github.io/vega-lite/docs/translate.html).
-    | Zoom T.Text
-      -- ^ Zooming selection transformation used for zooming a view. See the
-      --   [Vega-Lite zoom documentation](https://vega.github.io/vega-lite/docs/zoom.html).
-    | Fields [T.Text]
-      -- ^ Field names for projecting a selection.
-    | Encodings [Channel]
-      -- ^ Encoding channels that form a named selection.
-      --
-      --   For example, to __project__ a selection across all items that
-      --   share the same value in the color channel:
-      --
-      --   @sel = 'selection' . 'select' \"mySelection\" 'Multi' ['Encodings' ['ChColor']]@
-    | SInit [(T.Text, DataValue)]
-      -- ^ Initialise one or more selections with values from bound fields.
-      --   See also 'SInitInterval'.
-      --
-      --   For example,
-      --
-      --   @
-      --   'selection'
-      --       . 'select' \"CylYr\"
-      --           'Single'
-      --           [ 'Fields' [\"Cylinders\", \"Year\"]
-      --           , 'SInit'
-      --               [ (\"Cylinders\", 'Number' 4)
-      --               , (\"Year\", 'Number' 1977)
-      --               ]
-      --           , 'Bind'
-      --               [ 'IRange' \"Cylinders\" ['InMin' 3, 'InMax' 8, 'InStep' 1]
-      --               , 'IRange' \"Year\" ['InMin' 1969, 'InMax' 1981, 'InStep' 1]
-      --               ]
-      --           ]
-      --   @
-      --
-      --   @since 0.4.0.0
-    | SInitInterval (Maybe (DataValue, DataValue)) (Maybe (DataValue, DataValue))
-      -- ^ Initialize the domain extent of an interval selection. See
-      --   also 'SInit'.
-      --
-      --   The parameters refer to the x and y axes, given in the order
-      --   @(minimum, maximum)@ for each axis. If an axis is set to
-      --   @Nothing@ then the selection is projected over that
-      --   dimension. At least one of the two arguments should be
-      --   set (i.e. not @Nothing@).
-      --
-      --   @
-      --   'select' \"mySelection\"
-      --          'Interval'
-      --          [ 'SInitInterval'
-      --              (Just ( 'DateTime' ['DTYear' 2013]
-      --                    , 'DateTime' ['DTYear' 2015]
-      --                    )
-      --              (Just ('Number' 40, 'Number' 80))
-      --          ]
-      --   @
-      --
-      --   @since 0.4.0.0
-    | ResolveSelections SelectionResolution
-      -- ^ Strategy that determines how selections' data queries are resolved when applied
-      --   in a filter transform, conditional encoding rule, or scale domain.
-    | SelectionMark [SelectionMarkProperty]
-      -- ^ Appearance of an interval selection mark (dragged rectangle).
-    | Bind [Binding]
-      -- ^ Binding to some input elements as part of a named selection.
-      --
-      --   The followig example allows a selection to be based on a
-      --   drop-down list of options:
-      --
-      --   @
-      --   sel = 'selection'
-      --           . 'select' \"mySelection\"
-      --               'Single'
-      --               ['Fields' [\"crimeType\"]
-      --               , 'Bind' ['ISelect' \"crimeType\"
-      --                         ['InOptions'
-      --                            [ \"Anti-social behaviour\"
-      --                            , \"Criminal damage and arson\"
-      --                            , \"Drugs\"
-      --                            , \"Robbery\"
-      --                            , \"Vehicle crime\"
-      --                            ]
-      --                         ]
-      --                      ]
-      --               ]
-      --   @
-    | Nearest Bool
-      -- ^ Whether or not a selection should capture nearest marks to a pointer
-      --   rather than an exact position match.
-    | Toggle T.Text
-      -- ^ Predicate expression that determines a toggled selection. See the
-      --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
-
-
-selectionProperty :: SelectionProperty -> LabelledSpec
-selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
-selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
-selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) iVals)
--- This is invalid according to the specification
-selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
-selectionProperty (SInitInterval mx my) =
-  let conv (_, Nothing) = Nothing
-      conv (lbl, Just (lo, hi)) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
-
-  in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
-
-selectionProperty (On e) = "on" .= e
-selectionProperty (Clear e) = "clear" .= if T.null e then toJSON False else toJSON e
-selectionProperty Empty = "empty" .= fromT "none"
-selectionProperty (ResolveSelections res) = "resolve" .= selectionResolutionLabel res
-selectionProperty (SelectionMark markProps) = "mark" .= object (map selectionMarkProperty markProps)
-selectionProperty BindScales = "bind" .= fromT "scales"
-selectionProperty (Bind binds) = "bind" .= object (map bindingSpec binds)
-selectionProperty (Nearest b) = "nearest" .= b
-selectionProperty (Toggle expr) = "toggle" .= expr
-selectionProperty (Translate e) = "translate" .= if T.null e then toJSON False else toJSON e
-selectionProperty (Zoom e) = "zoom" .= if T.null e then toJSON False else toJSON e
-
-
 -- | Indicates a channel type to be used in a resolution specification.
 
 -- assuming this is based on schema 3.3.0 #/definitions/SingleDefUnitChannel
@@ -5163,162 +4852,6 @@ channelLabel ChHref = "href"
 channelLabel ChKey = "key"
 
 
-{-|
-
-Determines how selections in faceted or repeated views are resolved. See the
-<https://vega.github.io/vega-lite/docs/selection.html#resolve Vega-Lite documentation>
-for details.
-
-For use with 'ResolveSelections'.
-
--}
-data SelectionResolution
-    = Global
-      -- ^ One selection available across all subviews (default).
-    | Union
-      -- ^ Each subview contains its own brush and marks are selected if they lie
-      --   within /any/ of these individual selections.
-    | Intersection
-      -- ^  Each subview contains its own brush and marks are selected if they lie
-      --    within /all/ of these individual selections.
-
-
-selectionResolutionLabel :: SelectionResolution -> T.Text
-selectionResolutionLabel Global = "global"
-selectionResolutionLabel Union = "union"
-selectionResolutionLabel Intersection = "intersect"
-
-
-{-|
-
-Properties for customising the appearance of an interval selection mark (dragged
-rectangle). For details see the
-<https://vega.github.io/vega-lite/docs/selection.html#interval-mark Vega-Lite documentation>.
-
--}
-data SelectionMarkProperty
-    = SMFill T.Text
-    | SMFillOpacity Opacity
-    | SMStroke T.Text
-    | SMStrokeOpacity Opacity
-    | SMStrokeWidth Double
-    | SMStrokeDash [Double]
-    | SMStrokeDashOffset Double
-
-
-selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
-selectionMarkProperty (SMFill colour) = "fill" .= colour
-selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
-selectionMarkProperty (SMStroke colour) = "stroke" .= colour
-selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
-selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
-selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= xs
-selectionMarkProperty (SMStrokeDashOffset x) = "strokeDashOffset" .= x
-
-
-{-|
-
-GUI Input properties. The type of relevant property will depend on the type of
-input element selected. For example an @InRange@ (slider) can have numeric min,
-max and step values; @InSelect@ (selector) has a list of selection label options.
-For details see the
-<https://vega.github.io/vega/docs/signals/#bind Vega input element binding documentation>.
-
-The @debounce@ property, available for all input types allows a delay in input event
-handling to be added in order to avoid unnecessary event broadcasting. The @Element@
-property is an optional CSS selector indicating the parent element to which the
-input element should be added. This allows the option of the input element to be
-outside the visualization container.
--}
-
--- based on schema 3.3.0 #/definitions/BindRange
---       or              #/definitions/InputBinding
-
--- placeholder is in InputBinding
--- debounce is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
--- element is in BindCheckbox / BindRadioSelect / BindRange / InputBinding
-
--- but InputBinding doesn't have min/max/others
-
-data InputProperty
-    = Debounce Double
-    | Element T.Text
-    | InOptions [T.Text]
-    | InMin Double
-    | InMax Double
-    | InName T.Text
-    | InStep Double
-    | InPlaceholder T.Text
-
-
-inputProperty :: InputProperty -> LabelledSpec
-inputProperty (Debounce x) = "debounce" .= x
-inputProperty (Element el) = "element" .= el -- #/definitions/Element
-inputProperty (InOptions opts) = "options" .= map toJSON opts
-inputProperty (InMin x) = "min" .= x
-inputProperty (InMax x) = "max" .= x
-inputProperty (InName s) = "name" .= s
-inputProperty (InStep x) = "step" .= x
-inputProperty (InPlaceholder el) = "placeholder" .= toJSON el
-
-
-{-|
-
-Describes the binding property of a selection based on some HTML input element
-such as a checkbox or radio button. For details see the
-<https://vega.github.io/vega-lite/docs/bind.html#scale-binding Vega-Lite documentation>
-and the
-<https://vega.github.io/vega/docs/signals/#bind Vega input binding documentation>.
--}
-data Binding
-    = IRange T.Text [InputProperty]
-      -- ^ Range slider input element that can bound to a named field value.
-    | ICheckbox T.Text [InputProperty]
-      -- ^ Checkbox input element that can bound to a named field value.
-    | IRadio T.Text [InputProperty]
-      -- ^ Radio box input element that can bound to a named field value.
-    | ISelect T.Text [InputProperty]
-      -- ^ Select input element that can bound to a named field value.
-    | IText T.Text [InputProperty]
-      -- ^ Text input element that can bound to a named field value.
-    | INumber T.Text [InputProperty]
-      -- ^ Number input element that can bound to a named field value.
-    | IDate T.Text [InputProperty]
-      -- ^ Date input element that can bound to a named field value.
-    | ITime T.Text [InputProperty]
-      -- ^ Time input element that can bound to a named field value.
-    | IMonth T.Text [InputProperty]
-      -- ^ Month input element that can bound to a named field value.
-    | IWeek T.Text [InputProperty]
-      -- ^ Week input element that can bound to a named field value.
-    | IDateTimeLocal T.Text [InputProperty]
-      -- ^ Local time input element that can bound to a named field value.
-    | ITel T.Text [InputProperty]
-      -- ^ Telephone number input element that can bound to a named field value.
-    | IColor T.Text [InputProperty]
-      -- ^ Color input element that can bound to a named field value.
-
-
-bindingSpec :: Binding -> LabelledSpec
-bindingSpec bnd =
-  let (lbl, input, ps) = case bnd of
-        IRange label props -> (label, fromT "range", props)
-        ICheckbox label props -> (label, "checkbox", props)
-        IRadio label props -> (label, "radio", props)
-        ISelect label props -> (label, "select", props)
-        IText label props -> (label, "text", props)
-        INumber label props -> (label, "number", props)
-        IDate label props -> (label, "date", props)
-        ITime label props -> (label, "time", props)
-        IMonth label props -> (label, "month", props)
-        IWeek label props -> (label, "week", props)
-        IDateTimeLocal label props -> (label, "datetimelocal", props)
-        ITel label props -> (label, "tel", props)
-        IColor label props -> (label, "color", props)
-
-  in (lbl, object (("input" .= input) : map inputProperty ps))
-
-
 -- | Indicates the anchor position for text.
 
 data APosition
@@ -5374,7 +4907,7 @@ data TitleConfig
       -- ^ Default placement of titles relative to the chart body.
     | TStyle [T.Text]
       -- ^ A list of named styles to apply. A named style can be specified
-      --   via 'NamedStyle' or 'NamedStyles'. Later styles in the list will
+      --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
       --   override earlier ones if there is a conflict in any of the
       --   properties.
       --
@@ -5422,7 +4955,7 @@ titleFrameSpec FrGroup = "group"
 data ViewBackground
     = VBStyle [T.Text]
     -- ^ A list of named styles to apply. A named style can be specified
-    --   via 'NamedStyle' or 'NamedStyles'. Later styles in the list will
+    --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
     --   override earlier ones if there is a conflict in any of the mark
     --   properties.
     | VBCornerRadius Double
@@ -5547,201 +5080,6 @@ data ViewConfig
       -- ^ The stroke opacity.
     | ViewStrokeWidth Double
       -- ^ The stroke width, in pixels.
-
-
-viewConfigProperty :: ViewConfig -> LabelledSpec
-viewConfigProperty (ViewWidth x) = "width" .= x
-viewConfigProperty (ViewHeight x) = "height" .= x
-viewConfigProperty (ViewClip b) = "clip" .= b
-viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
-viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
-viewConfigProperty (ViewOpacity x) = "opacity" .= x
-viewConfigProperty (ViewStroke ms) = "stroke" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs
-viewConfigProperty (ViewStrokeDashOffset x) = "strokeDashOffset" .= x
-viewConfigProperty (ViewStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-viewConfigProperty (ViewStrokeMiterLimit x) = "strokeMiterLimit" .= x
-viewConfigProperty (ViewStrokeOpacity x) = "strokeOpacity" .= x
-viewConfigProperty (ViewStrokeWidth x) = "strokeWidth" .= x
-
-
-{-|
-
-Type of configuration property to customise. See the
-<https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
-for details.
-
--}
-
--- based on schema 3.3.0 #/definitions/Config
---
--- TODO:
---   Bar - change to BarConfig rather than MarkProperty?
---     BoxplotStyle BoxPlotConfig
---     Concat CompositionConfig
---     ErrorBand ErrorBandCOnfig
---     ErrorBar ErrorBarCOnfig
---   Facet takes CompositionConfig not FacetConfig
---     HeaderColumn takes HeaderConfig, just as HeaderStyle does
---     HeaderFacet ditto
---     HeaderRow ditto
---   LineStyle takes LineConfig not MarkConfig
---   TextStyle takes TextConfig not MarkConfig
---   TickStyle takes TickConfig not MarkConfig
---   TrailStyle takes LineConfig not MarkConfig
---
-
-data ConfigurationProperty
-    = AreaStyle [MarkProperty]
-      -- ^ The default appearance of area marks.
-    | Autosize [Autosize]
-      -- ^ The default sizing of visualizations.
-    | Axis [AxisConfig]
-      -- ^ The default appearance of axes.
-    | AxisBand [AxisConfig]
-      -- ^ The default appearance of axes with band scaling.
-    | AxisBottom [AxisConfig]
-      -- ^ The default appearance of the bottom-side axes.
-    | AxisLeft [AxisConfig]
-      -- ^ The default appearance of the left-side axes.
-    | AxisRight [AxisConfig]
-      -- ^ The default appearance of the right-side axes.
-    | AxisTop [AxisConfig]
-      -- ^ The default appearance of the top-side axes.
-    | AxisX [AxisConfig]
-      -- ^ The default appearance of the X axes.
-    | AxisY [AxisConfig]
-      -- ^ The default appearance of the Y axes.
-    | Background T.Text
-      -- ^ The default background color of visualizations.
-    | BarStyle [MarkProperty]
-      -- ^ The default appearance of bar marks.
-    | CircleStyle [MarkProperty]
-      -- ^ The default appearance of circle marks.
-    | ConcatStyle [ConcatConfig]
-      -- ^ The default appearance of concatenated layouts.
-      --
-      --   @since 0.4.0.0
-    | CountTitle T.Text
-      -- ^ The default title style for count fields.
-    | FacetStyle [FacetConfig]
-      -- ^ The default appearance of facet layouts.
-      --
-      --   @since 0.4.0.0
-    | FieldTitle FieldTitleProperty
-      -- ^ The default title-generation style for fields.
-    | GeoshapeStyle [MarkProperty]
-      -- ^ The default appearance of geoshape marks.
-      --
-      --   @since 0.4.0.0
-    | HeaderStyle [HeaderProperty]
-      -- ^ The default appearance of facet headers.
-      --
-      --   @since 0.4.0.0
-    | Legend [LegendConfig]
-      -- ^ The default appearance of legends.
-    | LineStyle [MarkProperty]
-      -- ^ The default appearance of line marks.
-    | MarkStyle [MarkProperty]
-      -- ^ The default mark appearance.
-    | NamedStyle T.Text [MarkProperty]
-      -- ^ The default appearance of a single named style.
-    | NamedStyles [(T.Text, [MarkProperty])]
-      -- ^ The default appearance of a list of named styles.
-      --
-      --   @since 0.4.0.0
-    | NumberFormat T.Text
-      -- ^ The default number formatting for axis and text labels.
-    | Padding Padding
-      -- ^ The default padding in pixels from the edge of the of visualization
-      --   to the data rectangle.
-    | PointStyle [MarkProperty]
-      -- ^ The default appearance of point marks.
-    | Projection [ProjectionProperty]
-      -- ^ The default style of map projections.
-    | Range [RangeConfig]
-      -- ^ The default range properties used when scaling.
-    | RectStyle [MarkProperty]
-      -- ^ The default appearance of rectangle marks.
-    | RemoveInvalid Bool
-      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
-      --   invalid values are skipped or filtered out when represented as marks.
-    | RuleStyle [MarkProperty]
-      -- ^ The default appearance of rule marks.
-    | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
-      -- ^ The default properties used when scaling.
-    | SelectionStyle [(Selection, [SelectionProperty])]
-      -- ^ The default appearance of selection marks.
-    | SquareStyle [MarkProperty]
-      -- ^  the default appearance of square marks
-    | Stack StackOffset
-      -- ^ The default stack offset style for stackable marks.
-      --
-      --   Changed from @StackProperty@ in version @0.4.0.0@.
-    | TextStyle [MarkProperty]
-      -- ^ The default appearance of text marks.
-    | TickStyle [MarkProperty]
-      -- ^ The default appearance of tick marks.
-    | TimeFormat T.Text
-      -- ^ The default time format for axis and legend labels.
-    | TitleStyle [TitleConfig]
-      -- ^ The default appearance of visualization titles.
-    | TrailStyle [MarkProperty]
-      -- ^ The default style of trail marks.
-      --
-      --   @since 0.4.0.0
-    | View [ViewConfig]
-      -- ^ The default single view style.
-
-configProperty :: ConfigurationProperty -> LabelledSpec
-configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Background bg) = "background" .= bg
-configProperty (CountTitle ttl) = "countTitle" .= ttl
-configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
-configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
-configProperty (NumberFormat fmt) = "numberFormat" .= fmt
-configProperty (Padding pad) = "padding" .= paddingSpec pad
-configProperty (TimeFormat fmt) = "timeFormat" .= fmt
-configProperty (Axis acs) = "axis" .= object (map axisConfigProperty acs)
-configProperty (AxisX acs) = "axisX" .= object (map axisConfigProperty acs)
-configProperty (AxisY acs) = "axisY" .= object (map axisConfigProperty acs)
-configProperty (AxisLeft acs) = "axisLeft" .= object (map axisConfigProperty acs)
-configProperty (AxisRight acs) = "axisRight" .= object (map axisConfigProperty acs)
-configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
-configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
-configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
-configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
-configProperty (MarkStyle mps) = mprops_ "mark" mps
-configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
-configProperty (AreaStyle mps) = mprops_ "area" mps
-configProperty (BarStyle mps) = mprops_ "bar" mps
-configProperty (CircleStyle mps) = mprops_ "circle" mps
-configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
-configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
-configProperty (HeaderStyle hps) = header_ hps
-configProperty (LineStyle mps) = mprops_ "line" mps
-configProperty (PointStyle mps) = mprops_ "point" mps
-configProperty (RectStyle mps) = mprops_ "rect" mps
-configProperty (RuleStyle mps) = mprops_ "rule" mps
-configProperty (SquareStyle mps) = mprops_ "square" mps
-configProperty (TextStyle mps) = mprops_ "text" mps
-configProperty (TickStyle mps) = mprops_ "tick" mps
-configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
-configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
-configProperty (NamedStyles styles) =
-  let toStyle = uncurry mprops_
-  in "style" .= object (map toStyle styles)
-configProperty (Scale scs) = scaleConfig_ scs
-configProperty (Stack so) = stackOffset so
-configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
-configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
-  in "selection" .= object (map selProp selConfig)
-configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 
 
 {-|
@@ -5963,72 +5301,6 @@ data AxisConfig
       -- ^ The Y coordinate of the axis title, relative to the axis group.
 
 
-axisConfigProperty :: AxisConfig -> LabelledSpec
-axisConfigProperty (BandPosition x) = "bandPosition" .= x
-axisConfigProperty (Domain b) = "domain" .= b
-axisConfigProperty (DomainColor c) = "domainColor" .= c
-axisConfigProperty (DomainDash ds) = "domainDash" .= ds
-axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
-axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
-axisConfigProperty (DomainWidth w) = "domainWidth" .= w
-axisConfigProperty (Grid b) = "grid" .= b
-axisConfigProperty (GridColor c) = "gridColor" .= c
-axisConfigProperty (GridDash ds) = "gridDash" .= ds
-axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
-axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
-axisConfigProperty (GridWidth x) = "gridWidth" .= x
-axisConfigProperty (Labels b) = "labels" .= b
-axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
-axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
-axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisConfigProperty LabelNoBound = "labelBound" .= False
-axisConfigProperty LabelBound = "labelBound" .= True
-axisConfigProperty (LabelBoundValue x) = "labelBound" .= x
-axisConfigProperty LabelNoFlush = "labelFlush" .= False
-axisConfigProperty LabelFlush = "labelFlush" .= True
-axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
-axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
-axisConfigProperty (LabelColor c) = "labelColor" .= c
-axisConfigProperty (LabelFont f) = "labelFont" .= f
-axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
-axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
-axisConfigProperty (LabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
-axisConfigProperty (LabelLimit x) = "labelLimit" .= x
-axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
-axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
-axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
-axisConfigProperty (LabelSeparation x) = "labelSeparation" .= x
-axisConfigProperty (MaxExtent n) = "maxExtent" .= n
-axisConfigProperty (MinExtent n) = "minExtent" .= n
-axisConfigProperty NoTitle = "title" .= A.Null
-axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
-axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
-axisConfigProperty (Ticks b) = "ticks" .= b
-axisConfigProperty (TickColor c) = "tickColor" .= c
-axisConfigProperty (TickDash ds) = "tickDash" .= ds
-axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
-axisConfigProperty (TickExtra b) = "tickExtra" .= b
-axisConfigProperty (TickOffset x) = "tickOffset" .= x
-axisConfigProperty (TickOpacity x) = "tickOpacity" .= x
-axisConfigProperty (TickRound b) = "tickRound" .= b
-axisConfigProperty (TickSize x) = "tickSize" .= x
-axisConfigProperty (TickWidth x) = "tickWidth" .= x
-axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
-axisConfigProperty (TitleAnchor a) = "titleAnchor" .= anchorLabel a
-axisConfigProperty (TitleAngle x) = "titleAngle" .= x
-axisConfigProperty (TitleBaseline va) = "titleBaseline" .= vAlignLabel va
-axisConfigProperty (TitleColor c) = "titleColor" .= c
-axisConfigProperty (TitleFont f) = "titleFont" .= f
-axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
-axisConfigProperty (TitleFontStyle s) = "titleFontStyle" .= s
-axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
-axisConfigProperty (TitleLimit x) = "titleLimit" .= x
-axisConfigProperty (TitleOpacity x) = "titleOpacity" .= x
-axisConfigProperty (TitlePadding x) = "titlePadding" .= x
-axisConfigProperty (TitleX x) = "titleX" .= x
-axisConfigProperty (TitleY y) = "titleY" .= y
-
-
 {-|
 
 Used for creating logical compositions. For example
@@ -6190,7 +5462,7 @@ data Filter
       --   within the given interactive selection are used.
       --
       --   @
-      --   sel = 'selection' . 'select' \"myBrush\" 'Interval' ['Encodings' ['ChX']]
+      --   sel = 'Graphics.Vega.VegaLite.selection' . 'Graphics.Vega.VegaLite.select' \"myBrush\" 'Graphics.Vega.VegaLite.Interval' ['Graphics.Vega.VegaLite.Encodings' ['ChX']]
       --   trans = 'transform' . 'filter' ('FSelection' \"myBrush\")
       --   @
     | FOneOf T.Text DataValues
@@ -6804,7 +6076,7 @@ facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 
 {-|
 
-Configuration options for faceted views, used with 'FacetStyle'.
+Configuration options for faceted views, used with 'Graphics.Vega.VegaLite.FacetStyle'.
 
 See the
 <https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
@@ -6818,10 +6090,6 @@ data FacetConfig
     | FSpacing Double
     -- ^ The spacing in pixels between sub-views in a faceted composition.
 
-
-facetConfigProperty :: FacetConfig -> LabelledSpec
-facetConfigProperty (FColumns n) = "columns" .= n
-facetConfigProperty (FSpacing x) = "spacing" .= x
 
 
 -- | Types of text channel property used for displaying text as part of the visualization.
@@ -6982,9 +6250,9 @@ to use a double-click:
 @
 config =
     'configure'
-        . 'configuration' ('Axis' [ 'DomainWidth' 1 ])
-        . 'configuration' ('View' [ 'ViewStroke' (Just "transparent") ])
-        . 'configuration' ('SelectionStyle' [ ( 'Single', [ 'On' \"dblclick\" ] ) ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.Axis' [ 'DomainWidth' 1 ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.View' [ 'ViewStroke' (Just "transparent") ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.SelectionStyle' [ ( 'Graphics.Vega.VegaLite.Single', [ 'Graphics.Vega.VegaLite.On' \"dblclick\" ] ) ])
 @
 -}
 configure :: [LabelledSpec] -> PropertySpec
@@ -7210,7 +6478,7 @@ height h = (VLHeight, toJSON h)
 
 {-|
 
-Configuration options for concatenated views, used with 'ConcatStyle'.
+Configuration options for concatenated views, used with 'Graphics.Vega.VegaLite.ConcatStyle'.
 
 @since 0.4.0.0
 
@@ -7220,11 +6488,6 @@ data ConcatConfig
       -- ^ The maximum number of columns to use in a concatenated flow layout.
     | ConcatSpacing Double
       -- ^ The spacing in pixels between sub-views in a concatenated view.
-
-
-concatConfigProperty :: ConcatConfig -> LabelledSpec
-concatConfigProperty (ConcatColumns n) = "columns" .= n
-concatConfigProperty (ConcatSpacing x) = "spacing" .= x
 
 
 {-|
@@ -7414,26 +6677,6 @@ in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], res [], 'layer' [specBar, spec
 -}
 resolve :: [LabelledSpec] -> PropertySpec
 resolve res = (VLResolve, object res)
-
-
-{-|
-
-Create a full selection specification from a list of selections. For details
-see the
-<https://vega.github.io/vega-lite/docs/selection.html Vega-Lite documentation>.
-
-@
-sel =
-   'selection'
-       . 'select' \"view\" 'Interval' ['BindScales'] []
-       . 'select' \"myBrush\" 'Interval' []
-       . 'select' \"myPaintbrush\" 'Multi' ['On' \"mouseover\", 'Nearest' True]
-@
-
--}
-
-selection :: [LabelledSpec] -> PropertySpec
-selection sels = (VLSelection, object sels)
 
 
 {-|
@@ -8014,20 +7257,6 @@ columns cols = (VLColumns, toJSON cols)
 
 {-|
 
-Defines a single configuration option to be applied globally across the visualization.
-The first parameter identifies the type of configuration, the second a list of previous
-configurations to which this one may be added.
-
-@
-'configuration' ('Axis' [ 'DomainWidth' 4 ]) []
-@
--}
-configuration :: ConfigurationProperty -> BuildLabelledSpecs
-configuration cfg ols = configProperty cfg : ols
-
-
-{-|
-
 Encode a \"level of detail\" channel. This provides a way of grouping by a field
 but unlike, say 'color', all groups have the same visual properties.
 
@@ -8570,32 +7799,6 @@ row ::
   --   the field ('FName') and its measurement type ('FmType').
   -> BuildLabelledSpecs
 row fFields ols = ("row" .= object (map facetChannelProperty fFields)) : ols
-
-
-{-|
-
-Create a single named selection that may be applied to a data query or transformation.
-
-@
-sel =
-    'selection'
-        . 'select' "view" 'Interval' [ 'BindScales' ] []
-        . 'select' "myBrush" 'Interval' []
-        . 'select' "myPaintbrush" 'Multi' [ 'On' "mouseover", 'Nearest' True ]
-@
-
--}
-select ::
-  T.Text
-  -- ^ The name given to the selection.
-  -> Selection
-  -- ^ The type of the selection.
-  -> [SelectionProperty]
-  -- ^ What options are applied to the selection.
-  -> BuildLabelledSpecs
-select nme sType options ols =
-    let selProps = ("type" .= selectionLabel sType) : map selectionProperty options
-    in (nme .= object selProps) : ols
 
 
 {-|
