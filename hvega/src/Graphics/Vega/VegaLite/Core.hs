@@ -1,6 +1,5 @@
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TupleSections #-}
 {-# OPTIONS_GHC -fwarn-incomplete-patterns #-}
 
 {-|
@@ -10,7 +9,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : CPP, OverloadedStrings, TupleSections
+Portability : CPP, OverloadedStrings
 
 This provides the functionality of the VegaLite module but is
 not directly exported to the user.
@@ -18,33 +17,14 @@ not directly exported to the user.
 -}
 
 module Graphics.Vega.VegaLite.Core
-       ( dataFromUrl
-       , dataFromColumns
-       , dataFromRows
-       , dataFromJson
-       , dataFromSource
-       , dataName
-       , datasets
-       , dataColumn
-       , dataRow
-       , noData
-       , Data
-       , DataColumn
-       , DataRow
-
-       , geometry
+       ( geometry
        , geoFeatureCollection
        , geometryCollection
        , Geometry(..)
 
-       , dataSequence
-       , dataSequenceAs
        , sphere
        , graticule
        , GraticuleProperty(..)
-
-       , Format(..)
-       , DataType(..)
 
        , transform
 
@@ -280,7 +260,6 @@ module Graphics.Vega.VegaLite.Core
 import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
-import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
@@ -288,7 +267,7 @@ import Control.Arrow (second)
 
 -- Aeson's Value type conflicts with the Number type
 import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
-import Data.Maybe (fromMaybe, mapMaybe)
+import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -302,6 +281,9 @@ import Graphics.Vega.VegaLite.Data
   , DataValues(..)
   , dataValueSpec
   , dataValuesSpecs
+  )
+import Graphics.Vega.VegaLite.Input
+  ( Data
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(..)
@@ -514,533 +496,6 @@ opAs op field label =
   object [ op_ op, field_ field, "as" .= label ]
 
 
-{-|
-
-Indicates the type of data to be parsed when reading input data. For @FoDate@
-and @FoUtc@, the formatting specification can be specified using
-<https://vega.github.io/vega-lite/docs/data.html#format D3's formatting specifiers>
-or left as an empty string if default date formatting is to be applied. Care should
-be taken when assuming default parsing of dates because different browsers can
-parse dates differently. Being explicit about the date format is usually safer.
-
--}
-data DataType
-    = FoNumber
-      -- ^ Indicate numeric data type to be parsed when reading input data.
-    | FoBoolean
-      -- ^ Indicate Boolean data type to be parsed when reading input data.
-    | FoDate T.Text
-      -- ^ Date format for parsing input data using
-      --   [D3's formatting specifiers](https://vega.github.io/vega-lite/docs/data.html#format)
-      --   or left as an empty string for default formatting.
-    | FoUtc T.Text
-      -- ^ Similar to 'FoDate' but for UTC format dates.
-
-
-{-|
-
-Specifies the type of format a data source uses. If the format is indicated by
-the file name extension (@".tsv"@, @".csv"@, @".json"@) there is no need to indicate the
-format explicitly. However this can be useful if the filename extension does not
-indicate type (e.g. @".txt"@) or you wish to customise the parsing of a file. For
-example, when specifying the @JSON@ format, its parameter indicates the name of
-property field containing the attribute data to extract. For details see the
-<https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>.
--}
-data Format
-    = JSON T.Text
-      -- ^ Property to be extracted from some JSON when it has some surrounding structure.
-      --   e.g., specifying the property @values.features@ is equivalent to retrieving
-      --   @json.values.features@ from a JSON object with a custom delimiter.
-    | CSV
-      -- ^ Comma-separated (CSV) data file format.
-    | TSV
-      -- ^ Tab-separated (TSV) data file format
-    | DSV Char
-      -- ^ The fields are separated by the given character (which must be a
-      --   single 16-bit code unit).
-      --
-      --   @since 0.4.0.0
-      {- This isn't in the current vega-lite v3 schema as far as I can see
-    | Arrow
-      -- ^ <https://observablehq.com/@theneuralbit/introduction-to-apache-arrow Apache Arrow> format.
-      --
-      -- @since 0.4.0.0
-      -}
-    | TopojsonFeature T.Text
-      -- ^ A topoJSON feature format containing an object with the given name. For example:
-      --
-      -- @
-      -- 'dataFromUrl' \"londonBoroughs.json\" ['TopojsonFeature' \"boroughs\"]
-      -- @
-    | TopojsonMesh T.Text
-      -- ^ A topoJSON mesh format containing an object with the given name. Unlike
-      --   'TopojsonFeature', the corresponding geo data are returned as a single unified mesh,
-      --   not as individual GeoJSON features.
-    | Parse [(T.Text, DataType)]
-      -- ^ Parsing rules when processing some data text, specified as
-      --   a list of tuples in the form @(fieldname,
-      --   datatype)@. Useful when automatic type inference needs to
-      --   be overridden, for example when converting integers representing
-      --   years into dates and strings into numbers:
-      --
-      -- @
-      -- 'dataFromUrl' \"myDataFile.csv\"
-      --    [ 'Parse' [ ( \"year\", 'FoDate' \"%Y\" ), ( "\y\", 'FoNumber' ) ] ]
-      -- @
-
-
-{-|
-
-Represents a single column of data. Used when generating inline data with
-'dataColumn' and 'dataFromColumns'.
--}
-type DataColumn = [LabelledSpec]
-
-{-|
-
-Represents a single row of data. Used when generating inline data with
-'dataRow' and 'dataFromRows'.
--}
-type DataRow = VLSpec
-
-{-|
-
-Convenience type-annotation label for use with data generation functions.
-
-@
-myRegion : ['DataColumn'] -> 'Data'
-myRegion =
-    'dataFromColumns' []
-        . 'dataColumn' "easting" ('Numbers' [ -3, 4, 4, -3, -3 ])
-        . 'dataColumn' "northing" ('Numbers' [ 52, 52, 45, 45, 52 ])
-@
-
-It is the same as 'PropertySpec' (which was added in @0.4.0.0@),
-but kept separate to help better-document code.
-
--}
-type Data = (VLProperty, VLSpec)
-
-
-formatProperty :: Format -> [LabelledSpec]
-formatProperty (JSON js) =
-  let ps = [("type", "json")]
-           <> if T.null (T.strip js) then [] else [("property", js)]
-  in map (second toJSON) ps
-
-formatProperty CSV = [("type", "csv")]
-formatProperty TSV = [("type", "tsv")]
-formatProperty (DSV delim) = [("type", "dsv"), "delimiter" .= delim]
--- formatProperty Arrow = [("type", "arrow")]
-formatProperty (TopojsonFeature os) = [("type", "topojson")
-                                      , "feature" .= os
-                                      ]
-formatProperty (TopojsonMesh os) = [("type", "topojson")
-                                   , "mesh" .= os
-                                   ]
-formatProperty (Parse fmts) =
-  let pObj = object (map (second dataTypeSpec) fmts)
-  in [("parse", pObj)]
-
-
-dataTypeSpec :: DataType -> VLSpec
-dataTypeSpec dType =
-  let s = case dType of
-        FoNumber -> "number"
-        FoBoolean -> "boolean"
-        FoDate fmt | T.null fmt -> "date"
-                   | otherwise -> "date:'" <> fmt <> "'"
-        FoUtc fmt | T.null fmt -> "utc"
-                  | otherwise -> "utc:'" <> fmt <> "'"
-  in toJSON s
-
-
-{-|
-
-Create a row of data. A row comprises a list of (columnName, value) pairs.
-The final parameter is the list of any other rows to which this is added.
-
-This is expected to be used with 'dataFromRows'.
-
-@
-'dataRow' [(\"Animal\", 'Str' \"Fish\"), (\"Age\", 'Number' 28), (\"Year\", 'Str' "2010")] []
-@
--}
-dataRow :: [(T.Text, DataValue)] -> [DataRow] -> [DataRow]
-dataRow rw = (object (map (second dataValueSpec) rw) :)
-
-
-{-|
-
-Create a dataset comprising a collection of named 'Data' items. Each data item
-can be created with normal data generating functions such as 'dataFromRows' or
-'dataFromJson'. These can be later referred to using 'dataFromSource'.
-
-@
-let toJS = Data.Aeson.toJSON
-    obj = Data.Aeson.object
-
-    dvals = 'dataFromRows' []
-            . 'dataRow' [ ( "cat", 'Str' "a" ), ( "val", 'Number' 10 ) ]
-            . 'dataRow' [ ( "cat", 'Str' "b" ), ( "val", 'Number' 18 ) ]
-    json = toJS
-            [ obj [ ( "cat", toJS "a" ), ( "val", toJS 120 ) ]
-            , obj [ ( "cat", toJS "b" ), ( "val", toJS 180 ) ]
-            ]
-
-    enc = ...
-
-in 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'datasets' [ ( \"myData\", dvals [] ),  ( \"myJson\", 'dataFromJson' json [] ) ]
-    , 'dataFromSource' \"myData\" []
-    , 'mark' 'Bar' []
-    , enc []
-    ]
-@
--}
-datasets :: [(T.Text, Data)] -> Data
-datasets namedData =
-  -- Follow Elm in parsing the structure to get what we want, but the code is
-  -- written rather differently.
-  --
-  -- The input is expected to be a singleton list containing a pair.
-  let converted = extract . snd
-      specs = map (second converted) namedData
-
-      convert :: Value -> Maybe [(T.Text, Value)]
-      convert v = HM.toList <$> decode (encode v)
-
-      extract din =
-        let extract' [(_, v)] = Just v
-            extract' _ = Nothing
-
-        in fromMaybe din (convert din >>= extract')
-
-  in (VLDatasets, object specs)
-
-
--- | This is for composed specifications, and it tells the visualization to
---   ignore the data from the parent.
---
---   @since 0.4.0.0
-noData :: Data
-noData = (VLData, A.Null)
-
-
-{-|
-
-Name to give a data source. Useful when a specification needs to reference a
-data source, such as one generated via an API call.
-
-@
-dvals = 'dataName' \"myName\" ('dataFromUrl' \"myData.json\" [])
-@
-
-@since 0.4.0.0
-
--}
-
--- TODO: can we restrict this to only those with a VLProperty of VLData?
-
-dataName ::
-  T.Text
-  -- ^ The name to give the data source
-  -> Data
-  -- ^ The data source to be named.
-  -> Data
-  -- ^ If the input @Data@ argument is not a data source then
-  --   this is just the input value.
-dataName s odata@(_, dataSpec) =
-  -- follow Elm in parsing the structure to get what we want, but the code is
-  -- written rather differently. This is based on the code used in datasets.
-  --
-  -- The input is expected to be a singleton list containing a pair.
-  --
-  let converted = convert >>= extract
-
-      -- Aeson's objects are wrappers around a hash map, so this should be
-      -- a relatively easy conversion. The type annotation isn't needed
-      -- but left in for reference.
-      --
-      convert :: Maybe [(T.Text, Value)]
-      convert = HM.toList <$> decode (encode dataSpec)
-
-      extract [v] = Just v
-      extract _ = Nothing
-
-  in case converted of
-       Just v -> (VLData, object [ "name" .= s, v ])
-       _ -> odata
-
-
-{-|
-
-Generate a sequence of numbers as a data source. The resulting
-sequence will have the name @\"data\"@. To give it an alternative name use
-'dataSequenceAs'.
-
-@
-myData = 'dataSequence' 0 6.28 0.1
-@
-
-@since 0.4.0.0
-
--}
-dataSequence ::
-  Double     -- ^ start of the sequence (inclusive)
-  -> Double  -- ^ end of the sequence (exclusive)
-  -> Double  -- ^ step size
-  -> Data
-dataSequence start stop step =
-  let vals = [("sequence", object svals)]
-      svals = [ "start" .= start
-              , "stop" .= stop
-              , "step" .= step
-              ]
-
-  in (VLData, object vals)
-
-
-{-|
-
-Generate a sequence of numbers as a named data source. This extends
-'dataSequence' by allowing you to name the data source.
-
-@
-myTheta = 'dataSequenceAs' 0 6.28 0.1 \"theta\"
-@
-
-@since 0.4.0.0
-
--}
-dataSequenceAs ::
-  Double     -- ^ start of the sequence (inclusive)
-  -> Double  -- ^ end of the sequence (exclusive)
-  -> Double  -- ^ step size
-  -> T.Text  -- ^ The name of the data source
-  -> Data
-dataSequenceAs start stop step outName =
-  let vals = [("sequence", object svals)]
-      svals = [ "start" .= start
-              , "stop" .= stop
-              , "step" .= step
-              , "as" .= outName
-              ]
-
-  in (VLData, object vals)
-
-
-{-|
-
-Declare a data source from a list of column values. Each column has a
-specific type (e.g. 'Number' or 'String'), but different columns can have
-different types.
-
-Note that the columns are truncated to match the length of the shortest column.
-
-@
-'dataFromColumns' [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
-  . 'dataColumn' \"Animal\" ('Strings' [ \"Fish\", \"Dog\", \"Cat\" ])
-  . 'dataColumn' \"Age\" ('Numbers' [ 28, 12, 6 ])
-  . 'dataColumn' \"Year\" ('Strings' [ "2010", "2014", "2015" ])
-@
--}
-dataFromColumns ::
-  [Format]
-  -- ^ An optional list of formatting instructions for the columns.
-  --
-  --   Simple numbers and strings do not normally need formatting, but it is
-  --   good practice to explicitly declare date-time formats as handling of
-  --   these values can vary between different viewers (e.g. browsers).
-  --
-  --   See the
-  --   <https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
-  --   for more details.
-  -> [DataColumn]
-  -- ^ The columns to add. This is expected to be created with one or more
-  --   calls to 'dataColumn'.
-  -> Data
-dataFromColumns fmts cols =
-  let dataArray = map object (transpose cols)
-
-      vals = [("values", toJSON dataArray)]
-             <> if null fmts
-                then []
-                else [("format", toJSON fmtObject)]
-
-      fmtObject = object (concatMap formatProperty fmts)
-
-  in (VLData, object vals)
-
-
-transpose :: [[a]] -> [[a]]
-transpose [] = []
-transpose ([]:xss) = transpose xss
-transpose ((x:xs) : xss) =
-  let heads = filterMap elmHead xss --
-      tails = filterMap elmTail xss
-
-      elmHead (h:_) = Just h
-      elmHead [] = Nothing
-
-      elmTail [] = Nothing
-      elmTail (_:ts) = Just ts
-
-      filterMap = mapMaybe
-
-  in (x : heads) : transpose (xs : tails)
-
-
-{-|
-
-Declare a data source from a provided json specification. The most likely use-case
-for specifying json inline is when creating <http://geojson.org geojson> objects,
-when 'geometry', 'geometryCollection', and 'geoFeatureCollection' functions
-may be used. For more general cases of json creation, consider 'Data.Aeson.encode'.
-
-@
-let geojson =
-        'geometry' ('GeoPolygon' [ [ ( -3, 59 ), ( 4, 59 ), ( 4, 52 ), ( -3, 59 ) ] ]) []
-in 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'width' 200
-    , 'height' 200
-    , 'dataFromJson' geojson []
-    , 'projection' [ 'PrType' 'Orthographic' ]
-    , 'mark' 'Geoshape' []
-    ]
-@
--}
-dataFromJson :: VLSpec -> [Format] -> Data
-dataFromJson vlspec fmts =
-  let js = if null fmts
-           then object [("values", vlspec)]
-           else object [ ("values", vlspec)
-                       , ("format",
-                          object (concatMap formatProperty fmts)) ]
-  in (VLData, js)
-
-
-{-|
-
-Create a column of data. A column has a name and a list of values. The final
-parameter is the list of any other columns to which this is added.
-
-This is expected to be used with 'dataFromColumns'.
-
-@
-'dataColumn' \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
-@
--}
-dataColumn :: T.Text -> DataValues -> [DataColumn] -> [DataColumn]
-dataColumn colName dVals xs =
-  let col = case dVals of
-        Booleans cs -> map toJSON cs
-        DateTimes cs -> map dtToJSON cs
-        Numbers cs -> map toJSON cs
-        Strings cs -> map toJSON cs
-
-      dtToJSON = object . map dateTimeProperty
-      x = map (colName,) col
-
-  in x : xs
-
-
-{-|
-
-Declare a data source from a provided list of row values. Each row
-contains a list of tuples where the first value is a string
-representing the column name, and the second the column value for that
-row. Each column can have a value of a different type but
-__you must ensure__
-that when subsequent rows are added, they match the types of
-previous values with shared column names.
-
-Note though that generally if you are creating data inline (as opposed
-to reading from a file), adding data by column is more efficient and
-less error-prone.
-
-@
-dataFromRows [ 'Parse' [ ( \"Year\", 'FoDate' "%Y" ) ] ]
-  . 'dataRow' [ ( \"Animal\", 'Str' \"Fish\" ), ( \"Age\", 'Number' 28 ), ( \"Year\", 'Str' "2010" ) ]
-  . 'dataRow' [ ( \"Animal\", 'Str' \"Dog\" ), ( \"Age\", 'Number' 12 ), ( \"Year\", 'Str' "2014" ) ]
-  . 'dataRow' [ ( \"Animal\", 'Str' \"Cat\" ), ( \"Age\", 'Number' 6 ), ( \"Year\", 'Str' "2015" ) ]
-@
--}
-dataFromRows ::
-  [Format]
-  -- ^ An optional list of formatting instructions for the rows.
-  --
-  --   Simple numbers and strings do not normally need formatting, but it is
-  --   good practice to explicitly declare date-time formats as handling of
-  --   these values can vary between different viewers (e.g. browsers).
-  --
-  --   See the
-  --   <https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
-  --   for more details.
-  -> [DataRow]
-  -- ^ The rows to add. This is expected to be created with one or more
-  --   calls to 'dataRow'.
-  -> Data
-dataFromRows fmts rows =
-  let kvs = ("values", toJSON rows)
-            : if null fmts
-              then []
-              else [("format", object (concatMap formatProperty fmts))]
-  in (VLData, object kvs)
-
-
-{-|
-
-Declare data from a named source. The source may be from named 'datasets' within
-a specification or a named data source created via the
-<https://vega.github.io/vega/docs/api/view/#data Vega View API>.
-An optional list of field formatting instructions can be provided as the second
-parameter or an empty list to use the default formatting. See the
-<https://vega.github.io/vega-lite/docs/data.html#named Vega-Lite documentation>
-for details.
-
-@
-'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'datasets' [ ( "myData", dvals [] ),  ( "myJson", 'dataFromJson' json [] ) ]
-    , 'dataFromSource' "myData" []
-    , 'mark' 'Bar' []
-    , ...
-    ]
-@
--}
-dataFromSource :: T.Text -> [Format] -> Data
-dataFromSource sourceName fmts =
-  let kvs = ("name" .= sourceName)
-            : if null fmts
-              then []
-              else [("format", object (concatMap formatProperty fmts))]
-  in (VLData, object kvs)
-
-
-{-|
-
-Declare data source from a url. The url can be a local path on a web server
-or an external http(s) url. Used to create a data ( property, specification ) pair.
-An optional list of field formatting instructions can be provided as the second
-parameter or an empty list to use the default formatting. See the
-<https://vega.github.io/vega-lite/docs/data.html#format Vega-Lite documentation>
-for details.
-
-@
-'dataFromUrl' "data/weather.csv" [ 'Parse' [ ( "date", 'FoDate' "%Y-%m-%d %H:%M" ) ] ]
-@
--}
--- TODO: should this use a URL type?
-dataFromUrl :: T.Text -> [Format] -> Data
-dataFromUrl url fmts =
-  let kvs = ("url" .= url)
-            : if null fmts
-              then []
-              else [("format", object (concatMap formatProperty fmts))]
-  in (VLData, object kvs)
-
-
 -- | Type of visual mark used to represent data in the visualization.
 --
 --   The properties of the mark can be changed with the 'MarkProperty'
@@ -1162,7 +617,7 @@ for the second parameter.
 @
 
 @
-let dvals = 'dataFromUrl' \"city.json\" ['TopojsonFeature' \"boroughs\"] []
+let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"city.json\" ['Graphics.Vega.VegaLite.TopojsonFeature' \"boroughs\"] []
     markOpts = 'mark' 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
 in 'Graphics.Vega.VegaLite.toVegaLite' [dvals, markOpts]
 @
@@ -2663,7 +2118,7 @@ be transparent.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'background' "rgb(251,247,238)"
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -2680,7 +2135,7 @@ Provides an optional description to be associated with the visualization.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'description' "Population change of key regions since 1900"
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -2708,7 +2163,7 @@ Provide an optional title to be displayed in the visualization.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'title' "Population Growth" ['TColor' \"orange\"]
-    , 'dataFromUrl' \"data/population.json\" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
     , 'encoding' ...
     ]
@@ -3544,7 +2999,7 @@ for details.
     [ 'width' 250
     , 'height' 300
     , 'autosize' [ 'AFit', 'APadding', 'AResize' ]
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6162,7 +5617,7 @@ The number of columns in the flow layout can be set with 'columns'
 and, if not specified, will default to a single row of unlimited columns.
 
 @
-let dvals = 'dataSequenceAs' 0 6.28 0.1 \"x\"
+let dvals = 'Graphics.Vega.VegaLite.dataSequenceAs' 0 6.28 0.1 \"x\"
     trans = 'transform'
               . 'calculateAs' \"sin(datum.x)\" \"sinX\"
               . 'calculateAs' \"cos(datum.x)\" \"cosX\"
@@ -6253,7 +5708,7 @@ setting.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'height' 300
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6283,7 +5738,7 @@ Assigns a list of specifications to be juxtaposed horizontally in a visualizatio
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'dataFromUrl' "data/driving.json" []
+    [ 'Graphics.Vega.VegaLite.dataFromUrl' "data/driving.json" []
     , hConcat [ spec1, spec2 ]
     ]
 @
@@ -6297,15 +5752,15 @@ hConcat specs = (VLHConcat, toJSON specs)
 Assigns a list of specifications to superposed layers in a visualization.
 
 @
-'Graphics.Vega.VegaLite.toVegaLite' ['dataFromUrl' "data/driving.json" [], layer [spec1, spec2]]
+'Graphics.Vega.VegaLite.toVegaLite' ['Graphics.Vega.VegaLite.dataFromUrl' "data/driving.json" [], layer [spec1, spec2]]
 @
 
 A complete example showing @layer@ in use:
 
 @
-let dvals = 'dataFromColumns' []
-              . 'dataColumn' \"x\" ('Numbers' [1, 2, 3, 4, 5])
-              . 'dataColumn' \"a\" ('Numbers' [28, 91, 43, 55, 81])
+let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
+              . 'Graphics.Vega.VegaLite.dataColumn' \"x\" ('Numbers' [1, 2, 3, 4, 5])
+              . 'Graphics.Vega.VegaLite.dataColumn' \"a\" ('Numbers' [28, 91, 43, 55, 81])
     enc = 'encoding'
              . 'position' 'X' ['PName' \"x\", 'PmType' 'Ordinal']
              . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
@@ -6331,7 +5786,7 @@ Provides an optional name to be associated with the visualization.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'name' \"PopGrowth\"
-    , 'dataFromUrl' \"data/population.json\" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6352,7 +5807,7 @@ for details.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
     , 'padding' ('PEdges' 20 10 5 15)
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6433,7 +5888,7 @@ let res = 'resolve'
             . 'resolution' ('RLegend' [('ChColor', 'Independent')])
 
 in 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'dataFromUrl' \"data/movies.json\" []
+    [ 'Graphics.Vega.VegaLite.dataFromUrl' \"data/movies.json\" []
     , 'vConcat' [heatSpec, barSpec]
     , res []
     ]
@@ -6443,10 +5898,10 @@ For more information see the
 <https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation>.
 
 @
-let dvals = 'dataFromColumns' []
-              . 'dataColumn' "x" ('Numbers' [1, 2, 3, 4, 5])
-              . 'dataColumn' "a" ('Numbers' [28, 91, 43, 55, 81])
-              . 'dataColumn' "b" ('Numbers' [17, 22, 28, 30, 40])
+let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
+              . 'Graphics.Vega.VegaLite.dataColumn' "x" ('Numbers' [1, 2, 3, 4, 5])
+              . 'Graphics.Vega.VegaLite.dataColumn' "a" ('Numbers' [28, 91, 43, 55, 81])
+              . 'Graphics.Vega.VegaLite.dataColumn' "b" ('Numbers' [17, 22, 28, 30, 40])
     encBar = 'encoding'
                . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
                . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
@@ -6640,7 +6095,7 @@ Assigns a list of specifications to be juxtaposed vertically in a visualization.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'dataFromUrl' "data/driving.json" []
+    [ 'Graphics.Vega.VegaLite.dataFromUrl' "data/driving.json" []
     , 'vConcat' [ spec1, spec2 ]
     ]
 @
@@ -6659,7 +6114,7 @@ setting.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
-    , 'dataFromUrl' "data/population.json" []
+    , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
     ]
@@ -6908,7 +6363,7 @@ Randomly sample rows from a data source up to a given maximum.
 For example, the following randomly samples 50 values from a sine curve:
 
 @
- dvals = 'dataSequenceAs' 0 13 0.001 \"x\"
+ dvals = 'Graphics.Vega.VegaLite.dataSequenceAs' 0 13 0.001 \"x\"
  trans = 'transform'
            . 'calculateAs' \"sin(datum.x)\" \"y\"
            . 'sample' 50
@@ -7003,7 +6458,7 @@ Note that when faceting, dimensions specified with 'width' and 'height'
 refer to the individual faceted plots, not the overall visualization.
 
 @
-let dvals = 'dataFromUrl' \"crimeData.csv\"
+let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
     enc = 'encoding'
             . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
             . 'position' 'Y' ['PName' \"reportedCrimes\", 'PmType' 'Quantitative'
@@ -7170,10 +6625,10 @@ See also 'foldAs'.
 
 @
 dvals =
-    'dataFromColumns' []
-        . 'dataColumn' \"city\" ('Strings' [ \"Bristol\", \"Sheffield\", \"Glasgow\" ])
-        . 'dataColumn' \"temp2017\" ('Numbers' [ 12, 11, 7 ])
-        . 'dataColumn' \"temp2018\" ('Numbers' [ 14, 13, 10 ])
+    'Graphics.Vega.VegaLite.dataFromColumns' []
+        . 'Graphics.Vega.VegaLite.dataColumn' \"city\" ('Strings' [ \"Bristol\", \"Sheffield\", \"Glasgow\" ])
+        . 'Graphics.Vega.VegaLite.dataColumn' \"temp2017\" ('Numbers' [ 12, 11, 7 ])
+        . 'Graphics.Vega.VegaLite.dataColumn' \"temp2018\" ('Numbers' [ 14, 13, 10 ])
 
 trans =
     'transform'
@@ -7258,7 +6713,7 @@ file matches the value of @person@ in the primary data source.
 
 @
 trans = 'transform'
-          . 'lookup' \"person\" ('dataFromUrl' \"data/lookup_people.csv\" []) \"name\" [\"age\", \"height\"]
+          . 'lookup' \"person\" ('Graphics.Vega.VegaLite.dataFromUrl' \"data/lookup_people.csv\" []) \"name\" [\"age\", \"height\"]
 @
 -}
 lookup ::
@@ -7266,7 +6721,7 @@ lookup ::
   -- ^ The field in the primary data structure acting as the key.
   -> Data
   -- ^ The secondary data source (e.g. the return from the data-generating
-  --   functions such as 'dataFromUrl').
+  --   functions such as 'Graphics.Vega.VegaLite.dataFromUrl').
   -> T.Text
   -- ^ The name of the field in the secondary data source to match against
   --   the primary key.
@@ -7294,7 +6749,7 @@ primary data source.
 
 @
 'transform'
-    . 'lookupAs' "person" ('dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
+    . 'lookupAs' "person" ('Graphics.Vega.VegaLite.dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
 @
 
 If the data contained columns called @age@ and @height@ then they would
@@ -7317,7 +6772,7 @@ lookupAs ::
   -- ^ The field in the primary data structure acting as the key.
   -> Data
   -- ^ The secondary data source (e.g. the return from the data-generating
-  --   functions such as 'dataFromUrl').
+  --   functions such as 'Graphics.Vega.VegaLite.dataFromUrl').
   -> T.Text
   -- ^ The name of the field in the secondary data source to match against
   --   the primary key.
@@ -7425,10 +6880,10 @@ mean of existing @b@ values with @c=1@, for the \"missing\" coordinate
 of (@a=30@, @c=1@):
 
 @
-let dvals = 'dataFromColumns' []
-              . 'dataColumn' "a" ('Numbers' [0, 0, 10, 10, 20, 20, 30])
-              . 'dataColumn' "b" ('Numbers' [28, 91, 43, 55, 81, 53, 19])
-              . 'dataColumn' "c" ('Numbers' [0, 1, 0, 1, 0, 1, 0])
+let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
+              . 'Graphics.Vega.VegaLite.dataColumn' "a" ('Numbers' [0, 0, 10, 10, 20, 20, 30])
+              . 'Graphics.Vega.VegaLite.dataColumn' "b" ('Numbers' [28, 91, 43, 55, 81, 53, 19])
+              . 'Graphics.Vega.VegaLite.dataColumn' "c" ('Numbers' [0, 1, 0, 1, 0, 1, 0])
 
     trans = 'transform'
               . 'impute' "b" "a" ['ImMethod' 'ImMean', 'ImGroupBy' ["c"]]
@@ -7566,7 +7021,7 @@ Note that when faceting, dimensions specified with 'width' and 'height'
 refer to the individual faceted plots, not the whole visualization.
 
 @
-let dvals = 'dataFromUrl' \"crimeData.csv\"
+let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
     enc = 'encoding'
             . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
             . 'position' 'Y' ['PName' \"reportedCrimes\"
