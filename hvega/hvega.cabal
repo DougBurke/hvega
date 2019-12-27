@@ -127,6 +127,7 @@ library
                        Graphics.Vega.VegaLite.Output
                        Graphics.Vega.VegaLite.Selection
                        Graphics.Vega.VegaLite.Specification
+                       Graphics.Vega.VegaLite.Time
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5
                      , text == 1.2.*

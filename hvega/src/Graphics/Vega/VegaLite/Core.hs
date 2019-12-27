@@ -251,11 +251,6 @@ module Graphics.Vega.VegaLite.Core
        , DataValue(..)
        , DataValues(..)
 
-       , DateTime(..)
-       , MonthName(..)
-       , DayName(..)
-       , TimeUnit(..)
-
        -- not for external export
        , fromT
        , channelLabel
@@ -319,7 +314,12 @@ import Graphics.Vega.VegaLite.Specification
   , asSpec
   , specification
   )
-
+import Graphics.Vega.VegaLite.Time
+  ( DateTime
+  , TimeUnit
+  , dateTimeProperty
+  , timeUnitLabel
+  )
 
 --- helpers
 
@@ -3097,9 +3097,9 @@ data AxisProperty
       --   @
       --   'PAxis' ['AxValues' ('Numbers' [2, 3, 5, 7, 11, 13, 17])]
       --   'PAxis' ['AxValues' ('Strings' ["cats", "dogs", "elephants"])]
-      --   'PAxis' ['AxValues' ('DateTimes' [ ['DTYear' 2019, 'DTMonth' 'Mar', 'DTDate' 31]
-      --                              , ['DTYear' 2019, 'DTMonth' 'Jun', 'DTDate' 30]
-      --                              , ['DTYear' 2019, 'DTMonth' 'Sep', 'DTDate' 30]
+      --   'PAxis' ['AxValues' ('DateTimes' [ ['Graphics.Vega.VegaLite.DTYear' 2019, 'Graphics.Vega.VegaLite.DTMonth' 'Graphics.Vega.VegaLite.Mar', 'Graphics.Vega.VegaLite.DTDate' 31]
+      --                              , ['Graphics.Vega.VegaLite.DTYear' 2019, 'Graphics.Vega.VegaLite.DTMonth' 'Graphics.Vega.VegaLite.Jun', 'Graphics.Vega.VegaLite.DTDate' 30]
+      --                              , ['Graphics.Vega.VegaLite.DTYear' 2019, 'Graphics.Vega.VegaLite.DTMonth' 'Graphics.Vega.VegaLite.Sep', 'Graphics.Vega.VegaLite.DTDate' 30]
       --                              ])]
       --   @
       --
@@ -3256,157 +3256,6 @@ overlapStrategyLabel :: OverlapStrategy -> T.Text
 overlapStrategyLabel ONone = "false"
 overlapStrategyLabel OParity = "parity"
 overlapStrategyLabel OGreedy = "greedy"
-
-
-{-|
-
-Allows a date or time to be represented. This is typically part of a list of
-@DateTime@ items to provide a specific point in time. For details see the
-<https://vega.github.io/vega-lite/docs/types.html#datetime Vega-Lite documentation>.
--}
-
-data DateTime
-    = DTYear Int
-    | DTQuarter Int
-    | DTMonth MonthName
-    | DTDate Int
-    | DTDay DayName
-    | DTHours Int
-    | DTMinutes Int
-    | DTSeconds Int
-    | DTMilliseconds Int
-
-
--- | Identifies the day of the week.
-
-data DayName
-    = Mon
-    | Tue
-    | Wed
-    | Thu
-    | Fri
-    | Sat
-    | Sun
-
-
--- | Identifies a month of the year.
-
-data MonthName
-    = Jan
-    | Feb
-    | Mar
-    | Apr
-    | May
-    | Jun
-    | Jul
-    | Aug
-    | Sep
-    | Oct
-    | Nov
-    | Dec
-
-
-{-|
-
-Describes a unit of time. Useful for encoding and transformations. See the
-<https://vega.github.io/vega-lite/docs/timeunit.html Vega-Lite documentation>
-for further details.
-
-@
-'encoding'
-    . 'position' 'X' [ 'PName' "date", 'PmType' 'Temporal', 'PTimeUnit' ('Utc' 'YearMonthDateHours') ]
-@
--}
-
-data TimeUnit
-    = Year
-    | YearQuarter
-    | YearQuarterMonth
-    | YearMonth
-    | YearMonthDate
-    | YearMonthDateHours
-    | YearMonthDateHoursMinutes
-    | YearMonthDateHoursMinutesSeconds
-    | Quarter
-    | QuarterMonth
-    | Month
-    | MonthDate
-    | Date
-    | Day
-    | Hours
-    | HoursMinutes
-    | HoursMinutesSeconds
-    | Minutes
-    | MinutesSeconds
-    | Seconds
-    | SecondsMilliseconds
-    | Milliseconds
-    | Utc TimeUnit
-      -- ^ Encode a time as UTC (coordinated universal time, independent of local time
-      --   zones or daylight saving).
-
-
-dateTimeProperty :: DateTime -> LabelledSpec
-dateTimeProperty (DTYear y) = "year" .= y
-dateTimeProperty (DTQuarter q) = "quarter" .= q
-dateTimeProperty (DTMonth mon) = "month" .= monthNameLabel mon
-dateTimeProperty (DTDate dt) = "date" .= dt
-dateTimeProperty (DTDay day) = "day" .= dayLabel day
-dateTimeProperty (DTHours h) = "hours" .= h
-dateTimeProperty (DTMinutes m) = "minutes" .= m
-dateTimeProperty (DTSeconds s) = "seconds" .= s
-dateTimeProperty (DTMilliseconds ms) = "milliseconds" .= ms
-
-
-dayLabel :: DayName -> T.Text
-dayLabel Mon = "Mon"
-dayLabel Tue = "Tue"
-dayLabel Wed = "Wed"
-dayLabel Thu = "Thu"
-dayLabel Fri = "Fri"
-dayLabel Sat = "Sat"
-dayLabel Sun = "Sun"
-
-
-monthNameLabel :: MonthName -> T.Text
-monthNameLabel Jan = "Jan"
-monthNameLabel Feb = "Feb"
-monthNameLabel Mar = "Mar"
-monthNameLabel Apr = "Apr"
-monthNameLabel May = "May"
-monthNameLabel Jun = "Jun"
-monthNameLabel Jul = "Jul"
-monthNameLabel Aug = "Aug"
-monthNameLabel Sep = "Sep"
-monthNameLabel Oct = "Oct"
-monthNameLabel Nov = "Nov"
-monthNameLabel Dec = "Dec"
-
-
-timeUnitLabel :: TimeUnit -> T.Text
-timeUnitLabel Year = "year"
-timeUnitLabel YearQuarter = "yearquarter"
-timeUnitLabel YearQuarterMonth = "yearquartermonth"
-timeUnitLabel YearMonth = "yearmonth"
-timeUnitLabel YearMonthDate = "yearmonthdate"
-timeUnitLabel YearMonthDateHours = "yearmonthdatehours"
-timeUnitLabel YearMonthDateHoursMinutes = "yearmonthdatehoursminutes"
-timeUnitLabel YearMonthDateHoursMinutesSeconds = "yearmonthdatehoursminutesseconds"
-timeUnitLabel Quarter = "quarter"
-timeUnitLabel QuarterMonth = "quartermonth"
-timeUnitLabel Month = "month"
-timeUnitLabel MonthDate = "monthdate"
-timeUnitLabel Date = "date"
-timeUnitLabel Day = "day"
-timeUnitLabel Hours = "hours"
-timeUnitLabel HoursMinutes = "hoursminutes"
-timeUnitLabel HoursMinutesSeconds = "hoursminutesseconds"
-timeUnitLabel Minutes = "minutes"
-timeUnitLabel MinutesSeconds = "minutesseconds"
-timeUnitLabel Seconds = "seconds"
-timeUnitLabel SecondsMilliseconds = "secondsmilliseconds"
-timeUnitLabel Milliseconds = "milliseconds"
-timeUnitLabel (Utc tu) = "utc" <> timeUnitLabel tu
 
 
 {-|
@@ -5351,8 +5200,8 @@ data BooleanOp
       --   'Data.Function.&').
       --
       --   @
-      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2010] ['DTYear' 2017])
-      --           & 'FilterOpTrans' ('MTimeUnit' 'Year')
+      --   'filter' ('FRange' "date" ('DateRange' ['Graphics.Vega.VegaLite.DTYear' 2010] ['Graphics.Vega.VegaLite.DTYear' 2017])
+      --           & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.Year')
       --           & 'FCompose'
       --           )
       --   @
@@ -5475,7 +5324,7 @@ data Filter
       --   For example:
       --
       --   @
-      --   'filter' ('FRange' "date" ('DateRange' ['DTYear' 2006] ['DTYear' 2016])
+      --   'filter' ('FRange' "date" ('DateRange' ['Graphics.Vega.VegaLite.DTYear' 2006] ['Graphics.Vega.VegaLite.DTYear' 2016])
       --   @
       --
       --   See 'FilterOpTrans' for more use cases.
@@ -7516,7 +7365,7 @@ example:
 
 @
 'encoding'
-  . 'position' X ['PName' "personDetails.age", 'PmType' 'Temporal', 'PTimeUnit' 'Year', 'PTitle' \"Age\"]
+  . 'position' X ['PName' "personDetails.age", 'PmType' 'Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Year', 'PTitle' \"Age\"]
   . 'position' Y ['PName' "personDetails.height", 'PmType' 'Quantitative', 'PTitle' \"Height\"]
 @
 
@@ -7920,10 +7769,10 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = 'transform' . 'timeUnitAs' 'Month' \"date\" \"monthly\"
+trans = 'transform' . 'timeUnitAs' 'Graphics.Vega.VegaLite.Month' \"date\" \"monthly\"
 
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Day' ]
+        . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Day' ]
         . 'position' 'Y' [ 'PAggregate' 'Sum', 'PmType' 'Quantitative' ]
         . 'detail' [ 'DName' \"monthly\", 'DmType' 'Temporal' ]
 @
