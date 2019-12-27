@@ -167,8 +167,6 @@ module Graphics.Vega.VegaLite.Core
        , facetFlow
        , FacetMapping(..)
        , FacetChannel(..)
-       , asSpec
-       , specification
        , Arrangement(..)
 
        , HeaderProperty(..)
@@ -278,8 +276,6 @@ import Graphics.Vega.VegaLite.Specification
   , Color
   , Opacity
   , ZIndex
-  , asSpec
-  , specification
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
@@ -1902,11 +1898,11 @@ data PositionChannel
       --      . 'position' 'X' [ PRepeat 'Flow', 'PmType' 'Quantitative' ]
       --
       -- spec =
-      --    'asSpec' [ dataVals [], 'mark' 'Tick' [], enc [] ]
+      --    'Graphics.Vega.VegaLite.asSpec' [ dataVals [], 'mark' 'Tick' [], enc [] ]
       --
       -- 'Graphics.Vega.VegaLite.toVegaLite'
       --    [ 'repeatFlow' [ \"Horsepower\", \"Miles_per_Gallon\", \"Acceleration\"]
-      --    , 'specification' spec
+      --    , 'Graphics.Vega.VegaLite.specification' spec
       --    ]
       -- @
     | PmType Measurement
@@ -5196,8 +5192,8 @@ let dvals = 'Graphics.Vega.VegaLite.dataSequenceAs' 0 6.28 0.1 \"x\"
 
 in toVegaLite [ dvals
               , trans []
-              , 'vlConcat' [ 'asSpec' [encCos [], 'mark' 'Line' []]
-                         , 'asSpec' [encSin [], 'mark' 'Line' []]
+              , 'vlConcat' [ 'Graphics.Vega.VegaLite.asSpec' [encCos [], 'mark' 'Line' []]
+                         , 'Graphics.Vega.VegaLite.asSpec' [encSin [], 'mark' 'Line' []]
                          ]
               ]
 @
@@ -5218,7 +5214,7 @@ Defines the fields that will be used to facet a view in rows or columns to creat
 a set of small multiples. This is used where the encoding of the visualization in small
 multiples is identical, but data for each is grouped by the given fields. When
 creating a faceted view in this way you also need to define a full specification
-to apply to each of those facets using 'asSpec'.
+to apply to each of those facets using 'Graphics.Vega.VegaLite.asSpec'.
 
 See the
 <https://vega.github.io/vega-lite/docs/facet.html Vega-Lite documentation>
@@ -5229,7 +5225,7 @@ for further details.
     [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Ordinal' ]
             , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Ordinal' ]
             ]
-    , 'specification' spec
+    , 'Graphics.Vega.VegaLite.specification' spec
     ]
 @
 
@@ -5246,7 +5242,7 @@ facet fMaps = (VLFacet, object (map facetMappingProperty fMaps))
 Facet a view to create small multiples in a flow layout. Used when the encoding
 of the visualization in small multiples is identical, but data for each is grouped
 by the given fields. When creating a faceted view in this way you also need to
-define a full specification to apply to each of those facets using 'asSpec'.
+define a full specification to apply to each of those facets using 'Graphics.Vega.VegaLite.asSpec'.
 
 Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
@@ -5254,7 +5250,7 @@ if the number of plots exceeds an optional column limit (specified via 'columns'
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
-    , 'specification' spec
+    , 'Graphics.Vega.VegaLite.specification' spec
     ]
 @
 
@@ -5336,8 +5332,8 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
 
     in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals []
                   , enc []
-                  , 'layer' [ 'asSpec' ['mark' 'Bar' []]
-                          , 'asSpec' ['mark' 'Text' ['MdY' (-8)]]
+                  , 'layer' [ 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Bar' []]
+                          , 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Text' ['MdY' (-8)]]
                           ]
                   ]
 @
@@ -5392,7 +5388,7 @@ set of small multiples. This is used where the encoding of the
 visualization in small multiples is largely identical, but the data
 field used in each might vary. When a list of fields is identified
 with @repeat@ you also need to define a full specification to apply to
-each of those fields using 'asSpec'.
+each of those fields using 'Graphics.Vega.VegaLite.asSpec'.
 
 Unlike __faceting__, which creates multiple charts based on different values of a
 single field, __repeating__ uses a different field for each chart.
@@ -5404,7 +5400,7 @@ for further details.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'repeat' ['ColumnFields' [\"Cat\", \"Dog\", \"Fish\"]]
-    , 'specification' ('asSpec' spec)
+    , 'Graphics.Vega.VegaLite.specification' ('Graphics.Vega.VegaLite.asSpec' spec)
     ]
 @
 
@@ -5421,7 +5417,7 @@ repeat fields = (VLRepeat, object (map repeatFieldsProperty fields))
 Define the fields that will be used to compose a flow layout of a set of
 small multiples. Used when the encoding is largely identical, but the data field
 used in each might vary. When a list of fields is identified with @repeatFlow@ you also
-need to define a full specification to apply to each of those fields using 'asSpec'.
+need to define a full specification to apply to each of those fields using 'Graphics.Vega.VegaLite.asSpec'.
 
 Small multiples will be laid out from left to right, moving on to new rows only
 if the number of plots exceeds an optional column limit (specified via 'columns').
@@ -5429,7 +5425,7 @@ if the number of plots exceeds an optional column limit (specified via 'columns'
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'repeatFlow' [ \"Cat\", \"Dog\", \"Fish\" ]
-    , 'specification' ('asSpec' spec)
+    , 'Graphics.Vega.VegaLite.specification' ('Graphics.Vega.VegaLite.asSpec' spec)
     ]
 @
 
@@ -5473,11 +5469,11 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
     encBar = 'encoding'
                . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
                . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
-    specBar = 'asSpec' ['mark' 'Bar' [], encBar []]
+    specBar = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Bar' [], encBar []]
     encLine = 'encoding'
                 . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
                 . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
-    specLine = 'asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
+    specLine = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
     res = 'resolve'
             . 'resolution' ('RScale' [('ChY', 'Independent')])
 
