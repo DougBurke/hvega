@@ -263,6 +263,12 @@ import Graphics.Vega.VegaLite.Data
   , dataValueSpec
   , dataValuesSpecs
   )
+import Graphics.Vega.VegaLite.Foundation
+  ( Angle
+  , Color
+  , Opacity
+  , ZIndex
+  )
 import Graphics.Vega.VegaLite.Input
   ( Data
   )
@@ -272,10 +278,6 @@ import Graphics.Vega.VegaLite.Specification
   , PropertySpec
   , LabelledSpec
   , BuildLabelledSpecs
-  , Angle
-  , Color
-  , Opacity
-  , ZIndex
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime

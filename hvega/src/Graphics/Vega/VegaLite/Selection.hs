@@ -47,12 +47,12 @@ import Graphics.Vega.VegaLite.Data
   ( DataValue
   , dataValueSpec
   )
+import Graphics.Vega.VegaLite.Foundation (Opacity)
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
   , LabelledSpec
   , BuildLabelledSpecs
-  , Opacity
   )
 
   
