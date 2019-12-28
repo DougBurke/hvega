@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
-Module      : Graphics.Vega.VegaLite.Selection
+Module      : Graphics.Vega.VegaLite.Configuration
 Copyright   : (c) Douglas Burke, 2018-2019
 License     : BSD3
 
