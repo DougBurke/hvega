@@ -45,14 +45,10 @@ import Graphics.Vega.VegaLite.Core
   , LegendLayout(..)
   , BaseLegendLayout(..)
   , sideLabel
-  , anchorLabel
-  , hAlignLabel
-  , vAlignLabel
   , strokeCapLabel
   , strokeJoinLabel
   , overlapStrategyLabel
   , schemeProperty
-  , orientationSpec
   , boundsSpec
   , symbolLabel
   , legendOrientLabel
@@ -64,7 +60,13 @@ import Graphics.Vega.VegaLite.Core
   , header_
   , mprops_
   )
-import Graphics.Vega.VegaLite.Foundation (fontWeightSpec)
+import Graphics.Vega.VegaLite.Foundation
+  ( anchorLabel
+  , fontWeightSpec
+  , orientationSpec
+  , hAlignLabel
+  , vAlignLabel
+  )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
   , projectionProperty

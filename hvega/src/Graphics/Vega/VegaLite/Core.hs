@@ -64,7 +64,6 @@ module Graphics.Vega.VegaLite.Core
        , StrokeCap(..)
        , StrokeJoin(..)
 
-       , Orientation(..)
        , MarkInterpolation(..)
        , Symbol(..)
        , PointMarker(..)
@@ -75,10 +74,8 @@ module Graphics.Vega.VegaLite.Core
        , Cursor(..)
 
        , encoding
-       , Measurement(..)
 
        , position
-       , Position(..)
 
        , PositionChannel(..)
 
@@ -86,9 +83,6 @@ module Graphics.Vega.VegaLite.Core
        , SortField(..)
 
        , AxisProperty(..)
-
-       , HAlign(..)
-       , VAlign(..)
 
        , OverlapStrategy(..)
 
@@ -166,7 +160,6 @@ module Graphics.Vega.VegaLite.Core
        , facetFlow
        , FacetMapping(..)
        , FacetChannel(..)
-       , Arrangement(..)
 
        , HeaderProperty(..)
 
@@ -204,7 +197,6 @@ module Graphics.Vega.VegaLite.Core
        , TitleFrame(..)
 
        , ViewConfig(..)
-       , APosition(..)
        , FieldTitleProperty(..)
 
        , FacetConfig(..)
@@ -214,15 +206,11 @@ module Graphics.Vega.VegaLite.Core
        -- not for external export
        , fromT
        , channelLabel
-       , anchorLabel
        , sideLabel
-       , hAlignLabel
-       , vAlignLabel
        , strokeCapLabel
        , strokeJoinLabel
        , overlapStrategyLabel
        , schemeProperty
-       , orientationSpec
        , boundsSpec
        , symbolLabel
        , legendOrientLabel
@@ -267,7 +255,20 @@ import Graphics.Vega.VegaLite.Foundation
   , Opacity
   , ZIndex
   , FontWeight(..)
+  , Measurement(..)
+  , Arrangement(..)
+  , APosition(..)
+  , Orientation(..)
+  , Position(..)
+  , HAlign(..)
+  , VAlign(..)
   , fontWeightSpec
+  , measurementLabel
+  , arrangementLabel
+  , anchorLabel
+  , orientationSpec
+  , hAlignLabel
+  , vAlignLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -1045,87 +1046,6 @@ so it can either be used to add further encoding specifications or as
 encoding :: [LabelledSpec] -> PropertySpec
 encoding channels = (VLEncoding, object channels)
 
--- TODO:
---
---  encoding of X2/... shouldn't include the PmType in the output, apparently
---  so we could try and filter that out, or just rely on the user to not
---  add the PmType fields in this case.
-
-{-|
-
-Type of position channel, @X@ and @Y@ represent horizontal and vertical axis
-dimensions on a plane and @X2@ and @Y2@ represent secondary axis dimensions where
-two scales are overlaid in the same space. Geographic positions represented by
-longitude and latiutude values are identified with @Longitude@, @Latitude@ and
-their respective secondary equivalents. Such geographic position channels are
-subject to a map projection (set using 'Graphics.Vega.VegaLite.projection') before being placed graphically.
-
--}
-data Position
-    = X
-    | Y
-    | X2
-    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
-    --    marks.
-    | Y2
-    -- ^ The secondary coordinate for ranged 'Area', 'Bar', 'Rect', and 'Rule'
-    --    marks.
-    | XError
-      -- ^ Indicates that the 'X' channel represents the mid-point and
-      --   the 'XError' channel gives the offset. If 'XError2' is not
-      --   defined then this channel value is applied symmetrically.
-      --
-      --   @since 0.4.0.0
-    | XError2
-      -- ^ Used to support asymmetric error ranges defined as 'XError'
-      --   and 'XError2'. One of 'XError' or 'XError2' channels must
-      --   contain positive values and the other negative values.
-      --
-      --   @since 0.4.0.0
-    | YError
-      -- ^ Indicates that the 'Y' channel represents the mid-point and
-      --   the 'YError' channel gives the offset. If 'YError2' is not
-      --   defined then this channel value is applied symmetrically.
-      --
-      --   @since 0.4.0.0
-    | YError2
-      -- ^ Used to support asymmetric error ranges defined as 'YError'
-      --   and 'YError2'. One of 'YError' or 'YError2' channels must
-      --   contain positive values and the other negative values.
-      --
-      --   @since 0.4.0.0
-    | Longitude
-      -- ^ The longitude value for projections.
-    | Latitude
-      -- ^ The latitude value for projections.
-    | Longitude2
-      -- ^ A second longitude coordinate.
-    | Latitude2
-      -- ^ A second longitude coordinate.
-
-
-{-|
-
-Type of measurement to be associated with some channel.
-
--}
-
-data Measurement
-    = Nominal
-      -- ^ Data are categories identified by name alone and which have no intrinsic order.
-    | Ordinal
-      -- ^ Data are also categories, but ones which have some natural order.
-    | Quantitative
-      -- ^ Data are numeric measurements typically on a continuous scale.
-    | Temporal
-      -- ^ Data represents time in some manner.
-    | GeoFeature
-      -- ^ Geospatial position encoding ('Longitude' and 'Latitude') should specify the 'PmType'
-      -- as @Quantitative@. Geographically referenced features encoded as 'shape' marks
-      -- should specify 'MmType' as @GeoFeature@ (Vega-Lite currently refers to this type
-      -- as @<https://vega.github.io/vega-lite/docs/encoding.html geojson>@.
-
-
 {-|
 
 Type of binning property to customise. See the
@@ -1315,30 +1235,6 @@ operationSpec Sum = "sum"
 operationSpec Valid = "valid"
 operationSpec Variance = "variance"
 operationSpec VarianceP = "variancep"
-
-
--- | Identifies how repeated or faceted views are arranged.
---
---   This is used with a number of constructors: 'ByRepeatOp',
---   'HRepeat', 'MRepeat', 'ORepeat', 'PRepeat', and 'TRepeat'.
-
--- based on schema 3.3.0 #/definitions/RepeatRef
-
-data Arrangement
-    = Column
-      -- ^ Column arrangement.
-    | Row
-      -- ^ Row arrangement.
-    | Flow
-      -- ^ Flow arrangement (aka \"repeat\").
-      --
-      --   @since 0.4.0.0
-
-
-arrangementLabel :: Arrangement -> T.Text
-arrangementLabel Column = "column"
-arrangementLabel Row = "row"
-arrangementLabel Flow = "repeat"  -- NOTE: not "flow"!
 
 
 -- | How are stacks applied within a transform?
@@ -2018,14 +1914,6 @@ positionChannelProperty (PNumber x) = "value" .= x
 positionChannelProperty (PImpute ips) = impute_ ips
 
 
-measurementLabel :: Measurement -> T.Text
-measurementLabel Nominal = "nominal"
-measurementLabel Ordinal = "ordinal"
-measurementLabel Quantitative = "quantitative"
-measurementLabel Temporal = "temporal"
-measurementLabel GeoFeature = "geojson"
-
-
 positionLabel :: Position -> T.Text
 positionLabel X = "x"
 positionLabel Y = "y"
@@ -2514,34 +2402,6 @@ axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dt
 axisProperty (AxZIndex z) = "zindex" .= z
 
 
--- | Indicates the horizontal alignment of text such as on an axis or legend.
-
-data HAlign
-    = AlignCenter
-    | AlignLeft
-    | AlignRight
-
-
--- | Indicates the vertical alignment of text that may be attached to a mark.
-
-data VAlign
-    = AlignTop
-    | AlignMiddle
-    | AlignBottom
-
-
-hAlignLabel :: HAlign -> T.Text
-hAlignLabel AlignLeft = "left"
-hAlignLabel AlignCenter = "center"
-hAlignLabel AlignRight = "right"
-
-
-vAlignLabel :: VAlign -> T.Text
-vAlignLabel AlignTop = "top"
-vAlignLabel AlignMiddle = "middle"
-vAlignLabel AlignBottom = "bottom"
-
-
 -- | Represents one side of a rectangular space.
 
 data Side
@@ -2704,31 +2564,6 @@ markInterpolationLabel CardinalOpen = "cardinal-open"
 markInterpolationLabel CardinalClosed = "cardinal-closed"
 markInterpolationLabel Bundle = "bundle"
 markInterpolationLabel Monotone = "monotone"
-
-
-{-|
-
-The orientation of an item. This is used with:
-'BLeLDirection', 'LDirection',
-'LeGradientDirection', 'LeLDirection', 'LeSymbolDirection',
-and 'MOrient'.
-
-In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.
-
--}
-
--- based on schema 3.3.0 #/definitions/Orientation
-
-data Orientation
-    = Horizontal
-      -- ^ Display horizontally.
-    | Vertical
-      -- ^ Display vertically.
-
-
-orientationSpec :: Orientation -> VLSpec
-orientationSpec Horizontal = "horizontal"
-orientationSpec Vertical = "vertical"
 
 
 {-|
@@ -3784,23 +3619,6 @@ channelLabel ChText = "text"
 channelLabel ChTooltip = "tooltip"
 channelLabel ChHref = "href"
 channelLabel ChKey = "key"
-
-
--- | Indicates the anchor position for text.
-
-data APosition
-    = AStart
-      -- ^ The start of the text.
-    | AMiddle
-      -- ^ The middle of the text.
-    | AEnd
-      -- ^ The end of the text.
-
-
-anchorLabel :: APosition -> T.Text
-anchorLabel AStart = "start"
-anchorLabel AMiddle = "middle"
-anchorLabel AEnd = "end"
 
 
 {-|
