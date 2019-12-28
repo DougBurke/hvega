@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 {-|
 Module      : Graphics.Vega.VegaLite.Foundation
 Copyright   : (c) Douglas Burke, 2018-2019
@@ -5,6 +7,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
+Portability : OverloadedStrings
 
 Basic types that are used throughout VegaLite.
 
@@ -15,13 +18,26 @@ module Graphics.Vega.VegaLite.Foundation
        , Color
        , Opacity
        , ZIndex
+
+       , FontWeight(..)
+
+       -- not for external export
+       , fontWeightSpec
+
        )
     where
 
 import qualified Data.Text as T
 
+import Data.Aeson (toJSON)
+
+
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
+
+
+import Graphics.Vega.VegaLite.Specification (VLSpec)
+
 
 {-|
 
@@ -116,3 +132,44 @@ in 'Graphics.Vega.VegaLite.toVegaLite' [ cfg []
 -}
 
 type ZIndex = Natural
+
+
+-- | Indicates the weight options for a font.
+
+data FontWeight
+    = Bold
+    | Bolder
+    | Lighter
+    | Normal
+    | W100
+    | W200
+    | W300
+    | W400
+    | W500
+    | W600
+    | W700
+    | W800
+    | W900
+
+
+fromF :: Double -> VLSpec
+fromF = toJSON
+
+fromT :: T.Text -> VLSpec
+fromT = toJSON
+
+
+fontWeightSpec :: FontWeight -> VLSpec
+fontWeightSpec Bold = fromT "bold"
+fontWeightSpec Bolder = fromT "bolder"
+fontWeightSpec Lighter = fromT "lighter"
+fontWeightSpec Normal = fromT "normal"
+fontWeightSpec W100 = fromF 100
+fontWeightSpec W200 = fromF 200
+fontWeightSpec W300 = fromF 300
+fontWeightSpec W400 = fromF 400
+fontWeightSpec W500 = fromF 500
+fontWeightSpec W600 = fromF 600
+fontWeightSpec W700 = fromF 700
+fontWeightSpec W800 = fromF 800
+fontWeightSpec W900 = fromF 900

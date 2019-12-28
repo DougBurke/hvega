@@ -115,7 +115,6 @@ module Graphics.Vega.VegaLite.Core
        , tooltip
        , tooltips
        , TextChannel(..)
-       , FontWeight(..)
 
        , hyperlink
        , HyperlinkChannel(..)
@@ -222,7 +221,6 @@ module Graphics.Vega.VegaLite.Core
        , strokeCapLabel
        , strokeJoinLabel
        , overlapStrategyLabel
-       , fontWeightSpec
        , schemeProperty
        , orientationSpec
        , boundsSpec
@@ -268,6 +266,8 @@ import Graphics.Vega.VegaLite.Foundation
   , Color
   , Opacity
   , ZIndex
+  , FontWeight(..)
+  , fontWeightSpec
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -392,10 +392,6 @@ dataCond_ getProps tests elseClause =
 
 fromT :: T.Text -> VLSpec
 fromT = toJSON
-
-fromF :: Double -> VLSpec
-fromF = toJSON
-
 
 {-|
 
@@ -2670,40 +2666,6 @@ cursorLabel CZoomIn = "zoom-in"
 cursorLabel CZoomOut = "zoom-out"
 cursorLabel CGrab = "grab"
 cursorLabel CGrabbing = "grabbing"
-
-
--- | Indicates the weight options for a font.
-
-data FontWeight
-    = Bold
-    | Bolder
-    | Lighter
-    | Normal
-    | W100
-    | W200
-    | W300
-    | W400
-    | W500
-    | W600
-    | W700
-    | W800
-    | W900
-
-
-fontWeightSpec :: FontWeight -> VLSpec
-fontWeightSpec Bold = fromT "bold"
-fontWeightSpec Bolder = fromT "bolder"
-fontWeightSpec Lighter = fromT "lighter"
-fontWeightSpec Normal = fromT "normal"
-fontWeightSpec W100 = fromF 100
-fontWeightSpec W200 = fromF 200
-fontWeightSpec W300 = fromF 300
-fontWeightSpec W400 = fromF 400
-fontWeightSpec W500 = fromF 500
-fontWeightSpec W600 = fromF 600
-fontWeightSpec W700 = fromF 700
-fontWeightSpec W800 = fromF 800
-fontWeightSpec W900 = fromF 900
 
 
 {-|

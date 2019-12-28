@@ -51,7 +51,6 @@ import Graphics.Vega.VegaLite.Core
   , strokeCapLabel
   , strokeJoinLabel
   , overlapStrategyLabel
-  , fontWeightSpec
   , schemeProperty
   , orientationSpec
   , boundsSpec
@@ -65,6 +64,7 @@ import Graphics.Vega.VegaLite.Core
   , header_
   , mprops_
   )
+import Graphics.Vega.VegaLite.Foundation (fontWeightSpec)
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
   , projectionProperty
