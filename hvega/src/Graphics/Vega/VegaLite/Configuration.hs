@@ -40,7 +40,6 @@ import Graphics.Vega.VegaLite.Core
   , TitleConfig
   , ViewConfig(..)
   , Padding
-  , StackOffset
   , FieldTitleProperty(..)
   , LegendLayout(..)
   , BaseLegendLayout(..)
@@ -48,7 +47,6 @@ import Graphics.Vega.VegaLite.Core
   , boundsSpec
   , legendOrientLabel
   , compositionAlignmentSpec
-  , stackOffset
   , titleConfigSpec
   , autosizeProperty
   , paddingSpec
@@ -56,7 +54,8 @@ import Graphics.Vega.VegaLite.Core
   , mprops_
   )
 import Graphics.Vega.VegaLite.Foundation
-  ( anchorLabel
+  ( StackOffset
+  , anchorLabel
   , fontWeightSpec
   , orientationSpec
   , hAlignLabel
@@ -66,6 +65,7 @@ import Graphics.Vega.VegaLite.Foundation
   , sideLabel
   , overlapStrategyLabel
   , symbolLabel
+  , stackOffset
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
