@@ -61,8 +61,6 @@ module Graphics.Vega.VegaLite.Core
        , Mark(..)
 
        , MarkProperty(..)
-       , StrokeCap(..)
-       , StrokeJoin(..)
 
        , MarkInterpolation(..)
        , Symbol(..)
@@ -123,7 +121,6 @@ module Graphics.Vega.VegaLite.Core
        , DetailChannel(..)
 
        , ScaleProperty(..)
-       , Scale(..)
        , categoricalDomainMap
        , domainRangeMap
        , ScaleDomain(..)
@@ -207,8 +204,6 @@ module Graphics.Vega.VegaLite.Core
        , fromT
        , channelLabel
        , sideLabel
-       , strokeCapLabel
-       , strokeJoinLabel
        , overlapStrategyLabel
        , schemeProperty
        , boundsSpec
@@ -262,6 +257,9 @@ import Graphics.Vega.VegaLite.Foundation
   , Position(..)
   , HAlign(..)
   , VAlign(..)
+  , StrokeCap
+  , StrokeJoin
+  , Scale
   , fontWeightSpec
   , measurementLabel
   , arrangementLabel
@@ -269,6 +267,9 @@ import Graphics.Vega.VegaLite.Foundation
   , orientationSpec
   , hAlignLabel
   , vAlignLabel
+  , strokeCapLabel
+  , strokeJoinLabel
+  , scaleLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -984,47 +985,6 @@ markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
 
 
--- | How are strokes capped? This is used with 'MStrokeCap', 'VBStrokeCap',
---   and `ViewStrokeCap'.
---
---   @since 0.4.0.0
-
-data StrokeCap
-    = CButt
-      -- ^ Butt stroke cap.
-    | CRound
-      -- ^ Rounded stroke cap.
-    | CSquare
-      -- ^ Square stroke cap.
-
-
-strokeCapLabel :: StrokeCap -> T.Text
-strokeCapLabel CButt = "butt"
-strokeCapLabel CRound = "round"
-strokeCapLabel CSquare = "square"
-
-
--- | How are strokes joined? This is used with 'MStrokeJoin', 'VBStrokeJoin',
---   and `ViewStrokeJoin'.
---
---
---   @since 0.4.0.0
-
-data StrokeJoin
-    = JMiter
-      -- ^ Mitred stroke join.
-    | JRound
-      -- ^ Rounded stroke join.
-    | JBevel
-      -- ^ Bevelled stroke join.
-
-
-strokeJoinLabel :: StrokeJoin -> T.Text
-strokeJoinLabel JMiter = "miter"
-strokeJoinLabel JRound = "round"
-strokeJoinLabel JBevel = "bevel"
-
-
 {-|
 
 Create an encoding specification from a list of channel encodings,
@@ -1371,7 +1331,7 @@ data ScaleProperty
       --
       --   @since 0.4.0.0
     | SBase Double
-      -- ^ The base to use for log scaling ('ScLog').
+      -- ^ The base to use for log scaling ('Graphics.Vega.VegaLite.ScLog').
       --
       --   Default is @10@.
       --
@@ -1385,7 +1345,7 @@ data ScaleProperty
       -- ^ Should values outside the data domain be clamped (to the minimum or
       --   maximum value)?
     | SConstant Double
-      -- ^ The desired slope of the 'ScSymLog' function at zero.
+      -- ^ The desired slope of the 'Graphics.Vega.VegaLite.ScSymLog' function at zero.
       --
       --   The default is @1@.
       --
@@ -1393,7 +1353,7 @@ data ScaleProperty
     | SDomain ScaleDomain
       -- ^ Custom scaling domain.
     | SExponent Double
-      -- ^ The exponent to use for power scaling ('ScPow').
+      -- ^ The exponent to use for power scaling ('Graphics.Vega.VegaLite.ScPow').
       --
       --   @since 0.4.0.0
     | SInterpolate CInterpolate
@@ -1464,74 +1424,6 @@ schemeProperty nme [n] = "scheme" .= object ["name" .= nme, "count" .= n]
 schemeProperty nme [mn, mx] = "scheme" .= object ["name" .= nme, "extent" .= [mn, mx]]
 schemeProperty nme [n, mn, mx] = "scheme" .= object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
 schemeProperty nme _ = "scheme" .= nme
-
-
--- | Used to indicate the type of scale transformation to apply.
---
---   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
---   'ScLinear' should be used instead.
-
-data Scale
-    = ScLinear
-      -- ^ A linear scale.
-    | ScPow
-      -- ^ A power scale. The exponent to use for scaling is specified with
-      --   'SExponent'.
-    | ScSqrt
-      -- ^ A square-root scale.
-    | ScLog
-      -- ^ A log scale. Defaults to log of base 10, but can be customised with
-      --   'SBase'.
-    | ScSymLog
-      -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
-      --   scale. Similar to a log scale but supports zero and negative values. The slope
-      --   of the function at zero can be set with 'SConstant'.
-      --
-      --   @since 0.4.0.0
-    | ScTime
-      -- ^ A temporal scale.
-    | ScUtc
-      -- ^ A temporal scale, in UTC.
-    | ScOrdinal
-      -- ^ An ordinal scale.
-    | ScBand
-      -- ^ A band scale.
-    | ScPoint
-      -- ^ A point scale.
-    | ScBinLinear
-      -- ^ A linear band scale.
-    | ScBinOrdinal
-      -- ^ An ordinal band scale.
-    | ScQuantile
-      -- ^ A quantile scale.
-      --
-      --   @since 0.4.0.0
-    | ScQuantize
-      -- ^ A quantizing scale.
-      --
-      --   @since 0.4.0.0
-    | ScThreshold
-      -- ^ A threshold scale.
-      --
-      --   @since 0.4.0.0
-
-
-scaleLabel :: Scale -> T.Text
-scaleLabel ScLinear = "linear"
-scaleLabel ScPow = "pow"
-scaleLabel ScSqrt = "sqrt"
-scaleLabel ScLog = "log"
-scaleLabel ScSymLog = "symlog"
-scaleLabel ScTime = "time"
-scaleLabel ScUtc = "utc"
-scaleLabel ScOrdinal = "ordinal"
-scaleLabel ScBand = "band"
-scaleLabel ScPoint = "point"
-scaleLabel ScBinLinear = "bin-linear"
-scaleLabel ScBinOrdinal = "bin-ordinal"
-scaleLabel ScQuantile = "quantile"
-scaleLabel ScQuantize = "quantize"
-scaleLabel ScThreshold = "threshold"
 
 
 {-|

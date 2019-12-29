@@ -29,6 +29,11 @@ module Graphics.Vega.VegaLite.Foundation
        , HAlign(..)
        , VAlign(..)
 
+       , StrokeCap(..)
+       , StrokeJoin(..)
+
+       , Scale(..)
+
        -- not for external export
        , fontWeightSpec
        , measurementLabel
@@ -37,6 +42,9 @@ module Graphics.Vega.VegaLite.Foundation
        , orientationSpec
        , hAlignLabel
        , vAlignLabel
+       , strokeCapLabel
+       , strokeJoinLabel
+       , scaleLabel
 
        )
     where
@@ -370,3 +378,112 @@ vAlignLabel :: VAlign -> T.Text
 vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
+
+
+-- | How are strokes capped? This is used with 'Graphics.Vega.VegaLite.MStrokeCap', 'Graphics.Vega.VegaLite.VBStrokeCap',
+--   and 'Graphics.Vega.VegaLite.ViewStrokeCap'.
+--
+--   @since 0.4.0.0
+
+data StrokeCap
+    = CButt
+      -- ^ Butt stroke cap.
+    | CRound
+      -- ^ Rounded stroke cap.
+    | CSquare
+      -- ^ Square stroke cap.
+
+
+strokeCapLabel :: StrokeCap -> T.Text
+strokeCapLabel CButt = "butt"
+strokeCapLabel CRound = "round"
+strokeCapLabel CSquare = "square"
+
+
+-- | How are strokes joined? This is used with 'Graphics.Vega.VegaLite.MStrokeJoin', 'Graphics.Vega.VegaLite.VBStrokeJoin',
+--   and 'Graphics.Vega.VegaLite.ViewStrokeJoin'.
+--
+--
+--   @since 0.4.0.0
+
+data StrokeJoin
+    = JMiter
+      -- ^ Mitred stroke join.
+    | JRound
+      -- ^ Rounded stroke join.
+    | JBevel
+      -- ^ Bevelled stroke join.
+
+
+strokeJoinLabel :: StrokeJoin -> T.Text
+strokeJoinLabel JMiter = "miter"
+strokeJoinLabel JRound = "round"
+strokeJoinLabel JBevel = "bevel"
+
+
+-- | Used to indicate the type of scale transformation to apply.
+--
+--   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
+--   'ScLinear' should be used instead.
+
+data Scale
+    = ScLinear
+      -- ^ A linear scale.
+    | ScPow
+      -- ^ A power scale. The exponent to use for scaling is specified with
+      --   'Graphics.Vega.VegaLite.SExponent'.
+    | ScSqrt
+      -- ^ A square-root scale.
+    | ScLog
+      -- ^ A log scale. Defaults to log of base 10, but can be customised with
+      --   'Graphics.Vega.VegaLite.SBase'.
+    | ScSymLog
+      -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
+      --   scale. Similar to a log scale but supports zero and negative values. The slope
+      --   of the function at zero can be set with 'Graphics.Vega.VegaLite.SConstant'.
+      --
+      --   @since 0.4.0.0
+    | ScTime
+      -- ^ A temporal scale.
+    | ScUtc
+      -- ^ A temporal scale, in UTC.
+    | ScOrdinal
+      -- ^ An ordinal scale.
+    | ScBand
+      -- ^ A band scale.
+    | ScPoint
+      -- ^ A point scale.
+    | ScBinLinear
+      -- ^ A linear band scale.
+    | ScBinOrdinal
+      -- ^ An ordinal band scale.
+    | ScQuantile
+      -- ^ A quantile scale.
+      --
+      --   @since 0.4.0.0
+    | ScQuantize
+      -- ^ A quantizing scale.
+      --
+      --   @since 0.4.0.0
+    | ScThreshold
+      -- ^ A threshold scale.
+      --
+      --   @since 0.4.0.0
+
+
+scaleLabel :: Scale -> T.Text
+scaleLabel ScLinear = "linear"
+scaleLabel ScPow = "pow"
+scaleLabel ScSqrt = "sqrt"
+scaleLabel ScLog = "log"
+scaleLabel ScSymLog = "symlog"
+scaleLabel ScTime = "time"
+scaleLabel ScUtc = "utc"
+scaleLabel ScOrdinal = "ordinal"
+scaleLabel ScBand = "band"
+scaleLabel ScPoint = "point"
+scaleLabel ScBinLinear = "bin-linear"
+scaleLabel ScBinOrdinal = "bin-ordinal"
+scaleLabel ScQuantile = "quantile"
+scaleLabel ScQuantize = "quantize"
+scaleLabel ScThreshold = "threshold"
