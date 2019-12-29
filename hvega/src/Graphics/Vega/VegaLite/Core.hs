@@ -249,14 +249,14 @@ import Graphics.Vega.VegaLite.Foundation
   , Color
   , Opacity
   , ZIndex
-  , FontWeight(..)
-  , Measurement(..)
-  , Arrangement(..)
-  , APosition(..)
-  , Orientation(..)
-  , Position(..)
-  , HAlign(..)
-  , VAlign(..)
+  , FontWeight
+  , Measurement
+  , Arrangement
+  , APosition
+  , Orientation
+  , Position
+  , HAlign
+  , VAlign
   , StrokeCap
   , StrokeJoin
   , Scale
@@ -270,6 +270,7 @@ import Graphics.Vega.VegaLite.Foundation
   , strokeCapLabel
   , strokeJoinLabel
   , scaleLabel
+  , positionLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -622,7 +623,7 @@ data MarkChannel
       -- @
       -- 'color'
       --   [ MSelectionCondition ('SelectionName' \"myBrush\")
-      --      [ 'MName' \"myField\", 'MmType' 'Ordinal' ]
+      --      [ 'MName' \"myField\", 'MmType' 'Graphics.Vega.VegaLite.Ordinal' ]
       --      [ 'MString' \"grey\" ]
       --   ]
       -- @
@@ -992,10 +993,10 @@ such as 'position', 'color', 'size', 'shape'.
 
 @
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
-        . 'position' 'Y' [ PName \"Age\", 'PmType' 'Quantitative' ]
-        . 'shape' [ 'MName' \"Species\", 'MmType' 'Nominal' ]
-        . 'size' [ 'MName' \"Population\", 'MmType' 'Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Animal\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ PName \"Age\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'shape' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
+        . 'size' [ 'MName' \"Population\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ]
 @
 
 The type of @enc@ in this example is @[LabelledSpec] -> PropertySpec@,
@@ -1107,12 +1108,12 @@ data Operation
       --
       --   @
       --   'encoding'
-      --     . 'position' 'X'
+      --     . 'position' 'Graphics.Vega.VegaLite.X'
       --                [ 'PName' \"Production_Budget\"
-      --                , 'PmType' 'Quantitative'
+      --                , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
       --                , 'PAggregate' ('ArgMax' ('Just' \"US_Gross\"))
       --                ]
-      --     . 'position' 'Y' ['PName' \"Major_Genre\", 'PmType' 'Nominal']
+      --     . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"Major_Genre\", 'PmType' 'Graphics.Vega.VegaLite.Nominal']
       --   @
       --
       --   An example of its use as part of an 'aggregate' call:
@@ -1604,9 +1605,9 @@ data SortProperty
       --   @variety@ by the mean age of the data in each variety category:
       --
       -- @
-      -- 'position' 'Y'
+      -- 'position' 'Graphics.Vega.VegaLite.Y'
       --   [ 'PName' "variety"
-      --   , 'PmType' 'Ordinal'
+      --   , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
       --   , 'PSort' [ ByFieldOp "age" 'Mean', 'Descending' ]
       --   ]
       -- @
@@ -1616,9 +1617,9 @@ data SortProperty
       -- ^ Sort by another channel.
       --
       -- @
-      -- 'position' 'Y'
+      -- 'position' 'Graphics.Vega.VegaLite.Y'
       --  [ 'PName' "age"
-      --  , 'PmType' 'Ordinal'
+      --  , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
       --  , 'PSort' [ ByChannel 'ChX' ]
       --  ]
       -- @
@@ -1661,7 +1662,7 @@ data PositionChannel
       -- @
       -- enc =
       --   'encoding'
-      --      . 'position' 'X' [ PWidth ]
+      --      . 'position' 'Graphics.Vega.VegaLite.X' [ PWidth ]
       -- @
       --
       --   @since 0.4.0.0
@@ -1681,7 +1682,7 @@ data PositionChannel
       -- @
       -- enc =
       --   'encoding'
-      --      . 'position' 'X' [ PRepeat 'Flow', 'PmType' 'Quantitative' ]
+      --      . 'position' 'Graphics.Vega.VegaLite.X' [ PRepeat 'Graphics.Vega.VegaLite.Flow', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
       --
       -- spec =
       --    'Graphics.Vega.VegaLite.asSpec' [ dataVals [], 'mark' 'Tick' [], enc [] ]
@@ -1701,11 +1702,11 @@ data PositionChannel
       --
       --   @
       --   enc = 'encoding'
-      --           . 'position' 'X' [ 'PName' \"x\"
-      --                        , 'PmType' 'Ordinal'
+      --           . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"x\"
+      --                        , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
       --                        , 'PBin' ['Step' 5]
       --                        ]
-      --           . 'position' 'Y' [ 'PmType' 'Quantitative'
+      --           . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
       --                        , 'PAggregate' 'Count'
       --                        ]
       --   @
@@ -1729,9 +1730,9 @@ data PositionChannel
       --
       --   @
       --   enc = 'encoding'
-      --           . 'position' 'X' [ 'PName' \"role\", 'PmType' 'Ordinal' ]
-      --           . 'position' 'Y' [ 'PName' \"salary\"
-      --                        , 'PmType' 'Quantitative'
+      --           . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"role\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
+      --           . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"salary\"
+      --                        , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
       --                        , 'PAggregate' 'Mean'
       --                        ]
       --   @
@@ -1746,8 +1747,8 @@ data PositionChannel
       --
       --   @
       --   enc = 'encoding'
-      --           . 'position' 'X' [ 'PName' \"ageGroup\"
-      --                        , 'PmType' 'Nominal'
+      --           . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"ageGroup\"
+      --                        , 'PmType' 'Graphics.Vega.VegaLite.Nominal'
       --                        , 'PScale' ['SPaddingInner' 0.5]
       --                        ]
       --   @
@@ -1766,12 +1767,12 @@ data PositionChannel
       --
       --   @
       --   enc = 'encoding'
-      --           . 'position' 'X' ['PName' \"week\", 'PmType' 'Ordinal']
-      --           . 'position' 'Y' [ 'PName' \"takings\"
-      --                        , 'PmType' 'Quantitative'
+      --           . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"week\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal']
+      --           . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"takings\"
+      --                        , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
       --                        , 'PStack' 'StCenter'
       --                        ]
-      --           . 'color' ['MName' \"shop\", 'MmType' 'Nominal']
+      --           . 'color' ['MName' \"shop\", 'MmType' 'Graphics.Vega.VegaLite.Nominal']
       --   @
       --
       --   Changed from @StackProperty@ in version @0.4.0.0@.
@@ -1804,21 +1805,6 @@ positionChannelProperty PHeight = value_ "height"
 positionChannelProperty PWidth = value_ "width"
 positionChannelProperty (PNumber x) = "value" .= x
 positionChannelProperty (PImpute ips) = impute_ ips
-
-
-positionLabel :: Position -> T.Text
-positionLabel X = "x"
-positionLabel Y = "y"
-positionLabel X2 = "x2"
-positionLabel Y2 = "y2"
-positionLabel XError     = "xError"
-positionLabel YError     = "yError"
-positionLabel XError2    = "xError2"
-positionLabel YError2    = "yError2"
-positionLabel Longitude = "longitude"
-positionLabel Latitude = "latitude"
-positionLabel Longitude2 = "longitude2"
-positionLabel Latitude2 = "latitude2"
 
 
 {-|
@@ -3952,7 +3938,7 @@ Used for creating logical compositions. For example
 @
 'color'
     [ 'MSelectionCondition' (Or ('SelectionName' "alex") (SelectionName "morgan"))
-        ['MAggregate' 'Count', 'MName' "*", 'MmType' 'Quantitative']
+        ['MAggregate' 'Count', 'MName' "*", 'MmType' 'Graphics.Vega.VegaLite.Quantitative']
         ['MString' "gray"]
     ]
 @
@@ -4018,7 +4004,7 @@ data BooleanOp
     -- @
     -- 'color'
     --    [ 'MSelectionCondition' ('SelectionName' \"myBrush\")
-    --        ['MName' \"myField\", 'MmType' 'Nominal']
+    --        ['MName' \"myField\", 'MmType' 'Graphics.Vega.VegaLite.Nominal']
     --        ['MString' \"grey\"]
     --    ]
     -- @
@@ -4444,7 +4430,7 @@ domain and range values.
 @
 'color'
     [ 'MName' "year"
-    , 'MmType' 'Ordinal'
+    , 'MmType' 'Graphics.Vega.VegaLite.Ordinal'
     , 'MScale' (domainRangeMap (1955, \"rgb(230,149,156)\") (2000, \"rgb(145,26,36)\"))
     ]
 @
@@ -4488,8 +4474,8 @@ categoricalDomainMap scaleDomainPairs =
 {-|
 
 Create a list of fields to use in set of repeated small multiples. The list of
-fields named here can be referenced in an encoding with @'PRepeat' 'Column'@
-or @'PRepeat' 'Row'@.
+fields named here can be referenced in an encoding with @'PRepeat' 'Graphics.Vega.VegaLite.Column'@
+or @'PRepeat' 'Graphics.Vega.VegaLite.Row'@.
 
 -}
 data RepeatFields
@@ -4860,9 +4846,9 @@ let dvals = 'Graphics.Vega.VegaLite.dataSequenceAs' 0 6.28 0.1 \"x\"
               . 'calculateAs' \"sin(datum.x)\" \"sinX\"
               . 'calculateAs' \"cos(datum.x)\" \"cosX\"
     enc = 'encoding'
-            . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
-    encCos = enc . 'position' 'Y' ['PName' \"cosX\", 'PmType' 'Quantitative']
-    encSin = enc . 'position' 'Y' ['PName' \"sinX\", 'PmType' 'Quantitative']
+            . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+    encCos = enc . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"cosX\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+    encSin = enc . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"sinX\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
 
 in toVegaLite [ dvals
               , trans []
@@ -4896,8 +4882,8 @@ for further details.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
-    [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Ordinal' ]
-            , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Ordinal' ]
+    [ facet [ 'RowBy' [ 'FName' \"Month\", 'FmType' 'Graphics.Vega.VegaLite.Ordinal' ]
+            , 'ColumnBy' [ 'FName' \"Week\", 'FmType' 'Graphics.Vega.VegaLite.Ordinal' ]
             ]
     , 'Graphics.Vega.VegaLite.specification' spec
     ]
@@ -4923,7 +4909,7 @@ if the number of plots exceeds an optional column limit (specified via 'columns'
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
-    [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Nominal' ]
+    [ facetFlow [ 'FName' \"Origin\", 'FmType' 'Graphics.Vega.VegaLite.Nominal' ]
     , 'Graphics.Vega.VegaLite.specification' spec
     ]
 @
@@ -5000,9 +4986,9 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
               . 'Graphics.Vega.VegaLite.dataColumn' \"x\" ('Numbers' [1, 2, 3, 4, 5])
               . 'Graphics.Vega.VegaLite.dataColumn' \"a\" ('Numbers' [28, 91, 43, 55, 81])
     enc = 'encoding'
-             . 'position' 'X' ['PName' \"x\", 'PmType' 'Ordinal']
-             . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
-             . 'text' ['TName' \"a\", 'TmType' 'Nominal']
+             . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal']
+             . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+             . 'text' ['TName' \"a\", 'TmType' 'Graphics.Vega.VegaLite.Nominal']
 
     in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals []
                   , enc []
@@ -5141,12 +5127,12 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
               . 'Graphics.Vega.VegaLite.dataColumn' "a" ('Numbers' [28, 91, 43, 55, 81])
               . 'Graphics.Vega.VegaLite.dataColumn' "b" ('Numbers' [17, 22, 28, 30, 40])
     encBar = 'encoding'
-               . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
-               . 'position' 'Y' ['PName' \"a\", 'PmType' 'Quantitative']
+               . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+               . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
     specBar = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Bar' [], encBar []]
     encLine = 'encoding'
-                . 'position' 'X' ['PName' \"x\", 'PmType' 'Quantitative']
-                . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
+                . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+                . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
     specLine = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
     res = 'resolve'
             . 'resolution' ('RScale' [('ChY', 'Independent')])
@@ -5670,14 +5656,14 @@ calculateAs expr label ols = ("calculate" .= [expr, label]) : ols
 Encode a color channel.
 
 @
-'color' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'color' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ] []
 @
 
 Encoding a color channel will generate a legend by default. To stop the legend
 appearing, just supply an empty list of legend properties to 'MLegend':
 
 @
-'color' [ 'MName' \"Species\", 'MmType' 'Nominal', 'MLegend' [] ] []
+'color' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal', 'MLegend' [] ] []
 @
 -}
 color ::
@@ -5698,10 +5684,10 @@ refer to the individual faceted plots, not the overall visualization.
 @
 let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
     enc = 'encoding'
-            . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
-            . 'position' 'Y' ['PName' \"reportedCrimes\", 'PmType' 'Quantitative'
+            . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"month\", 'PmType' 'Graphics.Vega.VegaLite.Temporal']
+            . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"reportedCrimes\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
                          , 'PAggregate' 'Sum']
-            . 'column' ['FName' \"crimeType\", 'FmType' 'Nominal']
+            . 'column' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
 
     in 'Graphics.Vega.VegaLite.toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
 @
@@ -5745,7 +5731,7 @@ See the
 for details.
 
 @
-'detail' ['DName' \"Species\", 'DmType' 'Nominal'] []
+'detail' ['DName' \"Species\", 'DmType' 'Graphics.Vega.VegaLite.Nominal'] []
 @
 -}
 detail ::
@@ -5765,7 +5751,7 @@ The second parameter is a list of any previous channels to which this fill chann
 should be added.
 
 @
-'fill' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'fill' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ] []
 @
 
 Note that if both @fill@ and 'color' encodings are specified, @fill@ takes precedence.
@@ -5874,9 +5860,9 @@ trans =
 
 enc =
     'encoding'
-        . 'position' 'X' [ 'PName' \"key\", 'PmType' 'Nominal' ]
-        . 'position' 'Y' [ 'PName' \"city\", 'PmType' 'Nominal' ]
-        . 'size' [ 'MName' \"value\", 'MmType' 'Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"key\", 'PmType' 'Graphics.Vega.VegaLite.Nominal' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"city\", 'PmType' 'Graphics.Vega.VegaLite.Nominal' ]
+        . 'size' [ 'MName' \"value\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ]
 @
 
 @since 0.4.0.0
@@ -5911,7 +5897,7 @@ Encode a hyperlink channel.
 
 @
 'encoding'
-  . 'hyperlink' [ 'HName' \"Species\", 'HmType' 'Nominal' ]
+  . 'hyperlink' [ 'HName' \"Species\", 'HmType' 'Graphics.Vega.VegaLite.Nominal' ]
 @
 
 @
@@ -5996,8 +5982,8 @@ example:
 
 @
 'encoding'
-  . 'position' X ['PName' "personDetails.age", 'PmType' 'Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Year', 'PTitle' \"Age\"]
-  . 'position' Y ['PName' "personDetails.height", 'PmType' 'Quantitative', 'PTitle' \"Height\"]
+  . 'position' X ['PName' "personDetails.age", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Year', 'PTitle' \"Age\"]
+  . 'position' Y ['PName' "personDetails.height", 'PmType' 'Graphics.Vega.VegaLite.Quantitative', 'PTitle' \"Height\"]
 @
 
 See the
@@ -6127,9 +6113,9 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
               . 'impute' "b" "a" ['ImMethod' 'ImMean', 'ImGroupBy' ["c"]]
 
     enc = 'encoding'
-            . 'position' 'X' ['PName' \"a\", 'PmType' 'Quantitative']
-            . 'position' 'Y' ['PName' \"b\", 'PmType' 'Quantitative']
-            . 'color' ['MName' \"c\", 'MmType' 'Nominal']
+            . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+            . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
+            . 'color' ['MName' \"c\", 'MmType' 'Graphics.Vega.VegaLite.Nominal']
 
     in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], trans [], enc [], 'mark' 'Line' []]
 @
@@ -6168,7 +6154,7 @@ by opacity. The second parameter is a list of any previous channels to
 which this opacity channel should be added.
 
 @
-'opacity' [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
+'opacity' [ 'MName' \"Age\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ] []
 @
 
 See also 'fillOpacity'.
@@ -6186,9 +6172,9 @@ Encode an order channel.
 @
 enc =
     'encoding'
-        . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
-        . 'position' 'Y' [ 'PName' "gas", 'PmType' 'Quantitative' ]
-        . 'order' [ 'OName' "year", 'OmType' 'Temporal', 'OSort' ['Descending'] ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' "miles", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' "gas", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'order' [ 'OName' "year", 'OmType' 'Graphics.Vega.VegaLite.Temporal', 'OSort' ['Descending'] ]
 @
 -}
 order ::
@@ -6206,7 +6192,7 @@ Encode a position channel.
 @
 enc =
     'encoding'
-      . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal' ]
+      . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Animal\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
 @
 
 Encoding by position will generate an axis by default. To prevent the axis from
@@ -6215,7 +6201,7 @@ appearing, simply provide an empty list of axis properties to 'PAxis':
 @
 enc =
     'encoding'
-      . 'position' 'X' [ 'PName' \"Animal\", 'PmType' 'Ordinal', 'PAxis' [] ]
+      . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Animal\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal', 'PAxis' [] ]
 @
 -}
 position ::
@@ -6261,13 +6247,13 @@ refer to the individual faceted plots, not the whole visualization.
 @
 let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
     enc = 'encoding'
-            . 'position' 'X' ['PName' \"month\", 'PmType' 'Temporal']
-            . 'position' 'Y' ['PName' \"reportedCrimes\"
-                         , 'PmType' 'Quantitative'
+            . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"month\", 'PmType' 'Graphics.Vega.VegaLite.Temporal']
+            . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"reportedCrimes\"
+                         , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
                          , 'PAggregate' 'Sum'
                          , 'PAxis' ['AxNoTitle']
                          ]
-            . 'row' ['FName' \"crimeType\", 'FmType' 'Nominal']
+            . 'row' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
 
 in 'Graphics.Vega.VegaLite.toVegaLite' ['height' 80, dvals [], 'mark' 'Bar' [], enc []]
 @
@@ -6286,7 +6272,7 @@ row fFields ols = ("row" .= object (map facetChannelProperty fFields)) : ols
 Encode a shape channel.
 
 @
-'shape' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'shape' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ] []
 @
 -}
 shape ::
@@ -6301,7 +6287,7 @@ shape markProps ols = mchan_ "shape" markProps : ols
 Encode a size channel.
 
 @
-'size' [ 'MName' \"Age\", 'MmType' 'Quantitative' ] []
+'size' [ 'MName' \"Age\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ] []
 @
 -}
 size ::
@@ -6317,7 +6303,7 @@ Encode a stroke channel. This acts in a similar way to encoding by 'color' but
 only affects the exterior boundary of marks.
 
 @
-'stroke' [ 'MName' \"Species\", 'MmType' 'Nominal' ] []
+'stroke' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ] []
 @
 
 Note that if both @stroke@ and 'color' encodings are specified, @stroke@ takes
@@ -6373,9 +6359,9 @@ for formatting the appearance of the text.
 
 @
 'encoding'
-    . 'position' 'X' [ 'PName' "miles", 'PmType' 'Quantitative' ]
-    . 'position' 'Y' [ 'PName' "gas", 'PmType' 'Quantitative' ]
-    . 'text' [ 'TName' "miles", 'TmType' 'Quantitative' ]
+    . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' "miles", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' "gas", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    . 'text' [ 'TName' "miles", 'TmType' 'Graphics.Vega.VegaLite.Quantitative' ]
 @
 -}
 text ::
@@ -6403,9 +6389,9 @@ grouping by month:
 trans = 'transform' . 'timeUnitAs' 'Graphics.Vega.VegaLite.Month' \"date\" \"monthly\"
 
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' \"date\", 'PmType' 'Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Day' ]
-        . 'position' 'Y' [ 'PAggregate' 'Sum', 'PmType' 'Quantitative' ]
-        . 'detail' [ 'DName' \"monthly\", 'DmType' 'Temporal' ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Day' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PAggregate' 'Sum', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'detail' [ 'DName' \"monthly\", 'DmType' 'Graphics.Vega.VegaLite.Temporal' ]
 @
 -}
 timeUnitAs ::
@@ -6430,9 +6416,9 @@ for formatting the appearance of the text.
 
 @
 enc = 'encoding'
-        . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
-        . 'position' 'Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Quantitative' ]
-        . 'tooltip' [ 'TName' \"Year\", 'TmType' 'Temporal', 'TFormat' "%Y" ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Horsepower\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'tooltip' [ 'TName' \"Year\", 'TmType' 'Graphics.Vega.VegaLite.Temporal', 'TFormat' "%Y" ]
 @
 
 To encode multiple tooltip values with a mark, use 'tooltips'.
@@ -6453,10 +6439,10 @@ Encode a tooltip channel using multiple data fields.
 
 @
 'encoding'
-    . 'position' 'X' [ 'PName' \"Horsepower\", 'PmType' 'Quantitative' ]
-    . 'position' 'Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Quantitative' ]
-    . 'tooltips' [ [ 'TName' \"Year\",  'TmType' 'Temporal', 'TFormat' "%Y" ]
-               , [ 'TName' \"Month\", 'TmType' 'Temporal', 'TFormat' "%Y" ] ]
+    . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Horsepower\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"Miles_per_Gallon\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    . 'tooltips' [ [ 'TName' \"Year\",  'TmType' 'Graphics.Vega.VegaLite.Temporal', 'TFormat' "%Y" ]
+               , [ 'TName' \"Month\", 'TmType' 'Graphics.Vega.VegaLite.Temporal', 'TFormat' "%Y" ] ]
 @
 -}
 tooltips ::

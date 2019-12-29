@@ -45,6 +45,7 @@ module Graphics.Vega.VegaLite.Foundation
        , strokeCapLabel
        , strokeJoinLabel
        , scaleLabel
+       , positionLabel
 
        )
     where
@@ -350,6 +351,22 @@ data Position
       -- ^ A second longitude coordinate.
     | Latitude2
       -- ^ A second longitude coordinate.
+
+
+positionLabel :: Position -> T.Text
+positionLabel X = "x"
+positionLabel Y = "y"
+positionLabel X2 = "x2"
+positionLabel Y2 = "y2"
+positionLabel XError     = "xError"
+positionLabel YError     = "yError"
+positionLabel XError2    = "xError2"
+positionLabel YError2    = "yError2"
+positionLabel Longitude = "longitude"
+positionLabel Latitude = "latitude"
+positionLabel Longitude2 = "longitude2"
+positionLabel Latitude2 = "latitude2"
+
 
 
 -- | Indicates the horizontal alignment of text such as on an axis or legend.
