@@ -63,13 +63,10 @@ module Graphics.Vega.VegaLite.Core
        , MarkProperty(..)
 
        , MarkInterpolation(..)
-       , Symbol(..)
        , PointMarker(..)
        , LineMarker(..)
        , MarkErrorExtent(..)
        , TooltipContent(..)
-
-       , Cursor(..)
 
        , encoding
 
@@ -78,13 +75,8 @@ module Graphics.Vega.VegaLite.Core
        , PositionChannel(..)
 
        , SortProperty(..)
-       , SortField(..)
 
        , AxisProperty(..)
-
-       , OverlapStrategy(..)
-
-       , Side(..)
 
        , size
        , color
@@ -203,11 +195,8 @@ module Graphics.Vega.VegaLite.Core
        -- not for external export
        , fromT
        , channelLabel
-       , sideLabel
-       , overlapStrategyLabel
        , schemeProperty
        , boundsSpec
-       , symbolLabel
        , legendOrientLabel
        , compositionAlignmentSpec
        , stackOffset
@@ -260,6 +249,13 @@ import Graphics.Vega.VegaLite.Foundation
   , StrokeCap
   , StrokeJoin
   , Scale
+  , SortField
+  , Cursor
+  , OverlapStrategy
+  , Side
+  , Symbol
+  , field_
+  , order_
   , fontWeightSpec
   , measurementLabel
   , arrangementLabel
@@ -271,6 +267,11 @@ import Graphics.Vega.VegaLite.Foundation
   , strokeJoinLabel
   , scaleLabel
   , positionLabel
+  , sortFieldSpec
+  , cursorLabel
+  , overlapStrategyLabel
+  , sideLabel
+  , symbolLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -305,13 +306,6 @@ clamped xmin xmax x = max xmin (min xmax x)
 
 aggregate_ :: Operation -> LabelledSpec
 aggregate_ op = "aggregate" .= operationSpec op
-
-field_ :: T.Text -> LabelledSpec
-field_ f = "field" .= f
-
--- could restrict to ascending/descending
-order_ :: T.Text -> LabelledSpec
-order_ o = "order" .= o
 
 op_ :: Operation -> LabelledSpec
 op_ op = "op" .= operationSpec op
@@ -1261,7 +1255,7 @@ to specifying stacking directly when encoding position.
         []
         \"stack_count_Origin1\"
         \"stack_count_Origin2\"
-        [ 'StOffset' 'StNormalize', 'StSort' [ 'WAscending' \"Origin\" ] ]
+        [ 'StOffset' 'StNormalize', 'StSort' [ 'Graphics.Vega.VegaLite.WAscending' \"Origin\" ] ]
     . 'window'
         [ ( [ 'WAggregateOp' 'Min', 'WField' \"stack_count_Origin1\" ], \"x\" )
         , ( [ 'WAggregateOp' 'Max', 'WField' \"stack_count_Origin2\" ], \"x2\" )
@@ -1271,7 +1265,7 @@ to specifying stacking directly when encoding position.
         [ \"Origin\" ]
         \"y\"
         \"y2\"
-        [ 'StOffset' 'StNormalize', 'StSort' [ 'WAscending' \"Cylinders\" ] ]
+        [ 'StOffset' 'StNormalize', 'StSort' [ 'Graphics.Vega.VegaLite.WAscending' \"Cylinders\" ] ]
 @
 
 @since 0.4.0.0
@@ -2059,7 +2053,7 @@ data AxisProperty
     | AxLabelSeparation Double
       -- ^ The minimum separation, in pixels, between label bounding boxes
       --   for them to be considered non-overlapping. This is ignored if
-      --   the 'AxLabelOverlap' strategy is 'ONone'.
+      --   the 'AxLabelOverlap' strategy is 'Graphics.Vega.VegaLite.ONone'.
       --
       --   @since 0.4.0.0
     | AxMaxExtent Double
@@ -2280,132 +2274,6 @@ axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dt
 axisProperty (AxZIndex z) = "zindex" .= z
 
 
--- | Represents one side of a rectangular space.
-
-data Side
-    = STop
-    | SBottom
-    | SLeft
-    | SRight
-
-
-sideLabel :: Side -> T.Text
-sideLabel STop = "top"
-sideLabel SBottom = "bottom"
-sideLabel SLeft = "left"
-sideLabel SRight = "right"
-
-
-{-|
-
-Type of overlap strategy to be applied when there is not space to show all items
-on an axis. See the
-<https://vega.github.io/vega-lite/docs/axis.html#labels Vega-Lite documentation>
-for more details.
--}
-
-data OverlapStrategy
-    = ONone
-      -- ^ No overlap strategy to be applied when there is not space to show all items
-      --   on an axis.
-    | OParity
-      -- ^ Give all items equal weight in overlap strategy to be applied when there is
-      --   not space to show them all on an axis.
-    | OGreedy
-      -- ^ Greedy overlap strategy to be applied when there is not space to show all
-      --   items on an axis.
-
-overlapStrategyLabel :: OverlapStrategy -> T.Text
-overlapStrategyLabel ONone = "false"
-overlapStrategyLabel OParity = "parity"
-overlapStrategyLabel OGreedy = "greedy"
-
-
-{-|
-
-Represents the type of cursor to display. For an explanation of each type,
-see the
-<https://developer.mozilla.org/en-US/docs/Web/CSS/cursor#Keyword%20values CSS documentation>.
-
--}
-data Cursor
-    = CAuto
-    | CDefault
-    | CNone
-    | CContextMenu
-    | CHelp
-    | CPointer
-    | CProgress
-    | CWait
-    | CCell
-    | CCrosshair
-    | CText
-    | CVerticalText
-    | CAlias
-    | CCopy
-    | CMove
-    | CNoDrop
-    | CNotAllowed
-    | CAllScroll
-    | CColResize
-    | CRowResize
-    | CNResize
-    | CEResize
-    | CSResize
-    | CWResize
-    | CNEResize
-    | CNWResize
-    | CSEResize
-    | CSWResize
-    | CEWResize
-    | CNSResize
-    | CNESWResize
-    | CNWSEResize
-    | CZoomIn
-    | CZoomOut
-    | CGrab
-    | CGrabbing
-
-
-cursorLabel :: Cursor -> T.Text
-cursorLabel CAuto = "auto"
-cursorLabel CDefault = "default"
-cursorLabel CNone = "none"
-cursorLabel CContextMenu = "context-menu"
-cursorLabel CHelp = "help"
-cursorLabel CPointer = "pointer"
-cursorLabel CProgress = "progress"
-cursorLabel CWait = "wait"
-cursorLabel CCell = "cell"
-cursorLabel CCrosshair = "crosshair"
-cursorLabel CText = "text"
-cursorLabel CVerticalText = "vertical-text"
-cursorLabel CAlias = "alias"
-cursorLabel CCopy = "copy"
-cursorLabel CMove = "move"
-cursorLabel CNoDrop = "no-drop"
-cursorLabel CNotAllowed = "not-allowed"
-cursorLabel CAllScroll = "all-scroll"
-cursorLabel CColResize = "col-resize"
-cursorLabel CRowResize = "row-resize"
-cursorLabel CNResize = "n-resize"
-cursorLabel CEResize = "e-resize"
-cursorLabel CSResize = "s-resize"
-cursorLabel CWResize = "w-resize"
-cursorLabel CNEResize = "ne-resize"
-cursorLabel CNWResize = "nw-resize"
-cursorLabel CSEResize = "se-resize"
-cursorLabel CSWResize = "sw-resize"
-cursorLabel CEWResize = "ew-resize"
-cursorLabel CNSResize = "ns-resize"
-cursorLabel CNESWResize = "nesw-resize"
-cursorLabel CNWSEResize = "nwse-resize"
-cursorLabel CZoomIn = "zoom-in"
-cursorLabel CZoomOut = "zoom-out"
-cursorLabel CGrab = "grab"
-cursorLabel CGrabbing = "grabbing"
-
-
 {-|
 
 Indicates mark interpolation style. See the
@@ -2493,74 +2361,6 @@ markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
 markErrorExtentLSpec ExRange            = extent_ "min-max"
 markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
-
-
--- | Identifies the type of symbol used with the 'Point' mark type.
---   It is used with 'MShape', 'LeSymbolType', and 'LSymbolType'.
---
---   In version @0.4.0.0@ all constructors were changed to start
---   with @Sym@.
---
-data Symbol
-    = SymCircle
-      -- ^ Specify a circular symbol for a shape mark.
-    | SymSquare
-      -- ^ Specify a square symbol for a shape mark.
-    | SymCross
-      -- ^ Specify a cross symbol for a shape mark.
-    | SymDiamond
-      -- ^ Specify a diamond symbol for a shape mark.
-    | SymTriangleUp
-      -- ^ Specify an upward-triangular symbol for a shape mark.
-    | SymTriangleDown
-      -- ^ Specify a downward-triangular symbol for a shape mark.
-    | SymTriangleRight
-      -- ^ Specify an right-facing triangular symbol for a shape mark.
-      --
-      --   @since 0.4.0.0
-    | SymTriangleLeft
-      -- ^ Specify an left-facing triangular symbol for a shape mark.
-      --
-      --   @since 0.4.0.0
-    | SymStroke
-      -- ^ The line symbol.
-      --
-      --  @since 0.4.0.0
-    | SymArrow
-      -- ^ Centered directional shape.
-      --
-      --  @since 0.4.0.0
-    | SymTriangle
-      -- ^ Centered directional shape. It is not clear what difference
-      --   this is to 'SymTriangleUp'.
-      --
-      --  @since 0.4.0.0
-    | SymWedge
-      -- ^ Centered directional shape.
-      --
-      --  @since 0.4.0.0
-    | SymPath T.Text
-      -- ^ A custom symbol shape as an
-      --   [SVG path description](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths).
-      --
-      --   For correct sizing, the path should be defined within a square
-      --   bounding box, defined on an axis of -1 to 1 for both dimensions.
-
-
-symbolLabel :: Symbol -> T.Text
-symbolLabel SymCircle = "circle"
-symbolLabel SymSquare = "square"
-symbolLabel SymCross = "cross"
-symbolLabel SymDiamond = "diamond"
-symbolLabel SymTriangleUp = "triangle-up"
-symbolLabel SymTriangleDown = "triangle-down"
-symbolLabel SymTriangleRight = "triangle-right"
-symbolLabel SymTriangleLeft = "triangle-left"
-symbolLabel SymStroke = "stroke"
-symbolLabel SymArrow = "arrow"
-symbolLabel SymTriangle = "triangle"
-symbolLabel SymWedge = "wedge"
-symbolLabel (SymPath svgPath) = svgPath
 
 
 {-|
@@ -2768,7 +2568,7 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeLabelSeparation Double
       -- ^ The minimum separation between label bounding boxes for them
-      --   to be considered non-overlapping (ignored if 'ONone' is the
+      --   to be considered non-overlapping (ignored if 'Graphics.Vega.VegaLite.ONone' is the
       --   chosen overlap strategy).
       --
       --   @since 0.4.0.0
@@ -3846,7 +3646,7 @@ data AxisConfig
     | LabelSeparation Double
       -- ^ The minimum separation, in pixels, between label bounding boxes
       --   for them to be considered non-overlapping. This is ignored if
-      --   the 'LabelOverlap' strategy is 'ONone'.
+      --   the 'LabelOverlap' strategy is 'Graphics.Vega.VegaLite.ONone'.
       --
       --   @since 0.4.0.0
     | MaxExtent Double
@@ -5401,22 +5201,6 @@ windowPropertySpec wps =
       fromSpecs _ = A.Null
 
   in map fromSpecs [frms, ips, gps, sts]
-
-
--- | How should the field be sorted when performing a window transform.
---
---   @since 0.4.00
-
-data SortField
-    = WAscending T.Text
-    -- ^ Sort the field into ascending order.
-    | WDescending T.Text
-    -- ^ Sort the field into descending order.
-
-
-sortFieldSpec :: SortField -> VLSpec
-sortFieldSpec (WAscending f) = object [field_ f, order_ "ascending"]
-sortFieldSpec (WDescending f) = object [field_ f, order_ "descending"]
 
 
 -- | Window transformations.

@@ -44,11 +44,8 @@ import Graphics.Vega.VegaLite.Core
   , FieldTitleProperty(..)
   , LegendLayout(..)
   , BaseLegendLayout(..)
-  , sideLabel
-  , overlapStrategyLabel
   , schemeProperty
   , boundsSpec
-  , symbolLabel
   , legendOrientLabel
   , compositionAlignmentSpec
   , stackOffset
@@ -66,6 +63,9 @@ import Graphics.Vega.VegaLite.Foundation
   , vAlignLabel
   , strokeCapLabel
   , strokeJoinLabel
+  , sideLabel
+  , overlapStrategyLabel
+  , symbolLabel
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
