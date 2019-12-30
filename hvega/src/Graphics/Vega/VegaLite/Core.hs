@@ -49,7 +49,6 @@ module Graphics.Vega.VegaLite.Core
        , sample
 
        , window
-       , WindowProperty(..)
 
        , mark
        , Mark(..)
@@ -223,7 +222,6 @@ import Graphics.Vega.VegaLite.Foundation
   , StrokeCap
   , StrokeJoin
   , Scale
-  , SortField
   , Cursor
   , OverlapStrategy
   , Side
@@ -236,6 +234,7 @@ import Graphics.Vega.VegaLite.Foundation
   , fromT
   , field_
   , order_
+  , allowNull
   , fontWeightSpec
   , measurementLabel
   , arrangementLabel
@@ -247,7 +246,6 @@ import Graphics.Vega.VegaLite.Foundation
   , strokeJoinLabel
   , scaleLabel
   , positionLabel
-  , sortFieldSpec
   , cursorLabel
   , overlapStrategyLabel
   , sideLabel
@@ -279,12 +277,14 @@ import Graphics.Vega.VegaLite.Transform
   ( Operation(Count)
   , Window
   , BinProperty
+  , WindowProperty
   , aggregate_
   , op_
   , binned_
   , bin
   , binProperty
   , windowFieldProperty
+  , windowPropertySpec
   )
 
 --- helpers
@@ -1006,7 +1006,7 @@ to specifying stacking directly when encoding position.
         [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Min', 'Graphics.Vega.VegaLite.WField' \"stack_count_Origin1\" ], \"x\" )
         , ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Max', 'Graphics.Vega.VegaLite.WField' \"stack_count_Origin2\" ], \"x2\" )
         ]
-        [ 'WFrame' Nothing Nothing, 'WGroupBy' [ \"Origin\" ] ]
+        [ 'Graphics.Vega.VegaLite.WFrame' Nothing Nothing, 'Graphics.Vega.VegaLite.WGroupBy' [ \"Origin\" ] ]
     . 'stack' \"count_*\"
         [ \"Origin\" ]
         \"y\"
@@ -4369,61 +4369,6 @@ width :: Double -> PropertySpec
 width w = (VLWidth, toJSON w)
 
 
--- | Properties for a window transform.
---
---   @since 0.4.0.0
-
-data WindowProperty
-    = WFrame (Maybe Int) (Maybe Int)
-      -- ^ Moving window for use by a window transform. When a number is
-      --   given, via @Just@, then it indicates the offset from the current
-      --   data object. A @Nothing@ indicates an un-bounded number of rows
-      --   preceding or following the current data object.
-    | WIgnorePeers Bool
-      -- ^ Should the sliding window in a window transform ignore peer
-      --   values (those considered identical by the sort criteria).
-    | WGroupBy [T.Text]
-      -- ^ The fields for partitioning data objects in a window transform
-      --   into separate windows. If not specified, all points will be in a
-      --   single group.
-    | WSort [SortField]
-      -- ^ Comparator for sorting data objects within a window transform.
-
-
--- This is different to how Elm's VegaLite handles this (as of version 1.12.0)
--- Helpers for windowPropertySpec
-
--- allowNull :: A.ToJSON a => Maybe a -> VLSpec
-allowNull :: Maybe Int -> VLSpec
-allowNull (Just a) = toJSON a
-allowNull Nothing = A.Null
-
-wpFrame , wpIgnorePeers, wpGroupBy, wpSort :: WindowProperty -> Maybe VLSpec
-wpFrame (WFrame m1 m2) = Just (toJSON [allowNull m1, allowNull m2])
-wpFrame _ = Nothing
-
-wpIgnorePeers (WIgnorePeers b) = Just (toJSON b)
-wpIgnorePeers _ = Nothing
-
-wpGroupBy (WGroupBy fs) = Just (toJSON fs)
-wpGroupBy _ = Nothing
-
-wpSort (WSort sfs) = Just (toJSON (map sortFieldSpec sfs))
-wpSort _ = Nothing
-
-windowPropertySpec :: [WindowProperty] -> [VLSpec]
-windowPropertySpec wps =
-  let frms = mapMaybe wpFrame wps
-      ips = mapMaybe wpIgnorePeers wps
-      gps = mapMaybe wpGroupBy wps
-      sts = mapMaybe wpSort wps
-
-      fromSpecs [spec] = spec
-      fromSpecs _ = A.Null
-
-  in map fromSpecs [frms, ips, gps, sts]
-
-
 {-|
 
 Defines a set of named aggregation transformations to be used when encoding
@@ -4467,7 +4412,7 @@ The third parameter is a list of transformations to which this is added.
 'transform'
     . 'joinAggregate'
         [ 'opAs' 'Graphics.Vega.VegaLite.Mean' "rating" "avYearRating" ]
-        [ 'WGroupBy' [ "year" ] ]
+        [ 'Graphics.Vega.VegaLite.WGroupBy' [ "year" ] ]
     . 'filter' ('FExpr' "(datum.rating - datum.avYearRating) > 3"))
 @
 
@@ -4499,7 +4444,7 @@ definition and an output name. The second is the window transform definition.
 @
 'transform'
     . 'window' [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Sum', 'Graphics.Vega.VegaLite.WField' "Time" ], "TotalTime" ) ]
-             [ 'WFrame' Nothing Nothing ]
+             [ 'Graphics.Vega.VegaLite.WFrame' Nothing Nothing ]
 @
 
 @since 0.4.0.0

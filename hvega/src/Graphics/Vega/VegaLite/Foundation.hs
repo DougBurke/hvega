@@ -79,6 +79,7 @@ module Graphics.Vega.VegaLite.Foundation
        , fromT
        , field_
        , order_
+       , allowNull
        )
     where
 
@@ -101,6 +102,12 @@ field_ f = "field" .= f
 -- could restrict to ascending/descending
 order_ :: T.Text -> LabelledSpec
 order_ o = "order" .= o
+
+
+-- allowNull :: A.ToJSON a => Maybe a -> VLSpec
+allowNull :: Maybe Int -> VLSpec
+allowNull (Just a) = toJSON a
+allowNull Nothing = A.Null
 
 
 {-|

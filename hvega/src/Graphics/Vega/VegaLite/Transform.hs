@@ -23,6 +23,7 @@ module Graphics.Vega.VegaLite.Transform
        , Window(..)
        , WOperation(..)
        , BinProperty(..)
+       , WindowProperty(..)
 
          -- not for extgernal export
        , aggregate_
@@ -31,18 +32,24 @@ module Graphics.Vega.VegaLite.Transform
        , binned_
        , binProperty
        , windowFieldProperty
+       , windowPropertySpec
 
        ) where
 
+import qualified Data.Aeson as A
 import qualified Data.Text as T
 
-import Data.Aeson ((.=), object)
+import Data.Aeson ((.=), object, toJSON)
+import Data.Maybe (mapMaybe)
 
 
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 import Graphics.Vega.VegaLite.Foundation
-  ( field_
+  ( SortField
+  , sortFieldSpec
+  , field_
   , fromT
+  , allowNull
   )
 
 
@@ -308,3 +315,53 @@ bin xs = "bin" .= object (map binProperty xs)
 
 binned_ :: LabelledSpec
 binned_ = "bin" .= fromT "binned"
+
+
+-- | Properties for a window transform.
+--
+--   @since 0.4.0.0
+
+data WindowProperty
+    = WFrame (Maybe Int) (Maybe Int)
+      -- ^ Moving window for use by a window transform. When a number is
+      --   given, via @Just@, then it indicates the offset from the current
+      --   data object. A @Nothing@ indicates an un-bounded number of rows
+      --   preceding or following the current data object.
+    | WIgnorePeers Bool
+      -- ^ Should the sliding window in a window transform ignore peer
+      --   values (those considered identical by the sort criteria).
+    | WGroupBy [T.Text]
+      -- ^ The fields for partitioning data objects in a window transform
+      --   into separate windows. If not specified, all points will be in a
+      --   single group.
+    | WSort [SortField]
+      -- ^ Comparator for sorting data objects within a window transform.
+
+
+-- This is different to how Elm's VegaLite handles this (as of version 1.12.0)
+-- Helpers for windowPropertySpec
+
+wpFrame , wpIgnorePeers, wpGroupBy, wpSort :: WindowProperty -> Maybe VLSpec
+wpFrame (WFrame m1 m2) = Just (toJSON [allowNull m1, allowNull m2])
+wpFrame _ = Nothing
+
+wpIgnorePeers (WIgnorePeers b) = Just (toJSON b)
+wpIgnorePeers _ = Nothing
+
+wpGroupBy (WGroupBy fs) = Just (toJSON fs)
+wpGroupBy _ = Nothing
+
+wpSort (WSort sfs) = Just (toJSON (map sortFieldSpec sfs))
+wpSort _ = Nothing
+
+windowPropertySpec :: [WindowProperty] -> [VLSpec]
+windowPropertySpec wps =
+  let frms = mapMaybe wpFrame wps
+      ips = mapMaybe wpIgnorePeers wps
+      gps = mapMaybe wpGroupBy wps
+      sts = mapMaybe wpSort wps
+
+      fromSpecs [spec] = spec
+      fromSpecs _ = A.Null
+
+  in map fromSpecs [frms, ips, gps, sts]
