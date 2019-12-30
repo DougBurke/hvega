@@ -38,16 +38,15 @@ import Data.Aeson ((.=), object, toJSON)
 import Data.Maybe (mapMaybe)
 
 
-import Graphics.Vega.VegaLite.Core
-  ( Channel
-  , fromT
-  , channelLabel
-  )
 import Graphics.Vega.VegaLite.Data
   ( DataValue
   , dataValueSpec
   )
-import Graphics.Vega.VegaLite.Foundation (Opacity)
+import Graphics.Vega.VegaLite.Foundation
+  ( Opacity
+  , Channel
+  , channelLabel
+  , fromT)
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec

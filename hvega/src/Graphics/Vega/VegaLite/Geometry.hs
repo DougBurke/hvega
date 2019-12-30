@@ -45,11 +45,11 @@ import Data.Monoid ((<>))
 #endif
 
 
-import Graphics.Vega.VegaLite.Core (fromT)
 import Graphics.Vega.VegaLite.Data
   ( DataValue
   , dataValueSpec
   )
+import Graphics.Vega.VegaLite.Foundation (fromT)
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLProjection)
   , VLSpec

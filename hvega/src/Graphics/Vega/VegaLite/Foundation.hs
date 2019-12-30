@@ -48,6 +48,10 @@ module Graphics.Vega.VegaLite.Foundation
 
        , TooltipContent(..)
 
+       , Channel(..)
+       , Resolve(..)
+       , Resolution(..)
+
        -- not for external export
        , fontWeightSpec
        , measurementLabel
@@ -69,7 +73,10 @@ module Graphics.Vega.VegaLite.Foundation
        , stackPropertySpecOffset
        , stackOffset
        , ttContentLabel
+       , channelLabel
+       , resolveProperty
 
+       , fromT
        , field_
        , order_
        )
@@ -831,3 +838,112 @@ ttContentLabel :: TooltipContent -> T.Text
 ttContentLabel TTEncoding = "encoding"
 ttContentLabel TTData = "data"
 ttContentLabel TTNone = "null"
+
+
+-- | Indicates a channel type to be used in a resolution specification.
+
+-- assuming this is based on schema 3.3.0 #/definitions/SingleDefUnitChannel
+
+data Channel
+    = ChX
+    | ChY
+    | ChX2
+    | ChY2
+    | ChLongitude
+      -- ^ @since 0.4.0.0
+    | ChLongitude2
+      -- ^ @since 0.4.0.0
+    | ChLatitude
+      -- ^ @since 0.4.0.0
+    | ChLatitude2
+      -- ^ @since 0.4.0.0
+    | ChColor
+    | ChFill
+      -- ^ @since 0.3.0.0
+    | ChFillOpacity
+      -- ^ @since 0.4.0.0
+    | ChHref
+      -- ^ @since 0.4.0.0
+    | ChKey
+      -- ^ @since 0.4.0.0
+    | ChStroke
+      -- ^ @since 0.3.0.0
+    | ChStrokeOpacity
+      -- ^ @since 0.4.0.0
+    | ChStrokeWidth
+      -- ^ @since 0.4.0.0
+    | ChOpacity
+    | ChShape
+    | ChSize
+    | ChText
+      -- ^ @since 0.4.0.0
+    | ChTooltip
+      -- ^ @since 0.4.0.0
+
+
+channelLabel :: Channel -> T.Text
+channelLabel ChX = "x"
+channelLabel ChY = "y"
+channelLabel ChX2 = "x2"
+channelLabel ChY2 = "y2"
+channelLabel ChLongitude = "longitude"
+channelLabel ChLatitude = "latitude"
+channelLabel ChLongitude2 = "longitude2"
+channelLabel ChLatitude2 = "latitude2"
+channelLabel ChColor = "color"
+channelLabel ChFill = "fill"
+channelLabel ChStroke = "stroke"
+channelLabel ChStrokeWidth = "strokeWidth"
+channelLabel ChShape = "shape"
+channelLabel ChSize = "size"
+channelLabel ChFillOpacity = "fillOpacity"
+channelLabel ChStrokeOpacity = "strokeOpacity"
+channelLabel ChOpacity = "opacity"
+channelLabel ChText = "text"
+channelLabel ChTooltip = "tooltip"
+channelLabel ChHref = "href"
+channelLabel ChKey = "key"
+
+
+{-|
+
+Indicates whether or not a scale domain should be independent of others in a
+composite visualization. See the
+<https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation> for
+details.
+
+For use with 'Resolve'.
+
+-}
+data Resolution
+    = Shared
+    | Independent
+
+
+resolutionLabel :: Resolution -> T.Text
+resolutionLabel Shared = "shared"
+resolutionLabel Independent = "independent"
+
+
+{-|
+
+Used to determine how a channel's axis, scale or legend domains should be resolved
+if defined in more than one view in a composite visualization. See the
+<https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation>
+for details.
+-}
+data Resolve
+    = RAxis [(Channel, Resolution)]
+    | RLegend [(Channel, Resolution)]
+    | RScale [(Channel, Resolution)]
+
+
+resolveProperty :: Resolve -> LabelledSpec
+resolveProperty res =
+  let (nme, rls) = case res of
+        RAxis chRules -> ("axis", chRules)
+        RLegend chRules -> ("legend", chRules)
+        RScale chRules -> ("scale", chRules)
+
+      ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
+  in (nme, object ans)

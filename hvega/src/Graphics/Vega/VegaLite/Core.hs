@@ -135,9 +135,6 @@ module Graphics.Vega.VegaLite.Core
 
        , resolve
        , resolution
-       , Resolve(..)
-       , Channel(..)
-       , Resolution(..)
 
        , repeat
        , repeatFlow
@@ -190,8 +187,6 @@ module Graphics.Vega.VegaLite.Core
        , ConcatConfig(..)
 
        -- not for external export
-       , fromT
-       , channelLabel
        , schemeProperty
        , boundsSpec
        , legendOrientLabel
@@ -253,6 +248,9 @@ import Graphics.Vega.VegaLite.Foundation
   , StackProperty
   , StackOffset
   , TooltipContent(TTNone)
+  , Channel
+  , Resolve
+  , fromT
   , field_
   , order_
   , fontWeightSpec
@@ -275,6 +273,8 @@ import Graphics.Vega.VegaLite.Foundation
   , stackPropertySpecOffset
   , stackOffset
   , ttContentLabel
+  , channelLabel
+  , resolveProperty
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -389,9 +389,6 @@ dataCond_ getProps tests elseClause =
   in h : hs
 
 
-
-fromT :: T.Text -> VLSpec
-fromT = toJSON
 
 {-|
 
@@ -1566,7 +1563,7 @@ data SortProperty
       -- 'position' 'Graphics.Vega.VegaLite.Y'
       --  [ 'PName' "age"
       --  , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
-      --  , 'PSort' [ ByChannel 'ChX' ]
+      --  , 'PSort' [ ByChannel 'Graphics.Vega.VegaLite.ChX' ]
       --  ]
       -- @
       --
@@ -3186,71 +3183,6 @@ data ScaleConfig
       -- ^ Whether or not to use the source data range before aggregation.
 
 
--- | Indicates a channel type to be used in a resolution specification.
-
--- assuming this is based on schema 3.3.0 #/definitions/SingleDefUnitChannel
-
-data Channel
-    = ChX
-    | ChY
-    | ChX2
-    | ChY2
-    | ChLongitude
-      -- ^ @since 0.4.0.0
-    | ChLongitude2
-      -- ^ @since 0.4.0.0
-    | ChLatitude
-      -- ^ @since 0.4.0.0
-    | ChLatitude2
-      -- ^ @since 0.4.0.0
-    | ChColor
-    | ChFill
-      -- ^ @since 0.3.0.0
-    | ChFillOpacity
-      -- ^ @since 0.4.0.0
-    | ChHref
-      -- ^ @since 0.4.0.0
-    | ChKey
-      -- ^ @since 0.4.0.0
-    | ChStroke
-      -- ^ @since 0.3.0.0
-    | ChStrokeOpacity
-      -- ^ @since 0.4.0.0
-    | ChStrokeWidth
-      -- ^ @since 0.4.0.0
-    | ChOpacity
-    | ChShape
-    | ChSize
-    | ChText
-      -- ^ @since 0.4.0.0
-    | ChTooltip
-      -- ^ @since 0.4.0.0
-
-
-channelLabel :: Channel -> T.Text
-channelLabel ChX = "x"
-channelLabel ChY = "y"
-channelLabel ChX2 = "x2"
-channelLabel ChY2 = "y2"
-channelLabel ChLongitude = "longitude"
-channelLabel ChLatitude = "latitude"
-channelLabel ChLongitude2 = "longitude2"
-channelLabel ChLatitude2 = "latitude2"
-channelLabel ChColor = "color"
-channelLabel ChFill = "fill"
-channelLabel ChStroke = "stroke"
-channelLabel ChStrokeWidth = "strokeWidth"
-channelLabel ChShape = "shape"
-channelLabel ChSize = "size"
-channelLabel ChFillOpacity = "fillOpacity"
-channelLabel ChStrokeOpacity = "strokeOpacity"
-channelLabel ChOpacity = "opacity"
-channelLabel ChText = "text"
-channelLabel ChTooltip = "tooltip"
-channelLabel ChHref = "href"
-channelLabel ChKey = "key"
-
-
 {-|
 
 Title configuration properties. These are used to configure the default style
@@ -3844,7 +3776,7 @@ data Filter
       --   within the given interactive selection are used.
       --
       --   @
-      --   sel = 'Graphics.Vega.VegaLite.selection' . 'Graphics.Vega.VegaLite.select' \"myBrush\" 'Graphics.Vega.VegaLite.Interval' ['Graphics.Vega.VegaLite.Encodings' ['ChX']]
+      --   sel = 'Graphics.Vega.VegaLite.selection' . 'Graphics.Vega.VegaLite.select' \"myBrush\" 'Graphics.Vega.VegaLite.Interval' ['Graphics.Vega.VegaLite.Encodings' ['Graphics.Vega.VegaLite.ChX']]
       --   trans = 'transform' . 'filter' ('FSelection' \"myBrush\")
       --   @
     | FOneOf T.Text DataValues
@@ -3923,50 +3855,6 @@ vale to accept and the second the inclusive maximum.
 data FilterRange
     = NumberRange Double Double
     | DateRange [DateTime] [DateTime]
-
-
-{-|
-
-Indicates whether or not a scale domain should be independent of others in a
-composite visualization. See the
-<https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation> for
-details.
-
-For use with 'Resolve'.
-
--}
-data Resolution
-    = Shared
-    | Independent
-
-
-resolutionLabel :: Resolution -> T.Text
-resolutionLabel Shared = "shared"
-resolutionLabel Independent = "independent"
-
-
-{-|
-
-Used to determine how a channel's axis, scale or legend domains should be resolved
-if defined in more than one view in a composite visualization. See the
-<https://vega.github.io/vega-lite/docs/resolve.html Vega-Lite documentation>
-for details.
--}
-data Resolve
-    = RAxis [(Channel, Resolution)]
-    | RLegend [(Channel, Resolution)]
-    | RScale [(Channel, Resolution)]
-
-
-resolveProperty :: Resolve -> LabelledSpec
-resolveProperty res =
-  let (nme, rls) = case res of
-        RAxis chRules -> ("axis", chRules)
-        RLegend chRules -> ("legend", chRules)
-        RScale chRules -> ("scale", chRules)
-
-      ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
-  in (nme, object ans)
 
 
 {-|
@@ -4861,7 +4749,7 @@ type.
 
 @
 let res = 'resolve'
-            . 'resolution' ('RLegend' [('ChColor', 'Independent')])
+            . 'resolution' ('Graphics.Vega.VegaLite.RLegend' [('Graphics.Vega.VegaLite.ChColor', 'Graphics.Vega.VegaLite.Independent')])
 
 in 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'Graphics.Vega.VegaLite.dataFromUrl' \"data/movies.json\" []
@@ -4887,7 +4775,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
                 . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
     specLine = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
     res = 'resolve'
-            . 'resolution' ('RScale' [('ChY', 'Independent')])
+            . 'resolution' ('Graphics.Vega.VegaLite.RScale' [('Graphics.Vega.VegaLite.ChY', 'Graphics.Vega.VegaLite.Independent')])
 
 in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], res [], 'layer' [specBar, specLine]]
 @
@@ -5963,7 +5851,7 @@ pairing the channel to which it applies and the rule type.
 
 @
 'resolve'
-    . resolution ('RScale' [ ( 'ChY', 'Independent' ) ])
+    . resolution ('Graphics.Vega.VegaLite.RScale' [ ( 'Graphics.Vega.VegaLite.ChY', 'Graphics.Vega.VegaLite.Independent' ) ])
 @
 -}
 resolution :: Resolve -> BuildLabelledSpecs
