@@ -109,8 +109,6 @@ module Graphics.Vega.VegaLite.Core
        , ScaleRange(..)
        , ScaleNice(..)
 
-       , CInterpolate(..)
-
        , layer
        , vlConcat
        , columns
@@ -123,15 +121,12 @@ module Graphics.Vega.VegaLite.Core
        , center
        , centerRC
        , bounds
-       , Bounds(..)
-       , CompositionAlignment(..)
 
        , resolve
        , resolution
 
        , repeat
        , repeatFlow
-       , RepeatFields(..)
        , facet
        , facetFlow
        , FacetMapping(..)
@@ -149,8 +144,6 @@ module Graphics.Vega.VegaLite.Core
        , autosize
        , background
        , usermetadata
-       , Padding(..)
-       , Autosize(..)
 
        , title
 
@@ -168,9 +161,7 @@ module Graphics.Vega.VegaLite.Core
 
        -- not for external export
        , schemeProperty
-       , boundsSpec
        , legendOrientLabel
-       , compositionAlignmentSpec
        , titleConfigSpec
        , autosizeProperty
        , paddingSpec
@@ -187,8 +178,7 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 import qualified Data.Vector as V
 
--- Aeson's Value type conflicts with the Number type
-import Data.Aeson (Value, decode, encode, object, toJSON, (.=))
+import Data.Aeson (decode, encode, object, toJSON, (.=))
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -229,6 +219,12 @@ import Graphics.Vega.VegaLite.Foundation
   , TooltipContent(TTNone)
   , Channel
   , Resolve
+  , Bounds
+  , CompositionAlignment
+  , Padding
+  , Autosize
+  , RepeatFields
+  , CInterpolate
   , fromT
   , field_
   , order_
@@ -253,6 +249,12 @@ import Graphics.Vega.VegaLite.Foundation
   , ttContentLabel
   , channelLabel
   , resolveProperty
+  , boundsSpec
+  , compositionAlignmentSpec
+  , paddingSpec
+  , autosizeProperty
+  , repeatFieldsProperty
+  , cInterpolateSpec
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -1262,55 +1264,6 @@ data ScaleRange
 
 {-|
 
-Indicates the type of color interpolation to apply, when mapping a data field
-onto a color scale.
-
-For details see the
-<https://vega.github.io/vega-lite/docs/scale.html#continuous Vega-Lite documentation>.
-
--}
-data CInterpolate
-    = CubeHelix Double
-      -- ^ Cube helix color interpolation for continuous color scales using the given
-      --   gamma value (anchored at 1).
-    | CubeHelixLong Double
-      -- ^ Long-path cube helix color interpolation for continuous color scales using
-      --   the given gamma value (anchored at 1).
-    | Hcl
-      -- ^ HCL color interpolation for continuous color scales.
-    | HclLong
-      -- ^ HCL color interpolation in polar coordinate space for continuous color scales.
-    | Hsl
-      -- ^ HSL color interpolation for continuous color scales.
-    | HslLong
-      -- ^ HSL color interpolation in polar coordinate space for continuous color scales.
-    | Lab
-      -- ^ Lab color interpolation for continuous color scales.
-    | Rgb Double
-      -- ^ RGB color interpolation for continuous color scales using the given gamma
-      --   value (anchored at 1).
-
-
--- Need to tie down some types as things are too polymorphic,
--- particularly in the presence of OverloadedStrings.
---
-pairT :: T.Text -> T.Text -> (T.Text, Value)
-pairT a b = a .= b
-
-
-cInterpolateSpec :: CInterpolate -> VLSpec
-cInterpolateSpec (Rgb gamma) = object [pairT "type" "rgb", "gamma" .= gamma]
-cInterpolateSpec Hsl = object [pairT "type" "hsl"]
-cInterpolateSpec HslLong = object [pairT "type" "hsl-long"]
-cInterpolateSpec Lab = object [pairT "type" "lab"]
-cInterpolateSpec Hcl = object [pairT "type" "hcl"]
-cInterpolateSpec HclLong = object [pairT "type" "hcl-long"]
-cInterpolateSpec (CubeHelix gamma) = object [pairT "type" "cubehelix", "gamma" .= gamma]
-cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", "gamma" .= gamma]
-
-
-{-|
-
 Allow type of sorting to be customised. For details see the
 <https://vega.github.io/vega-lite/docs/sort.html Vega-Lite documentation>.
 
@@ -2106,42 +2059,6 @@ markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
 
 {-|
 
-Indicates the auto-sizing characteristics of the visualization such as amount
-of padding, whether it should fill the parent container etc. For more details see the
-<https://vega.github.io/vega-lite/docs/size.html#autosize Vega-Lite documentation>.
-
--}
-
-data Autosize
-    = AContent
-      -- ^ Interpret visualization dimensions to be for the data rectangle (external
-      --   padding added to this size).
-    | AFit
-      -- ^ Interpret visualization dimensions to be for the entire visualization (data
-      --   rectangle is shrunk to accommodate external decorations padding).
-    | ANone
-      -- ^ No autosizing is applied.
-    | APad
-      -- ^ Automatically expand size of visualization from the given dimensions in order
-      --   to fit in all supplementary decorations (legends etc.).
-    | APadding
-      -- ^ Interpret visualization width to be for the entire visualization (data
-      -- rectangle is shrunk to accommodate external padding).
-    | AResize
-      -- ^ Recalculate autosizing on every view update.
-
-
-autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad = ("type", fromT "pad")
-autosizeProperty AFit = ("type", fromT "fit")
-autosizeProperty ANone = ("type", fromT "none")
-autosizeProperty AResize = "resize" .= True
-autosizeProperty AContent = ("contains", fromT "content")
-autosizeProperty APadding = ("contains", fromT "padding")
-
-
-{-|
-
 Declare the way the view is sized. See the
 <https://vega.github.io/vega-lite/docs/size.html#autosize Vega-Lite documentation>
 for details.
@@ -2150,7 +2067,7 @@ for details.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 250
     , 'height' 300
-    , 'autosize' [ 'AFit', 'APadding', 'AResize' ]
+    , 'autosize' [ 'Graphics.Vega.VegaLite.AFit', 'Graphics.Vega.VegaLite.APadding', 'Graphics.Vega.VegaLite.AResize' ]
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -2812,25 +2729,6 @@ data LegendValues
     | LStrings [T.Text]
 
 
--- | Specify the padding dimensions in pixel units.
-
-data Padding
-    = PSize Double
-      -- ^ Use the same padding on all four edges of the container.
-    | PEdges Double Double Double Double
-      -- ^ Specify the padding for the left, top, right, and bottom edges.
-
-
-paddingSpec :: Padding -> VLSpec
-paddingSpec (PSize p) = toJSON p
-paddingSpec (PEdges l t r b) =
-  object [ "left" .= l
-         , "top" .= t
-         , "right" .= r
-         , "bottom" .= b
-         ]
-
-
 -- | The properties of a point marker on a line or area mark.
 --   For use with 'MPoint'.
 --
@@ -2856,28 +2754,6 @@ pointMarkerSpec PMTransparent = "transparent"
 pointMarkerSpec PMNone = toJSON False
 pointMarkerSpec (PMMarker []) = toJSON True
 pointMarkerSpec (PMMarker mps) = object (map markProperty mps)
-
-
--- | Specifies the alignment of compositions. It is used with:
---   'align', 'alignRC', 'LeGridAlign', and 'LGridAlign'.
---
---   @since 0.4.0.0
-
-data CompositionAlignment
-    = CANone
-    -- ^ Flow layout is used, where adjacent subviews are placed one after
-    --   another.
-    | CAEach
-    -- ^ Each row and column may be of a variable size.
-    | CAAll
-    -- ^ All the rows and columns are of the same size (this is based on the
-    --   maximum subview size).
-
-
-compositionAlignmentSpec :: CompositionAlignment -> VLSpec
-compositionAlignmentSpec CANone = "none"
-compositionAlignmentSpec CAEach = "each"
-compositionAlignmentSpec CAAll = "all"
 
 
 {-|
@@ -3521,27 +3397,6 @@ categoricalDomainMap scaleDomainPairs =
 
 {-|
 
-Create a list of fields to use in set of repeated small multiples. The list of
-fields named here can be referenced in an encoding with @'PRepeat' 'Graphics.Vega.VegaLite.Column'@
-or @'PRepeat' 'Graphics.Vega.VegaLite.Row'@.
-
--}
-data RepeatFields
-    = RowFields [T.Text]
-    | ColumnFields [T.Text]
-
-
-repeatFieldsProperty :: RepeatFields -> LabelledSpec
-repeatFieldsProperty rfs =
-  let (nme, vs) = case rfs of
-        RowFields fields -> ("row", fields)
-        ColumnFields fields -> ("column", fields)
-
-  in nme .= map toJSON vs
-
-
-{-|
-
 Types of facet channel property used for creating a composed facet view of small
 multiples.
 
@@ -3832,25 +3687,6 @@ centerRC ::
 centerRC cRow cCol = (VLCenter, object ["row" .= cRow, "col" .= cCol])
 
 
--- | This is used with 'bounds' to define the extent of a sub plot.
---
---   @since 0.4.0.0
-
-data Bounds
-  = Full
-    -- ^ Bounds calculation should use the entire plot area (including axes, title,
-    --   and legend).
-  | Flush
-    -- ^ Bounds calculation should take only the specified width and height values for
-    --   a sub-view. Useful when attempting to place sub-plots without axes or legends into
-    --   a uniform grid structure.
-
-
-boundsSpec :: Bounds -> VLSpec
-boundsSpec Full = "full"
-boundsSpec Flush = "flush"
-
-
 {-|
 
 Bounds calculation method to use for determining the extent of a sub-plot in
@@ -4046,7 +3882,7 @@ for details.
 @
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
-    , 'padding' ('PEdges' 20 10 5 15)
+    , 'padding' ('Graphics.Vega.VegaLite.PEdges' 20 10 5 15)
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
     , 'mark' 'Bar' []
     , enc []
@@ -4075,7 +3911,7 @@ for further details.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'repeat' ['ColumnFields' [\"Cat\", \"Dog\", \"Fish\"]]
+    [ 'repeat' ['Graphics.Vega.VegaLite.ColumnFields' [\"Cat\", \"Dog\", \"Fish\"]]
     , 'Graphics.Vega.VegaLite.specification' ('Graphics.Vega.VegaLite.asSpec' spec)
     ]
 @

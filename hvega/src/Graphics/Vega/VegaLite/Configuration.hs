@@ -39,19 +39,13 @@ import Data.Aeson ((.=), object, toJSON)
 import Graphics.Vega.VegaLite.Core
   ( MarkProperty
   , HeaderProperty
-  , Autosize
   , LegendConfig(..)
   , TitleConfig
-  , Padding
   , LegendLayout(..)
   , BaseLegendLayout(..)
   , schemeProperty
-  , boundsSpec
   , legendOrientLabel
-  , compositionAlignmentSpec
   , titleConfigSpec
-  , autosizeProperty
-  , paddingSpec
   , header_
   , mprops_
   )
@@ -68,6 +62,8 @@ import Graphics.Vega.VegaLite.Foundation
   , StrokeJoin
   , HAlign
   , VAlign
+  , Padding
+  , Autosize
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
@@ -79,6 +75,10 @@ import Graphics.Vega.VegaLite.Foundation
   , overlapStrategyLabel
   , symbolLabel
   , stackOffset
+  , boundsSpec
+  , compositionAlignmentSpec
+  , paddingSpec
+  , autosizeProperty
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
