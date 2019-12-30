@@ -43,8 +43,6 @@ module Graphics.Vega.VegaLite.Core
        , lookupAs
 
        , impute
-       , ImputeProperty(..)
-       , ImMethod(..)
 
        , sample
 
@@ -234,7 +232,6 @@ import Graphics.Vega.VegaLite.Foundation
   , fromT
   , field_
   , order_
-  , allowNull
   , fontWeightSpec
   , measurementLabel
   , arrangementLabel
@@ -278,9 +275,12 @@ import Graphics.Vega.VegaLite.Transform
   , Window
   , BinProperty
   , WindowProperty
+  , ImputeProperty
   , aggregate_
   , op_
   , binned_
+  , impute_
+  , imputeFields_
   , bin
   , binProperty
   , windowFieldProperty
@@ -309,9 +309,6 @@ sort_ ops = "sort" .= sortPropertySpec ops
 
 header_ :: [HeaderProperty] -> LabelledSpec
 header_ hps = "header" .= object (map headerProperty hps)
-
-impute_ :: [ImputeProperty] -> LabelledSpec
-impute_ ips = "impute" .= object (map imputeProperty ips)
 
 -- TODO: should this turn an empty list into true?
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
@@ -4890,94 +4887,6 @@ lookupAs key1 (_, spec) key2 asName ols =
   ("lookupAs" .= [toJSON key1, spec, toJSON key2, toJSON asName]) : ols
 
 
--- | This is used with `impute` and `PImpute`.
---
---   @since 0.4.0.0
-
-data ImputeProperty
-    = ImFrame (Maybe Int) (Maybe Int)
-      -- ^ 1d window over which data imputation values are generated. The two
-      --   parameters should either be @Just@ a number indicating the offset from the current
-      --   data object, or @Nothing@ to indicate unbounded rows preceding or following the
-      --   current data object.
-    | ImKeyVals DataValues
-      -- ^ Key values to be considered for imputation.
-    | ImKeyValSequence Double Double Double
-      -- ^ Key values to be considered for imputation as a sequence of numbers between
-      --   a start (first parameter), to less than an end (second parameter) in steps of
-      --   the third parameter.
-    | ImMethod ImMethod
-      -- ^ How is the imputed value constructed.
-      --
-      --   When using @ImMethod 'ImValue'@, the replacement value is
-      --   set with 'ImNewValue'.
-    | ImGroupBy [T.Text]
-      -- ^ Allow imputing of missing values on a per-group basis. For use with the impute
-      --   transform only and not a channel encoding.
-    | ImNewValue DataValue
-      -- ^ The replacement value (when using @ImMethod 'ImValue'@).
-
-
-imputeProperty :: ImputeProperty -> LabelledSpec
-imputeProperty (ImFrame m1 m2) = "frame" .= map allowNull [m1, m2]
-imputeProperty (ImKeyVals dVals) = "keyvals" .= dataValuesSpecs dVals
-imputeProperty (ImKeyValSequence start stop step) =
-  "keyvals" .= object ["start" .= start, "stop" .= stop, "step" .= step]
-imputeProperty (ImMethod method) = "method" .= imMethodLabel method
-imputeProperty (ImNewValue dVal) = "value" .= dataValueSpec dVal
-imputeProperty (ImGroupBy _) = "groupby" .= A.Null
-
-
-imputePropertySpecFrame, imputePropertySpecKeyVals,
-  imputePropertySpecKeyValSequence, imputePropertySpecGroupBy,
-  imputePropertySpecMethod, imputePropertySpecValue :: ImputeProperty -> Maybe VLSpec
-
-imputePropertySpecFrame (ImFrame m1 m2) = Just (toJSON (map allowNull [m1, m2]))
-imputePropertySpecFrame _ = Nothing
-
-imputePropertySpecKeyVals (ImKeyVals dVals) = Just (toJSON (dataValuesSpecs dVals))
-imputePropertySpecKeyVals _ = Nothing
-
-imputePropertySpecKeyValSequence (ImKeyValSequence start stop step) =
-  let obj = ["start" .= start, "stop" .= stop, "step" .= step]
-  in Just (object obj)
-imputePropertySpecKeyValSequence _ = Nothing
-
-imputePropertySpecGroupBy (ImGroupBy fields) = Just (toJSON fields)
-imputePropertySpecGroupBy _ = Nothing
-
-imputePropertySpecMethod (ImMethod method) = Just (toJSON (imMethodLabel method))
-imputePropertySpecMethod _ = Nothing
-
-imputePropertySpecValue (ImNewValue dVal) = Just (dataValueSpec dVal)
-imputePropertySpecValue _ = Nothing
-
-
-
--- | Imputation method to use when replacing values.
---
---   @since 0.4.0.0
-
-data ImMethod
-  = ImMin
-    -- ^ Use the minimum value.
-  | ImMax
-    -- ^ Use the maximum value.
-  | ImMean
-    -- ^ Use the mean value.
-  | ImMedian
-    -- ^ Use the median value.
-  | ImValue
-    -- ^ Use a replacement value (set with @ImNewValue@).
-
-
-imMethodLabel :: ImMethod -> T.Text
-imMethodLabel ImMin = "min"
-imMethodLabel ImMax = "max"
-imMethodLabel ImMean = "mean"
-imMethodLabel ImMedian = "median"
-imMethodLabel ImValue = "value"
-
 {-|
 
 Impute missing data values.
@@ -4993,7 +4902,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
               . 'Graphics.Vega.VegaLite.dataColumn' "c" ('Numbers' [0, 1, 0, 1, 0, 1, 0])
 
     trans = 'transform'
-              . 'impute' "b" "a" ['ImMethod' 'ImMean', 'ImGroupBy' ["c"]]
+              . 'impute' "b" "a" ['Graphics.Vega.VegaLite.ImMethod' 'Graphics.Vega.VegaLite.ImMean', 'Graphics.Vega.VegaLite.ImGroupBy' ["c"]]
 
     enc = 'encoding'
             . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
@@ -5015,18 +4924,7 @@ impute ::
   -- ^ Define how the imputation works.
   -> BuildLabelledSpecs
 impute fields key imProps ols =
-  let ags = [ fromT fields, fromT key
-            , toSpec (mapMaybe imputePropertySpecFrame imProps)
-            , toSpec (mapMaybe imputePropertySpecKeyVals imProps)
-            , toSpec (mapMaybe imputePropertySpecKeyValSequence imProps)
-            , toSpec (mapMaybe imputePropertySpecMethod imProps)
-            , toSpec (mapMaybe imputePropertySpecGroupBy imProps)
-            , toSpec (mapMaybe imputePropertySpecValue imProps) ]
-
-      toSpec [x] = x
-      toSpec _ = A.Null
-
-  in ("impute", toJSON ags) : ols
+  (imputeFields_ fields key imProps) : ols
 
 
 {-|
