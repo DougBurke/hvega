@@ -21,6 +21,8 @@ module Graphics.Vega.VegaLite.Time
        , TimeUnit(..)
 
        -- not for external export
+       , timeUnit_
+
        , dateTimeProperty
        -- , dayLabel
        -- , monthNameLabel
@@ -37,6 +39,10 @@ import Data.Monoid ((<>))
 #endif
 
 import Graphics.Vega.VegaLite.Specification (LabelledSpec)
+
+
+timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 
 
 {-|

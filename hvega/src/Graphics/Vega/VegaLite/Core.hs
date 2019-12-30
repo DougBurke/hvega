@@ -267,6 +267,7 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
+  , timeUnit_
   , dateTimeProperty
   , timeUnitLabel
   )
@@ -316,9 +317,6 @@ mprops_ f mps = f .= object (map markProperty mps)
 
 mchan_ :: T.Text -> [MarkChannel] -> LabelledSpec
 mchan_ f ms = f .= object (concatMap markChannelProperty ms)
-
-timeUnit_ :: TimeUnit -> LabelledSpec
-timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
 
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
