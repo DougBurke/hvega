@@ -166,24 +166,12 @@ module Graphics.Vega.VegaLite.Core
 
        , configure
 
-       , AxisConfig(..)
-
        , LegendConfig(..)
        , LegendLayout(..)
        , BaseLegendLayout(..)
 
-       , ScaleConfig(..)
-
-       , RangeConfig(..)
-
        , TitleConfig(..)
        , TitleFrame(..)
-
-       , ViewConfig(..)
-
-       , FacetConfig(..)
-
-       , ConcatConfig(..)
 
        -- not for external export
        , schemeProperty
@@ -1248,7 +1236,7 @@ stack f grp start end sProps ols =
 
 Individual scale property. These are used to customise an individual scale
 transformation. To customise all scales use 'configure' and supply relevant
-'ScaleConfig' values. For more details see the
+'Graphics.Vega.VegaLite.ScaleConfig' values. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html Vega-Lite documentation>.
 
 There are two utility routines for constructing a list of scale
@@ -1450,7 +1438,7 @@ instead of range.
 
 Any directly specified range for @x@ and @y@ channels will be ignored. Range can be customized
 via the view's corresponding [size](https://vega.github.io/vega-lite/docs/size.html)
-('width' and 'height') or via range steps and paddings properties (e.g. 'SCRangeStep')
+('width' and 'height') or via range steps and paddings properties (e.g. 'Graphics.Vega.VegaLite.SCRangeStep')
 for band and point scales.
 
 -}
@@ -1828,7 +1816,7 @@ title s topts = (VLTitle,
 {-|
 
 Axis customisation properties. These are used for customising individual axes.
-To configure all axes, use 'AxisConfig' with a 'Graphics.Vega.VegaLite.configuration' instead. See the
+To configure all axes, use 'Graphics.Vega.VegaLite.AxisConfig' with a 'Graphics.Vega.VegaLite.configuration' instead. See the
 <https://vega.github.io/vega-lite/docs/axis.html#axis-properties Vega-Lite documentation>
 for more details.
 
@@ -3089,90 +3077,6 @@ compositionAlignmentSpec CAAll = "all"
 
 {-|
 
-Properties for customising the colors of a range. The parameter should be a
-named color scheme such as @\"accent\"@ or @\"purpleorange-11\"@. For details see the
-<https://vega.github.io/vega/docs/schemes/#scheme-properties Vega-Lite documentation>.
--}
-data RangeConfig
-    = RCategory T.Text
-    | RDiverging T.Text
-    | RHeatmap T.Text
-    | ROrdinal T.Text
-    | RRamp T.Text
-    | RSymbol T.Text
-
-
-{-|
-
-Scale configuration property. These are used to configure all scales.
-For more details see the
-<https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
-
--}
-
-data ScaleConfig
-    = SCBandPaddingInner Double
-      -- ^ Default inner padding for x and y band-ordinal scales.
-    | SCBandPaddingOuter Double
-      -- ^ Default outer padding for x and y band-ordinal scales.
-    | SCBarBandPaddingInner Double
-      -- ^ Default inner padding for x and y band-ordinal scales of 'Bar' marks.
-      --
-      --   @since 0.4.0.0
-    | SCBarBandPaddingOuter Double
-      -- ^ Default outer padding for x and y band-ordinal scales of 'Bar' marks.
-      --
-      --   @since 0.4.0.0
-    | SCRectBandPaddingInner Double
-      -- ^ Default inner padding for x and y band-ordinal scales of 'Rect' marks.
-      --
-      --   @since 0.4.0.0
-    | SCRectBandPaddingOuter Double
-      -- ^ Default outer padding for x and y band-ordinal scales of 'Rect' marks.
-      --
-      --   @since 0.4.0.0
-    | SCClamp Bool
-      -- ^ Whether or not by default values that exceed the data domain are clamped to
-      --   the min/max range value.
-    | SCMaxBandSize Double
-      -- ^ Default maximum value for mapping quantitative fields to a bar's
-      --   size/bandSize.
-    | SCMinBandSize Double
-      -- ^ Default minimum value for mapping quantitative fields to a bar's
-      --   size/bandSize.
-    | SCMaxFontSize Double
-      -- ^ Default maximum value for mapping a quantitative field to a text
-      --   mark's size.
-    | SCMinFontSize Double
-      -- ^ Default minimum value for mapping a quantitative field to a text
-      --   mark's size.
-    | SCMaxOpacity Opacity
-      -- ^ Default maximum opacity for mapping a field to opacity.
-    | SCMinOpacity Opacity
-      -- ^ Default minimum opacity for mapping a field to opacity.
-    | SCMaxSize Double
-      -- ^ Default maximum size for point-based scales.
-    | SCMinSize Double
-      -- ^ Default minimum size for point-based scales.
-    | SCMaxStrokeWidth Double
-      -- ^ Default maximum stroke width for rule, line and trail marks.
-    | SCMinStrokeWidth Double
-      -- ^ Default minimum stroke width for rule, line and trail marks.
-    | SCPointPadding Double
-      -- ^ Default padding for point-ordinal scales.
-    | SCRangeStep (Maybe Double)
-      -- ^ Default range step for band and point scales when the mark is not text.
-    | SCRound Bool
-      -- ^ Are numeric values are rounded to integers when scaling? Useful
-      --   for snapping to the pixel grid.
-    | SCTextXRangeStep Double
-      -- ^ Default range step for x band and point scales of text marks.
-    | SCUseUnaggregatedDomain Bool
-      -- ^ Whether or not to use the source data range before aggregation.
-
-
-{-|
-
 Title configuration properties. These are used to configure the default style
 of all titles within a visualization.
 For further details see the
@@ -3312,295 +3216,6 @@ viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
 
 viewBackground :: [ViewBackground] -> PropertySpec
 viewBackground vbs = (VLViewBackground, object (map viewBackgroundSpec vbs))
-
-
-{-|
-
-View configuration property. These are used to configure the style of a single
-view within a visualization such as its size and default fill and stroke colors.
-For further details see the
-<https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
-
-This type has been changed in the @0.4.0.0@ release to use a consistent
-naming scheme for the constructors (everything starts with @View@). Prior to
-this release only @ViewWidth@ and @ViewHeight@ were named this way. There
-are also five new constructors.
-
--}
-
--- based on schema 3.3.0 #/definitions/ViewConfig
-
-data ViewConfig
-    = ViewWidth Double
-      -- ^ The default width of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (x axis).
-    | ViewHeight Double
-      -- ^ The default height of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
-    | ViewClip Bool
-      -- ^ Should the view be clipped?
-    | ViewCornerRadius Double
-      -- ^ The radius, in pixels, of rounded rectangle corners.
-      --
-      --   The default is @0@.
-      --
-      --   @since 0.4.0.0
-    | ViewFill (Maybe T.Text)
-      -- ^ The fill color.
-    | ViewFillOpacity Opacity
-      -- ^ The fill opacity.
-    | ViewOpacity Opacity
-      -- ^ The overall opacity.
-      --
-      --   The default is @0.7@ for non-aggregate plots with 'Point', 'Tick',
-      --   'Circle', or 'Square' marks or layered 'Bar' charts, and @1@
-      --   otherwise.
-      --
-      --   @since 0.4.0.0
-    | ViewStroke (Maybe T.Text)
-      -- ^ The stroke color.
-    | ViewStrokeCap StrokeCap
-      -- ^ The stroke cap for line-ending style.
-      --
-      --   @since 0.4.0.0
-    | ViewStrokeDash [Double]
-      -- ^ The stroke dash style. It is defined by an alternating 'on-off'
-      --   sequence of line lengths, in pixels.
-    | ViewStrokeDashOffset Double
-      -- ^ Number of pixels before the first line dash is drawn.
-    | ViewStrokeJoin StrokeJoin
-      -- ^ The stroke line-join method.
-      --
-      --   @since 0.4.0.0
-    | ViewStrokeMiterLimit Double
-      -- ^ The miter limit at which to bevel a line join.
-      --
-      --   @since 0.4.0.0
-    | ViewStrokeOpacity Opacity
-      -- ^ The stroke opacity.
-    | ViewStrokeWidth Double
-      -- ^ The stroke width, in pixels.
-
-
-{-|
-
-Axis configuration options for customising all axes. See the
-<https://vega.github.io/vega-lite/docs/axis.html#general-config Vega-Lite documentation>
-for more details.
-
-The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
-@TitleLimit@ constructor should be used instead.
-
--}
-data AxisConfig
-    = BandPosition Double
-      -- ^ The default axis band position.
-    | Domain Bool
-      -- ^ Should the axis domain be displayed?
-    | DomainColor Color
-      -- ^ The axis domain color.
-    | DomainDash [Double]
-      -- ^ The dash style of the domain (alternating stroke, space lengths
-      --   in pixels).
-      --
-      --   @since 0.4.0.0
-    | DomainDashOffset Double
-      -- ^ The pixel offset at which to start drawing the domain dash array.
-      --
-      --   @since 0.4.0.0
-    | DomainOpacity Opacity
-      -- ^ The axis domain opacity.
-      --
-      --   @since 0.4.0.0
-    | DomainWidth Double
-      -- ^ The width of the axis domain.
-    | Grid Bool
-      -- ^ Should an axis grid be displayed?
-    | GridColor Color
-      -- ^ The color for the grid.
-    | GridDash [Double]
-      -- ^ The dash style of the grid (alternating stroke, space lengths
-      --   in pixels).
-    | GridDashOffset Double
-      -- ^ The pixel offset at which to start drawing the grid dash array.
-      --
-      --   @since 0.4.0.0
-    | GridOpacity Opacity
-      -- ^ The opacity of the grid.
-    | GridWidth Double
-      -- ^ The width of the grid lines.
-    | Labels Bool
-      -- ^ Should labels be added to an axis?
-    | LabelAlign HAlign
-      -- ^ The horizontal alignment for labels.
-      --
-      --   @since 0.4.0.0
-    | LabelAngle Angle
-      -- ^ The angle at which to draw labels.
-    | LabelBaseline VAlign
-      -- ^ The vertical alignment for labels.
-      --
-      --   @since 0.4.0.0
-    | LabelNoBound
-      -- ^ No boundary overlap check is applied to labels. This is the
-      --   default behavior.
-      --
-      --   See also 'LabelBound' and 'LabelBoundValue'.
-      --
-      --   @since 0.4.0.0
-    | LabelBound
-      -- ^ Labels are hidden if they exceed the axis range by more than 1
-      --   pixel.
-      --
-      --   See also 'LabelNoBound' and 'LabelBoundValue'.
-      --
-      --   @since 0.4.0.0
-    | LabelBoundValue Double
-      -- ^ Labels are hidden if they exceed the axis range by more than
-      --   the given number of pixels.
-      --
-      --   See also 'LabelNoBound' and 'LabelBound'.
-      --
-      --   @since 0.4.0.0
-    | LabelColor Color
-      -- ^ The label color.
-    | LabelNoFlush
-      -- ^ The labels are not aligned flush to the scale. This is the
-      --   default for non-continuous X scales.
-      --
-      --   See also 'LabelFlush' and 'LabelFlushValue'.
-      --
-      --   @since 0.4.0.0
-    | LabelFlush
-      -- ^ The first and last axis labels are aligned flush to the scale
-      --   range.
-      --
-      --   See also 'LabelNoFlush' and 'LabelFlushValue'.
-      --
-      --   @since 0.4.0.0
-    | LabelFlushValue Double
-      -- ^ The labels are aligned flush, and the parameter determines
-      --   the extra offset, in pixels, to apply to the first and last
-      --   labels. This can help the labels better group (visually) with
-      --   the corresponding axis ticks.
-      --
-      --   See also 'LabelNoFlush' and 'LabelFlush'.
-      --
-      --   @since 0.4.0.0
-    | LabelFlushOffset Double
-      -- ^ The number of pixels to offset flush-adjusted labels.
-      --
-      --   @since 0.4.0.0
-    | LabelFont T.Text
-      -- ^ The font for the label.
-    | LabelFontSize Double
-      -- ^ The font size of the label.
-    | LabelFontStyle T.Text
-      -- ^ The font style of the label.
-      --
-      --   @since 0.4.0.0
-    | LabelFontWeight FontWeight
-      -- ^ The font weight of the label.
-      --
-      --   @since 0.4.0.0
-    | LabelLimit Double
-      -- ^ The maximum width of a label, in pixels.
-    | LabelOpacity Opacity
-      -- ^ The opacity of the label.
-      --
-      --   @since 0.4.0.0
-    | LabelOverlap OverlapStrategy
-      -- ^ How should overlapping labels be displayed?
-    | LabelPadding Double
-      -- ^ The padding, in pixels, between the label and the axis.
-    | LabelSeparation Double
-      -- ^ The minimum separation, in pixels, between label bounding boxes
-      --   for them to be considered non-overlapping. This is ignored if
-      --   the 'LabelOverlap' strategy is 'Graphics.Vega.VegaLite.ONone'.
-      --
-      --   @since 0.4.0.0
-    | MaxExtent Double
-      -- ^ The maximum extent, in pixels, that axis ticks and labels should use.
-      --   This determines a maxmium offset value for axis titles.
-    | MinExtent Double
-      -- ^ The minimum extent, in pixels, that axis ticks and labels should use.
-      --   This determines a minmium offset value for axis titles.
-    | NoTitle
-      -- ^ Do not draw a title for this axis.
-      --
-      --   @since 0.4.0.0
-    | Orient Side
-      -- ^ The orientation of the axis.
-      --
-      --   @since 0.4.0.0
-    | ShortTimeLabels Bool
-      -- ^ Should an axis use short time labels (abbreviated month and week-day names)?
-    | Ticks Bool
-      -- ^ Should tick marks be drawn on an axis?
-    | TickColor Color
-      -- ^ The color of the ticks.
-    | TickDash [Double]
-      -- ^ The dash style of the ticks (alternating stroke, space lengths
-      --   in pixels).
-    | TickDashOffset Double
-      -- ^ The pixel offset at which to start drawing the tick dash array.
-      --
-      --   @since 0.4.0.0
-    | TickExtra Bool
-      -- ^ Should an extra axis tick mark be added for the initial position of
-      --   the axis?
-      --
-      --   @since 0.4.0.0
-    | TickOffset Double
-      -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
-      --
-      --   @since 0.4.0.0
-    | TickOpacity Opacity
-      -- ^ The opacity of the ticks.
-      --
-      --   @since 0.4.0.0
-    | TickRound Bool
-      -- ^ Should pixel position values be rounded to the nearest integer?
-    | TickSize Double
-      -- ^ The size of the tick marks in pixels.
-    | TickWidth Double
-      -- ^ The width of the tick marks in pixels.
-    | TitleAlign HAlign
-      -- ^ The horizontal alignment of the axis title.
-    | TitleAnchor APosition
-      -- ^ The text anchor position for placing axis titles.
-      --
-      --   @since 0.4.0.0
-    | TitleAngle Angle
-      -- ^ The angle of the axis title.
-    | TitleBaseline VAlign
-      -- ^ The vertical alignment of the axis title.
-    | TitleColor Color
-      -- ^ The color of the axis title.
-    | TitleFont T.Text
-      -- ^ The font for the axis title.
-    | TitleFontSize Double
-      -- ^ The font size of the axis title.
-    | TitleFontStyle T.Text
-      -- ^ The font style of the axis title.
-      --
-      --   @since 0.4.0.0
-    | TitleFontWeight FontWeight
-      -- ^ The font weight of the axis title.
-    | TitleLimit Double
-      -- ^ The maximum allowed width of the axis title, in pixels.
-    | TitleOpacity Opacity
-      -- ^ The opacity of the axis title.
-      --
-      --   @since 0.4.0.0
-    | TitlePadding Double
-      -- ^ The padding, in pixels, between title and axis.
-    | TitleX Double
-      -- ^ The X coordinate of the axis title, relative to the axis group.
-    | TitleY Double
-      -- ^ The Y coordinate of the axis title, relative to the axis group.
 
 
 {-|
@@ -4168,24 +3783,6 @@ facetChannelProperty FNoTitle = "title" .= A.Null
 facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
 
 
-{-|
-
-Configuration options for faceted views, used with 'Graphics.Vega.VegaLite.FacetStyle'.
-
-See the
-<https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
-
-@since 0.4.0.0
-
--}
-data FacetConfig
-    = FColumns Int
-    -- ^ The maximum number of columns to use in a faceted-flow layout.
-    | FSpacing Double
-    -- ^ The spacing in pixels between sub-views in a faceted composition.
-
-
-
 -- | Types of text channel property used for displaying text as part of the visualization.
 
 -- Basing the following partly on vega-lite-3.3.0.json / TextFieldDef
@@ -4344,8 +3941,8 @@ to use a double-click:
 @
 config =
     'configure'
-        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.Axis' [ 'DomainWidth' 1 ])
-        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.View' [ 'ViewStroke' (Just "transparent") ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.Axis' [ 'Graphics.Vega.VegaLite.DomainWidth' 1 ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.View' [ 'Graphics.Vega.VegaLite.ViewStroke' (Just "transparent") ])
         . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.SelectionStyle' [ ( 'Graphics.Vega.VegaLite.Single', [ 'Graphics.Vega.VegaLite.On' \"dblclick\" ] ) ])
 @
 -}
@@ -4568,20 +4165,6 @@ setting.
 -}
 height :: Double -> PropertySpec
 height h = (VLHeight, toJSON h)
-
-
-{-|
-
-Configuration options for concatenated views, used with 'Graphics.Vega.VegaLite.ConcatStyle'.
-
-@since 0.4.0.0
-
--}
-data ConcatConfig
-    = ConcatColumns Int
-      -- ^ The maximum number of columns to use in a concatenated flow layout.
-    | ConcatSpacing Double
-      -- ^ The spacing in pixels between sub-views in a concatenated view.
 
 
 {-|
