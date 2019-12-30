@@ -180,7 +180,6 @@ module Graphics.Vega.VegaLite.Core
        , TitleFrame(..)
 
        , ViewConfig(..)
-       , FieldTitleProperty(..)
 
        , FacetConfig(..)
 
@@ -2367,17 +2366,6 @@ for details.
 -}
 autosize :: [Autosize] -> PropertySpec
 autosize aus = (VLAutosize, object (map autosizeProperty aus))
-
-
--- | Indicates the style in which field names are displayed.
-
-data FieldTitleProperty
-    = Verbal
-      -- ^ Creates \"Sum of field\", \"Year of date\", \"field (binned)\", etc.
-    | Function
-      -- ^ Creates \"SUM(field)\", \"YEAR(date)\", \"BIN(field)\", etc.
-    | Plain
-      -- ^ Just use the field name without any extra text.
 
 
 -- | Indicates the type of legend to create. It is used with 'LType'.

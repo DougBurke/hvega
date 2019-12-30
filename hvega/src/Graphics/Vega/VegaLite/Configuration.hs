@@ -17,6 +17,7 @@ modules.
 
 module Graphics.Vega.VegaLite.Configuration
        ( ConfigurationProperty(..)
+       , FieldTitleProperty(..)
        , configuration
        ) where
 
@@ -40,7 +41,6 @@ import Graphics.Vega.VegaLite.Core
   , TitleConfig
   , ViewConfig(..)
   , Padding
-  , FieldTitleProperty(..)
   , LegendLayout(..)
   , BaseLegendLayout(..)
   , schemeProperty
@@ -264,6 +264,17 @@ configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
 scaleConfig_ :: [ScaleConfig] -> LabelledSpec
 -- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
 scaleConfig_ scs = "scale" .= object (map scaleConfigProperty scs)
+
+
+-- | Indicates the style in which field names are displayed.
+
+data FieldTitleProperty
+    = Verbal
+      -- ^ Creates \"Sum of field\", \"Year of date\", \"field (binned)\", etc.
+    | Function
+      -- ^ Creates \"SUM(field)\", \"YEAR(date)\", \"BIN(field)\", etc.
+    | Plain
+      -- ^ Just use the field name without any extra text.
 
 
 fieldTitleLabel :: FieldTitleProperty -> T.Text
