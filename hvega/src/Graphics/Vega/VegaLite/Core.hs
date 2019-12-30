@@ -23,10 +23,8 @@ module Graphics.Vega.VegaLite.Core
        , joinAggregate
        , opAs
        , timeUnitAs
-       , Operation(..)
 
        , binAs
-       , BinProperty(..)
 
        , stack
 
@@ -51,8 +49,6 @@ module Graphics.Vega.VegaLite.Core
        , sample
 
        , window
-       , Window(..)
-       , WOperation(..)
        , WindowProperty(..)
 
        , mark
@@ -279,6 +275,17 @@ import Graphics.Vega.VegaLite.Time
   , dateTimeProperty
   , timeUnitLabel
   )
+import Graphics.Vega.VegaLite.Transform
+  ( Operation(Count)
+  , Window
+  , BinProperty
+  , aggregate_
+  , op_
+  , binned_
+  , bin
+  , binProperty
+  , windowFieldProperty
+  )
 
 --- helpers
 
@@ -293,12 +300,6 @@ clamped ::
   -> Double
 clamped xmin xmax x = max xmin (min xmax x)
 
-
-aggregate_ :: Operation -> LabelledSpec
-aggregate_ op = "aggregate" .= operationSpec op
-
-op_ :: Operation -> LabelledSpec
-op_ op = "op" .= operationSpec op
 
 repeat_ :: Arrangement -> LabelledSpec
 repeat_ arr = "repeat" .= arrangementLabel arr
@@ -386,8 +387,8 @@ For further details see the
 @
 'transform'
     . 'aggregate'
-        [ 'opAs' 'Min' "people" "lowerBound"
-        , 'opAs' 'Max' "people" "upperBound"
+        [ 'opAs' 'Graphics.Vega.VegaLite.Min' "people" "lowerBound"
+        , 'opAs' 'Graphics.Vega.VegaLite.Max' "people" "upperBound"
         ]
         [ "age" ]
 @
@@ -990,197 +991,6 @@ encoding channels = (VLEncoding, object channels)
 
 {-|
 
-Type of binning property to customise. See the
-<https://vega.github.io/vega-lite/docs/bin.html Vega-Lite documentation> for
-more details.
-
-This is used with: 'binAs', 'DBin', 'FBin', 'HBin', 'MBin', 'OBin',
-'PBin', and 'TBin'.
-
--}
-
--- based on schema 3.3.0 #/definitions/BinParams
-
-data BinProperty
-    = AlreadyBinned Bool
-      -- ^ Should the input data be treated as already binned?
-      --
-      --   @since 0.4.0.0
-    | BinAnchor Double
-      -- ^ A value in the binned domain at which to anchor the bins, shifting the bin
-      --   boundaries if necessary to ensure that a boundary aligns with the anchor
-      --   value.
-      --
-      --   @since 0.4.0.0
-    | Base Double
-      -- ^ The number base to use for automatic bin determination.
-      --
-      --   Default is @10@.
-    | Divide [Double]
-      -- ^ Scale factors indicating allowable subdivisions.
-      --
-      --   Default is @[5, 2]@.
-      --
-      --   Prior to @0.4.0.0@ the @Divide@ constructor took two numbers.
-    | Extent Double Double
-      -- ^ The range (minimum, maximum) of the desired bin values.
-    | MaxBins Int
-      -- ^ The maxium number of bins.
-      --
-      --   Default is @6@ for 'row', 'column', and 'shape' channels,
-      --   @10@ otherwise.
-    | MinStep Double
-      -- ^ A minimum allowable step size.
-    | Nice Bool
-      -- ^ If @True@, the bin boundaries are adjusted to use human-friendly values,
-      --   such as multiples of ten.
-      --
-      --   Default is @True@.
-    | Step Double
-      -- ^ The step size to use between bins.
-      --
-      --   If specified, 'MaxBins' and other related options are ignored.
-    | Steps [Double]
-      -- ^ Pick the step size from this list.
-
-
-binProperty :: BinProperty -> LabelledSpec
-binProperty (AlreadyBinned b) = "binned" .= b
-binProperty (BinAnchor x) = "anchor" .= x
-binProperty (Base x) = "base" .= x
-binProperty (Divide xs) = "divide" .= xs
-binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
-binProperty (MaxBins n) = "maxbins" .= n
-binProperty (MinStep x) = "minstep" .= x
-binProperty (Nice b) = "nice" .= b
-binProperty (Step x) = "step" .= x
-binProperty (Steps xs) = "steps" .= xs
-
-
-bin :: [BinProperty] -> LabelledSpec
-bin [] = "bin" .= True
-bin xs = "bin" .= object (map binProperty xs)
-
-binned_ :: LabelledSpec
-binned_ = "bin" .= fromT "binned"
-
-
-{-|
-
-Type of aggregation operation. See the
-<https://vega.github.io/vega-lite/docs/aggregate.html#ops Vega-Lite documentation>
-for more details.
-
-The @Average@ constructor was removed in version @0.4.0.0@; use 'Mean' instead.
-
--}
-data Operation
-    = ArgMax (Maybe T.Text)
-      -- ^ An input data object containing the maximum field value to be used
-      --   in an aggregation operation.
-      --
-      --   If supplied as part of an encoding aggregation, the parameter
-      --   should be 'Just' the name of the field to maximise. When used
-      --   as part of a transform the parameter should be 'Nothing' as the
-      --   field is specified in the 'aggregate' call.
-      --
-      --   Encoding example, to find the production budget for the maximum
-      --   US grossing film in each genre:
-      --
-      --   @
-      --   'encoding'
-      --     . 'position' 'Graphics.Vega.VegaLite.X'
-      --                [ 'PName' \"Production_Budget\"
-      --                , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
-      --                , 'PAggregate' ('ArgMax' ('Just' \"US_Gross\"))
-      --                ]
-      --     . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"Major_Genre\", 'PmType' 'Graphics.Vega.VegaLite.Nominal']
-      --   @
-      --
-      --   An example of its use as part of an 'aggregate' call:
-      --
-      --   @
-      --   'transform'
-      --     . 'aggregate'
-      --         [ 'opAs' ('ArgMax' 'Nothing') \"US_Gross\" \"amUSGross\"]
-      --         [\"Major_Genre\"]
-      --   @
-      --
-      --   The optional field name was added in the @0.4.0.0@ release.
-    | ArgMin (Maybe T.Text)
-      -- ^ An input data object containing the minimum field value to be used
-      --   in an aggregation operation. See 'ArgMax' for a discussion of the
-      --   optional argument.
-      --
-      --   The optional field name was added in the @0.4.0.0@ release.
-    | CI0
-      -- ^ Lower 95% confidence interval to be used in an aggregation operation.
-    | CI1
-      -- ^ Upper 95% confidence interval to be used in an aggregation operation.
-    | Count
-      -- ^ Total count of data objects to be used in an aggregation operation.
-    | Distinct
-      -- ^ Count of distinct data objects to be used in an aggregation operation.
-    | Max
-      -- ^ Maximum field value to be used in an aggregation operation.
-    | Mean
-      -- ^ Mean field value to be used in an aggregation operation.
-    | Median
-      -- ^ Median field value to be used in an aggregation operation.
-    | Min
-      -- ^ Minimum field value to be used in an aggregation operation.
-    | Missing
-      -- ^ Count of @null@ or @undefined@ field value to be used in an aggregation operation.
-    | Q1
-      -- ^ Lower quartile boundary of field values to be used in an aggregation operation.
-    | Q3
-      -- ^ Upper quartile boundary of field values to be used in an aggregation operation.
-    | Stderr
-      -- ^ Standard error of field values to be used in an aggregate operation.
-    | Stdev
-      -- ^ Sample standard deviation of field values to be used in an aggregate operation.
-    | StdevP
-      -- ^ Population standard deviation of field values to be used in an aggregate operation.
-    | Sum
-      -- ^ Sum of field values to be used in an aggregate operation.
-    | Valid
-      -- ^ Count of values that are not @null@, @undefined@, or @NaN@ to be used in an
-      -- aggregation operation.
-    | Variance
-      -- ^ Sample variance of field values to be used in an aggregate operation.
-    | VarianceP
-      -- ^ Population variance of field values to be used in an aggregate operation.
-
-
--- Unlike Elm, not checking if the string is empty for ArgMin/Max
-
-operationSpec :: Operation -> VLSpec
-operationSpec (ArgMax Nothing) = "argmax"
-operationSpec (ArgMax (Just s)) = object ["argmax" .= s]
-operationSpec (ArgMin Nothing) = "argmin"
-operationSpec (ArgMin (Just s)) = object ["argmin" .= s]
-operationSpec CI0 = "ci0"
-operationSpec CI1 = "ci1"
-operationSpec Count = "count"
-operationSpec Distinct = "distinct"
-operationSpec Max = "max"
-operationSpec Mean = "mean"
-operationSpec Median = "median"
-operationSpec Min = "min"
-operationSpec Missing = "missing"
-operationSpec Q1 = "q1"
-operationSpec Q3 = "q3"
-operationSpec Stderr = "stderr"
-operationSpec Stdev = "stdev"
-operationSpec StdevP = "stdevp"
-operationSpec Sum = "sum"
-operationSpec Valid = "valid"
-operationSpec Variance = "variance"
-operationSpec VarianceP = "variancep"
-
-
-{-|
-
 Apply a stack transform for positioning multiple values. This is an alternative
 to specifying stacking directly when encoding position.
 
@@ -1193,8 +1003,8 @@ to specifying stacking directly when encoding position.
         \"stack_count_Origin2\"
         [ 'Graphics.Vega.VegaLite.StOffset' 'Graphics.Vega.VegaLite.StNormalize', 'Graphics.Vega.VegaLite.StSort' [ 'Graphics.Vega.VegaLite.WAscending' \"Origin\" ] ]
     . 'window'
-        [ ( [ 'WAggregateOp' 'Min', 'WField' \"stack_count_Origin1\" ], \"x\" )
-        , ( [ 'WAggregateOp' 'Max', 'WField' \"stack_count_Origin2\" ], \"x2\" )
+        [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Min', 'Graphics.Vega.VegaLite.WField' \"stack_count_Origin1\" ], \"x\" )
+        , ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Max', 'Graphics.Vega.VegaLite.WField' \"stack_count_Origin2\" ], \"x2\" )
         ]
         [ 'WFrame' Nothing Nothing, 'WGroupBy' [ \"Origin\" ] ]
     . 'stack' \"count_*\"
@@ -1538,7 +1348,7 @@ data SortProperty
       -- 'position' 'Graphics.Vega.VegaLite.Y'
       --   [ 'PName' "variety"
       --   , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
-      --   , 'PSort' [ ByFieldOp "age" 'Mean', 'Descending' ]
+      --   , 'PSort' [ ByFieldOp "age" 'Graphics.Vega.VegaLite.Mean', 'Descending' ]
       --   ]
       -- @
       --
@@ -1634,7 +1444,7 @@ data PositionChannel
       --   enc = 'encoding'
       --           . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"x\"
       --                        , 'PmType' 'Graphics.Vega.VegaLite.Ordinal'
-      --                        , 'PBin' ['Step' 5]
+      --                        , 'PBin' ['Graphics.Vega.VegaLite.Step' 5]
       --                        ]
       --           . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
       --                        , 'PAggregate' 'Count'
@@ -1663,7 +1473,7 @@ data PositionChannel
       --           . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"role\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
       --           . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"salary\"
       --                        , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
-      --                        , 'PAggregate' 'Mean'
+      --                        , 'PAggregate' 'Graphics.Vega.VegaLite.Mean'
       --                        ]
       --   @
     | PScale [ScaleProperty]
@@ -4614,73 +4424,6 @@ windowPropertySpec wps =
   in map fromSpecs [frms, ips, gps, sts]
 
 
--- | Window transformations.
---
---   @since 0.4.0.0
-
-data Window
-    = WAggregateOp Operation
-      -- ^ An aggregrate operation to be used in a window transformation.
-    | WOp WOperation
-      -- ^ Window-specific operation to be used in a window transformation.
-    | WParam Int
-      -- ^ Numeric parameter for window-only operations that can be parameterised
-      --   ('Ntile', 'Lag', 'Lead' and 'NthValue').
-    | WField T.Text
-      -- ^ Field for which to compute a window operation. Not needed for operations
-      --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
-
-
-windowFieldProperty :: Window -> LabelledSpec
-windowFieldProperty (WAggregateOp op) = "op" .= operationSpec op
-windowFieldProperty (WOp op) = "op" .= wOperationLabel op
-windowFieldProperty (WParam n) = "param" .= n
-windowFieldProperty (WField f) = field_ f
-
-
--- | Window-specific operation for transformations (for use with 'WOp').
---
---   @since 0.4.0.0
-
-data WOperation
-    = RowNumber
-      -- ^ Assign consecutive row number to values in a data object to be applied in a window transform.
-    | Rank
-      -- ^ Rank function to be applied in a window transform.
-    | DenseRank
-      -- ^ Dense rank function to be applied in a window transform.
-    | PercentRank
-      -- ^ Percentile of values in a sliding window to be applied in a window transform.
-    | CumeDist
-      -- ^ Cumulative distribution function to be applied in a window transform.
-    | Ntile
-      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
-    | Lag
-      -- ^ Value preceding the current object in a sliding window to be applied in a window transform.
-    | Lead
-      -- ^ Value following the current object in a sliding window to be applied in a window transform.
-    | FirstValue
-      -- ^ First value in a sliding window to be applied in a window transform.
-    | LastValue
-      -- ^ Last value in a sliding window to be applied in a window transform.
-    | NthValue
-      -- ^ Nth value in a sliding window to be applied in a window transform.
-
-
-wOperationLabel :: WOperation -> T.Text
-wOperationLabel RowNumber = "row_number"
-wOperationLabel Rank = "rank"
-wOperationLabel DenseRank = "dense_rank"
-wOperationLabel PercentRank = "percent_rank"
-wOperationLabel CumeDist = "cume_dist"
-wOperationLabel Ntile = "ntile"
-wOperationLabel Lag = "lag"
-wOperationLabel Lead = "lead"
-wOperationLabel FirstValue = "first_value"
-wOperationLabel LastValue = "last_value"
-wOperationLabel NthValue = "nth_value"
-
-
 {-|
 
 Defines a set of named aggregation transformations to be used when encoding
@@ -4692,7 +4435,7 @@ see the
 @
 'transform'
     . 'aggregate'
-        [ 'opAs' 'Min' "people" "lowerBound", 'opAs' 'Max' "people" "upperBound" ]
+        [ 'opAs' 'Graphics.Vega.VegaLite.Min' "people" "lowerBound", 'opAs' 'Graphics.Vega.VegaLite.Max' "people" "upperBound" ]
         [ "age" ]
 @
 
@@ -4723,7 +4466,7 @@ The third parameter is a list of transformations to which this is added.
 @
 'transform'
     . 'joinAggregate'
-        [ 'opAs' 'Mean' "rating" "avYearRating" ]
+        [ 'opAs' 'Graphics.Vega.VegaLite.Mean' "rating" "avYearRating" ]
         [ 'WGroupBy' [ "year" ] ]
     . 'filter' ('FExpr' "(datum.rating - datum.avYearRating) > 3"))
 @
@@ -4755,7 +4498,7 @@ definition and an output name. The second is the window transform definition.
 
 @
 'transform'
-    . 'window' [ ( [ 'WAggregateOp' 'Sum', 'WField' "Time" ], "TotalTime" ) ]
+    . 'window' [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Sum', 'Graphics.Vega.VegaLite.WField' "Time" ], "TotalTime" ) ]
              [ 'WFrame' Nothing Nothing ]
 @
 
@@ -4806,7 +4549,7 @@ over this form of bin transformation.
 
 @
 'transform'
-    . 'binAs' [ 'MaxBins' 3 ] \"IMDB_Rating\" \"ratingGroup\"
+    . 'binAs' [ 'Graphics.Vega.VegaLite.MaxBins' 3 ] \"IMDB_Rating\" \"ratingGroup\"
 @
 -}
 binAs ::
@@ -4881,7 +4624,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
     enc = 'encoding'
             . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"month\", 'PmType' 'Graphics.Vega.VegaLite.Temporal']
             . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"reportedCrimes\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
-                         , 'PAggregate' 'Sum']
+                         , 'PAggregate' 'Graphics.Vega.VegaLite.Sum']
             . 'column' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
 
     in 'Graphics.Vega.VegaLite.toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
@@ -5445,7 +5188,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
             . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"month\", 'PmType' 'Graphics.Vega.VegaLite.Temporal']
             . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"reportedCrimes\"
                          , 'PmType' 'Graphics.Vega.VegaLite.Quantitative'
-                         , 'PAggregate' 'Sum'
+                         , 'PAggregate' 'Graphics.Vega.VegaLite.Sum'
                          , 'PAxis' ['AxNoTitle']
                          ]
             . 'row' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
@@ -5585,7 +5328,7 @@ trans = 'transform' . 'timeUnitAs' 'Graphics.Vega.VegaLite.Month' \"date\" \"mon
 
 enc = 'encoding'
         . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Day' ]
-        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PAggregate' 'Sum', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PAggregate' 'Graphics.Vega.VegaLite.Sum', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
         . 'detail' [ 'DName' \"monthly\", 'DmType' 'Graphics.Vega.VegaLite.Temporal' ]
 @
 -}
