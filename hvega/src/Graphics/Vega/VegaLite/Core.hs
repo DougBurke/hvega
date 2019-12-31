@@ -138,8 +138,6 @@ module Graphics.Vega.VegaLite.Core
 
        , configure
 
-       , LegendConfig(..)
-
        , TitleConfig(..)
        , TitleFrame(..)
 
@@ -185,14 +183,12 @@ import Graphics.Vega.VegaLite.Foundation
   , Measurement
   , Arrangement
   , APosition
-  , Orientation
   , Position
   , HAlign
   , VAlign
   , Scale
   , OverlapStrategy
   , Side
-  , Symbol
   , StackProperty
   , StackOffset
   , Channel
@@ -234,9 +230,7 @@ import Graphics.Vega.VegaLite.Input
   ( Data
   )
 import Graphics.Vega.VegaLite.Legend
-  ( LegendLayout
-  , LegendProperty
-  , LegendOrientation
+  ( LegendProperty
   , legendProperty
   )
 import Graphics.Vega.VegaLite.Mark
@@ -1550,250 +1544,6 @@ for details.
 -}
 autosize :: [Autosize] -> PropertySpec
 autosize aus = (VLAutosize, object (map autosizeProperty aus))
-
-
-{-|
-
-Legend configuration options. For more detail see the
-<https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
-
-This data type has seen significant changes in the @0.4.0.0@ release:
-
-- the @EntryPadding@, @GradientHeight@, @GradientLabelBaseline@, @GradientWidth@
-  and @SymbolColor@ constructors were removed;
-
-- the constructors were removed;
-
-- the remaining constructors that did not begin with @Le@ were renamed (for
-  example @Orient@ was changed to 'LeOrient');
-
-- and new constructors were added.
-
--}
-
--- based on schema 3.3.0 #/definitions/LegendConfig
-
-data LegendConfig
-    = LeClipHeight Double
-      -- ^ The height in pixels at which to clip symbol legend entries.
-      --
-      --   @since 0.4.0.0
-    | LeColumnPadding Double
-      -- ^ The horizontal padding, in pixels, between symbol legend entries.
-      --
-      --   @since 0.4.0.0
-    | LeColumns Int
-      -- ^ The number of columns in which to arrange symbol legend entries. A value
-      --   of @0@ or lower indicates a single row with one column per entry.
-      --
-      --   @since 0.4.0.0
-    | LeCornerRadius Double
-      -- ^ The corner radius for the full legend.
-    | LeFillColor Color
-      -- ^ The background fill color for the full legend.
-    | LeGradientDirection Orientation
-      -- ^ The default direction for gradient legends.
-      --
-      --   @since 0.4.0.0
-    | LeGradientHorizontalMaxLength Double
-      -- ^ The maximum legend length for a horizontal gradient.
-      --
-      --   @since 0.4.0.0
-    | LeGradientHorizontalMinLength Double
-      -- ^ The minimum legend length for a horizontal gradient.
-      --
-      --   @since 0.4.0.0
-    | LeGradientLabelLimit Double
-      -- ^ The maximum allowed length, in pixels, of color-ramp gradient labels.
-    | LeGradientLabelOffset Double
-      -- ^ The vertical offset in pixels for color-ramp gradient labels.
-    | LeGradientLength Double
-      -- ^ The length in pixels of the primary axis of a color gradient.
-      --   See also 'LeGradientThickness'.
-      --
-      --   @since 0.4.0.0
-    | LeGradientOpacity Opacity
-      -- ^ The opacity of the color gradient.
-      --
-      --   @since 0.4.0.0
-    | LeGradientStrokeColor Color
-      -- ^ The color of the gradient stroke.
-    | LeGradientStrokeWidth Double
-      -- ^ The width of the gradient stroke, in pixels.
-    | LeGradientThickness Double
-      -- ^ The thickness in pixels of the color gradient. See also 'LeGradientLength'.
-      --
-      --   @since 0.4.0.0
-    | LeGradientVerticalMaxLength Double
-      -- ^ The maximum legend length for a vertical gradient.
-      --
-      --   @since 0.4.0.0
-    | LeGradientVerticalMinLength Double
-      -- ^ The minimum legend length for a vertical gradient.
-      --
-      --   @since 0.4.0.0
-    | LeGridAlign CompositionAlignment
-      -- ^ The alignment to apply to symbol legends rows and columns.
-      --
-      --    @since 0.4.0.0
-    | LeLabelAlign HAlign
-      -- ^ The alignment of the legend label.
-    | LeLabelBaseline VAlign
-      -- ^ The position of the baseline of the legend label.
-    | LeLabelColor Color
-      -- ^ The color of the legend label.
-    | LeLabelFont T.Text
-      -- ^ The font of the legend label.
-    | LeLabelFontSize Double
-      -- ^ The font of the legend label.
-    | LeLabelFontStyle T.Text
-      -- ^ The font style of the legend label.
-      --
-      --   @since 0.4.0.0
-    | LeLabelFontWeight FontWeight
-      -- ^ The font weight of the legend label.
-      --
-      --   @since 0.4.0.0
-    | LeLabelLimit Double
-      -- ^ The maxumum allowed pixel width of the legend label.
-    | LeLabelOffset Double
-      -- ^ The offset of the legend label.
-    | LeLabelOpacity Opacity
-      -- ^ The opacity of the legend label.
-      --
-      --   @since 0.4.0.0
-    | LeLabelOverlap OverlapStrategy
-      -- ^ How to resolve overlap of labels in gradient legends.
-      --
-      --   @since 0.4.0.0
-    | LeLabelPadding Double
-      -- ^ The passing in pixels between the legend and legend labels.
-      --
-      --   @since 0.4.0.0
-    | LeLabelSeparation Double
-      -- ^ The minimum separation between label bounding boxes for them
-      --   to be considered non-overlapping (ignored if 'Graphics.Vega.VegaLite.ONone' is the
-      --   chosen overlap strategy).
-      --
-      --   @since 0.4.0.0
-    | LeLayout [LegendLayout]
-      -- ^ Layout parameters for the legend orient group.
-      --
-      --   @since 0.4.0.0
-     | LeLeX Double
-      -- ^ Custom x position for a legend with orientation 'Graphics.Vega.VegaLite.LONone'.
-      --
-      --   @since 0.4.0.0
-     | LeLeY Double
-      -- ^ Custom y position for a legend with orientation 'Graphics.Vega.VegaLite.LONone'.
-      --
-      --   @since 0.4.0.0
-    | LeOffset Double
-      -- ^ The offset in pixels between the legend and the data rectangle
-      --   and axes.
-    | LeOrient LegendOrientation
-      -- ^ The orientation of the legend.
-    | LePadding Double
-      -- ^ The padding between the border and content of the legend group.
-    | LeRowPadding Double
-      -- ^ The vertical padding in pixels between symbol legend entries.
-      --
-      --   @since 0.4.0.0
-    | LeShortTimeLabels Bool
-      -- ^ Should month and weekday names be abbreviated?
-    | LeStrokeColor Color
-      -- ^ The border stoke color for the full legend.
-    | LeStrokeDash [Double]
-      -- ^ The border stroke dash pattern for the full legend (alternating
-      --   stroke, space lengths in pixels).
-    | LeStrokeWidth Double
-      -- ^ The border stroke width for the full legend.
-    | LeSymbolBaseFillColor Color
-      -- ^ The fill color for legend symbols. This is only applied if
-      --   there is no \"fill\" scale color encoding for the legend.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolBaseStrokeColor Color
-      -- ^ The stroke color for legend symbols. This is only applied if
-      --   there is no \"fill\" scale color encoding for the legend.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolDash [Double]
-      -- ^ The pattern for dashed symbol strokes (alternating
-      --   stroke, space lengths in pixels).
-      --
-      --   @since 0.4.0.0
-    | LeSymbolDashOffset Double
-      -- ^ The offset at which to start deawing the symbol dash pattern,
-      --   in pixels.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolDirection Orientation
-      -- ^ The default direction for symbol legends.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolFillColor Color
-      -- ^ The color of the legend symbol.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolOffset Double
-      -- ^ The horizontal pixel offset for legend symbols.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolOpacity Opacity
-      -- ^ The opacity of the legend symbols.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolSize Double
-      -- ^ The size of the legend symbol, in pixels.
-    | LeSymbolStrokeColor Color
-      -- ^ The stroke color for legend symbols.
-      --
-      --   @since 0.4.0.0
-    | LeSymbolStrokeWidth Double
-      -- ^ The width of the symbol's stroke.
-    | LeSymbolType Symbol
-      -- ^ The default shape type for legend symbols.
-    | LeTitle T.Text
-      -- ^ The legend title.
-      --
-      --   @since 0.4.0.0
-    | LeNoTitle
-      -- ^ Draw no title for the legend.
-      --
-      --   @since 0.4.0.0
-    | LeTitleAlign HAlign
-      -- ^ The horizontal text alignment for legend titles.
-    | LeTitleAnchor APosition
-      -- ^ The text anchor position for legend titles.
-      --
-      --   @since 0.4.0.0
-    | LeTitleBaseline VAlign
-      -- ^ The vertical text alignment for legend titles.
-    | LeTitleColor Color
-      -- ^ The color of the legend title.
-    | LeTitleFont T.Text
-      -- ^ The font of the legend title.
-    | LeTitleFontSize Double
-      -- ^ The font size of the legend title.
-    | LeTitleFontStyle T.Text
-      -- ^ The font style for the legend title.
-      --
-      --   @since 0.4.0.0
-    | LeTitleFontWeight FontWeight
-      -- ^ The font weight of the legend title.
-    | LeTitleLimit Double
-      -- ^ The maxmimum pixel width of the legend title.
-    | LeTitleOpacity Opacity
-      -- ^ The opacity of the legend title.
-      --
-      --   @since 0.4.0.0
-    | LeTitleOrient Side
-      -- ^ The orientation of the legend title.
-      --
-      --   @since 0.4.0.0
-    | LeTitlePadding Double
-      -- ^ The padding, in pixels, between title and legend.
 
 
 {-|
