@@ -43,9 +43,7 @@ import Data.Aeson ((.=), object, toJSON)
 
 
 import Graphics.Vega.VegaLite.Core
-  ( HeaderProperty
-  , schemeProperty
-  , header_
+  ( schemeProperty
   )
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
@@ -66,6 +64,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Padding
   , Autosize
   , ZIndex
+  , HeaderProperty
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
@@ -80,6 +79,7 @@ import Graphics.Vega.VegaLite.Foundation
   , compositionAlignmentSpec
   , paddingSpec
   , autosizeProperty
+  , header_
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty

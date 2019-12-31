@@ -119,8 +119,6 @@ module Graphics.Vega.VegaLite.Core
        , FacetMapping(..)
        , FacetChannel(..)
 
-       , HeaderProperty(..)
-
        , BooleanOp(..)
 
        , name
@@ -140,7 +138,6 @@ module Graphics.Vega.VegaLite.Core
        , schemeProperty
        , autosizeProperty
        , paddingSpec
-       , header_
 
        )
     where
@@ -194,8 +191,10 @@ import Graphics.Vega.VegaLite.Foundation
   , RepeatFields
   , CInterpolate
   , ViewBackground
+  , HeaderProperty
   , fromT
   , field_
+  , header_
   , order_
   , fontWeightSpec
   , measurementLabel
@@ -283,9 +282,6 @@ repeat_ arr = "repeat" .= arrangementLabel arr
 
 sort_ :: [SortProperty] -> LabelledSpec
 sort_ ops = "sort" .= sortPropertySpec ops
-
-header_ :: [HeaderProperty] -> LabelledSpec
-header_ hps = "header" .= object (map headerProperty hps)
 
 mchan_ :: T.Text -> [MarkChannel] -> LabelledSpec
 mchan_ f ms = f .= object (concatMap markChannelProperty ms)
@@ -1755,152 +1751,6 @@ vale to accept and the second the inclusive maximum.
 data FilterRange
     = NumberRange Double Double
     | DateRange [DateTime] [DateTime]
-
-
-{-|
-
-Represents a facet header property. For details, see the
-<https://vega.github.io/vega-lite/docs/facet.html#header Vega-Lite documentation>.
-
-Labels refer to the title of each sub-plot in a faceted view and
-title is the overall title of the collection.
-
--}
-
--- TODO: should there be a HLabelBaseline, HTitleFontStyle, ...?
---       However, the following covers the vega-lite 3.3.0 schema
-
-data HeaderProperty
-    = HFormat T.Text
-      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
-      --   facet header (title) values. To distinguish between formatting as numeric values
-      --   and data/time values, additionally use 'HFormatAsNum' or 'HFormatAsTemporal'.
-    | HFormatAsNum
-      -- ^ Facet headers should be formatted as numbers. Use a
-      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
-      --   with 'HFormat'.
-      --
-      -- @since 0.4.0.0
-    | HFormatAsTemporal
-      -- ^ Facet headers should be formatted as dates or times. Use a
-      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
-      --   with 'HFormat'.
-      --
-      -- @since 0.4.0.0
-    | HTitle T.Text
-      -- ^ The title for the facets.
-    | HNoTitle
-      -- ^ Draw no title for the facets.
-      --
-      -- @since 0.4.0.0
-    | HLabelAlign HAlign
-      -- ^ The horizontal alignment of the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelAnchor APosition
-      -- ^ The anchor position for the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelAngle Angle
-      -- ^ The angle to draw the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelColor Color
-      -- ^ The color of the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelFont T.Text
-      -- ^ The font for the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelFontSize Double
-      -- ^ The font size for the labels.
-      --
-      -- @since 0.4.0.0
-    | HLabelLimit Double
-      -- ^ The maximum length of each label.
-      --
-      -- @since 0.4.0.0
-    | HLabelOrient Side
-      -- ^ The position of the label relative to its sub-plot.
-      --
-      -- @since 0.4.0.0
-    | HLabelPadding Double
-      -- ^ The spacing in pixels between the label and its sub-plot.
-      --
-      -- @since 0.4.0.0
-    | HTitleAlign HAlign
-      -- ^ The horizontal alignment of the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleAnchor APosition
-      -- ^ The anchor position for the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleAngle Angle
-      -- ^ The angle to draw the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleBaseline VAlign
-      -- ^ The vertical alignment of the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleColor Color
-      -- ^ The color of the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleFont T.Text
-      -- ^ The font for the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleFontSize Double
-      -- ^ The font size for the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleFontWeight T.Text
-      -- ^ The font weight for the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleLimit Double
-      -- ^ The maximum length of the title.
-      --
-      -- @since 0.4.0.0
-    | HTitleOrient Side
-      -- ^ The position of the title relative to the sub-plots.
-      --
-      -- @since 0.4.0.0
-    | HTitlePadding Double
-      -- ^ The spacing in pixels between the title and the labels.
-      --
-      -- @since 0.4.0.0
-
-
-headerProperty :: HeaderProperty -> LabelledSpec
-headerProperty (HFormat fmt) = "format" .= fmt
-headerProperty HFormatAsNum = "formatType" .= fromT "number"
-headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
-headerProperty (HTitle ttl) = "title" .= ttl
-headerProperty HNoTitle = "title" .= A.Null
-headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
-headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
-headerProperty (HLabelAngle x) = "labelAngle" .= x
-headerProperty (HLabelColor s) = "labelColor" .= s
-headerProperty (HLabelFont s) = "labelFont" .= s
-headerProperty (HLabelFontSize x) = "labelFontSize" .= x
-headerProperty (HLabelLimit x) = "labelLimit" .= x
-headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
-headerProperty (HLabelPadding x) = "labelPadding" .= x
-headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
-headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
-headerProperty (HTitleAngle x) = "titleAngle" .= x
-headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-headerProperty (HTitleColor s) = "titleColor" .= s
-headerProperty (HTitleFont s) = "titleFont" .= s
-headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
-headerProperty (HTitleFontSize x) = "titleFontSize" .= x
-headerProperty (HTitleLimit x) = "titleLimit" .= x
-headerProperty (HTitleOrient orient) = "titleOrient" .= sideLabel orient
-headerProperty (HTitlePadding x) = "titlePadding" .= x
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
