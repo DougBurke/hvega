@@ -37,8 +37,7 @@ import Data.Aeson ((.=), object, toJSON)
 
 
 import Graphics.Vega.VegaLite.Core
-  ( MarkProperty
-  , HeaderProperty
+  ( HeaderProperty
   , LegendConfig(..)
   , TitleConfig
   , LegendLayout(..)
@@ -47,7 +46,6 @@ import Graphics.Vega.VegaLite.Core
   , legendOrientLabel
   , titleConfigSpec
   , header_
-  , mprops_
   )
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
@@ -84,6 +82,11 @@ import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
   , projectionProperty
   )
+import Graphics.Vega.VegaLite.Mark
+  ( MarkProperty
+  , mprops_
+  )
+
 import Graphics.Vega.VegaLite.Selection
   ( Selection
   , SelectionProperty

@@ -49,14 +49,6 @@ module Graphics.Vega.VegaLite.Core
        , window
 
        , mark
-       , Mark(..)
-
-       , MarkProperty(..)
-
-       , MarkInterpolation(..)
-       , PointMarker(..)
-       , LineMarker(..)
-       , MarkErrorExtent(..)
 
        , encoding
 
@@ -165,7 +157,6 @@ module Graphics.Vega.VegaLite.Core
        , autosizeProperty
        , paddingSpec
        , header_
-       , mprops_
 
        )
     where
@@ -206,16 +197,12 @@ import Graphics.Vega.VegaLite.Foundation
   , Position
   , HAlign
   , VAlign
-  , StrokeCap
-  , StrokeJoin
   , Scale
-  , Cursor
   , OverlapStrategy
   , Side
   , Symbol
   , StackProperty
   , StackOffset
-  , TooltipContent(TTNone)
   , Channel
   , Resolve
   , Bounds
@@ -235,18 +222,14 @@ import Graphics.Vega.VegaLite.Foundation
   , orientationSpec
   , hAlignLabel
   , vAlignLabel
-  , strokeCapLabel
-  , strokeJoinLabel
   , scaleLabel
   , positionLabel
-  , cursorLabel
   , overlapStrategyLabel
   , sideLabel
   , symbolLabel
   , stackPropertySpecSort
   , stackPropertySpecOffset
   , stackOffset
-  , ttContentLabel
   , channelLabel
   , resolveProperty
   , boundsSpec
@@ -259,6 +242,12 @@ import Graphics.Vega.VegaLite.Foundation
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
+  )
+import Graphics.Vega.VegaLite.Mark
+  ( Mark
+  , MarkProperty
+  , markLabel
+  , markProperty
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(..)
@@ -313,10 +302,6 @@ sort_ ops = "sort" .= sortPropertySpec ops
 
 header_ :: [HeaderProperty] -> LabelledSpec
 header_ hps = "header" .= object (map headerProperty hps)
-
--- TODO: should this turn an empty list into true?
-mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
-mprops_ f mps = f .= object (map markProperty mps)
 
 mchan_ :: T.Text -> [MarkChannel] -> LabelledSpec
 mchan_ f ms = f .= object (concatMap markChannelProperty ms)
@@ -411,114 +396,6 @@ opAs op field label =
   object [ op_ op, field_ field, "as" .= label ]
 
 
--- | Type of visual mark used to represent data in the visualization.
---
---   The properties of the mark can be changed with the 'MarkProperty'
---   constructors - such as 'MHeight' and 'MWidth' -  although not all
---   properties apply to all marks.
---
-data Mark
-    = Area
-      -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
-      --   for representing a series of data elements, such as in a stacked
-      --   area chart or streamgraph.
-    | Bar
-      -- ^ [Bar mark](https://vega.github.io/vega-lite/docs/bar.html)
-      --   for histograms, bar charts etc.
-    | Boxplot
-      -- ^ [Boxplot composite mark](https://vega.github.io/vega-lite/docs/boxplot.html)
-      --   for showing summaries of statistical distributions.
-      --
-      --   Tick marks can be added using 'MTicks' and outliers turned
-      --   off with 'MNoOutliers' or configured with 'MOutliers'.
-      --   For example:
-      --
-      --   @
-      --   'mark' Boxplot
-      --       [ 'MTicks' [ 'MColor' \"black\", 'MSize' 8 ]
-      --       , 'MBox' [ 'MFill' \"grey\" ]
-      --       , 'MOutliers' [ 'MColor' \"firebrick\" ]
-      --   ]
-      --   @
-      --
-      --   The range of the box plot is controlled with 'MExtent' with
-      --   the 'IqrScale' or 'ExRange' options (the default is
-      --   @IqrScale 1.5@).
-      --
-      --   @since 0.4.0.0
-    | Circle
-      -- ^ [Circle mark](https://vega.github.io/vega-lite/docs/circle.html)
-      --   for representing points.
-    | ErrorBar
-      -- ^ [Errorbar composite mark](https://vega.github.io/vega-lite/docs/errorbar.html)
-      --   for showing summaries of variation along a signal. By default
-      --   no ticks are drawn. To add ticks with default properties use
-      --   @`MTicks` []@, otherwise supply a list of configuration options:
-      --
-      --   @
-      --   'mark' ErrorBar [ 'MTicks' [ 'MColor' \"black\", 'MSize' 8 ] ]
-      --   @
-      --
-      --   @since 0.4.0.0
-    | ErrorBand
-      -- ^ [Errorband composite mark](https://vega.github.io/vega-lite/docs/errorband.html)
-      --   for showing summaries of variation along a signal. By default
-      --   no border is drawn. To add a border with default properties use
-      --   @'MBorders' []@, otherwise supply a list of configuration options:
-      --
-      --   @
-      --   'mark' ErrorBand [ 'MBorders' [ 'MColor' \"black\", 'MStrokeWidth' 0.5 ] ]
-      --   @
-      --
-      --   @since 0.4.0.0
-    | Geoshape
-      -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
-      --   determined by geographically referenced coordinates.
-    | Line
-      -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
-      --   for symbolising a sequence of values.
-    | Point
-      -- ^ [Point mark](https://vega.github.io/vega-lite/docs/point.html)
-      --   for symbolising a data point with a symbol.
-    | Rect
-      -- ^ [Rectangle mark](https://vega.github.io/vega-lite/docs/rect.html).
-    | Rule
-      -- ^ [Rule line](https://vega.github.io/vega-lite/docs/rule.html)
-      --   connecting two vertices.
-    | Square
-      -- ^ [Square mark](https://vega.github.io/vega-lite/docs/square.html)
-      --   for symbolising points.
-    | Text
-      -- ^ [Text mark](https://vega.github.io/vega-lite/docs/text.html)
-      --   to be displayed at some point location.
-    | Tick
-      -- ^ Short line - [tick](https://vega.github.io/vega-lite/docs/tick.html) -
-      --   mark for symbolising point locations.
-    | Trail
-      -- ^ [Trail mark](https://vega.github.io/vega-lite/docs/trail.html)
-      --   (line with variable width along its length).
-      --
-      --   @since 0.4.0.0
-
-
-markLabel :: Mark -> T.Text
-markLabel Area = "area"
-markLabel Bar = "bar"
-markLabel Boxplot = "boxplot"
-markLabel Circle = "circle"
-markLabel ErrorBar = "errorbar"
-markLabel ErrorBand = "errorband"
-markLabel Line = "line"
-markLabel Geoshape = "geoshape"
-markLabel Point = "point"
-markLabel Rect = "rect"
-markLabel Rule = "rule"
-markLabel Square = "square"
-markLabel Text = "text"
-markLabel Tick = "tick"
-markLabel Trail = "trail"
-
-
 {-|
 
 Create a mark specification. All marks must have a type (first parameter) and
@@ -527,13 +404,13 @@ style for lines. To keep the default style for the mark, just provide an empty l
 for the second parameter.
 
 @
-'mark' 'Circle' []
-'mark' 'Line' ['MInterpolate' 'StepAfter']
+'mark' 'Graphics.Vega.VegaLite.Circle' []
+'mark' 'Graphics.Vega.VegaLite.Line' ['Graphics.Vega.VegaLite.MInterpolate' 'Graphics.Vega.VegaLite.StepAfter']
 @
 
 @
 let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"city.json\" ['Graphics.Vega.VegaLite.TopojsonFeature' \"boroughs\"] []
-    markOpts = 'mark' 'Geoshape' ['MFill' \"lightgrey\", 'MStroke' \"white\"]
+    markOpts = 'mark' 'Graphics.Vega.VegaLite.Geoshape' ['Graphics.Vega.VegaLite.MFill' \"lightgrey\", 'Graphics.Vega.VegaLite.MStroke' \"white\"]
 in 'Graphics.Vega.VegaLite.toVegaLite' [dvals, markOpts]
 @
 -}
@@ -653,317 +530,6 @@ markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
 markChannelProperty (MTitle s) = ["title" .= s]
 markChannelProperty MNoTitle = ["title" .= A.Null]
-
-
-{-|
-
-Appearance of a line marker that is overlaid on an area mark.
-For use with 'MLine'.
-
-@since 0.4.0.0
-
--}
-
-data LineMarker
-  = LMNone
-    -- ^ No line marker.
-  | LMMarker [MarkProperty]
-    -- ^ The properties of a line marker overlain on an area mark.
-    --
-    --   Use an empty list to use a filled point with default properties.
-
-
--- An empty object has the same meaning as true, so there is no real need to
--- treat 'LMMarker []' specially, but I don't think it complicates things
--- here.
---
-lineMarkerSpec :: LineMarker -> VLSpec
-lineMarkerSpec LMNone = toJSON False
-lineMarkerSpec (LMMarker []) = toJSON True
-lineMarkerSpec (LMMarker mps) = object (map markProperty mps)
-
-
-{-|
-
-Properties for customising the appearance of a mark. For details see the
-<https://vega.github.io/vega-lite/docs/mark.html#config Vega-Lite documentation>.
-
-Not all properties are valid for each mark type.
-
-The Vega-Lite specification supports setting those properties that take
-@['MarkProperty']@ also to a boolean value. This is currently not
-supported in @hvega@.
-
--}
-
--- based on schema 3.3.0 #/definitions/MarkConfig
---
--- but it also contains a number of other properties
-
-data MarkProperty
-    = MAlign HAlign
-      -- ^ Horizontal alignment of a text mark.
-    | MAngle Angle
-      -- ^ Rotation angle of a text mark.
-    | MBandSize Double
-      -- ^ Band size of a bar mark.
-    | MBaseline VAlign
-      -- ^ Vertical alignment of a text mark.
-    | MBinSpacing Double
-      -- ^ Offset between bars for a binned field using a bar mark.
-      --
-      --   The ideal value for this is either @0@ (preferred by statisticians)
-      --   or @1@ (the Vega-Lite default value, D3 example style).
-    | MBorders [MarkProperty]
-      -- ^ Border properties for an 'ErrorBand' mark.
-      --
-      --   @since 0.4.0.0
-    | MBox [MarkProperty]
-      -- ^ Box-symbol properties for a 'Boxplot' mark.
-      --
-      --   @since 0.4.0.0
-    | MClip Bool
-      -- ^ Should a mark be clipped to the enclosing group's dimensions.
-    | MColor Color
-      -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
-      --   precedence and will override this if specified.
-    | MCursor Cursor
-      -- ^ Cursor to be associated with a hyperlink mark.
-    | MContinuousBandSize Double
-      -- ^ Continuous band size of a bar mark.
-    | MDiscreteBandSize Double
-      -- ^ Discrete band size of a bar mark.
-    | MdX Double
-      -- ^ Horizontal offset between a text mark and its anchor.
-    | MdY Double
-      -- ^ Vertical offset between a text mark and its anchor.
-    | MExtent MarkErrorExtent
-      -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
-      --   'ErrorBand' marks.
-      --
-      --   @since 0.4.0.0
-    | MFill T.Text
-      -- ^ Default fill color of a mark.
-    | MFilled Bool
-      -- ^ Should a mark's color should be used as the fill color instead of
-      --   stroke color.
-    | MFillOpacity Opacity
-      -- ^ Fill opacity of a mark.
-    | MFont T.Text
-      -- ^ Font of a text mark. Can be any font name made accessible via
-      -- a css file (or a generic font like \"serif\", \"monospace\" etc.).
-    | MFontSize Double
-      -- ^ Font size, in pixels, used by a text mark.
-    | MFontStyle T.Text
-      -- ^ Font style (e.g. \"italic\") used by a text mark.
-    | MFontWeight FontWeight
-      -- ^ Font weight used by a text mark.
-    | MHeight Double
-      -- ^ Explicitly set the height of a mark. See also 'MWidth'.
-      --
-      --   @since 0.4.0.0
-    | MHRef T.Text
-      -- ^ Hyperlink to be associated with a mark making it a clickable
-      --   hyperlink.
-      --
-      --   @since 0.4.0.0
-    | MInterpolate MarkInterpolation
-      -- ^ Interpolation method used by line and area marks.
-    | MLine LineMarker
-      -- ^ How should the vertices of an area mark be joined?
-      --
-      --   @since 0.4.0.0
-    | MMedian [MarkProperty]
-      -- ^ Median-line properties for the 'Boxplot' mark.
-      --
-      --   @since 0.4.0.0
-    | MOpacity Opacity
-      -- ^ Overall opacity of a mark in the range 0 to 1.
-    | MOrder Bool
-      -- ^ Ordering of vertices in a line or area mark. If @True@ (the default),
-      --   the order is determined by measurement type or order channel. If
-      --   @False@, the original data order is used.
-      --
-      --   @since 0.4.0.0
-    | MOrient Orientation
-      -- ^ Orientation of a non-stacked bar, tick, area or line mark.
-    | MOutliers [MarkProperty]
-      -- ^ Outlier symbol properties for the 'Boxplot' mark.
-      --
-      --   @since 0.4.0.0
-    | MNoOutliers
-      -- ^ Do not draw outliers with the 'Boxplot' mark.
-      --
-      --   @since 0.4.0.0
-    | MPoint PointMarker
-      -- ^ Appearance of a point marker joining the vertices of a line or area mark.
-      --
-      --   @since 0.4.0.0
-    | MRadius Double
-      -- ^ Polar coordinate radial offset of a text mark from its origin.
-    | MRule [MarkProperty]
-      -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
-      --
-      --   @since 0.4.0.0
-    | MShape Symbol
-      -- ^ Shape of a point mark.
-    | MShortTimeLabels Bool
-      -- ^ Aremonth and weekday names are abbreviated in a text mark?
-    | MSize Double
-      -- ^ Size of a mark.
-    | MStroke T.Text
-      -- ^ Default stroke color of a mark.
-    | MStrokeCap StrokeCap
-      -- ^ Cap style of a mark's stroke.
-      --
-      --   @since 0.4.0.0
-    | MStrokeDash [Double]
-      -- ^ The stroke dash style used by a mark, defined by an alternating 'on-off'
-      --   sequence of line lengths, in pixels.
-    | MStrokeDashOffset Double
-      -- ^ The number of pixels before the first line dash is drawn.
-    | MStrokeJoin StrokeJoin
-      -- ^ Line segment join style of a mark's stroke.
-      --
-      --   @since 0.4.0.0
-    | MStrokeMiterLimit Double
-      -- ^ Mitre limit at which to bevel a join between line segments of a
-      --   mark's stroke.
-      --
-      --   @since 0.4.0.0
-    | MStrokeOpacity Opacity
-      -- ^ Stroke opacity of a mark in the range 0 to 1.
-    | MStrokeWidth Double
-      -- ^ Stroke width of a mark in pixels.
-    | MStyle [T.Text]
-      -- ^ Names of custom styles to apply to a mark. Each should refer to a named style
-      --   defined in a separate style configuration.
-    | MTension Double
-      -- ^ Interpolation tension used when interpolating line and area marks.
-    | MText T.Text
-      -- ^ Placeholder text for a text mark for when a text channel is not specified.
-    | MTheta Double
-      -- ^ Polar coordinate angle (clockwise from north in radians)
-      --   of a text mark from the origin (determined by its
-      --   x and y properties).
-    | MThickness Double
-      -- ^ Thickness of a tick mark.
-    | MTicks [MarkProperty]
-      -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
-      --
-      --   @since 0.4.0.0
-    | MTooltip TooltipContent
-      -- ^ The tooltip content for a mark.
-      --
-      --   @since 0.4.0.0
-    | MWidth Double
-      -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
-      --   'MHeight'.
-      --
-      --   @since 0.4.0.0
-    | MX Double
-      -- ^ X position of a mark.
-      --
-      --   @since 0.4.0.0
-    | MX2 Double
-      -- ^ X2 position of a mark. This is the secondary position for
-      --   lines and area marks).
-      --
-      --   @since 0.4.0.0
-    | MXOffset Double
-      -- ^ X position offset of a mark.
-      --
-      --   @since 0.4.0.0
-    | MX2Offset Double
-      -- ^ X2 position offset of a mark.
-      --
-      --   @since 0.4.0.0
-    | MY Double
-      -- ^ Y position of a mark.
-      --
-      --   @since 0.4.0.0
-    | MY2 Double
-      -- ^ Y2 position of a mark. This is the secondary position for
-      --   lines and area marks).
-      --
-      --   @since 0.4.0.0
-    | MYOffset Double
-      -- ^ Y position offset of a mark.
-      --
-      --   @since 0.4.0.0
-    | MY2Offset Double
-      -- ^ Y2 position offset of a mark.
-      --
-      --   @since 0.4.0.0
-
-
-
-markProperty :: MarkProperty -> LabelledSpec
-markProperty (MFilled b) = "filled" .= b
-markProperty (MBorders mps) = mprops_ "borders" mps
-markProperty (MBox mps) = mprops_ "box" mps
-markProperty (MClip b) = "clip" .= b
-markProperty (MColor col) = "color" .= col
-markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MFill col) = "fill" .= col
-markProperty (MHeight x) = "height" .= x
-markProperty (MStroke t) = "stroke" .= t
-markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
-markProperty (MStrokeWidth w) = "strokeWidth" .= w
-markProperty (MStrokeDash xs) = "strokeDash" .= xs
-markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
-markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
-markProperty (MMedian mps) = mprops_ "median" mps
-markProperty (MOpacity x) = "opacity" .= x
-markProperty (MFillOpacity x) = "fillOpacity" .= x
-markProperty (MStyle [style]) = "style" .= style  -- special case singleton
-markProperty (MStyle styles) = "style" .= styles
-markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
-markProperty (MLine lm) = "line" .= lineMarkerSpec lm
-markProperty (MTension x) = "tension" .= x
-markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= orientationSpec orient
-markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
-markProperty (MOutliers mps) = mprops_ "outliers" mps
-markProperty MNoOutliers = "outliers" .= False
-markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
-markProperty (MShape sym) = "shape" .= symbolLabel sym
-markProperty (MSize x) = "size" .= x
-markProperty (MAngle x) = "angle" .= x
-markProperty (MAlign algn) = "align" .= hAlignLabel algn
-markProperty (MBaseline va) = "baseline" .= vAlignLabel va
-markProperty (MdX dx) = "dx" .= dx
-markProperty (MdY dy) = "dy" .= dy
-markProperty (MExtent mee) = markErrorExtentLSpec mee
-markProperty (MFont fnt) = "font" .= fnt
-markProperty (MFontSize x) = "fontSize" .= x
-markProperty (MFontStyle fSty) = "fontStyle" .= fSty
-markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
-markProperty (MHRef s) = "href" .= s
-markProperty (MRadius x) = "radius" .= x
-markProperty (MRule mps) = mprops_ "rule" mps
-markProperty (MText txt) = "text" .= txt
-markProperty (MTheta x) = "theta" .= x
-markProperty (MTicks mps) = mprops_ "ticks" mps
-markProperty (MBinSpacing x) = "binSpacing" .= x
-markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
-markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
-markProperty (MShortTimeLabels b) = "shortTimeLabels" .= b
-markProperty (MBandSize x) = "bandSize" .= x
-markProperty (MThickness x) = "thickness" .= x
-markProperty (MTooltip TTNone) = "tooltip" .= A.Null
-markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
-markProperty (MWidth x) = "width" .= x
-markProperty (MX x) = "x" .= x
-markProperty (MY x) = "y" .= x
-markProperty (MX2 x) = "x2" .= x
-markProperty (MY2 x) = "y2" .= x
-markProperty (MXOffset x) = "xOffset" .= x
-markProperty (MYOffset x) = "yOffset" .= x
-markProperty (MX2Offset x) = "x2Offset" .= x
-markProperty (MY2Offset x) = "y2Offset" .= x
 
 
 {-|
@@ -1374,7 +940,7 @@ data PositionChannel
       --      . 'position' 'Graphics.Vega.VegaLite.X' [ PRepeat 'Graphics.Vega.VegaLite.Flow', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
       --
       -- spec =
-      --    'Graphics.Vega.VegaLite.asSpec' [ dataVals [], 'mark' 'Tick' [], enc [] ]
+      --    'Graphics.Vega.VegaLite.asSpec' [ dataVals [], 'mark' 'Graphics.Vega.VegaLite.Tick' [], enc [] ]
       --
       -- 'Graphics.Vega.VegaLite.toVegaLite'
       --    [ 'repeatFlow' [ \"Horsepower\", \"Miles_per_Gallon\", \"Acceleration\"]
@@ -1506,7 +1072,7 @@ be transparent.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'background' "rgb(251,247,238)"
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -1523,7 +1089,7 @@ Provides an optional description to be associated with the visualization.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'description' "Population change of key regions since 1900"
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -1551,7 +1117,7 @@ Provide an optional title to be displayed in the visualization.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'title' "Population Growth" ['TColor' \"orange\"]
     , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , 'encoding' ...
     ]
 @
@@ -1971,95 +1537,6 @@ axisProperty (AxZIndex z) = "zindex" .= z
 
 {-|
 
-Indicates mark interpolation style. See the
-<https://vega.github.io/vega-lite/docs/mark.html#mark-def Vega-Lite documentation>
-for details.
--}
-data MarkInterpolation
-    = Basis
-    | BasisClosed
-    | BasisOpen
-    | Bundle
-    | Cardinal
-    | CardinalClosed
-    | CardinalOpen
-    | Linear
-    | LinearClosed
-    | Monotone
-    | StepAfter
-    | StepBefore
-    | Stepwise
-
-
-markInterpolationLabel :: MarkInterpolation -> T.Text
-markInterpolationLabel Linear = "linear"
-markInterpolationLabel LinearClosed = "linear-closed"
-markInterpolationLabel Stepwise = "step"
-markInterpolationLabel StepBefore = "step-before"
-markInterpolationLabel StepAfter = "step-after"
-markInterpolationLabel Basis = "basis"
-markInterpolationLabel BasisOpen = "basis-open"
-markInterpolationLabel BasisClosed = "basis-closed"
-markInterpolationLabel Cardinal = "cardinal"
-markInterpolationLabel CardinalOpen = "cardinal-open"
-markInterpolationLabel CardinalClosed = "cardinal-closed"
-markInterpolationLabel Bundle = "bundle"
-markInterpolationLabel Monotone = "monotone"
-
-
-{-|
-
-Indicates the extent of the rule used for the error bar.  See
-<https://vega.github.io/vega-lite/docs/errorbar.html#properties Vega-Lite documentation>
-for details.
-
-Note that not all options are valid for all mark types.
-
-This is called @SummaryExtent@ in Elm and the constructors also have
-different names.
-
-@since 0.4.0.0
--}
-
--- based on schema 3.3.0 #/definitions/ErrorBarExtent
---          (ConfidenceInterval to Iqr)
--- and combined with the box/band "min-max" and IQR scaling values
---
-
-data MarkErrorExtent
-  = ConfidenceInterval
-    -- ^ Band extent between the 95% confidence intervals of a distribution.
-  | StdErr
-    -- ^ Band extent as the standard error about the mean of a distribution.
-  | StdDev
-    -- ^ Band extent as the standard deviation of a distribution.
-  | Iqr
-    -- ^ Band extent between the lower and upper quartiles of a distribution
-    --   (the inter-quartile range, q1 to q3).
-  | ExRange
-    -- ^ Band extent between the minimum and maximum values in a distribution.
-  | IqrScale Double
-    -- ^ A scaling of the interquartile range to be used as whiskers in a
-    --   'Boxplot'. For example @IqrScale 1.5@  would extend whiskers to
-    --   ±1.5x the IQR from the mean.
-
--- This is a little different from the other calls since I wanted to
--- make sure the scale factor was encoded as a number not a string.
---
-extent_ :: T.Text -> LabelledSpec
-extent_ v = "extent" .= v
-
-markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
-markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
-markErrorExtentLSpec StdErr             = extent_ "stderr"
-markErrorExtentLSpec StdDev             = extent_ "stdev"
-markErrorExtentLSpec Iqr                = extent_ "iqr"
-markErrorExtentLSpec ExRange            = extent_ "min-max"
-markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
-
-
-{-|
-
 Declare the way the view is sized. See the
 <https://vega.github.io/vega-lite/docs/size.html#autosize Vega-Lite documentation>
 for details.
@@ -2070,7 +1547,7 @@ for details.
     , 'height' 300
     , 'autosize' [ 'Graphics.Vega.VegaLite.AFit', 'Graphics.Vega.VegaLite.APadding', 'Graphics.Vega.VegaLite.AResize' ]
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -2728,33 +2205,6 @@ data LegendValues
     = LDateTimes [[DateTime]]
     | LNumbers [Double]
     | LStrings [T.Text]
-
-
--- | The properties of a point marker on a line or area mark.
---   For use with 'MPoint'.
---
---   @since 0.4.0.0
-
-data PointMarker
-    = PMTransparent
-    -- ^ A transparent marker is used, which can be useful for
-    --   interactive selections.
-    | PMNone
-    -- ^ No marker to be shown.
-    | PMMarker [MarkProperty]
-    -- ^ The properties of the marks to be shown at the points.
-    --
-    --   Use an empty list to use a filled point with default properties.
-
--- An empty object has the same meaning as true, so there is no real need to
--- treat 'PMMarker []' specially, but I don't think it complicates things
--- here.
---
-pointMarkerSpec :: PointMarker -> VLSpec
-pointMarkerSpec PMTransparent = "transparent"
-pointMarkerSpec PMNone = toJSON False
-pointMarkerSpec (PMMarker []) = toJSON True
-pointMarkerSpec (PMMarker mps) = object (map markProperty mps)
 
 
 {-|
@@ -3663,8 +3113,8 @@ let dvals = 'Graphics.Vega.VegaLite.dataSequenceAs' 0 6.28 0.1 \"x\"
 
 in toVegaLite [ dvals
               , trans []
-              , 'vlConcat' [ 'Graphics.Vega.VegaLite.asSpec' [encCos [], 'mark' 'Line' []]
-                         , 'Graphics.Vega.VegaLite.asSpec' [encSin [], 'mark' 'Line' []]
+              , 'vlConcat' [ 'Graphics.Vega.VegaLite.asSpec' [encCos [], 'mark' 'Graphics.Vega.VegaLite.Line' []]
+                         , 'Graphics.Vega.VegaLite.asSpec' [encSin [], 'mark' 'Graphics.Vega.VegaLite.Line' []]
                          ]
               ]
 @
@@ -3744,7 +3194,7 @@ setting.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'height' 300
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -3789,8 +3239,8 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
 
     in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals []
                   , enc []
-                  , 'layer' [ 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Bar' []]
-                          , 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Text' ['MdY' (-8)]]
+                  , 'layer' [ 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Graphics.Vega.VegaLite.Bar' []]
+                          , 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Graphics.Vega.VegaLite.Text' ['Graphics.Vega.VegaLite.MdY' (-8)]]
                           ]
                   ]
 @
@@ -3808,7 +3258,7 @@ Provides an optional name to be associated with the visualization.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'name' \"PopGrowth\"
     , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -3829,7 +3279,7 @@ for details.
     [ 'width' 500
     , 'padding' ('Graphics.Vega.VegaLite.PEdges' 20 10 5 15)
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -3926,11 +3376,11 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
     encBar = 'encoding'
                . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
                . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
-    specBar = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Bar' [], encBar []]
+    specBar = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Graphics.Vega.VegaLite.Bar' [], encBar []]
     encLine = 'encoding'
                 . 'position' 'Graphics.Vega.VegaLite.X' ['PName' \"x\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
                 . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
-    specLine = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Line' ['MColor' \"firebrick\"], encLine []]
+    specLine = 'Graphics.Vega.VegaLite.asSpec' ['mark' 'Graphics.Vega.VegaLite.Line' ['Graphics.Vega.VegaLite.MColor' \"firebrick\"], encLine []]
     res = 'resolve'
             . 'resolution' ('Graphics.Vega.VegaLite.RScale' [('Graphics.Vega.VegaLite.ChY', 'Graphics.Vega.VegaLite.Independent')])
 
@@ -4136,7 +3586,7 @@ setting.
 'Graphics.Vega.VegaLite.toVegaLite'
     [ 'width' 500
     , 'Graphics.Vega.VegaLite.dataFromUrl' "data/population.json" []
-    , 'mark' 'Bar' []
+    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
     , enc []
     ]
 @
@@ -4348,7 +3798,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
                          , 'PAggregate' 'Graphics.Vega.VegaLite.Sum']
             . 'column' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
 
-    in 'Graphics.Vega.VegaLite.toVegaLite' ['width' 100, dvals [], 'mark' 'Bar' [], enc [] ]
+    in 'Graphics.Vega.VegaLite.toVegaLite' ['width' 100, dvals [], 'mark' 'Graphics.Vega.VegaLite.Bar' [], enc [] ]
 @
 -}
 column ::
@@ -4688,7 +4138,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
             . 'position' 'Graphics.Vega.VegaLite.Y' ['PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative']
             . 'color' ['MName' \"c\", 'MmType' 'Graphics.Vega.VegaLite.Nominal']
 
-    in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], trans [], enc [], 'mark' 'Line' []]
+    in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], trans [], enc [], 'mark' 'Graphics.Vega.VegaLite.Line' []]
 @
 
 @since 0.4.0.0
@@ -4815,7 +4265,7 @@ let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"crimeData.csv\"
                          ]
             . 'row' ['FName' \"crimeType\", 'FmType' 'Graphics.Vega.VegaLite.Nominal']
 
-in 'Graphics.Vega.VegaLite.toVegaLite' ['height' 80, dvals [], 'mark' 'Bar' [], enc []]
+in 'Graphics.Vega.VegaLite.toVegaLite' ['height' 80, dvals [], 'mark' 'Graphics.Vega.VegaLite.Bar' [], enc []]
 @
 
 -}

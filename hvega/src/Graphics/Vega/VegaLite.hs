@@ -609,6 +609,7 @@ import qualified Graphics.Vega.VegaLite.Data as VL
 import qualified Graphics.Vega.VegaLite.Foundation as VL
 import qualified Graphics.Vega.VegaLite.Geometry as VL
 import qualified Graphics.Vega.VegaLite.Input as VL
+import qualified Graphics.Vega.VegaLite.Mark as VL
 import qualified Graphics.Vega.VegaLite.Output as VL
 import qualified Graphics.Vega.VegaLite.Selection as VL
 import qualified Graphics.Vega.VegaLite.Specification as VL
