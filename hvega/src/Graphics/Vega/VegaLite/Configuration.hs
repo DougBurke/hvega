@@ -40,10 +40,7 @@ import Graphics.Vega.VegaLite.Core
   ( HeaderProperty
   , LegendConfig(..)
   , TitleConfig
-  , LegendLayout(..)
-  , BaseLegendLayout(..)
   , schemeProperty
-  , legendOrientLabel
   , titleConfigSpec
   , header_
   )
@@ -73,7 +70,6 @@ import Graphics.Vega.VegaLite.Foundation
   , overlapStrategyLabel
   , symbolLabel
   , stackOffset
-  , boundsSpec
   , compositionAlignmentSpec
   , paddingSpec
   , autosizeProperty
@@ -81,6 +77,10 @@ import Graphics.Vega.VegaLite.Foundation
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
   , projectionProperty
+  )
+import Graphics.Vega.VegaLite.Legend
+  ( legendOrientLabel
+  , legendLayoutSpec
   )
 import Graphics.Vega.VegaLite.Mark
   ( MarkProperty
@@ -94,8 +94,7 @@ import Graphics.Vega.VegaLite.Selection
   , selectionLabel
   )
 import Graphics.Vega.VegaLite.Specification
-  ( VLSpec
-  , LabelledSpec
+  ( LabelledSpec
   , BuildLabelledSpecs
   )
   
@@ -437,36 +436,6 @@ legendConfigProperty (LeTitleLimit x) = "titleLimit" .= x
 legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
 legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
-
-
-legendLayoutSpec :: LegendLayout -> LabelledSpec
-legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
-legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
-legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
-legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
-legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
-legendLayoutSpec (LeLCenter b) = "center" .= b
-legendLayoutSpec (LeLDirection o) = "direction" .= orientationSpec o
-legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
-legendLayoutSpec (LeLMargin x) = "margin" .= x
-legendLayoutSpec (LeLOffset x) = "offset" .= x
-legendLayoutSpec (LeLRight bl) = "right" .= toBLSpec bl
-legendLayoutSpec (LeLTop bl) = "top" .= toBLSpec bl
-legendLayoutSpec (LeLTopLeft bl) = "top-left" .= toBLSpec bl
-legendLayoutSpec (LeLTopRight bl) = "top-right" .= toBLSpec bl
-
-
-toBLSpec :: [BaseLegendLayout] -> VLSpec
-toBLSpec = object . map baseLegendLayoutSpec
-
-
-baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
-baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
-baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
-baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
-baseLegendLayoutSpec (BLeLDirection o) = "direction" .= orientationSpec o
-baseLegendLayoutSpec (BLeLMargin x) = "margin" .= x
-baseLegendLayoutSpec (BLeLOffset x) = "offset" .= x
 
 
 {-|
