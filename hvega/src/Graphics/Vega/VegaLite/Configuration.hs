@@ -26,8 +26,13 @@ module Graphics.Vega.VegaLite.Configuration
        , RangeConfig(..)
        , AxisConfig(..)
        , LegendConfig(..)
+       , TitleConfig(..)
+
+       , TitleFrame(..)
 
        , configuration
+       , title
+
        ) where
 
 
@@ -39,9 +44,7 @@ import Data.Aeson ((.=), object, toJSON)
 
 import Graphics.Vega.VegaLite.Core
   ( HeaderProperty
-  , TitleConfig
   , schemeProperty
-  , titleConfigSpec
   , header_
   )
 import Graphics.Vega.VegaLite.Foundation
@@ -62,6 +65,7 @@ import Graphics.Vega.VegaLite.Foundation
   , VAlign
   , Padding
   , Autosize
+  , ZIndex
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
@@ -99,8 +103,11 @@ import Graphics.Vega.VegaLite.Selection
   , selectionLabel
   )
 import Graphics.Vega.VegaLite.Specification
-  ( LabelledSpec
+  ( VLSpec
+  , VLProperty(VLTitle)
+  , LabelledSpec
   , BuildLabelledSpecs
+  , PropertySpec
   )
   
 
@@ -1135,6 +1142,86 @@ facetConfigProperty (FColumns n) = "columns" .= n
 facetConfigProperty (FSpacing x) = "spacing" .= x
 
 
+-- | Specifies how the title anchor is positioned relative to the frame.
+--
+--   @since 0.4.0.0
+data TitleFrame
+    = FrBounds
+      -- ^ The position is relative to the full bounding box.
+    | FrGroup
+      -- ^ The pistion is relative to the group width / height.
+
+titleFrameSpec :: TitleFrame -> VLSpec
+titleFrameSpec FrBounds = "bounds"
+titleFrameSpec FrGroup = "group"
+
+
+{-|
+
+Title configuration properties. These are used to configure the default style
+of all titles within a visualization.
+For further details see the
+<https://vega.github.io/vega-lite/docs/title.html#config Vega-Lite documentation>.
+-}
+data TitleConfig
+    = TAnchor APosition
+      -- ^ Default anchor position when placing titles.
+    | TAngle Angle
+      -- ^ Default angle when orientating titles.
+    | TBaseline VAlign
+      -- ^ Default vertical alignment when placing titles.
+    | TColor Color
+      -- ^ Default color when showing titles.
+    | TFont T.Text
+      -- ^ Default font when showing titles.
+    | TFontSize Double
+      -- ^ Default font size when showing titles.
+    | TFontStyle T.Text
+      -- ^ Defaylt font style when showing titles.
+      --
+      --   @since 0.4.0.0
+    | TFontWeight FontWeight
+      -- ^ Default font weight when showing titles.
+    | TFrame TitleFrame
+      -- ^ Default title position anchor.
+      --
+      --   @since 0.4.0.0
+    | TLimit Double
+      -- ^ Default maximum length, in pixels, of titles.
+    | TOffset Double
+      -- ^ Default offset, in pixels, of titles relative to the chart body.
+    | TOrient Side
+      -- ^ Default placement of titles relative to the chart body.
+    | TStyle [T.Text]
+      -- ^ A list of named styles to apply. A named style can be specified
+      --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
+      --   override earlier ones if there is a conflict in any of the
+      --   properties.
+      --
+      --   @since 0.4.0.0
+    | TZIndex ZIndex
+      -- ^ Drawing order of a title relative to the other chart elements.
+      --
+      --   @since 0.4.0.0
+
+titleConfigSpec :: TitleConfig -> LabelledSpec
+titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
+titleConfigSpec (TAngle x) = "angle" .= x
+titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
+titleConfigSpec (TColor clr) = "color" .= clr
+titleConfigSpec (TFont fnt) = "font" .= fnt
+titleConfigSpec (TFontSize x) = "fontSize" .= x
+titleConfigSpec (TFontStyle s) = "fontStyle" .= s
+titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
+titleConfigSpec (TFrame tf) = "frame" .= titleFrameSpec tf
+titleConfigSpec (TLimit x) = "limit" .= x
+titleConfigSpec (TOffset x) = "offset" .= x
+titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
+titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
+titleConfigSpec (TStyle styles) = "style" .= styles
+titleConfigSpec (TZIndex z) = "zindex" .= z
+
+
 {-|
 
 Configuration options for concatenated views, used with 'Graphics.Vega.VegaLite.ConcatStyle'.
@@ -1166,3 +1253,32 @@ configurations to which this one may be added.
 -}
 configuration :: ConfigurationProperty -> BuildLabelledSpecs
 configuration cfg ols = configProperty cfg : ols
+
+
+{-|
+
+Provide an optional title to be displayed in the visualization.
+
+@
+'Graphics.Vega.VegaLite.toVegaLite'
+    [ 'title' "Population Growth" ['TColor' \"orange\"]
+    , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
+    , 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.Bar' []
+    , 'Graphics.Vega.VegaLite.encoding' ...
+    ]
+@
+
+Prior to @0.4.0.0@ there was no way to set the title options
+(other than using 'configuration' with 'TitleStyle').
+
+-}
+title ::
+  T.Text
+  -> [TitleConfig]
+  -- ^ Configure the appearance of the title.
+  --
+  --   @since 0.4.0.0
+  -> PropertySpec
+title s [] = (VLTitle, toJSON s)
+title s topts = (VLTitle,
+                 object ("text" .= s : map titleConfigSpec topts))

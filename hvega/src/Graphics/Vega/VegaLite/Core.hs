@@ -132,18 +132,12 @@ module Graphics.Vega.VegaLite.Core
        , background
        , usermetadata
 
-       , title
-
        , viewBackground
 
        , configure
 
-       , TitleConfig(..)
-       , TitleFrame(..)
-
        -- not for external export
        , schemeProperty
-       , titleConfigSpec
        , autosizeProperty
        , paddingSpec
        , header_
@@ -1101,35 +1095,6 @@ usermetadata o = (VLUserMetadata, A.Object o)
 
 {-|
 
-Provide an optional title to be displayed in the visualization.
-
-@
-'Graphics.Vega.VegaLite.toVegaLite'
-    [ 'title' "Population Growth" ['TColor' \"orange\"]
-    , 'Graphics.Vega.VegaLite.dataFromUrl' \"data/population.json\" []
-    , 'mark' 'Graphics.Vega.VegaLite.Bar' []
-    , 'encoding' ...
-    ]
-@
-
-Prior to @0.4.0.0@ there was no way to set the title options
-(other than using 'Graphics.Vega.VegaLite.configuration' with 'Graphics.Vega.VegaLite.TitleStyle').
-
--}
-title ::
-  T.Text
-  -> [TitleConfig]
-  -- ^ Configure the appearance of the title.
-  --
-  --   @since 0.4.0.0
-  -> PropertySpec
-title s [] = (VLTitle, toJSON s)
-title s topts = (VLTitle,
-                 object ("text" .= s : map titleConfigSpec topts))
-
-
-{-|
-
 Axis customisation properties. These are used for customising individual axes.
 To configure all axes, use 'Graphics.Vega.VegaLite.AxisConfig' with a 'Graphics.Vega.VegaLite.configuration' instead. See the
 <https://vega.github.io/vega-lite/docs/axis.html#axis-properties Vega-Lite documentation>
@@ -1544,85 +1509,6 @@ for details.
 -}
 autosize :: [Autosize] -> PropertySpec
 autosize aus = (VLAutosize, object (map autosizeProperty aus))
-
-
-{-|
-
-Title configuration properties. These are used to configure the default style
-of all titles within a visualization.
-For further details see the
-<https://vega.github.io/vega-lite/docs/title.html#config Vega-Lite documentation>.
--}
-data TitleConfig
-    = TAnchor APosition
-      -- ^ Default anchor position when placing titles.
-    | TAngle Angle
-      -- ^ Default angle when orientating titles.
-    | TBaseline VAlign
-      -- ^ Default vertical alignment when placing titles.
-    | TColor Color
-      -- ^ Default color when showing titles.
-    | TFont T.Text
-      -- ^ Default font when showing titles.
-    | TFontSize Double
-      -- ^ Default font size when showing titles.
-    | TFontStyle T.Text
-      -- ^ Defaylt font style when showing titles.
-      --
-      --   @since 0.4.0.0
-    | TFontWeight FontWeight
-      -- ^ Default font weight when showing titles.
-    | TFrame TitleFrame
-      -- ^ Default title position anchor.
-      --
-      --   @since 0.4.0.0
-    | TLimit Double
-      -- ^ Default maximum length, in pixels, of titles.
-    | TOffset Double
-      -- ^ Default offset, in pixels, of titles relative to the chart body.
-    | TOrient Side
-      -- ^ Default placement of titles relative to the chart body.
-    | TStyle [T.Text]
-      -- ^ A list of named styles to apply. A named style can be specified
-      --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
-      --   override earlier ones if there is a conflict in any of the
-      --   properties.
-      --
-      --   @since 0.4.0.0
-    | TZIndex ZIndex
-      -- ^ Drawing order of a title relative to the other chart elements.
-      --
-      --   @since 0.4.0.0
-
-titleConfigSpec :: TitleConfig -> LabelledSpec
-titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
-titleConfigSpec (TAngle x) = "angle" .= x
-titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
-titleConfigSpec (TColor clr) = "color" .= clr
-titleConfigSpec (TFont fnt) = "font" .= fnt
-titleConfigSpec (TFontSize x) = "fontSize" .= x
-titleConfigSpec (TFontStyle s) = "fontStyle" .= s
-titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
-titleConfigSpec (TFrame tf) = "frame" .= titleFrameSpec tf
-titleConfigSpec (TLimit x) = "limit" .= x
-titleConfigSpec (TOffset x) = "offset" .= x
-titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
-titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
-titleConfigSpec (TStyle styles) = "style" .= styles
-titleConfigSpec (TZIndex z) = "zindex" .= z
-
--- | Specifies how the title anchor is positioned relative to the frame.
---
---   @since 0.4.0.0
-data TitleFrame
-    = FrBounds
-      -- ^ The position is relative to the full bounding box.
-    | FrGroup
-      -- ^ The pistion is relative to the group width / height.
-
-titleFrameSpec :: TitleFrame -> VLSpec
-titleFrameSpec FrBounds = "bounds"
-titleFrameSpec FrGroup = "group"
 
 
 -- | The background style of a single view or layer in a view composition.
