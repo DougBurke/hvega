@@ -22,7 +22,7 @@ module Graphics.Vega.VegaLite.Legend
        , LegendValues(..)
 
          -- not for external export
-       , legendProperty
+       , legendProp_
        , legendOrientLabel
        , legendLayoutSpec
 
@@ -491,6 +491,11 @@ legendProperty (LValues vals) =
 legendProperty (LeX x) = "legendX" .= x
 legendProperty (LeY x) = "legendY" .= x
 legendProperty (LZIndex z) = "zindex" .= z
+
+
+legendProp_ :: [LegendProperty] -> LabelledSpec
+legendProp_ [] = "legend" .= A.Null
+legendProp_ lps = "legend" .= object (map legendProperty lps)
 
 
 -- | A list of data values suitable for setting legend values, used with

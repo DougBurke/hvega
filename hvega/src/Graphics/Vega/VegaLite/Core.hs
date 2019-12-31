@@ -225,7 +225,7 @@ import Graphics.Vega.VegaLite.Input
   )
 import Graphics.Vega.VegaLite.Legend
   ( LegendProperty
-  , legendProperty
+  , legendProp_
   )
 import Graphics.Vega.VegaLite.Mark
   ( Mark
@@ -299,10 +299,6 @@ mtype_ m = "type" .= measurementLabel m
 scaleProp_ :: [ScaleProperty] -> LabelledSpec
 scaleProp_ [] = "scale" .= A.Null
 scaleProp_ sps = "scale" .= object (map scaleProperty sps)
-
-legendProp_ :: [LegendProperty] -> LabelledSpec
-legendProp_ [] = "legend" .= A.Null
-legendProp_ lps = "legend" .= object (map legendProperty lps)
 
 
 value_ :: T.Text -> LabelledSpec
