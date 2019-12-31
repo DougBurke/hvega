@@ -131,6 +131,7 @@ library
                        Graphics.Vega.VegaLite.Legend
                        Graphics.Vega.VegaLite.Mark
                        Graphics.Vega.VegaLite.Output
+                       Graphics.Vega.VegaLite.Scale
                        Graphics.Vega.VegaLite.Selection
                        Graphics.Vega.VegaLite.Specification
                        Graphics.Vega.VegaLite.Time
