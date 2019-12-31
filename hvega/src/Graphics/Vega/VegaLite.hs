@@ -12,8 +12,8 @@ This is a port of the
 written by Jo Wood of the giCentre at the City
 University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
-to create a Vega-Lite specification, targeting __version 3__ of the
-<https://vega.github.io/schema/vega-lite/v3.json JSON schema>.  The
+to create a Vega-Lite specification, targeting __version 4__ of the
+<https://vega.github.io/schema/vega-lite/v4.json JSON schema>.  The
 ihaskell-hvega module provides an easy way to embed Vega-Lite
 visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
@@ -74,7 +74,7 @@ We can inspect how the encoded JSON looks like in an GHCi session:
 
 @
 > 'A.encode' $ 'VL.fromVL' vl1
-> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https:\/\/vega.github.io\/schema\/vega-lite\/v3.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
+> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https:\/\/vega.github.io\/schema\/vega-lite\/v4.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
 @
 
 The produced JSON can then be processed with vega-lite, which renders the following image:
@@ -591,6 +591,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.5
+         --
+         -- $update0500
+
          -- ** Version 0.4
          --
          -- $update0400
@@ -924,6 +928,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0500
+-- The @0.5.0.0@ release now creates specifications using version 4
+-- of the Vega-Lite schema (version 0.4 of @hvega@ used version 3).
+-- The 'VL.toVegaLiteSchema' function can be used along with the
+-- 'VL.vlSchema3' to use version 3 for the output.
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and

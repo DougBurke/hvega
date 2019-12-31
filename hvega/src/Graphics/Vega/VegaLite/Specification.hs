@@ -94,9 +94,9 @@ vlSchema4 = vlSchema 4 Nothing Nothing Nothing
 --
 --   There is no validation of the input values.
 --
---   At the time of writing the latest version 4 schema - which
---   is @https://vega.github.io/schema/vega-lite/v4.0.0-beta.0.json@ -
---   can be specified as
+--   Alpha and Beta releases can be specified by setting
+--   the last argument; for instance to get the \"beta.0\"
+--   version of version 4 you would use
 --
 --   @vlSchema 4 (Just 0) (Just 0) (Just "-beta.0")@
 --
@@ -104,7 +104,7 @@ vlSchema4 = vlSchema 4 Nothing Nothing Nothing
 --
 --   @vlSchema 4 Nothing Nothing Nothing@
 --
---   refers to the latest version.
+--   refers to the latest release of version 4.
 --
 vlSchema ::
   Natural
@@ -158,14 +158,11 @@ let dat = 'Graphics.Vega.VegaLite.dataFromColumns' []
 in 'toVegaLite' [ dat [], 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.Bar' [], enc [] ]
 @
 
-The schema used is <https://github.com/vega/schema version 3 of Vega-Lite>,
-although there are some differences, in part because of bugs in @hvega@ -
-in which case please [report an issue](https://github.com/DougBurke/hvega/issues) - but also because of issues with the Vega-Lite spec (for instance there
-are several minor issues I have reported against version 3.3.0 of the
-Vega-Lite schema).
-
-Use 'toVegaLiteSchema' if you need to create a Vega-Lite specification
-which uses a different version of the schema.
+The schema used is <https://github.com/vega/schema version 4 of Vega-Lite>,
+and please [report an issue](https://github.com/DougBurke/hvega/issues) if
+you find a problem with the output of @hvega@. Use 'toVegaLiteSchema' if you
+need to create a Vega-Lite specification which uses a different version of
+the schema.
 
 -}
 
@@ -179,7 +176,7 @@ which uses a different version of the schema.
 --    if so what direction, anything else?)
 
 toVegaLite :: [PropertySpec] -> VegaLite
-toVegaLite = toVegaLiteSchema vlSchema3
+toVegaLite = toVegaLiteSchema vlSchema4
 
 
 {-|
@@ -187,7 +184,7 @@ A version of 'toVegaLite' that allows you to change the Vega-Lite
 schema version of the visualization.
 
 @
-'toVegaLiteSchema' 'vlSchema4' props
+'toVegaLiteSchema' 'vlSchema3' props
 @
 -}
 

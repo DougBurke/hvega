@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.5.0.0
+
+Update to version 4.0 of the Vega-Lite specification (tested against
+version 4.0.2).
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich

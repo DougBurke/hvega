@@ -4,7 +4,7 @@
         "url": "https://gicentre.github.io/data/westMidlands/westMidsCrimesAggregated.tsv"
     },
     "width": 540,
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "selection": {
         "mySelection": {
             "nearest": true,
