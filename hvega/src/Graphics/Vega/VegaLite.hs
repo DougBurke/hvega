@@ -603,6 +603,11 @@ module Graphics.Vega.VegaLite
 --
 import Prelude ()
 
+-- There has been some attempt to separate out the types based
+-- on functionality, but it is somewhat hap-hazard. Most of
+-- the fuctionality is in the Core and Foundation modules
+-- (ie they are the ones that could perhaps be further split up).
+--
 import qualified Graphics.Vega.VegaLite.Configuration as VL
 import qualified Graphics.Vega.VegaLite.Core as VL
 import qualified Graphics.Vega.VegaLite.Data as VL

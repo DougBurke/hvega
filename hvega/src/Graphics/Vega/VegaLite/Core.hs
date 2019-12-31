@@ -11,8 +11,10 @@ Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
 Portability : CPP, OverloadedStrings
 
-This provides the functionality of the VegaLite module but is
-not directly exported to the user.
+The main fuctionality of VegaLite is provided by
+the Foundation and Core modules, but there are types
+(and functions) scattered around the place. There is
+some logic into what goes where, but it's not perfect.
 
 -}
 

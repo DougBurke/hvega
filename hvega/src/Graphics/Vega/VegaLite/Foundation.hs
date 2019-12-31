@@ -10,6 +10,8 @@ Stability   : unstable
 Portability : OverloadedStrings
 
 Basic types that are used throughout VegaLite.
+Would it make sense to break this up into
+smaller modules?
 
 -}
 
