@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.4.1.2
+version:             0.4.1.3
 synopsis:            Create Vega-Lite visualizations (version 3) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
@@ -122,6 +122,20 @@ library
   hs-source-dirs:      src
   exposed-modules:     Graphics.Vega.VegaLite
                        Graphics.Vega.Tutorials.VegaLite
+  other-modules:       Graphics.Vega.VegaLite.Configuration
+                       Graphics.Vega.VegaLite.Core
+                       Graphics.Vega.VegaLite.Data
+                       Graphics.Vega.VegaLite.Foundation
+                       Graphics.Vega.VegaLite.Geometry
+                       Graphics.Vega.VegaLite.Input
+                       Graphics.Vega.VegaLite.Legend
+                       Graphics.Vega.VegaLite.Mark
+                       Graphics.Vega.VegaLite.Output
+                       Graphics.Vega.VegaLite.Scale
+                       Graphics.Vega.VegaLite.Selection
+                       Graphics.Vega.VegaLite.Specification
+                       Graphics.Vega.VegaLite.Time
+                       Graphics.Vega.VegaLite.Transform
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 1.5
                      , text == 1.2.*
