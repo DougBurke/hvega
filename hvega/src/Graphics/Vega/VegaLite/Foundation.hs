@@ -59,6 +59,8 @@ module Graphics.Vega.VegaLite.Foundation
        , RepeatFields(..)
        , CInterpolate(..)
 
+       , ViewBackground(..)
+
        -- not for external export
        , fontWeightSpec
        , measurementLabel
@@ -88,6 +90,7 @@ module Graphics.Vega.VegaLite.Foundation
        , autosizeProperty
        , repeatFieldsProperty
        , cInterpolateSpec
+       , viewBackgroundSpec
 
        , fromT
        , field_
@@ -1133,3 +1136,59 @@ cInterpolateSpec Hcl = object [pairT "type" "hcl"]
 cInterpolateSpec HclLong = object [pairT "type" "hcl-long"]
 cInterpolateSpec (CubeHelix gamma) = object [pairT "type" "cubehelix", "gamma" .= gamma]
 cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", "gamma" .= gamma]
+
+
+-- | The properties for a single view or layer background.
+--
+--   @since 0.4.0.0
+
+data ViewBackground
+    = VBStyle [T.Text]
+    -- ^ A list of named styles to apply. A named style can be specified
+    --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
+    --   override earlier ones if there is a conflict in any of the mark
+    --   properties.
+    | VBCornerRadius Double
+    -- ^ The radius in pixels of rounded corners.
+    | VBFill (Maybe T.Text)
+    -- ^ Fill color.
+    | VBFillOpacity Opacity
+    -- ^ Fill opacity.
+    | VBOpacity Opacity
+    -- ^ Overall opacity.
+    | VBStroke (Maybe T.Text)
+    -- ^ The stroke color for a line around the background. If @Nothing@ then
+    --   no line is drawn.
+    | VBStrokeOpacity Opacity
+    -- ^ The opacity of the line around the background, if drawn.
+    | VBStrokeWidth Double
+    -- ^ The width of the line around the background, if drawn.
+    | VBStrokeCap StrokeCap
+    -- ^ The cap line-ending for the line around the background, if drawn.
+    | VBStrokeDash [Double]
+    -- ^ The dash style of the line around the background, if drawn.
+    | VBStrokeDashOffset Double
+    -- ^ The dash offset of the line around the background, if drawn.
+    | VBStrokeJoin StrokeJoin
+    -- ^ The line-joining style of the line around the background, if drawn.
+    | VBStrokeMiterLimit Double
+    -- ^ The mitre limit at which to bevel the line around the background, if drawn.
+
+
+viewBackgroundSpec :: ViewBackground -> LabelledSpec
+viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
+viewBackgroundSpec (VBStyle styles) = "style" .= styles
+viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
+viewBackgroundSpec (VBFill (Just s)) = "fill" .= s
+viewBackgroundSpec (VBFill Nothing) = "fill" .= A.Null
+viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
+viewBackgroundSpec (VBOpacity x) = "opacity" .= x
+viewBackgroundSpec (VBStroke (Just s)) = "stroke" .= s
+viewBackgroundSpec (VBStroke Nothing) = "stroke" .= A.Null
+viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
+viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
+viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
+viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .= x
+viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= xs
+viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .= x
+viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
