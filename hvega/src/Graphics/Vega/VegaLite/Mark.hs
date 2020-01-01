@@ -189,6 +189,10 @@ The Vega-Lite specification supports setting those properties that take
 @['MarkProperty']@ also to a boolean value. This is currently not
 supported in @hvega@.
 
+In @version 0.5.0.0@ the 'MRemoveInvalid' constructor was added, which
+replaces the @RemoveInvalid@ constructor of
+'Graphics.Vega.VegaLite.ConfigurationProperty'.
+
 -}
 
 -- based on schema 3.3.0 #/definitions/MarkConfig
@@ -296,6 +300,16 @@ data MarkProperty
       --   @since 0.4.0.0
     | MRadius Double
       -- ^ Polar coordinate radial offset of a text mark from its origin.
+    | MRemoveInvalid Bool
+      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
+      --   invalid values are skipped or filtered out when represented as marks,
+      --   otherwise they are taken to be @0@.
+      --
+      --   This replaces @RemoveInvalid@ from
+      --   'Graphics.Vega.VegaLite.ConfigurationProperty'
+      --   in version 0.4 of @hvega@.
+      --
+      --   @since 0.5.0.0
     | MRule [MarkProperty]
       -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
       --
@@ -437,6 +451,7 @@ markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
 markProperty (MHRef s) = "href" .= s
 markProperty (MRadius x) = "radius" .= x
+markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
 markProperty (MRule mps) = mprops_ "rule" mps
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x

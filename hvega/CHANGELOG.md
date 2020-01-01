@@ -6,6 +6,10 @@ For the latest version of this document, please see
 Update to version 4.0 of the Vega-Lite specification (tested against
 version 4.0.2).
 
+The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
+and has been replaced by the `MRemoveInvalid` constructor of
+`MarkProperty`.
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich

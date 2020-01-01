@@ -29,7 +29,7 @@ markCondition1 =
 
         config =
             configure
-                . configuration (RemoveInvalid False)
+                . configuration (MarkStyle [ MRemoveInvalid False ])
 
         enc =
             encoding

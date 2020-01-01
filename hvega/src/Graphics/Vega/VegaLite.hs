@@ -934,6 +934,15 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- of the Vega-Lite schema (version 0.4 of @hvega@ used version 3).
 -- The 'VL.toVegaLiteSchema' function can be used along with the
 -- 'VL.vlSchema3' to use version 3 for the output.
+--
+-- __Breaking changes__ in this release:
+--
+-- * The @RemoveInvalid@ constructor has been removed from
+--   'VL.ConfigurationProperty'. To indicate how missing values should
+--   be handled use the new 'VL.MRemoveInvalid' constructor from
+--   'VL.MarkProperty' instead. This means changing
+--   @'VL.configuration' (RemoveInvalid b)@ to
+--   @'VL.configuration' ('VL.MarkStyle' ['VL.MRemoveInvalid' b])@.
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and

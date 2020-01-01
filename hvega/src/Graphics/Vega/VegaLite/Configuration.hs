@@ -117,6 +117,12 @@ Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
 
+In @version 0.5.0.0@ the @RemoveInvalid@ constructor was removed, as
+the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
+'Graphics.Vega.VegaLite.MarkProperty' type should be used instead
+(so @'configuration' (RemoveInvalid b)@ changes to
+@'configuration' ('Graphics.Vega.VegaLite.MarkStyle' ['Graphics.Vega.VegaLite.MRemoveInvalid' b])@.
+
 -}
 
 -- based on schema 3.3.0 #/definitions/Config
@@ -209,9 +215,6 @@ data ConfigurationProperty
       -- ^ The default range properties used when scaling.
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
-    | RemoveInvalid Bool
-      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
-      --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
     | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
@@ -245,7 +248,6 @@ configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
 configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
 configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt

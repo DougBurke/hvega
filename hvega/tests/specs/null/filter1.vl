@@ -1,6 +1,8 @@
 {
     "config": {
-        "invalidValues": null
+        "mark": {
+            "invalid": null
+        }
     },
     "mark": "point",
     "data": {
