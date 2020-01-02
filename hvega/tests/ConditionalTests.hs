@@ -45,7 +45,12 @@ markCondition1 =
                         [ MString "#0099ee" ]
                     ]
     in
-    toVegaLite [ config [], dataVals, mark Point [], enc [] ]
+    toVegaLite [ config []
+               , dataVals
+               -- Vega-Lite 4 turned off tooltips by default, so
+               -- enable them here
+               , mark Point [ MTooltip TTEncoding ]
+               , enc [] ]
 
 
 markCondition2 :: VegaLite

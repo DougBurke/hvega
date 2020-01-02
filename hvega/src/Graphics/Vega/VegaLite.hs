@@ -935,6 +935,17 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.toVegaLiteSchema' function can be used along with the
 -- 'VL.vlSchema3' to use version 3 for the output.
 --
+-- __Changes in Vega-Lite 4__:
+--
+-- * The background of a visualization is now white by default whereas in
+--   previous versions it was transparent. If you
+--   need a transparent background then add the following configuration
+--   to the visualization:
+--   @'VL.configuration' ('VL.Background' \"rgba(0,0,0,0)\")@.
+--
+-- * Tooltips are now disabled by default. To enable, either use the
+--   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.
+--
 -- __Breaking changes__ in this release:
 --
 -- * The @RemoveInvalid@ constructor has been removed from

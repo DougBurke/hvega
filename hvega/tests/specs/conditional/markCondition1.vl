@@ -4,7 +4,12 @@
             "invalid": null
         }
     },
-    "mark": "point",
+    "mark": {
+        "tooltip": {
+            "content": "encoding"
+        },
+        "type": "point"
+    },
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
