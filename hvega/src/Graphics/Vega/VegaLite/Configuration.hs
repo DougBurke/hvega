@@ -298,6 +298,9 @@ Scale configuration property. These are used to configure all scales.
 For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
 
+Version @0.5.0.0@ removed the @SCRangeStep@ and @SCTextXRangeStep@
+constructors. The new 'ViewStep' constructor of 'ViewConfig' should
+be used instead.
 -}
 
 data ScaleConfig
@@ -350,13 +353,9 @@ data ScaleConfig
       -- ^ Default minimum stroke width for rule, line and trail marks.
     | SCPointPadding Double
       -- ^ Default padding for point-ordinal scales.
-    | SCRangeStep (Maybe Double)
-      -- ^ Default range step for band and point scales when the mark is not text.
     | SCRound Bool
       -- ^ Are numeric values are rounded to integers when scaling? Useful
       --   for snapping to the pixel grid.
-    | SCTextXRangeStep Double
-      -- ^ Default range step for x band and point scales of text marks.
     | SCUseUnaggregatedDomain Bool
       -- ^ Whether or not to use the source data range before aggregation.
 
@@ -745,9 +744,7 @@ scaleConfigProperty (SCMinSize x) = "minSize" .= x
 scaleConfigProperty (SCMaxStrokeWidth x) = "maxStrokeWidth" .= x
 scaleConfigProperty (SCMinStrokeWidth x) = "minStrokeWidth" .= x
 scaleConfigProperty (SCPointPadding x) = "pointPadding" .= x
-scaleConfigProperty (SCRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
 scaleConfigProperty (SCRound b) = "round" .= b
-scaleConfigProperty (SCTextXRangeStep x) = "textXRangeStep" .= x
 scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
 
 
@@ -771,11 +768,11 @@ data ViewConfig
     = ViewWidth Double
       -- ^ The default width of the single plot or each plot in a trellis plot when the
       --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (x axis).
+      --   'SRangeStep' is @Nothing@ for an ordinal scale (x axis).
     | ViewHeight Double
       -- ^ The default height of the single plot or each plot in a trellis plot when the
       --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
+      --   'SRangeStep' is @Nothing@ for an ordinal scale (y axis).
     | ViewClip Bool
       -- ^ Should the view be clipped?
     | ViewCornerRadius Double
@@ -798,6 +795,13 @@ data ViewConfig
       --   otherwise.
       --
       --   @since 0.4.0.0
+    | ViewStep Double
+      -- ^ Default step size for discrete fields.
+      --
+      --   This replaces @SCRangeStep@ and @SCTextXRangeStep@ from
+      --   'ScaleConfig'.
+      --
+      --   @since 0.5.0.0
     | ViewStroke (Maybe Color)
       -- ^ The stroke color.
       --
@@ -833,6 +837,7 @@ viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
 viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
 viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
 viewConfigProperty (ViewOpacity x) = "opacity" .= x
+viewConfigProperty (ViewStep x) = "step" .= x
 viewConfigProperty (ViewStroke ms) = "stroke" .= maybe A.Null toJSON ms
 viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs

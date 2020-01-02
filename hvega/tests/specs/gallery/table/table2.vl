@@ -1,10 +1,8 @@
 {
     "config": {
-        "scale": {
-            "rangeStep": 13
-        },
         "view": {
-            "strokeWidth": 0
+            "strokeWidth": 0,
+            "step": 13
         },
         "axis": {
             "domain": false

@@ -961,6 +961,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.MarkProperty' instead. This means changing
 --   @'VL.configuration' (RemoveInvalid b)@ to
 --   @'VL.configuration' ('VL.MarkStyle' ['VL.MRemoveInvalid' b])@.
+--
+-- * The @SCRangeStep@ and @SCTextXRangeStep@ constructors of
+--   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor
+--   of 'VL.ViewConfig' should be used instead. That is, users should
+--   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
+--   to @'VL.configuration' ('VL.View' ['VL.ViewStep x])@.
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and

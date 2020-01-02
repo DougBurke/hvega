@@ -14,6 +14,10 @@ The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.
 
+The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
+have been removed. The new `ViewStep` constructor of `ViewConfig` should be
+used as a replacement.
+
 The `Color` type alias is used in more places.
 
 ## 0.4.1.2
