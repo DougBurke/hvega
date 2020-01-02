@@ -12,6 +12,9 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
+    "width": {
+        "step": 17
+    },
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
@@ -30,9 +33,6 @@
         },
         "x": {
             "field": "age",
-            "scale": {
-                "rangeStep": 17
-            },
             "type": "ordinal"
         },
         "y": {

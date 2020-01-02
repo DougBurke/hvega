@@ -44,10 +44,10 @@ advanced1 =
         enc =
             encoding
                 . position X [ PName "PercentOfTotal", PmType Quantitative, PAxis [ AxTitle "% of total time" ] ]
-                . position Y [ PName "Activity", PmType Nominal, PScale [ SRangeStep (Just 12) ] ]
+                . position Y [ PName "Activity", PmType Nominal ]
     in
     toVegaLite
-        [ desc, dvals [], trans [], mark Bar [], enc [] ]
+        [ desc, dvals [], trans [], mark Bar [], heightStep 12, enc [] ]
 
 
 advanced2 :: VegaLite

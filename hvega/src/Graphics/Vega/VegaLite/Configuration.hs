@@ -767,12 +767,10 @@ are also five new constructors.
 data ViewConfig
     = ViewWidth Double
       -- ^ The default width of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep' is @Nothing@ for an ordinal scale (x axis).
+      --   visualization has a continuous (non-ordinal) scale.
     | ViewHeight Double
       -- ^ The default height of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep' is @Nothing@ for an ordinal scale (y axis).
+      --   visualization has a continuous (non-ordinal) scale.
     | ViewClip Bool
       -- ^ Should the view be clipped?
     | ViewCornerRadius Double

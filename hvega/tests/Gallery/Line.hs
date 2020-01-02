@@ -4,6 +4,8 @@
 -- Based on the Elm VegaLite GalleryLine.elm (from development of version
 -- 1.13.0)
 --
+-- TODO: update to v2.0 Elm test suite
+
 module Gallery.Line (testSpecs) where
 
 import Graphics.Vega.VegaLite
@@ -101,7 +103,7 @@ line4 =
 
         enc =
             encoding
-                . position X [ PName "year", PmType Ordinal, PScale [ SRangeStep (Just 50), SPadding 0.5 ] ]
+                . position X [ PName "year", PmType Ordinal, PScale [ SPadding 0.5 ] ]
                 . position Y [ PName "yield", PmType Quantitative, PAggregate Median ]
                 . color [ MName "site", MmType Nominal ]
     in
@@ -109,6 +111,7 @@ line4 =
         [ des
         , dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
         , mark Line []
+        , widthStep 50
         , enc []
         ]
 

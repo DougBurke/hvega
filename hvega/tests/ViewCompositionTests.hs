@@ -48,7 +48,6 @@ genderChart hdProps cProps =
                 . position X
                     [ PName "age"
                     , PmType Ordinal
-                    , PScale [ SRangeStep (Just 17) ]
                     ]
                 . position Y
                     [ PName "people"
@@ -62,7 +61,7 @@ genderChart hdProps cProps =
                     , MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ]
                     ]
     in
-    toVegaLite [ conf [], pop, trans [], enc [], mark Bar [] ]
+    toVegaLite [ conf [], pop, trans [], enc [], mark Bar [], widthStep 17 ]
 
 
 columns1, columns2, columns3, columns4 :: VegaLite

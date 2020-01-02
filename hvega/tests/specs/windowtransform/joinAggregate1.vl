@@ -14,6 +14,9 @@
             "calculate": "datum.Time/datum.TotalTime * 100"
         }
     ],
+    "height": {
+        "step": 12
+    },
     "mark": "bar",
     "data": {
         "values": [
@@ -50,9 +53,6 @@
         },
         "y": {
             "field": "Activity",
-            "scale": {
-                "rangeStep": 12
-            },
             "type": "nominal"
         }
     }

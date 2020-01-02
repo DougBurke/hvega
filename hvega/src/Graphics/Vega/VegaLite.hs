@@ -492,7 +492,9 @@ module Graphics.Vega.VegaLite
        , VL.name
        , VL.description
        , VL.height
+       , VL.heightStep
        , VL.width
+       , VL.widthStep
        , VL.padding
        , VL.autosize
        , VL.background
@@ -961,6 +963,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.MarkProperty' instead. This means changing
 --   @'VL.configuration' (RemoveInvalid b)@ to
 --   @'VL.configuration' ('VL.MarkStyle' ['VL.MRemoveInvalid' b])@.
+--
+-- * The @SRangeStep@ constructor from 'VL.ScaleProperty' has been
+--   removed. The 'VL.widthStep' and 'VL.heightStep' functions should
+--   be used instead.
 --
 -- * The @SCRangeStep@ and @SCTextXRangeStep@ constructors of
 --   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor

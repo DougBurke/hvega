@@ -123,7 +123,9 @@ module Graphics.Vega.VegaLite.Core
        , name
        , description
        , height
+       , heightStep
        , width
+       , widthStep
        , padding
        , autosize
        , background
@@ -598,6 +600,9 @@ transformation. To customise all scales use 'configure' and supply relevant
 There are two utility routines for constructing a list of scale
 properties: 'categoricalDomainMap' and 'domainRangeMap'.
 
+The @SRangeStep@ constructor was removed in version @0.5.0.0@. Users
+should use the 'heightStep' and 'widthStep' functions instead.
+
 The @SReverse@ constructor was removed in version @0.4.0.0@, as it
 represented a Vega, rather than Vega-Lite, property. The order of
 a scale can be changed with the 'PSort' constructor.
@@ -655,9 +660,6 @@ data ScaleProperty
       -- ^ Outer padding to apply to a band scaling.
     | SRange ScaleRange
       -- ^ Range of a scaling. The type of range depends on the encoding channel.
-    | SRangeStep (Maybe Double)
-      -- ^ Distance between the starts of adjacent bands in a band scaling. If
-      --   @Nothing@, the distance is determined automatically.
     | SRound Bool
       -- ^ Are numeric values in a scaling are rounded to integers?
       --
@@ -696,7 +698,6 @@ scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
 scaleProperty (SRange (RNumbers xs)) = "range" .= xs
 scaleProperty (SRange (RStrings ss)) = "range" .= ss
 scaleProperty (SRange (RName s)) = "range" .= s
-scaleProperty (SRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
 scaleProperty (SRound b) = "round" .= b
 scaleProperty (SScheme nme extent) = schemeProperty nme extent
 scaleProperty (SZero b) = "zero" .= b
@@ -2172,7 +2173,7 @@ facetFlow fFields = (VLFacet, object (map facetChannelProperty fFields))
 Overrides the default height of the visualization. If not specified the height
 will be calculated based on the content of the visualization. See
 'autosize' for customization of the content sizing relative to this
-setting.
+setting, and 'heightStep' for setting the height of discrete fields.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -2185,6 +2186,34 @@ setting.
 -}
 height :: Double -> PropertySpec
 height h = (VLHeight, toJSON h)
+
+
+{-|
+
+Set the height of the discrete y-field (e.g. individual bars in a
+horizontal bar chart).
+The total height is then calculated based on the number of discrete fields
+(e.g. bars).
+
+@
+'Graphics.Vega.VegaLite.toVegaLite'
+  [ 'heightStep' 17
+  , data []
+  , enc []
+  , 'mark' 'Graphcs.Vega.VegaLite.Bar' []
+  ]
+@
+
+This replaces the use of @SRangeStep@ from 'ScaleProperty'.
+
+@since 0.5.0.0
+-}
+
+-- Note that unlike ELm, we do not create a separate property here
+-- (ie no VLHeightStep)
+--
+heightStep :: Double -> PropertySpec
+heightStep s = (VLHeight, object [ "step" .= s ])
 
 
 {-|
@@ -2564,7 +2593,7 @@ vConcat specs = (VLVConcat, toJSON specs)
 Override the default width of the visualization. If not specified the width
 will be calculated based on the content of the visualization. See
 'autosize' for customization of the content sizing relative to this
-setting.
+setting, and 'widthStep' for setting the width of discrete fields.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -2577,6 +2606,33 @@ setting.
 -}
 width :: Double -> PropertySpec
 width w = (VLWidth, toJSON w)
+
+
+{-|
+
+Set the width of the discrete x-field (e.g. individual bars in a bar chart).
+The total width is then calculated based on the number of discrete fields
+(e.g. bars).
+
+@
+'Graphics.Vega.VegaLite.toVegaLite'
+  [ 'widthStep' 17
+  , data []
+  , enc []
+  , 'mark' 'Graphcs.Vega.VegaLite.Bar' []
+  ]
+@
+
+This replaces the use of @SRangeStep@ from 'ScaleProperty'.
+
+@since 0.5.0.0
+-}
+
+-- Note that unlike ELm, we do not create a separate property here
+-- (ie no VLWidthStep)
+--
+widthStep :: Double -> PropertySpec
+widthStep s = (VLWidth, object [ "step" .= s ])
 
 
 {-|

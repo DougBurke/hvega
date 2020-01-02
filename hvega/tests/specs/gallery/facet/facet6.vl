@@ -3,6 +3,9 @@
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
     "spec": {
+        "height": {
+            "step": 12
+        },
         "mark": "point",
         "encoding": {
             "color": {
@@ -19,9 +22,6 @@
             },
             "y": {
                 "field": "variety",
-                "scale": {
-                    "rangeStep": 12
-                },
                 "sort": {
                     "encoding": "x",
                     "order": "descending"

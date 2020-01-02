@@ -20,6 +20,9 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
+    "width": {
+        "step": 12
+    },
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
@@ -34,9 +37,6 @@
         },
         "x": {
             "field": "gender",
-            "scale": {
-                "rangeStep": 12
-            },
             "type": "nominal",
             "axis": {
                 "title": null

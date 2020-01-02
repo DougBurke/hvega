@@ -39,12 +39,12 @@ facet1 =
 
         enc =
             encoding
-                . position X [ PName "age", PmType Ordinal, PScale [ SRangeStep (Just 17) ] ]
+                . position X [ PName "age", PmType Ordinal ]
                 . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ] ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
                 . row [ FName "gender", FmType Nominal ]
     in
-    toVegaLite [ des, dvals [], trans [], mark Bar [], enc [] ]
+    toVegaLite [ des, dvals [], trans [], mark Bar [], widthStep 17, enc [] ]
 
 
 facet2 :: VegaLite
@@ -144,7 +144,6 @@ facet6 =
                 . position Y
                     [ PName "variety"
                     , PmType Ordinal
-                    , PScale [ SRangeStep (Just 12) ]
                     , PSort [ ByChannel ChX, Descending ]
                     ]
                 . color [ MName "year", MmType Nominal ]
@@ -159,7 +158,7 @@ facet6 =
             , FSort [ ByFieldOp "yield" Median ]
             , FHeader [ HNoTitle ]
             ]
-        , specification (asSpec [ enc [], mark Point [] ])
+        , specification (asSpec [ enc [], heightStep 12, mark Point [] ])
         ]
 
 
