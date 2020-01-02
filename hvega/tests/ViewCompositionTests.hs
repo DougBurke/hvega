@@ -117,7 +117,7 @@ grid1 =
 
         cfg = configure
                 . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
                 . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
 
     in
@@ -147,7 +147,7 @@ grid2 =
 
         cfg = configure
                 . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
                 . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
 
         trans =
@@ -166,6 +166,7 @@ grid2 =
 
 -- This has been changed from the Elm version so that it validates
 -- against the v3.4.0 specification.
+-- (not sure if this is still a valid comment)
 --
 grid3 :: VegaLite
 grid3 =
@@ -181,7 +182,7 @@ grid3 =
 
         cfg = configure
                 . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewHeight 120 ])
+                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
                 . configuration (FacetStyle [ FSpacing 80 ])
 
         trans =

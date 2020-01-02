@@ -4,8 +4,8 @@
             "type": "fit"
         },
         "view": {
-            "height": 300,
-            "width": 500,
+            "continuousHeight": 300,
+            "continuousWidth": 500,
             "stroke": null
         },
         "projection": {

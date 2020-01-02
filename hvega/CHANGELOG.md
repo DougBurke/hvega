@@ -17,6 +17,10 @@ and has been replaced by the `MRemoveInvalid` constructor of
 The `SRangeStep` constructor from `ScaleProperty` has been removed.
 The `widthStep` and `heightStep` functions should be used instead.
 
+The `ViewWidth` and `ViewHeight` constuctors of `ViewConfig` have
+been replaced by `ViewContinuousWidth`, `ViewContinuousHeight`,
+`ViewDiscreteWidth`, and `ViewDiscreteHeight`.
+
 The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
 have been removed. The new `ViewStep` constructor of `ViewConfig` should be
 used as a replacement.

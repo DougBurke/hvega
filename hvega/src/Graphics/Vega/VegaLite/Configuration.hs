@@ -755,6 +755,11 @@ view within a visualization such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 
+In version @0.5.0.0@ the @ViewWidth@ and @ViewHeight@ constructors have
+been removed, and replaced by
+'ViewContinuousWidth', 'ViewContinuousHeight',
+'ViewDiscreteWidth', and 'ViewDiscreteHeight'.
+
 This type has been changed in the @0.4.0.0@ release to use a consistent
 naming scheme for the constructors (everything starts with @View@). Prior to
 this release only @ViewWidth@ and @ViewHeight@ were named this way. There
@@ -765,20 +770,34 @@ are also five new constructors.
 -- based on schema 3.3.0 #/definitions/ViewConfig
 
 data ViewConfig
-    = ViewWidth Double
-      -- ^ The default width of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale.
-    | ViewHeight Double
-      -- ^ The default height of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale.
-    | ViewClip Bool
+    = ViewClip Bool
       -- ^ Should the view be clipped?
+    | ViewContinuousWidth Double
+      -- ^ The default width of single views when the
+      --   visualization has a continuous x field.
+      --
+      --   @since 0.5.0.0
+    | ViewContinuousHeight Double
+      -- ^ The default height of single views when the
+      --   visualization has a continuous y field.
+      --
+      --   @since 0.5.0.0
     | ViewCornerRadius Double
       -- ^ The radius, in pixels, of rounded rectangle corners.
       --
       --   The default is @0@.
       --
       --   @since 0.4.0.0
+    | ViewDiscreteWidth Double
+      -- ^ The default width of single views when the
+      --   visualization has a discrete x field.
+      --
+      --   @since 0.5.0.0
+    | ViewDiscreteHeight Double
+      -- ^ The default height of single views when the
+      --   visualization has a discrete y field.
+      --
+      --   @since 0.5.0.0
     | ViewFill (Maybe Color)
       -- ^ The fill color.
       --
@@ -827,11 +846,15 @@ data ViewConfig
       -- ^ The stroke width, in pixels.
 
 
+-- TODO: ViewBackground
+
 viewConfigProperty :: ViewConfig -> LabelledSpec
-viewConfigProperty (ViewWidth x) = "width" .= x
-viewConfigProperty (ViewHeight x) = "height" .= x
 viewConfigProperty (ViewClip b) = "clip" .= b
+viewConfigProperty (ViewContinuousWidth x) = "continuousWidth" .= x
+viewConfigProperty (ViewContinuousHeight x) = "continuousHeight" .= x
 viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
+viewConfigProperty (ViewDiscreteWidth x) = "discreteWidth" .= x
+viewConfigProperty (ViewDiscreteHeight x) = "discreteHeight" .= x
 viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
 viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
 viewConfigProperty (ViewOpacity x) = "opacity" .= x

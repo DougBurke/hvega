@@ -10,7 +10,7 @@
             "labelFontSize": 0.1
         },
         "view": {
-            "height": 120,
+            "continuousHeight": 120,
             "stroke": null
         },
         "facet": {
