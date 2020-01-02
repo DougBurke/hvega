@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.Tutorials.VegaLite
-Copyright   : (c) Douglas Burke, 2019
+Copyright   : (c) Douglas Burke, 2019-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -15,8 +15,8 @@ converted as necessary for the differences between @hvega@ and
 The Elm tutorial is based on the talk given by
 <https://youtu.be/9uaHRWj04D4 Wongsuphasawat et al at the 2017 Open Vis Conf>.
 
-The tutorial targets version 3 of the Vega-Lite specification and
-the functionality provided in version @0.4.0.0@ of hvega.
+The tutorial targets version 4 of the Vega-Lite specification and
+the functionality provided in version @0.5.0.0@ of hvega.
 
 -}
 
@@ -348,9 +348,11 @@ import Graphics.Vega.VegaLite
 -- $output
 -- The function 'toVegaLite' takes a list of grammar specifications,
 -- as will be shown in the examples below, and creates a single JSON object
--- that encodes the entire design. As of @hvega-0.4.0.0@ this targets
--- version 3 of the Vega-Lite schema, but this can be over-ridden with
--- 'toVegaLiteSchema' if needed.
+-- that encodes the entire design. As of @hvega-0.5.0.0@ this targets
+-- version 4 of the Vega-Lite schema, but this can be over-ridden with
+-- 'toVegaLiteSchema' if needed (although note that this just changes the
+-- version number in the schema field, it does not change the output to
+-- match a given version).
 --
 -- There is no concept of ordering to these specification lists, in that
 -- @[ dataFromUrl ..., encoding ..., mark ...]@;
@@ -447,7 +449,8 @@ stripPlot = toVegaLite
 
 -- $background-note
 -- The default background color for the visualization, at least in the
--- Vega-Embed PNG and SVG output, is transparent. In many cases this is
+-- Vega-Embed PNG and SVG output, is white (in Vega-Lite version 4;
+-- prior to this it was transparent). In many cases this is
 -- perfectly fine, but an explicit color can be specified using the
 -- 'Background' configuration option.
 
@@ -477,6 +480,13 @@ in toVegaLite
     , enc []
     , conf []
     ]
+@
+
+If you want a transparent background (as was the default with Vega-Lite 3
+and earlier), you would use
+
+@
+'configuration' ('Background' "rgba(0, 0, 0, 0)")
 @
 
 -}
@@ -2299,9 +2309,11 @@ in toVegaLite (conf [] :
                selectionProperties picked \"Please select a cluster\")
 @
 
-Note that the selection works both ways: the HTML widget can be used
-to select a cluster, and clicking on a point on the visualization will
-update the HTML widget.
+Originally this example had the selection working both ways - that is
+the HTML widget can be used to select a cluster and clicking on a point on
+the visualization updated the HTML widget. However, this no-longer happens
+and I don't know whether it is a change in Vega-Lite or I changed
+something in the visualization!
 
 Unlike the other plots shown in the tutorial, this is a screen grab
 rather than a PNG file created by Vega Embed. The background color was
@@ -3202,7 +3214,7 @@ such as
     plots - to highlight all stars in the same cluster, and I was
     pleasantly surprised to find out I could just use the same selection
     specification (@selCluster@) in both (hopefully I am not just
-    ejnoying a hole in the Vega Lite specification);
+    enjoying a hole in the Vega-Lite specification);
 
   * I have been perhaps too defensive in defining the Right Ascension
     and Declination axes in the relevant plots, as I want to make sure

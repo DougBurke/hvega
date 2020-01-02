@@ -4,7 +4,11 @@ For the latest version of this document, please see
 ## 0.5.0.0
 
 Update to version 4.0 of the Vega-Lite specification (tested against
-version 4.0.2).
+version 4.0.2). There are several changes in default behavior due
+to this (tooltips are now disabled by default, the background now defaults
+to white rather than transparent), although this is also controlled by
+how the Vega-Lite visualization is rendered, which can make tracking
+down why something has changed a bit awkward.
 
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of

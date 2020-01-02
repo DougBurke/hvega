@@ -10,7 +10,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Douglas Burke
 maintainer:          dburke.gw@gmail.com
-copyright:           2018-2019 Douglas Burke
+copyright:           2018-2020 Douglas Burke
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md

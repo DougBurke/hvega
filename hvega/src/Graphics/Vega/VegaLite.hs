@@ -1,6 +1,6 @@
 {-|
 Module      : Graphics.Vega.VegaLite
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -945,6 +945,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * Tooltips are now disabled by default. To enable, either use the
 --   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.
+--
+-- Note that the behavior of a Vega-Lite visualization seems to depend
+-- on both the version of the schema it is using, and the version of the
+-- visualization software used to display it (e.g.
+-- <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 --
 -- __Breaking changes__ in this release:
 --
