@@ -769,6 +769,8 @@ are also five new constructors.
 
 -- based on schema 3.3.0 #/definitions/ViewConfig
 
+{-# DEPRECATED ViewWidth "Please change ViewWidth to ViewContinuousWidth" #-}
+{-# DEPRECATED ViewHeight "Please change ViewHeight to ViewContinuousHeight" #-}
 data ViewConfig
     = ViewClip Bool
       -- ^ Should the view be clipped?
@@ -844,12 +846,20 @@ data ViewConfig
       -- ^ The stroke opacity.
     | ViewStrokeWidth Double
       -- ^ The stroke width, in pixels.
+    | ViewWidth Double
+      -- ^ As of version @0.5.0.0@ this is deprecated and 'ViewContinuousWidth' should
+      --   be used instead.
+    | ViewHeight Double
+      -- ^ As of version @0.5.0.0@ this is deprecated and 'ViewContinuousHeight' should
+      --   be used instead.
 
 
 -- TODO: ViewBackground
 
 viewConfigProperty :: ViewConfig -> LabelledSpec
 viewConfigProperty (ViewClip b) = "clip" .= b
+viewConfigProperty (ViewWidth x) = "continuousWidth" .= x
+viewConfigProperty (ViewHeight x) = "continuousHeight" .= x
 viewConfigProperty (ViewContinuousWidth x) = "continuousWidth" .= x
 viewConfigProperty (ViewContinuousHeight x) = "continuousHeight" .= x
 viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
