@@ -186,11 +186,20 @@ schema version of the visualization.
 @
 'toVegaLiteSchema' 'vlSchema3' props
 @
+
+Note that the schema is __only used__ to fill in the @\"$schema\"@
+field of the JSON structure. It __does not__ change the JSON
+encoding of the visualization.
+
 -}
 
 toVegaLiteSchema ::
   T.Text
   -- ^ The schema to use (e.g. 'vlSchema4' or created with 'vlSchema').
+  --
+  --   There is __no check__ that this schema represents Vega-Lite,
+  --   and is just treated as a value added to the output JSON.
+  --
   -> [PropertySpec]
   -- ^ The visualization.
   -> VegaLite
