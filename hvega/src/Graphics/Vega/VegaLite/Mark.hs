@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Mark
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -241,8 +241,10 @@ data MarkProperty
       --   'ErrorBand' marks.
       --
       --   @since 0.4.0.0
-    | MFill T.Text
+    | MFill Color
       -- ^ Default fill color of a mark.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | MFilled Bool
       -- ^ Should a mark's color should be used as the fill color instead of
       --   stroke color.
@@ -320,8 +322,10 @@ data MarkProperty
       -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
       -- ^ Size of a mark.
-    | MStroke T.Text
+    | MStroke Color
       -- ^ Default stroke color of a mark.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | MStrokeCap StrokeCap
       -- ^ Cap style of a mark's stroke.
       --

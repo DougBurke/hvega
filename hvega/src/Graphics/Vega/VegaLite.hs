@@ -935,6 +935,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.toVegaLiteSchema' function can be used along with the
 -- 'VL.vlSchema3' to use version 3 for the output.
 --
+-- The 'VL.Color' type alias is used in more places.
+--
 -- __Changes in Vega-Lite 4__:
 --
 -- * The background of a visualization is now white by default whereas in

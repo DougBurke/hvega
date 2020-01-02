@@ -4,7 +4,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Core
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -948,9 +948,8 @@ positionChannelProperty (PImpute ips) = impute_ ips
 
 {-|
 
-Set the background color of the visualization. Should be specified with a CSS
-string such as @\"#ffe\"@ or @\"rgb(200,20,150)\"@. If not specified the background will
-be transparent.
+Set the background color of the visualization. If not specified the background
+will be white.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -961,7 +960,13 @@ be transparent.
     ]
 @
 -}
-background :: T.Text -> PropertySpec
+background ::
+  Color
+  -- ^ The background color. For example, @\"rgba(0,0,0,0)\"@ is
+  --   transparent.
+  --
+  --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+  -> PropertySpec
 background colour = (VLBackground, toJSON colour)
 
 

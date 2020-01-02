@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Configuration
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -164,8 +164,10 @@ data ConfigurationProperty
       -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
       -- ^ The default appearance of the Y axes.
-    | Background T.Text
+    | Background Color
       -- ^ The default background color of visualizations.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | BarStyle [MarkProperty]
       -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
@@ -782,8 +784,10 @@ data ViewConfig
       --   The default is @0@.
       --
       --   @since 0.4.0.0
-    | ViewFill (Maybe T.Text)
+    | ViewFill (Maybe Color)
       -- ^ The fill color.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | ViewFillOpacity Opacity
       -- ^ The fill opacity.
     | ViewOpacity Opacity
@@ -794,8 +798,10 @@ data ViewConfig
       --   otherwise.
       --
       --   @since 0.4.0.0
-    | ViewStroke (Maybe T.Text)
+    | ViewStroke (Maybe Color)
       -- ^ The stroke color.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | ViewStrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --

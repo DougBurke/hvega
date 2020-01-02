@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Foundation
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -1158,15 +1158,19 @@ data ViewBackground
     --   properties.
     | VBCornerRadius Double
     -- ^ The radius in pixels of rounded corners.
-    | VBFill (Maybe T.Text)
+    | VBFill (Maybe Color)
     -- ^ Fill color.
+    --
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | VBFillOpacity Opacity
     -- ^ Fill opacity.
     | VBOpacity Opacity
     -- ^ Overall opacity.
-    | VBStroke (Maybe T.Text)
+    | VBStroke (Maybe Color)
     -- ^ The stroke color for a line around the background. If @Nothing@ then
     --   no line is drawn.
+    --
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | VBStrokeOpacity Opacity
     -- ^ The opacity of the line around the background, if drawn.
     | VBStrokeWidth Double

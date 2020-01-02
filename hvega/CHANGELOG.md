@@ -14,6 +14,8 @@ The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.
 
+The `Color` type alias is used in more places.
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich
