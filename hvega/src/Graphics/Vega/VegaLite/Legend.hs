@@ -59,6 +59,7 @@ import Graphics.Vega.VegaLite.Foundation
   , vAlignLabel
 
   , fromT
+  , splitOnNewline
   )
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 import Graphics.Vega.VegaLite.Time
@@ -467,7 +468,7 @@ legendProperty (LSymbolStrokeWidth x) = "symbolStrikeWidth" .= x
 legendProperty (LSymbolType sym) = "symbolType" .= symbolLabel sym
 legendProperty (LTickCount x) = "tickCount" .= x
 legendProperty (LTickMinStep x) = "tickMinStep" .= x
-legendProperty (LTitle s) = "title" .= s
+legendProperty (LTitle s) = "title" .= splitOnNewline s
 legendProperty LNoTitle = "title" .= A.Null
 legendProperty (LTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendProperty (LTitleAnchor anc) = "titleAnchor" .= anchorLabel anc

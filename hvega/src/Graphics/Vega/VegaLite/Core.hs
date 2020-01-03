@@ -194,6 +194,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ViewBackground
   , HeaderProperty
   , fromT
+  , splitOnNewline
   , field_
   , header_
   , order_
@@ -512,7 +513,7 @@ markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
-markChannelProperty (MTitle s) = ["title" .= s]
+markChannelProperty (MTitle s) = ["title" .= splitOnNewline s]
 markChannelProperty MNoTitle = ["title" .= A.Null]
 
 
@@ -930,7 +931,7 @@ positionChannelProperty (PBin b) = bin b
 positionChannelProperty PBinned = binned_
 positionChannelProperty (PAggregate op) = aggregate_ op
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
-positionChannelProperty (PTitle s) = "title" .= s
+positionChannelProperty (PTitle s) = "title" .= splitOnNewline s
 positionChannelProperty PNoTitle = "title" .= A.Null
 positionChannelProperty (PSort ops) = sort_ ops
 positionChannelProperty (PScale sps) = scaleProp_ sps
@@ -1375,7 +1376,7 @@ axisProperty (AxTickOpacity x) = "tickOpacity" .= x
 axisProperty (AxTickRound b) = "tickRound" .= b
 axisProperty (AxTickSize x) = "tickSize" .= x
 axisProperty (AxTickWidth x) = "tickWidth" .= x
-axisProperty (AxTitle ttl) = "title" .= ttl
+axisProperty (AxTitle ttl) = "title" .= splitOnNewline ttl
 axisProperty AxNoTitle = "title" .= A.Null
 axisProperty (AxTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 axisProperty (AxTitleAnchor a) = "titleAnchor" .= anchorLabel a
@@ -1897,7 +1898,7 @@ textChannelProperty TFormatAsNum = ["formatType" .= fromT "number"]
 textChannelProperty TFormatAsTemporal = ["formatType" .= fromT "time"]
 textChannelProperty (TmType measure) = [mtype_ measure]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
-textChannelProperty (TTitle s) = ["title" .= s]
+textChannelProperty (TTitle s) = ["title" .= splitOnNewline s]
 textChannelProperty TNoTitle = ["title" .= A.Null]
 textChannelProperty (TTimeUnit tu) = [timeUnit_ tu]
 textChannelProperty (TDataCondition tests elseClause) =

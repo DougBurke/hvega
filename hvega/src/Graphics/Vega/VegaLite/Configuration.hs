@@ -66,6 +66,8 @@ import Graphics.Vega.VegaLite.Foundation
   , ZIndex
   , HeaderProperty
   , ViewBackground
+  , splitOnNewline
+  , header_
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
@@ -81,7 +83,6 @@ import Graphics.Vega.VegaLite.Foundation
   , paddingSpec
   , autosizeProperty
   , viewBackgroundSpec
-  , header_
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
@@ -1249,6 +1250,39 @@ data TitleConfig
       --   properties.
       --
       --   @since 0.4.0.0
+    | TSubtitle T.Text
+      -- ^ Subtitle text. This is placed below the title text. Use \n
+      --   to insert line breaks into the subtitle.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleColor Color
+      -- ^ Subtitle color.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFont T.Text
+      -- ^ Subtitle font.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontSize Double
+      -- ^ Subtitle font size, in pixels.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontStyle T.Text
+      -- ^ Subtitle font style.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontWeight FontWeight
+      -- ^ Subtitle font weight.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleLineHeight Double
+      -- ^ Subtitle line height, in pixels.
+      --
+      --   @since 0.5.0.0
+    | TSubtitlePadding Double
+      -- ^ Padding, in pixels, between the title and Subtitle.
+      --
+      --   @since 0.5.0.0
     | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
       --
@@ -1269,6 +1303,14 @@ titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
 titleConfigSpec (TStyle styles) = "style" .= styles
+titleConfigSpec (TSubtitle s) = "subtitle" .= splitOnNewline s
+titleConfigSpec (TSubtitleColor s) = "subtitleColor" .= s
+titleConfigSpec (TSubtitleFont s) = "subtitleFont" .= s
+titleConfigSpec (TSubtitleFontSize x) = "subtitleFontSize" .= x
+titleConfigSpec (TSubtitleFontStyle s) = "subtitleFontStyle" .= s
+titleConfigSpec (TSubtitleFontWeight fw) = "subtitleFontWeight" .= fontWeightSpec fw
+titleConfigSpec (TSubtitleLineHeight x) = "subtitleLineHeight" .= x
+titleConfigSpec (TSubtitlePadding x) = "subtitlePadding" .= x
 titleConfigSpec (TZIndex z) = "zindex" .= z
 
 
@@ -1324,11 +1366,17 @@ Prior to @0.4.0.0@ there was no way to set the title options
 -}
 title ::
   T.Text
+  -- ^ The title. Any @'\n'@ characters are taken to mean a multi-line
+  --   string and indicate a line break.
+  --
+  --   In version @0.5.0.0@, support for line breaks was added.
   -> [TitleConfig]
   -- ^ Configure the appearance of the title.
   --
   --   @since 0.4.0.0
   -> PropertySpec
-title s [] = (VLTitle, toJSON s)
-title s topts = (VLTitle,
-                 object ("text" .= s : map titleConfigSpec topts))
+title s [] =
+  (VLTitle, splitOnNewline s)
+title s topts =
+  (VLTitle,
+    object ("text" .= splitOnNewline s : map titleConfigSpec topts))

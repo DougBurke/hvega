@@ -97,6 +97,7 @@ module Graphics.Vega.VegaLite.Foundation
        , viewBackgroundSpec
 
        , fromT
+       , splitOnNewline
        , field_
        , header_
        , order_
@@ -252,6 +253,15 @@ fromF = toJSON
 
 fromT :: T.Text -> VLSpec
 fromT = toJSON
+
+
+-- If there is a new-line in the text then convert to a list.
+splitOnNewline :: T.Text -> VLSpec
+splitOnNewline ts =
+  case T.split (== '\n') ts of
+    [] -> fromT ""
+    [s] -> toJSON s
+    s -> toJSON s
 
 
 fontWeightSpec :: FontWeight -> VLSpec
@@ -1331,7 +1341,7 @@ headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
 headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
-headerProperty (HTitle ttl) = "title" .= ttl
+headerProperty (HTitle ttl) = "title" .= splitOnNewline ttl
 headerProperty HNoTitle = "title" .= A.Null
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a

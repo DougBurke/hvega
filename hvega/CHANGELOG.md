@@ -27,6 +27,14 @@ The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
 have been removed. The new `ViewStep` constructor of `ViewConfig` should be
 used as a replacement.
 
+The `TitleConfig` type gained the following subtitle-related
+constructors: `TSubtitle`, `TSubtitleColor`, `TSubtitleFont`,
+`TSubtitleFontSize`, `TSubtitleFontStyle`, `TSubtitleFontWeight`,
+`TSubtitleLineHeight`, and `TSubtitlePadding`.
+
+Title (and subtitle) strings can now be split across multiple lines:
+use '\n' to indicate a line break.
+
 The `Color` type alias is used in more places.
 
 ## 0.4.1.2

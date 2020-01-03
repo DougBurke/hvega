@@ -27,6 +27,9 @@ testSpecs = [ ("default", defaultCfg)
             , ("padding", paddingCfg)
             , ("vbTest", vbTest)
             , ("axisCfg1", axisCfg1)
+            , ("titleCfg1", titleCfg1)
+            , ("titleCfg2", titleCfg2)
+            , ("titleCfg3", titleCfg3)
             ]
 
 singleVis :: ([a] -> (VLProperty, VLSpec)) -> VegaLite
@@ -228,3 +231,64 @@ axisCfg1 =
                              , TitleAnchor AEnd
                              ])
        & singleVis
+
+
+titleOpts :: [PropertySpec]
+titleOpts =
+  [ dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" [],
+    width 200
+  , height 200
+  , mark Circle []
+  , encoding
+      . position X [ PName "Horsepower"
+                   , PmType Quantitative ]
+      . position Y [ PName "Miles_per_Gallon"
+                   , PmType Quantitative ]
+      $ []
+  ]
+
+
+titleCfg1 :: VegaLite
+titleCfg1 =
+  toVegaLite
+    ((title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ])
+     : titleOpts)
+
+
+titleCfg2 :: VegaLite
+titleCfg2 =
+  toVegaLite
+    ((title "Car\nScatter"
+      [ TSubtitle "A subtitle\nalso over two lines"
+      , TAnchor AEnd
+      , TSubtitleColor "red"
+      , TSubtitleFont "serif"
+      , TSubtitleFontSize 10
+      , TSubtitleFontStyle "italic"
+      , TSubtitleFontWeight W900
+      , TSubtitleLineHeight 18
+      , TSubtitlePadding 60
+      ])
+      : titleOpts)
+
+
+titleCfg3 :: VegaLite
+titleCfg3 =
+  let cfg = configure
+                . configuration
+                    (TitleStyle
+                        [ TAnchor AEnd
+                        , TSubtitleColor "red"
+                        , TSubtitleFont "serif"
+                        , TSubtitleFontSize 10
+                        , TSubtitleFontStyle "italic"
+                        , TSubtitleFontWeight W900
+                        , TSubtitleLineHeight 18
+                        , TSubtitlePadding 60
+                        ]
+                    )
+
+  in toVegaLite
+     ( [ cfg []
+       , title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ]
+       ] ++ titleOpts )

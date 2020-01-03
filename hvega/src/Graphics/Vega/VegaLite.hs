@@ -937,6 +937,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.toVegaLiteSchema' function can be used along with the
 -- 'VL.vlSchema3' to use version 3 for the output.
 --
+-- Title (and subtitle) strings can now be split across multiple lines:
+-- use @'\n'@ to indicate where line breaks should occur.
+--
 -- The 'VL.Color' type alias is used in more places.
 --
 -- __Changes in Vega-Lite 4__:
@@ -980,6 +983,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   of 'VL.ViewConfig' should be used instead. That is, users should
 --   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
 --   to @'VL.configuration' ('VL.View' ['VL.ViewStep x])@.
+--
+-- * The 'VL.TitleConfig' type gained the following subtitle-related
+--   constructors: 'VL.TSubtitle', 'VL.TSubtitleColor', 'VL.TSubtitleFont',
+--   'VL.TSubtitleFontSize', 'VL.TSubtitleFontStyle',
+--   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
+--   and 'VL.TSubtitlePadding'.
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
