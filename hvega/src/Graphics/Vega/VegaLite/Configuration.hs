@@ -65,6 +65,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Autosize
   , ZIndex
   , HeaderProperty
+  , ViewBackground
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
@@ -79,6 +80,7 @@ import Graphics.Vega.VegaLite.Foundation
   , compositionAlignmentSpec
   , paddingSpec
   , autosizeProperty
+  , viewBackgroundSpec
   , header_
   )
 import Graphics.Vega.VegaLite.Geometry
@@ -289,7 +291,7 @@ configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
   in "selection" .= object (map selProp selConfig)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
+configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 
 {-|
@@ -554,7 +556,7 @@ data LegendConfig
       --
       --   @since 0.4.0.0
     | LeSymbolDashOffset Double
-      -- ^ The offset at which to start deawing the symbol dash pattern,
+      -- ^ The offset at which to start drawing the symbol dash pattern,
       --   in pixels.
       --
       --   @since 0.4.0.0
@@ -756,9 +758,10 @@ For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 
 In version @0.5.0.0@ the @ViewWidth@ and @ViewHeight@ constructors have
-been removed, and replaced by
+been deprecated, and replaced by
 'ViewContinuousWidth', 'ViewContinuousHeight',
-'ViewDiscreteWidth', and 'ViewDiscreteHeight'.
+'ViewDiscreteWidth', and 'ViewDiscreteHeight'. The 'ViewBackgroundStyle'
+constructor has been added.
 
 This type has been changed in the @0.4.0.0@ release to use a consistent
 naming scheme for the constructors (everything starts with @View@). Prior to
@@ -772,7 +775,11 @@ are also five new constructors.
 {-# DEPRECATED ViewWidth "Please change ViewWidth to ViewContinuousWidth" #-}
 {-# DEPRECATED ViewHeight "Please change ViewHeight to ViewContinuousHeight" #-}
 data ViewConfig
-    = ViewClip Bool
+    = ViewBackgroundStyle [ViewBackground]
+      -- ^ The default single-view style.
+      --
+      --   @since 0.5.0.0
+    | ViewClip Bool
       -- ^ Should the view be clipped?
     | ViewContinuousWidth Double
       -- ^ The default width of single views when the
@@ -854,29 +861,28 @@ data ViewConfig
       --   be used instead.
 
 
--- TODO: ViewBackground
-
-viewConfigProperty :: ViewConfig -> LabelledSpec
-viewConfigProperty (ViewClip b) = "clip" .= b
-viewConfigProperty (ViewWidth x) = "continuousWidth" .= x
-viewConfigProperty (ViewHeight x) = "continuousHeight" .= x
-viewConfigProperty (ViewContinuousWidth x) = "continuousWidth" .= x
-viewConfigProperty (ViewContinuousHeight x) = "continuousHeight" .= x
-viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
-viewConfigProperty (ViewDiscreteWidth x) = "discreteWidth" .= x
-viewConfigProperty (ViewDiscreteHeight x) = "discreteHeight" .= x
-viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
-viewConfigProperty (ViewOpacity x) = "opacity" .= x
-viewConfigProperty (ViewStep x) = "step" .= x
-viewConfigProperty (ViewStroke ms) = "stroke" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs
-viewConfigProperty (ViewStrokeDashOffset x) = "strokeDashOffset" .= x
-viewConfigProperty (ViewStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-viewConfigProperty (ViewStrokeMiterLimit x) = "strokeMiterLimit" .= x
-viewConfigProperty (ViewStrokeOpacity x) = "strokeOpacity" .= x
-viewConfigProperty (ViewStrokeWidth x) = "strokeWidth" .= x
+viewConfigProperties :: ViewConfig -> [LabelledSpec]
+viewConfigProperties (ViewBackgroundStyle bs) = map viewBackgroundSpec bs
+viewConfigProperties (ViewClip b) = ["clip" .= b]
+viewConfigProperties (ViewWidth x) = ["continuousWidth" .= x]
+viewConfigProperties (ViewHeight x) = ["continuousHeight" .= x]
+viewConfigProperties (ViewContinuousWidth x) = ["continuousWidth" .= x]
+viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
+viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
+viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
+viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
+viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null toJSON ms]
+viewConfigProperties (ViewFillOpacity x) = ["fillOpacity" .= x]
+viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
+viewConfigProperties (ViewStep x) = ["step" .= x]
+viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null toJSON ms]
+viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
+viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= xs]
+viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
+viewConfigProperties (ViewStrokeJoin sj) = ["strokeJoin" .= strokeJoinLabel sj]
+viewConfigProperties (ViewStrokeMiterLimit x) = ["strokeMiterLimit" .= x]
+viewConfigProperties (ViewStrokeOpacity x) = ["strokeOpacity" .= x]
+viewConfigProperties (ViewStrokeWidth x) = ["strokeWidth" .= x]
 
 
 {-|

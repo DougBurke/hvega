@@ -968,11 +968,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   removed. The 'VL.widthStep' and 'VL.heightStep' functions should
 --   be used instead.
 --
--- * The @ViewWidth@ and @ViewHeight@ constructors from `VL.ViewConfig`
---   have been replaced by `VL.ViewContinuousWidth`, `VL.ViewContinuousHeight`,
---   `VL.ViewDiscreteWidth`, and `VL.ViewDiscreteHeight` constructors
+-- * The @ViewWidth@ and @ViewHeight@ constructors from 'VL.ViewConfig'
+--   have been replaced by 'VL.ViewContinuousWidth', 'VL.ViewContinuousHeight',
+--   'VL.ViewDiscreteWidth', and 'VL.ViewDiscreteHeight' constructors
 --   (actually, they remain but are now deprecated and the
 --   continuous-named versions should be used instead).
+--   The 'VL.ViewBackgroundStyle' constructor has been added.
 --
 -- * The @SCRangeStep@ and @SCTextXRangeStep@ constructors of
 --   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor

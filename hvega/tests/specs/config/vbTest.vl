@@ -104,6 +104,9 @@
                 "strokeOpacity": 1,
                 "fillOpacity": 0.1
             }
+        },
+        "view": {
+            "fill": "#feb"
         }
     },
     "data": {

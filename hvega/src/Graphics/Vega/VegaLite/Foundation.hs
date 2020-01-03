@@ -1148,6 +1148,9 @@ cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", 
 
 -- | The properties for a single view or layer background.
 --
+--   Used with 'Graphics.Vega.VegaLite.viewBackground' and
+--   'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
+--
 --   @since 0.4.0.0
 
 data ViewBackground

@@ -20,7 +20,8 @@ The `widthStep` and `heightStep` functions should be used instead.
 The `ViewWidth` and `ViewHeight` constuctors of `ViewConfig` have
 been replaced by `ViewContinuousWidth`, `ViewContinuousHeight`,
 `ViewDiscreteWidth`, and `ViewDiscreteHeight` (well, the symbols
-remain but have been deprecated for the continous-named versions).
+remain but have been deprecated for the continous-named versions). The
+`ViewBackgroundStyle` constructor has been added.
 
 The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
 have been removed. The new `ViewStep` constructor of `ViewConfig` should be

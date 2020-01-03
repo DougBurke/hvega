@@ -153,6 +153,7 @@ vbTest =
                         , ( "mySecondStyle", [ MFill "black", MStroke "blue" ] )
                         ]
                     )
+                . configuration (View [ ViewBackgroundStyle [ VBFill (Just "#feb") ] ])
 
         streamSpec =
             asSpec
