@@ -42,6 +42,8 @@ use '\n' to indicate a line break.
 
 The `Color` type alias is used in more places.
 
+Bugfix: `ONone` now creates the correct JSON.
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich

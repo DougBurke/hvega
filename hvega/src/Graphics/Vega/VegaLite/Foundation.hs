@@ -708,10 +708,10 @@ data OverlapStrategy
       -- ^ Greedy overlap strategy to be applied when there is not space to show all
       --   items on an axis.
 
-overlapStrategyLabel :: OverlapStrategy -> T.Text
-overlapStrategyLabel ONone = "false"
-overlapStrategyLabel OParity = "parity"
-overlapStrategyLabel OGreedy = "greedy"
+overlapStrategyLabel :: OverlapStrategy -> VLSpec
+overlapStrategyLabel ONone = toJSON False
+overlapStrategyLabel OParity = toJSON True  -- fromT "parity"
+overlapStrategyLabel OGreedy = fromT "greedy"
 
 
 -- | Represents one side of a rectangular space.

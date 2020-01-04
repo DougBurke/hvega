@@ -995,6 +995,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.TSubtitleFontSize', 'VL.TSubtitleFontStyle',
 --   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
 --   and 'VL.TSubtitlePadding'.
+--
+-- __Bug Fixes__ in this release:
+--
+-- * The use of 'VL.ONone' now generates the correct output.
+--
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
