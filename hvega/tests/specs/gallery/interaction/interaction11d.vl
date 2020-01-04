@@ -1,7 +1,7 @@
 {
     "mark": "point",
     "data": {
-        "url": "data/cars.json"
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "selection": {
@@ -37,5 +37,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Drag out a rectangular brush to hughlight points."
+    "description": "Drag out a rectangular brush to highlight points."
 }

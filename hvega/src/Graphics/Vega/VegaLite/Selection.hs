@@ -19,17 +19,17 @@ module Graphics.Vega.VegaLite.Selection
        , Selection(..)
        , SelectionProperty(..)
        , Binding(..)
+       , BindLegendProperty(..)
        , InputProperty(..)
        , SelectionMarkProperty(..)
        , SelectionResolution(..)
 
        -- not for external export
-       , selectionProperty
+       , selectionProperties
        , selectionLabel
        )
     where
 
-import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Control.Arrow (second)
@@ -91,6 +91,29 @@ data SelectionProperty
       --   by binding selection to position scaling:
       --
       --   @sel = 'selection' . 'select' \"mySelection\" 'Interval' ['BindScales']@
+    | BindLegend [BindLegendProperty]
+      -- ^ Enable binding between a legend selection and the item it references. This is
+      --   only applicable to categorical (symbol) legends. The list of properties
+      --   must contain either 'BLField' or 'BLChannel'.
+      --
+      --   The following will allow the \"crimeType\" legend to be selected:
+      --
+      --   @
+      --   'select' \"mySelection\" 'Single' [ 'BindLegend' [ 'BLField' \"crimeType\" ] ]
+      --   @
+      --
+      --   Use 'On' to make a two-way binding (that is, selecting the legend or the symbol
+      --   type will highlight the other):
+      --
+      --   @
+      --   'select' \"sel\" 'Multi' [ 'On' \"click\"
+      --                      , 'BindLegend' [ 'BLField' \"crimeType\"
+      --                                   , 'BLEvent' \"dblclick\"
+      --                                   ]
+      --                      ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | On T.Text
       -- ^ [Vega event stream selector](https://vega.github.io/vega/docs/event-streams/#selector)
       --   that triggers a selection, or the empty string (which sets the property to @false@).
@@ -206,29 +229,33 @@ data SelectionProperty
       --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
 
 
-selectionProperty :: SelectionProperty -> LabelledSpec
-selectionProperty (Fields fNames) = "fields" .= map toJSON fNames
-selectionProperty (Encodings channels) = "encodings" .= map (toJSON . channelLabel) channels
-selectionProperty (SInit iVals) = "init" .= object (map (second dataValueSpec) iVals)
--- This is invalid according to the specification
-selectionProperty (SInitInterval Nothing Nothing) = "init" .= A.Null
-selectionProperty (SInitInterval mx my) =
+selectionProperties :: SelectionProperty -> [LabelledSpec]
+selectionProperties (Fields fNames) = ["fields" .= fNames]
+selectionProperties (Encodings channels) = ["encodings" .= map channelLabel channels]
+selectionProperties (SInit iVals) = ["init" .= object (map (second dataValueSpec) iVals)]
+selectionProperties (SInitInterval Nothing Nothing) = []
+selectionProperties (SInitInterval mx my) =
   let conv (_, Nothing) = Nothing
       conv (lbl, Just (lo, hi)) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
 
-  in "init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))
+  in ["init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))]
 
-selectionProperty (On e) = "on" .= e
-selectionProperty (Clear e) = "clear" .= if T.null e then toJSON False else toJSON e
-selectionProperty Empty = "empty" .= fromT "none"
-selectionProperty (ResolveSelections res) = "resolve" .= selectionResolutionLabel res
-selectionProperty (SelectionMark markProps) = "mark" .= object (map selectionMarkProperty markProps)
-selectionProperty BindScales = "bind" .= fromT "scales"
-selectionProperty (Bind binds) = "bind" .= object (map bindingSpec binds)
-selectionProperty (Nearest b) = "nearest" .= b
-selectionProperty (Toggle expr) = "toggle" .= expr
-selectionProperty (Translate e) = "translate" .= if T.null e then toJSON False else toJSON e
-selectionProperty (Zoom e) = "zoom" .= if T.null e then toJSON False else toJSON e
+selectionProperties (On e) = ["on" .= e]
+selectionProperties (Clear e) = ["clear" .= if T.null e then toJSON False else toJSON e]
+selectionProperties Empty = ["empty" .= fromT "none"]
+selectionProperties (ResolveSelections res) = ["resolve" .= selectionResolutionLabel res]
+selectionProperties (SelectionMark markProps) = ["mark" .= object (map selectionMarkProperty markProps)]
+selectionProperties BindScales = ["bind" .= fromT "scales"]
+selectionProperties (BindLegend blps) =
+  let lspecs = map bindLegendProperty blps
+  in if "bind" `elem` map fst lspecs
+     then lspecs
+     else ("bind" .= fromT "legend") : lspecs
+selectionProperties (Bind binds) = ["bind" .= object (map bindingSpec binds)]
+selectionProperties (Nearest b) = ["nearest" .= b]
+selectionProperties (Toggle expr) = ["toggle" .= expr]
+selectionProperties (Translate e) = ["translate" .= if T.null e then toJSON False else toJSON e]
+selectionProperties (Zoom e) = ["zoom" .= if T.null e then toJSON False else toJSON e]
 
 
 {-|
@@ -387,6 +414,27 @@ bindingSpec bnd =
   in (lbl, object (("input" .= input) : map inputProperty ps))
 
 
+{-|
+
+@since 0.5.0.0
+
+-}
+data BindLegendProperty
+  = BLField T.Text
+    -- ^ The data field which should be made interactive in the legend.
+  | BLChannel Channel
+    -- ^ Which channel should be made interactive in a legend.
+  | BLEvent T.Text
+    -- ^ The <https://vega.github.io/vega/docs/event-streams Vega event stream>
+    --   that should trigger an interactive legend selection. If not specified,
+    --   the default is to use a single click.
+
+
+bindLegendProperty :: BindLegendProperty -> LabelledSpec
+bindLegendProperty (BLField f) = "fields" .= [f]
+bindLegendProperty (BLChannel ch) = "encodings" .= [channelLabel ch]
+bindLegendProperty (BLEvent es) = "bind" .= object ["legend" .= es]
+
 
 {-|
 
@@ -430,7 +478,6 @@ select ::
   -- ^ What options are applied to the selection.
   -> BuildLabelledSpecs
 select nme sType options ols =
-    let selProps = ("type" .= selectionLabel sType) : map selectionProperty options
-    in (nme .= object selProps) : ols
-
-
+  -- TODO: elm filters out those properties that are set to A.Null
+  let selProps = ("type" .= selectionLabel sType) : concatMap selectionProperties options
+  in (nme .= object selProps) : ols

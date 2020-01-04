@@ -471,6 +471,7 @@ module Graphics.Vega.VegaLite
        , VL.Selection(..)
        , VL.SelectionProperty(..)
        , VL.Binding(..)
+       , VL.BindLegendProperty(..)
        , VL.InputProperty(..)
        , VL.SelectionMarkProperty(..)
 
@@ -1001,9 +1002,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The `VL.AFitX` and `VL.AFitY` constructors have been added to the
 --   @Autosize@ type.
 --
+-- * The `VL.SelectionProperty` type has gained the `VL.BindLegend`
+--   constructor - and associated `VL.BindLegendProperty` type - to
+--   allow selection of legend (categorical data only).
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The use of 'VL.ONone' now generates the correct output.
+--
+-- * The selection property @'VL.SInitInterval' Nothing Nothing@ is
+--   now a no-op (as it does nothing), rather than generating invalid JSON.
 --
 
 -- $update0400
@@ -1031,11 +1039,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.spacing', 'VL.spacingRC'); 'VL.VLUserMetadata' ('VL.usermetadata'); and
 -- 'VL.VLViewBackground' ('VL.viewBackground'). It is expected that you will be
 -- using the functions rather the constructors!
--- 
+--
 -- Four new type aliases have been added: 'VL.Angle', 'VL.Color', 'VL.Opacity',
 -- and 'VL.ZIndex'. These do not provide any new functionality but do
 -- document intent.
--- 
+--
 -- The 'VL.noData' function has been added to let compositions define the
 -- source of the data (whether it is from the parent or not), and data
 -- sources can be named with 'VL.dataName'. Data can be created with
@@ -1046,25 +1054,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Aeson Value and then use 'VL.dataFromJson'. Support for data imputation
 -- (creating new values based on existing data) has been added, as
 -- discussed below.
--- 
+--
 -- The alignment, size, and composition of plots can be defined and
 -- changed with 'VL.align', 'VL.alignRC', 'VL.bounds', 'VL.center', 'VL.centerRC',
 -- 'VL.columns', 'VL.spacing', and 'VL.spacingRC'.
--- 
+--
 -- Plots can be combined and arranged with: 'VL.facet', 'VL.facetFlow',
 -- 'VL.repeat', 'VL.repeatFlow', and 'VL.vlConcat'
--- 
+--
 -- New functions for use in a 'VL.transform': 'VL.flatten', 'VL.flattenAs',
 -- 'VL.fold', 'VL.foldAs', 'VL.impute', and 'VL.stack'.
--- 
+--
 -- New functions for use with 'VL.encoding': 'VL.fillOpacity', 'VL.strokeOpacity',
 -- 'VL.strokeWidth',
--- 
+--
 -- The ability to arrange specifications has added the "flow" option
 -- (aka "repeat"). This is seen in the addition of the 'VL.Flow' constructor
 -- to the 'VL.Arrangement' type - which is used with 'VL.ByRepeatOp',
 -- 'VL.HRepeat', 'VL.MRepeat', 'VL.ORepeat', 'VL.PRepeat', and 'VL.TRepeat'.
--- 
+--
 -- The 'VL.Mark' type has gained 'VL.Boxplot', 'VL.ErrorBar', 'VL.ErrorBand', and
 -- 'VL.Trail' constructors. The 'VL.MarkProperty' type has gained 'VL.MBorders',
 -- 'VL.MBox', 'VL.MExtent', 'VL.MHeight', 'VL.MHRef', 'VL.MLine', 'VL.MMedian', 'VL.MOrder',
@@ -1072,52 +1080,52 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.MStrokeMiterLimit', 'VL.MTicks', 'VL.MTooltip', 'VL.MWidth', 'VL.MX', 'VL.MX2',
 -- 'VL.MXOffset', 'VL.MX2Offset', 'VL.MY', 'VL.MY2', 'VL.MYOffset', and 'VL.MY2Offset'
 -- constructors.
--- 
+--
 -- The 'VL.Position' type has added 'VL.XError', 'VL.XError2', 'VL.YError', and
 -- 'VL.YError2' constructors.
--- 
+--
 -- The 'VL.MarkErrorExtent' type was added.
--- 
+--
 -- The 'VL.BooleanOp' type has gained the 'VL.FilterOp' and 'VL.FilterOpTrans'
 -- constructors which lets you use 'VL.Filter' expressions as part of a
 -- boolean operation. The 'VL.Filter' type has also gained expresiveness,
 -- with the 'VL.FLessThan', 'VL.FLessThanEq', 'VL.FGreaterThan', 'VL.FGreaterThanEq',
 -- and 'VL.FValid'.
--- 
+--
 -- The 'VL.Format' type has gained the 'VL.DSV' constructor, which allow you
 -- to specify the separator character for column data.
--- 
+--
 -- The MarkChannel type has been expanded to include: 'VL.MBinned', 'VL.MSort',
 -- 'VL.MTitle', and 'VL.MNoTitle'. The PositionChannel type has added
 -- 'VL.PHeight', 'VL.PWidth', 'VL.PNumber', 'VL.PBinned', 'VL.PImpute', 'VL.PTitle', and
 -- 'VL.PNoTitle' constructors.
--- 
+--
 -- The LineMarker and PointMarker types have been added for use with
 -- 'VL.MLine' and 'VL.MPoint' respectively (both from 'VL.MarkProperty').
--- 
--- The ability to define the binning property with 
+--
+-- The ability to define the binning property with
 -- 'VL.binAs', 'VL.DBin', 'VL.FBin', 'VL.HBin', 'VL.MBin', 'VL.OBin', 'VL.PBin', and 'VL.TBin' has
 -- been expanded by adding the 'VL.AlreadyBinned' and 'VL.BinAnchor'
 -- constructors to 'VL.BinProperty', as well as changing the 'VL.Divide'
 -- constructor (as described below).
--- 
+--
 -- The 'VL.StrokeCap' and 'VL.StrokeJoin' types has been added. These are used
 -- with 'VL.MStrokeCap', 'VL.VBStrokeCap', and 'VL.ViewStrokeCap' and
 -- 'VL.MStrokeJoin', 'VL.VBStrokeJoin', and 'VL.ViewStrokeJoin' respectively.
--- 
+--
 -- The 'VL.StackProperty' constructor has been added with the 'VL.StOffset'
 -- and 'VL.StSort' constructors. As discussed below this is a breaking change
 -- since the old StackProperty type has been renamed to 'VL.StackOffset'.
--- 
+--
 -- The 'VL.ScaleProperty' type has seen significant enhancement, by adding
 -- the constructors: 'VL.SAlign', 'VL.SBase', 'VL.SBins', 'VL.SConstant' and
 -- 'VL.SExponent'.  THe 'VL.Scale' tye has added 'VL.ScSymLog' 'VL.ScQuantile',
 -- 'VL.ScQuantize', and 'VL.ScThreshold'.
--- 
+--
 -- The 'VL.SortProperty' type has new constructors: 'VL.CustomSort',
 -- 'VL.ByRepeatOp', 'VL.ByFieldOp', and 'VL.ByChannel'. See the breaking-changes
 -- section below for the constructors that were removed.
--- 
+--
 -- The 'VL.AxisProperty' type has seen significant additions, including:
 -- 'VL.AxBandPosition', 'VL.AxDomainColor', 'VL.AxDomainDash',
 -- 'VL.AxDomainDashOffset', 'VL.AxDomainOpacity', 'VL.AxDomainWidth',
@@ -1133,10 +1141,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.AxTitleAnchor', 'VL.AxTitleBaseline', 'VL.AxTitleColor', 'VL.AxTitleFont',
 -- 'VL.AxTitleFontSize', 'VL.AxTitleFontStyle', 'VL.AxTitleFontWeight',
 -- 'VL.AxTitleLimit', 'VL.AxTitleOpacity', 'VL.AxTitleX', and 'VL.AxTitleY'.
--- 
+--
 -- The 'VL.AxisConfig' has seen a similar enhancement, and looks similar
 -- to the above apart from the constructors do not start with @Ax@.
--- 
+--
 -- The 'VL.LegendConfig' type has been significantly expanded and, as
 -- discussed in the Breaking Changes section, changed. It has gained:
 -- 'VL.LeClipHeight', 'VL.LeColumnPadding', 'VL.LeColumns', 'VL.LeGradientDirection',
@@ -1151,12 +1159,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.LeSymbolOffset', 'VL.LeSymbolOpacity', 'VL.LeSymbolStrokeColor', 'VL.LeTitle',
 -- 'VL.LeNoTitle', 'VL.LeTitleAnchor', 'VL.LeTitleFontStyle', 'VL.LeTitleOpacity',
 -- and 'VL.LeTitleOrient'.
--- 
+--
 -- The 'VL.LegendOrientation' type has gained 'VL.LOTop' and 'VL.LOBottom'.
--- 
+--
 -- The 'VL.LegendLayout' and 'VL.BaseLegendLayout' types are new, and used
 -- with 'VL.LeLayout' to define the legent orient group.
--- 
+--
 -- The 'VL.LegendProperty' type gained: 'VL.LClipHeight', 'VL.LColumnPadding',
 -- 'VL.LColumns', 'VL.LCornerRadius', 'VL.LDirection', 'VL.LFillColor',
 -- 'VL.LFormatAsNum', 'VL.LFormatAsTemporal', 'VL.LGradientLength',
@@ -1172,51 +1180,51 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.LTitleBaseline', 'VL.LTitleColor', 'VL.LTitleFont', 'VL.LTitleFontSize',
 -- 'VL.LTitleFontStyle', 'VL.LTitleFontWeight', 'VL.LTitleLimit', 'VL.LTitleOpacity',
 -- 'VL.LTitleOrient', 'VL.LTitlePadding', 'VL.LeX', and 'VL.LeY'.
--- 
+--
 -- 'VL.Projection' has gained the 'VL.Identity' constructor. The
 -- 'VL.ProjectionProperty' type has gained 'VL.PrScale', 'VL.PrTranslate',
 -- 'VL.PrReflectX', and 'VL.PrReflectY'. The 'VL.GraticuleProperty' type was
 -- added to configure the appearance of graticules created with
 -- 'VL.graticule'.
--- 
+--
 -- The 'VL.CompositionAlignment' type was added and is used with 'VL.align',
 -- 'VL.alignRC', 'VL.LeGridAlign', and 'VL.LGridAlign'.
--- 
+--
 -- The 'VL.Bounds' type was added for use with 'VL.bounds'.
--- 
+--
 -- The 'VL.ImputeProperty' and 'VL.ImMethod' types were added for use with
 -- 'VL.impute' and 'VL.PImpute'.
--- 
+--
 -- The 'VL.ScaleConfig' type has gained 'VL.SCBarBandPaddingInner',
 -- 'VL.SCBarBandPaddingOuter', 'VL.SCRectBandPaddingInner', and
 -- 'VL.SCRectBandPaddingOuter'.
--- 
+--
 -- The 'VL.SelectionProperty' type has gained 'VL.Clear', 'VL.SInit', and
 -- 'VL.SInitInterval'.
--- 
+--
 -- The Channel type has gained: 'VL.ChLongitude', 'VL.ChLongitude2',
 -- 'VL.ChLatitude', 'VL.ChLatitude2', 'VL.ChFill', 'VL.ChFillOpacity', 'VL.ChHref',
 -- 'VL.ChKey', 'VL.ChStroke', 'VL.ChStrokeOpacity'.  'VL.ChStrokeWidth', 'VL.ChText',
 -- and 'VL.ChTooltip'.
--- 
+--
 -- The 'VL.TitleConfig' type has gained: 'VL.TFontStyle', 'VL.TFrame', 'VL.TStyle',
 -- and 'VL.TZIndex'.
--- 
+--
 -- The 'VL.TitleFrame' type is new and used with 'VL.TFrame' from 'VL.TitleConfig'.
--- 
+--
 -- The 'VL.ViewBackground' type is new and used with 'VL.viewBackground'.
--- 
+--
 -- The 'VL.ViewConfig' type has gained 'VL.ViewCornerRadius', 'VL.ViewOpacity',
 -- 'VL.ViewStrokeCap', 'VL.ViewStrokeJoin', and 'VL.ViewStrokeMiterLimit'.
--- 
+--
 -- The 'VL.ConfigurationProperty' type, used with 'VL.configuration', has
 -- gained 'VL.ConcatStyle', 'VL.FacetStyle', 'VL.GeoshapeStyle', 'VL.HeaderStyle',
 -- 'VL.NamedStyles', and 'VL.TrailStyle' constructors.
--- 
+--
 -- The 'VL.ConcatConfig' type was added for use with the 'VL.ConcatStyle',
 -- and the 'VL.FacetConfig' type for the 'VL.FacetStyle'
 -- configuration settings.
--- 
+--
 -- The 'VL.HeaderProperty' type has gained: 'VL.HFormatAsNum',
 -- 'VL.HFormatAsTemporal', 'VL.HNoTitle', 'VL.HLabelAlign', 'VL.HLabelAnchor',
 -- 'VL.HLabelAngle', 'VL.HLabelColor', 'VL.HLabelFont', 'VL.HLabelFontSize',
@@ -1224,14 +1232,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HTitleAnchor', 'VL.HTitleAngle', 'VL.HTitleBaseline', 'VL.HTitleColor',
 -- 'VL.HTitleFont', 'VL.HTitleFontSize', 'VL.HTitleFontWeight', 'VL.HTitleLimit',
 -- 'VL.HTitleOrient', and 'VL.HTitlePadding'.
--- 
+--
 -- The 'VL.HyperlinkChannel' type has gained 'VL.HBinned'.
--- 
+--
 -- The 'VL.FacetChannel' type has gained 'VL.FSort', 'VL.FTitle', and 'VL.FNoTitle'.
--- 
+--
 -- The 'VL.TextChannel' type has gained 'VL.TBinned', 'VL.TFormatAsNum',
 -- 'VL.TFormatAsTemporal', 'VL.TTitle', and 'VL.TNoTitle'.
--- 
+--
 -- The 'VL.TooltipContent' type was added, for use with 'VL.MTooltip'.
 --
 -- The 'VL.Symbol' type has gained: 'VL.SymArrow', 'VL.SymStroke',
@@ -1317,4 +1325,3 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The @Legend@ type has been renamed 'VL.LegendType' and its constructors
 --   have been renamed 'VL.GradientLegend' and 'VL.SymbolLegend'.
-

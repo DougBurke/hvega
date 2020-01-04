@@ -102,7 +102,7 @@ import Graphics.Vega.VegaLite.Mark
 import Graphics.Vega.VegaLite.Selection
   ( Selection
   , SelectionProperty
-  , selectionProperty
+  , selectionProperties
   , selectionLabel
   )
 import Graphics.Vega.VegaLite.Specification
@@ -289,7 +289,7 @@ configProperty (Scale scs) = scaleConfig_ scs
 configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
+  let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
   in "selection" .= object (map selProp selConfig)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)

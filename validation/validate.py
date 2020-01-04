@@ -114,9 +114,6 @@ def process(schema):
             elif (root == 'tests/specs/color') and \
                 (infile in colorFails):
                 allowed = deque(['encoding', 'color', 'scale', 'interpolate', 'type'])
-            elif (root == 'tests/specs/gallery/interaction') and \
-                 (infile == 'interaction11a.vl'):
-                allowed = deque(['selection', 'brush', 'init'])
             elif root == 'tests/specs/fillstroke':
                 if infile in ['combined1.vl', 'fill1.vl']:
                     allowed = deque(['encoding', 'fill'])
@@ -161,7 +158,7 @@ def process(schema):
 
     nunexpected = nfailed - nexpected
     if nunexpected == 0:
-        print("There were only expected 'failures'.\n")
+        print("There were only expected 'failures' ({}).\n".format(nexpected))
         return
 
     sys.stderr.write("\n")

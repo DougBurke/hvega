@@ -446,7 +446,7 @@ interaction10 =
 --
 initInterval :: Maybe (DataValue, DataValue) -> Maybe (DataValue, DataValue) -> VegaLite
 initInterval mx my =
-  let desc = "Drag out a rectangular brush to hughlight points."
+  let desc = "Drag out a rectangular brush to highlight points."
 
       sel = selection
               . select "brush" Interval [ SInitInterval mx my ]
@@ -462,7 +462,7 @@ initInterval mx my =
 
   in toVegaLite
      [ description desc
-     , dataFromUrl "data/cars.json" []
+     , dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
      , mark Point []
      , enc []
      , sel []
@@ -473,8 +473,9 @@ xInit, yInit :: (DataValue, DataValue)
 xInit = (Number 55, Number 160)
 yInit = (Number 13, Number 37)
 
--- Note: interaction11a is invalid according to the Vega Lite 3.4.0
---       specification.
+-- Note: the Vega-Lite spec (circa version 4) does not support the
+--       "Nothing Nothing" case - aka interaction11a - so this is a
+--       check to make sure we handle this case correctly.
 --
 interaction11a, interaction11b, interaction11c, interaction11d :: VegaLite
 interaction11a = initInterval Nothing Nothing

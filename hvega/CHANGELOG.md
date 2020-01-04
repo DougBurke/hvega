@@ -41,12 +41,19 @@ change the content of axis labels.
 
 Added `AFitX` and `AFitY` constructors to the `Autosize` type.
 
+The `SelectionProperty` type has gained the `BindLegend` constructor,
+and the associated `BindLegendProperty` type, to allow selection of
+a legend (categorical data only).
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 
 The `Color` type alias is used in more places.
 
 Bugfix: `ONone` now creates the correct JSON.
+
+Bugfix: the selection property `SInitInterval Nothing Nothing` is
+now a no-op (as it does nothing), rather than generating invalid JSON.
 
 ## 0.4.1.2
 
@@ -190,7 +197,7 @@ The MarkChannel type has been expanded to include: `MBinned`, `MSort`,
 The LineMarker and PointMarker types have been added for use with
 `MLine` and `MPoint` respectively (both from `MarkProperty`).
 
-The ability to define the binning property with 
+The ability to define the binning property with
 `binAs`, `DBin`, `FBin`, `HBin`, `MBin`, `OBin`, `PBin`, and `TBin` has
 been expanded by adding the `AlreadyBinned` and `BinAnchor`
 constructors to `BinProperty`, as well as changing the `Divide`

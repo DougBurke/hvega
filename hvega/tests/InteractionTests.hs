@@ -2,6 +2,8 @@
 
 --
 -- Based on the Elm VegaLite GeoTests.elm as of version 1.12.0
+-- Note that the numbering / naming has diverged from Elm over
+-- time (I want to keep the old tests the same name)
 --
 module InteractionTests (testSpecs) where
 
@@ -19,6 +21,13 @@ testSpecs = [ ("interaction1", interaction1)
             , ("interaction6", interaction6)
             , ("interaction7", interaction7)
             , ("interaction8", interaction8)
+            , ("initinterval", initInterval)
+            , ("initintervalxy", initIntervalXY)
+            , ("initintervaly", initIntervalY)
+            , ("initintervalx", initIntervalX)
+            , ("bindlegend", bindLegend)
+            , ("bindlegend2", bindLegendDouble)
+            , ("bindlegendboth", bindLegendBoth)
             ]
 
 
@@ -65,69 +74,55 @@ encHighlight =
                 [ MNumber 0.1 ]
             ]
 
+
+iPlot :: ([LabelledSpec] -> PropertySpec) -> Mark -> VegaLite
+iPlot sel markType =
+  toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark markType [] ]
+
+
 interaction1 :: VegaLite
 interaction1 =
-    let
-        sel =
-            selection . select "mySelection" Single []
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Line [] ]
+    let sel = selection . select "mySelection" Single []
+    in iPlot sel Line
 
 
 interaction2 :: VegaLite
 interaction2 =
-    let
-        sel =
-            selection . select "mySelection" Multi []
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Line [] ]
+    let sel = selection . select "mySelection" Multi []
+    in iPlot sel Line
 
 
 interaction3 :: VegaLite
 interaction3 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "mySelection" Single [ Nearest True, Fields [ "crimeType" ] ]
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Circle [] ]
+    in iPlot sel Circle
 
 
 interaction4 :: VegaLite
 interaction4 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "mySelection" Interval [ Empty, Encodings [ ChX ] ]
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Circle [] ]
+    in iPlot sel Circle
 
 
 interaction5 :: VegaLite
 interaction5 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "mySelection" Interval [ BindScales, Encodings [ ChX ] ]
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Circle [] ]
+    in iPlot sel Circle
 
 
 interaction6 :: VegaLite
 interaction6 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "mySelection" Interval [ BindScales ]
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Circle [] ]
+    in iPlot sel Circle
 
 
 interaction7 :: VegaLite
 interaction7 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "mySelection"
                     Single
                     [ Fields [ "crimeType" ]
@@ -145,15 +140,13 @@ interaction7 =
                             ]
                         ]
                     ]
-    in
-    toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark Circle [] ]
+
+    in iPlot sel Circle
 
 
 interaction8 :: VegaLite
 interaction8 =
-    let
-        sel =
-            selection
+    let sel = selection
                 . select "maxSlider"
                     Single
                     [ SInit [ ( "maxReported", Number 14000 ) ]
@@ -165,8 +158,89 @@ interaction8 =
                     , Bind [ IRange "minReported" [ InName "Min", InMax 12800 ] ]
                     ]
 
-        trans =
-            transform
+        trans = transform
                 . filter (FExpr "datum.reportedCrimes >= minSlider_minReported && maxSlider_maxReported >= datum.reportedCrimes")
-    in
-    toVegaLite [ width 540, crimeData, trans [], sel [], enc [], mark Circle [] ]
+
+    in toVegaLite [ width 540, crimeData, trans [], sel [], enc [], mark Circle [] ]
+
+
+-- Note that an interval of Nothing Nothing can not be encoded in Vega-Lite 4.0.2,
+-- so this is a check we don't create invalid output.
+--
+initInterval :: VegaLite
+initInterval =
+  let sel = selection
+              . select "mySelection"
+                  Interval
+                  [ SInitInterval Nothing Nothing ]
+
+  in iPlot sel Circle
+
+
+initIntervalXY :: VegaLite
+initIntervalXY =
+  let sel = selection
+              . select "mySelection"
+                  Interval
+                  [ SInitInterval
+                    (Just ( DateTime [ DTYear 2013 ], DateTime [ DTYear 2015 ] ))
+                    (Just ( Number 4000, Number 8000 ))
+                  ]
+
+  in iPlot sel Circle
+
+
+initIntervalY :: VegaLite
+initIntervalY =
+  let sel = selection
+              . select "mySelection"
+                  Interval
+                  [ SInitInterval
+                    Nothing
+                    (Just ( Number 4000, Number 8000 ))
+                  ]
+
+  in iPlot sel Circle
+
+
+initIntervalX :: VegaLite
+initIntervalX =
+  let sel = selection
+              . select "mySelection"
+                  Interval
+                  [ Encodings [ ChX ]
+                  , SInitInterval
+                    (Just ( DateTime [ DTYear 2013 ], DateTime [ DTYear 2015 ] ))
+                    Nothing
+                  ]
+
+  in iPlot sel Circle
+
+
+bindLegend :: VegaLite
+bindLegend =
+  let sel = selection
+             . select "mySelection" Single [ BindLegend [ BLField "crimeType" ] ]
+
+  in iPlot sel Circle
+
+
+bindLegendDouble :: VegaLite
+bindLegendDouble =
+  let sel = selection
+             . select "mySelection" Single
+               [ BindLegend [ BLChannel ChColor, BLEvent "dblckick" ] ]
+
+  in iPlot sel Circle
+
+
+bindLegendBoth :: VegaLite
+bindLegendBoth =
+  let sel = selection
+             . select "mySelection"
+               Multi
+               [ On "click"
+               , BindLegend [ BLField "crimeType", BLEvent "dblclick" ]
+               ]
+
+  in iPlot sel Circle
