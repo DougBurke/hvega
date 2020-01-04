@@ -1065,6 +1065,16 @@ data Autosize
     | AFit
       -- ^ Interpret visualization dimensions to be for the entire visualization (data
       --   rectangle is shrunk to accommodate external decorations padding).
+    | AFitX
+      -- ^ Interpret visualization width to be for the entire visualization width (data
+      --   rectangle width is shrunk to accommodate external decorations padding).
+      --
+      --   @since 0.5.0.0
+    | AFitY
+      -- ^ Interpret visualization height to be for the entire visualization height (data
+      --   rectangle height is shrunk to accommodate external decorations padding).
+      --
+      --   @since 0.5.0.0
     | ANone
       -- ^ No autosizing is applied.
     | APad
@@ -1078,12 +1088,14 @@ data Autosize
 
 
 autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad = ("type", fromT "pad")
-autosizeProperty AFit = ("type", fromT "fit")
-autosizeProperty ANone = ("type", fromT "none")
+autosizeProperty APad = "type" .= fromT "pad"
+autosizeProperty AFit = "type" .= fromT "fit"
+autosizeProperty AFitX = "type" .= fromT "fit-x"
+autosizeProperty AFitY = "type" .= fromT "fit-y"
+autosizeProperty ANone = "type" .= fromT "none"
 autosizeProperty AResize = "resize" .= True
-autosizeProperty AContent = ("contains", fromT "content")
-autosizeProperty APadding = ("contains", fromT "padding")
+autosizeProperty AContent = "contains" .= fromT "content"
+autosizeProperty APadding = "contains" .= fromT "padding"
 
 
 {-|

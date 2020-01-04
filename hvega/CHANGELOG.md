@@ -39,6 +39,8 @@ properties (grid, label, and tick) can be used in this way. It has
 also gained the `AxLabelExpr` constructor, which allows you to
 change the content of axis labels.
 
+Added `AFitX` and `AFitY` constructors to the `Autosize` type.
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

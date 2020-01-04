@@ -25,6 +25,13 @@ testSpecs = [ ("default", defaultCfg)
             , ("mark1", markCfg1)
             , ("mark2", markCfg2)
             , ("padding", paddingCfg)
+            , ("paddingx", paddingXCfg)
+            , ("paddingy", paddingYCfg)
+            , ("paddingContent", paddingCntCfg)
+            , ("paddingNone", paddingNoneCfg)
+            , ("paddingPad", paddingPadCfg)
+            , ("paddingPadding", paddingPaddingCfg)
+            , ("paddingResize", paddingResizeCfg)
             , ("vbTest", vbTest)
             , ("axisCfg1", axisCfg1)
             , ("titleCfg1", titleCfg1)
@@ -213,12 +220,24 @@ markCfg2 =
         & compositeVis
 
 
-paddingCfg :: VegaLite
-paddingCfg =
-    configure
-        . configuration (Autosize [ AFit ])
-        . configuration (Padding (PEdges 90 60 30 0))
-        & singleVis
+paddingTest :: Autosize -> VegaLite
+paddingTest a =
+  configure
+  . configuration (Autosize [ a ])
+  . configuration (Padding (PEdges 90 60 30 0))
+  & singleVis
+
+
+paddingCfg, paddingXCfg, paddingYCfg, paddingCntCfg, paddingNoneCfg,
+  paddingPadCfg, paddingPaddingCfg, paddingResizeCfg:: VegaLite
+paddingCfg = paddingTest AFit
+paddingXCfg = paddingTest AFitX
+paddingYCfg = paddingTest AFitY
+paddingCntCfg = paddingTest AContent
+paddingNoneCfg = paddingTest ANone
+paddingPadCfg = paddingTest APad
+paddingPaddingCfg = paddingTest APadding
+paddingResizeCfg = paddingTest AResize
 
 
 axisCfg1 :: VegaLite

@@ -998,6 +998,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
 --   and 'VL.TSubtitlePadding'.
 --
+-- * The `VL.AFitX` and `VL.AFitY` constructors have been added to the
+--   @Autosize@ type.
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The use of 'VL.ONone' now generates the correct output.
