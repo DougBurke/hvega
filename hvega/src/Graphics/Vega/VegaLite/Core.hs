@@ -61,6 +61,7 @@ module Graphics.Vega.VegaLite.Core
        , SortProperty(..)
 
        , AxisProperty(..)
+       , ConditionalAxisProperty(..)
 
        , size
        , color
@@ -1019,6 +1020,39 @@ data AxisProperty
       --   the middle, and @1@ at the right edge.
       --
       --   @since 0.4.0.0
+    | AxDataCondition BooleanOp ConditionalAxisProperty
+      -- ^ Set conditions on an axis property. The first argument is the
+      --   test to apply, and the second is the pair of properties
+      --   to set if the condition holds or not.
+      --
+      --   The test parameter has access to the axis @value@ and @label@
+      --   properties: that is
+      --
+      --   @
+      --   'PAxis' [ 'AxDataCondition'
+      --             ('Expr' "datum.value <= 2")
+      --             ('CAxTickColor' "red" "blue")
+      --         , 'AxDataCondition'
+      --             ('Expr' "datum.label == '4.0'")
+      --             ('CAxTickWidth' 5 2)
+      --         ]
+      --   @
+      --
+      --   Inline aggregation can be performed (before the test)
+      --   using 'FilterOpTrans', which can be particularly useful for
+      --   filtering temporal data. The following example will use solid
+      --   grid lines for the first day in January, and dashes for
+      --   all other dates (using 'Data.Function.&'):
+      --
+      --   @
+      --   'PAxis' [ 'AxDataCondition'
+      --             ('FEqual' "value" ('Graphics.Vega.VegaLite.DateTime' ['Grahics.Vega.VegaLite.DTMonth' 'Graphics.Vega.VegaLite.Jan', 'Graphics.Vega.VegaLite.DTDate' 1])
+      --             & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.MonthDate'))
+      --             ('CAxGridDash' [] [2, 2])
+      --         ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | AxDomain Bool
       -- ^ Should the axis domain (the baseline) be displayed?
     | AxDomainColor Color
@@ -1323,6 +1357,14 @@ data AxisProperty
 
 axisProperty :: AxisProperty -> LabelledSpec
 axisProperty (AxBandPosition x) = "bandPosition" .= x
+axisProperty (AxDataCondition predicate cap) =
+  let (ifAxProp, elseAxProp) = conditionalAxisProperty cap
+      (axKey, ifProp) = axisProperty ifAxProp
+      (_, elseProp) = axisProperty elseAxProp
+  in axKey .= object [ "condition" .= object [ "test" .= booleanOpSpec predicate
+                                             , "value" .= ifProp
+                                             ]
+                     , "value" .= elseProp]
 axisProperty (AxDomain b) = "domain" .= b
 axisProperty (AxDomainColor s) = "domainColor" .= s
 axisProperty (AxDomainDash ds) = "domainDash" .= ds
@@ -1395,6 +1437,86 @@ axisProperty (AxTitleY x) = "titleY" .= x
 axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
 axisProperty (AxZIndex z) = "zindex" .= z
+
+
+{-|
+
+For use with 'AxDataCondition', and defines those axis properties
+which can be conditioned on their position (or label).
+
+The constuctor determines the axis property (a label, tick, or
+grid element), the second is the value to set if the condition
+is 'True', and the third is the value for when it is 'False'.
+
+@since 0.5.0.0
+-}
+
+data ConditionalAxisProperty
+  = CAxGridColor Color Color
+    -- ^ The color for the axis grid.
+  | CAxGridDash [Double] [Double]
+    -- ^ The dash style for the axis grid (alternating stroke, space
+    --   lengths in pixels).
+  | CAxGridDashOffset Double Double
+    -- ^ The pixel offset at which to start the dash style.
+  | CAxGridOpacity Opacity Opacity
+    -- ^ The opacity of the axis grid.
+  | CAxGridWidth Double Double
+    -- ^ The width of the axis grid.
+{-
+In Vega-Lite 4.0.2, labelAlign is listed as accepting a conditional number,
+not an alignment string, so I have removed this from the list for now:
+see https://github.com/vega/vega-lite/issues/5717
+
+  = CAxLabelAlign HAlign HAlign
+    -- ^ Axis label horizontal alignment.
+-}
+  | CAxLabelBaseline VAlign VAlign
+    -- ^ Axis label vertical alignment.
+  | CAxLabelColor Color Color
+    -- ^ Axis label color.
+  | CAxLabelFont T.Text T.Text
+    -- ^ Axis label font.
+  | CAxLabelFontSize Double Double
+    -- ^ Axis label font.
+  | CAxLabelFontStyle T.Text T.Text
+    -- ^ Axis label font style.
+  | CAxLabelFontWeight FontWeight FontWeight
+    -- ^ Axis label font weight.
+  | CAxLabelOpacity Opacity Opacity
+    -- ^ Axis label opacity.
+  | CAxTickColor T.Text T.Text
+    -- ^ Tick color for the axis.
+  | CAxTickDash [Double] [Double]
+    -- ^ The dash style for the axis ticks (alternating stroke, space
+    --   lengths in pixels).
+  | CAxTickDashOffset Double Double
+    -- ^ The pixel offset at which to start the dash style.
+  | CAxTickOpacity Opacity Opacity
+    -- ^ Opacity of the axis tick marks.
+  | CAxTickWidth Double Double
+    -- ^ Width of the axis tick marks.
+
+
+conditionalAxisProperty :: ConditionalAxisProperty -> (AxisProperty, AxisProperty)
+conditionalAxisProperty (CAxGridColor t f) = (AxGridColor t, AxGridColor f)
+conditionalAxisProperty (CAxGridDash t f) = (AxGridDash t, AxGridDash f)
+conditionalAxisProperty (CAxGridDashOffset t f) = (AxGridDashOffset t, AxGridDashOffset f)
+conditionalAxisProperty (CAxGridOpacity t f) = (AxGridOpacity t, AxGridOpacity f)
+conditionalAxisProperty (CAxGridWidth t f) = (AxGridWidth t, AxGridWidth f)
+-- conditionalAxisProperty (CAxLabelAlign t f) = (AxLabelAlign t, AxLabelAlign f)
+conditionalAxisProperty (CAxLabelBaseline t f) = (AxLabelBaseline t, AxLabelBaseline f)
+conditionalAxisProperty (CAxLabelColor t f) = (AxLabelColor t, AxLabelColor f)
+conditionalAxisProperty (CAxLabelFont t f) = (AxLabelFont t, AxLabelFont f)
+conditionalAxisProperty (CAxLabelFontSize t f) = (AxLabelFontSize t, AxLabelFontSize f)
+conditionalAxisProperty (CAxLabelFontStyle t f) = (AxLabelFontStyle t, AxLabelFontStyle f)
+conditionalAxisProperty (CAxLabelFontWeight t f) = (AxLabelFontWeight t, AxLabelFontWeight f)
+conditionalAxisProperty (CAxLabelOpacity t f) = (AxLabelOpacity t, AxLabelOpacity f)
+conditionalAxisProperty (CAxTickColor t f) = (AxTickColor t, AxTickColor f)
+conditionalAxisProperty (CAxTickDash t f) = (AxTickDash t, AxTickDash f)
+conditionalAxisProperty (CAxTickDashOffset t f) = (AxTickDashOffset t, AxTickDashOffset f)
+conditionalAxisProperty (CAxTickOpacity t f) = (AxTickOpacity t, AxTickOpacity f)
+conditionalAxisProperty (CAxTickWidth t f) = (AxTickWidth t, AxTickWidth f)
 
 
 {-|

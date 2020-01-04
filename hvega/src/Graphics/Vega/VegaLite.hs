@@ -312,6 +312,7 @@ module Graphics.Vega.VegaLite
          -- $axisprops
 
        , VL.AxisProperty(..)
+       , VL.ConditionalAxisProperty(..)
 
          -- ** Positioning Constants
          --
@@ -959,6 +960,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 --
 -- __Breaking changes__ in this release:
+--
+-- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
+--   marking a subset of axis properties as being conditional on their
+--   position, and the 'VL.ConditionalAxisProperty' for defining which
+--   properties (grid, label, and tick) can be used in this way.
 --
 -- * The @RemoveInvalid@ constructor has been removed from
 --   'VL.ConfigurationProperty'. To indicate how missing values should
