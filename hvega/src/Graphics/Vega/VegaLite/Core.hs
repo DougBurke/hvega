@@ -1152,6 +1152,22 @@ data AxisProperty
       -- ^ The label color.
       --
       --   @since 0.4.0.0
+    | AxLabelExpr T.Text
+      -- ^ Provide the expression used to generate axis labels.
+      --
+      --   The argument should be a
+      --   <https://vega.github.io/vega/docs/expressions/ Vega expression>, and
+      --   it can use @datum.value@ and @datum.label@ to access the data value
+      --   and default label text.
+      --
+      --   The following example uses four digit years for decades and
+      --   two-digit years for other years:
+      --
+      --   @
+      --   AxLabelExpr "if(year(datum.value) % 10 == 0, utcFormat(datum.value,'%Y'), utcFormat(datum.value,'%y'))"
+      --   @
+      --
+      --   @since 0.5.0.0
     | AxLabelNoFlush
       -- ^ The labels are not aligned flush to the scale. This is the
       --   default for non-continuous X scales.
@@ -1388,6 +1404,7 @@ axisProperty AxLabelNoBound = "labelBound" .= False
 axisProperty AxLabelBound = "labelBound" .= True
 axisProperty (AxLabelBoundValue x) = "labelBound" .= x
 axisProperty (AxLabelColor s) = "labelColor" .= s
+axisProperty (AxLabelExpr e) = "labelExpr" .= e
 axisProperty AxLabelNoFlush = "labelFlush" .= False
 axisProperty AxLabelFlush = "labelFlush" .= True
 axisProperty (AxLabelFlushValue x) = "labelFlush" .= x

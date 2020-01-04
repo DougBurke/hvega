@@ -965,6 +965,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   marking a subset of axis properties as being conditional on their
 --   position, and the 'VL.ConditionalAxisProperty' for defining which
 --   properties (grid, label, and tick) can be used in this way.
+--   It has also gained the 'VL.AxLabelExpr' constructor that allows you
+--   to change the content of axis labels.
 --
 -- * The @RemoveInvalid@ constructor has been removed from
 --   'VL.ConfigurationProperty'. To indicate how missing values should

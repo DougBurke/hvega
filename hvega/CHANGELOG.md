@@ -35,7 +35,9 @@ constructors: `TSubtitle`, `TSubtitleColor`, `TSubtitleFont`,
 `AxisProperty` has gained the `AxDataCondition` constructor for
 marking a subset of axis properties as being conditional on their
 position, and the `ConditionalAxisProperty` for defining which
-properties (grid, label, and tick) can be used in this way.
+properties (grid, label, and tick) can be used in this way. It has
+also gained the `AxLabelExpr` constructor, which allows you to
+change the content of axis labels.
 
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
