@@ -1009,6 +1009,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.TextChannel' type has gained 'VL.TString', which lets you specify
 --   the text content as a literal.
 --
+-- * Two new projections - 'VL.EqualEarth' and 'VL.NaturalEarth1' - have been
+--   added to the 'VL.Projection' type.
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The use of 'VL.ONone' now generates the correct output.
