@@ -45,6 +45,9 @@ The `SelectionProperty` type has gained the `BindLegend` constructor,
 and the associated `BindLegendProperty` type, to allow selection of
 a legend (categorical data only).
 
+The `TextChannel` type has gained the `TString` constructor, which
+lets you specify the text content as a literal.
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

@@ -999,12 +999,15 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
 --   and 'VL.TSubtitlePadding'.
 --
--- * The `VL.AFitX` and `VL.AFitY` constructors have been added to the
+-- * The 'VL.AFitX' and 'VL.AFitY' constructors have been added to the
 --   @Autosize@ type.
 --
--- * The `VL.SelectionProperty` type has gained the `VL.BindLegend`
---   constructor - and associated `VL.BindLegendProperty` type - to
+-- * The 'VL.SelectionProperty' type has gained the 'VL.BindLegend'
+--   constructor - and associated 'VL.BindLegendProperty' type - to
 --   allow selection of legend (categorical data only).
+--
+-- * The 'VL.TextChannel' type has gained 'VL.TString', which lets you specify
+--   the text content as a literal.
 --
 -- __Bug Fixes__ in this release:
 --

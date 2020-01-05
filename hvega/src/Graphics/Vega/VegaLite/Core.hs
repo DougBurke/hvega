@@ -2025,7 +2025,19 @@ data TextChannel
       --   @since 0.4.0.0
     | TTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a text channel.
-
+    | TString T.Text
+      -- ^ A literal value for encoding a text property channel
+      --
+      --   This can be useful for a text annotation, such as:
+      --
+      --   @
+      --   'encoding'
+      --      . 'position' 'Graphics.Vega.VegaLite.X' [ 'PNumber' 300 ]
+      --      . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PNumber' 1234 ]
+      --      . 'text' [ 'TString' \"Upper limit\" ]
+      --   @
+      --
+      --   @since 0.5.0.0
 
 textChannelProperty :: TextChannel -> [LabelledSpec]
 textChannelProperty (TName s) = [field_  s]
@@ -2044,6 +2056,7 @@ textChannelProperty (TDataCondition tests elseClause) =
   dataCond_ textChannelProperty tests elseClause
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
   selCond_ textChannelProperty selName ifClause elseClause
+textChannelProperty (TString s) = ["value" .= s]
 
 
 -- | Properties of an ordering channel used for sorting data fields.
