@@ -783,6 +783,19 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- <https://vega.github.io/vega-lite/docs/encoding.html#detail Vega-Lite documentation>
 -- for more information.
 
+-- NOTE: at present we don't support keyChannel, but leave in in case we
+--       ever do.
+--
+-- ** Dynamic data
+--
+-- $dyndata
+-- Dynamic data (adding or changing values in an existing visualization)
+-- is possible with Vega Lite via the
+-- <https://vega.github.io/vega/docs/api/view/#data-and-scales Vega View data streaming API>.
+-- There is no direct support for this in @hvega@,
+-- which only handles setting up the original visualization, but
+-- the 'VL.keyChannel' enconding may be useful.
+
 -- $scaling
 -- Used to specify how the encoding of a data field should be applied. See the
 -- [Vega-Lite scale documentation](https://vega.github.io/vega-lite/docs/scale.html).
@@ -991,7 +1004,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor
 --   of 'VL.ViewConfig' should be used instead. That is, users should
 --   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
---   to @'VL.configuration' ('VL.View' ['VL.ViewStep x])@.
+--   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
 --
 -- * The 'VL.TitleConfig' type gained the following subtitle-related
 --   constructors: 'VL.TSubtitle', 'VL.TSubtitleColor', 'VL.TSubtitleFont',

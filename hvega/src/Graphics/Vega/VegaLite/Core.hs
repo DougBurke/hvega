@@ -520,13 +520,12 @@ markChannelProperty MNoTitle = ["title" .= A.Null]
 
 {-|
 
-Create an encoding specification from a list of channel encodings,
-such as 'position', 'color', 'size', 'shape'.
+Create an encoding specification from a list of channel encodings.
 
 @
 enc = 'encoding'
         . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"Animal\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
-        . 'position' 'Graphics.Vega.VegaLite.Y' [ PName \"Age\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"Age\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
         . 'shape' [ 'MName' \"Species\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
         . 'size' [ 'MName' \"Population\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ]
 @
@@ -534,6 +533,12 @@ enc = 'encoding'
 The type of @enc@ in this example is @[LabelledSpec] -> PropertySpec@,
 so it can either be used to add further encoding specifications or as
 @enc []@ to create a specification.
+
+The supported encodings inclue:
+'color', 'detail', 'fill', 'fillOpacity', 'hyperlink',
+'opacity', 'order', 'position', 'row', 'shape', 'size',
+'stroke', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
+and 'tooltips'.
 
 -}
 encoding :: [LabelledSpec] -> PropertySpec
@@ -2615,13 +2620,13 @@ transform transforms =
           "impute" ->
             case dval of
               Just (A.Array vs) | V.length vs == 8 ->
-                                    let [imp, key, frameObj, keyValsObj, keyValsSequenceObj, methodObj, groupbyObj, valueObj] = V.toList vs
+                                    let [imp, keyField, frameObj, keyValsObj, keyValsSequenceObj, methodObj, groupbyObj, valueObj] = V.toList vs
 
                                         addField _ A.Null = []
                                         addField f v = [(f, v)]
 
                                         ols = [ ("impute", imp)
-                                              , ("key", key) ]
+                                              , ("key", keyField) ]
                                               <> addField "frame" frameObj
                                               <> addField "keyvals" keyValsObj
                                               <> addField "keyvals" keyValsSequenceObj
@@ -3044,6 +3049,32 @@ detail detailProps ols =
     ("detail" .= object (map detailChannelProperty detailProps)) : ols
 
 
+{-
+
+Elm added this in version 2.0, but I think it needs more structure
+than just a field name, so am leaving out for now.
+
+Encode a key channel, to support dynamic data via the
+<https://vega.github.io/vega/docs/api/view/ Vega View API>.
+
+See the <https://vega.github.io/vega-lite/docs/encoding.html#key Vega-Lite documentation>
+for more information.
+
+@
+'encoding' . 'keyChannel' \"Species\"
+@
+
+@since 0.5.0.0
+keyChannel ::
+  T.Text
+  -- ^ The field to use as the unique key for data binding.
+  -> BuildLabelledSpecs
+keyChannel f ols =
+    ("key" .= object ["field" .= f]) : ols
+    -- ("key" .= f) : ols
+
+-}
+
 {-|
 
 Encode a fill channel. This acts in a similar way to encoding by 'color' but
@@ -3345,8 +3376,8 @@ impute ::
   -> [ImputeProperty]
   -- ^ Define how the imputation works.
   -> BuildLabelledSpecs
-impute fields key imProps ols =
-  (imputeFields_ fields key imProps) : ols
+impute fields keyField imProps ols =
+  (imputeFields_ fields keyField imProps) : ols
 
 
 {-|

@@ -51,6 +51,7 @@ testSpecs = [ ("data1", data1)
             , ("filter2", filter2)
             , ("annotate1", annotate1)
             , ("null1", null1)
+            -- , ("key1", key1)
             ]
 
 
@@ -624,3 +625,26 @@ null1 =
                  . dataRow [("x", Number 7), ("y", Number 20)]
                  $ []
              ]
+
+
+{-
+
+In adding this test I found the output did not validate against
+version 4.0.2, so I've left out for now
+
+key1 :: VegaLite
+key1 =
+  let dvals = dataFromColumns []
+                . dataColumn "x1" (Numbers [ 4, 5, 6 ])
+                . dataColumn "x2" (Numbers [ 5, 6, 8 ])
+                . dataColumn "y" (Numbers [ 2, 2, 5 ])
+                . dataColumn "flag" (Strings [ "good", "bad", "good" ])
+
+      enc = encoding
+             . position X [ PName "x1", PmType Quantitative ]
+             . position Y [ PName "y", PmType Quantitative ]
+             . keyChannel "flag"
+
+  in toVegaLite [ dvals [], enc [], mark Line [] ]
+
+-}
