@@ -70,6 +70,17 @@ mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
 mprops_ f mps = f .= object (map markProperty mps)
 
 
+-- strips leading and trailing white space and, if the result
+-- is empty, returns Null, otherwise the trimmed text.
+--
+cleanT :: T.Text -> VLSpec
+cleanT t =
+  let tout = T.strip t
+  in if T.null tout
+     then A.Null
+     else toJSON tout
+
+
 -- | Type of visual mark used to represent data in the visualization.
 --
 --   The properties of the mark can be changed with the 'MarkProperty'
@@ -417,9 +428,9 @@ markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MFill col) = "fill" .= col
+markProperty (MFill col) = "fill" .= cleanT col
 markProperty (MHeight x) = "height" .= x
-markProperty (MStroke t) = "stroke" .= t
+markProperty (MStroke t) = "stroke" .= cleanT t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
 markProperty (MStrokeWidth w) = "strokeWidth" .= w

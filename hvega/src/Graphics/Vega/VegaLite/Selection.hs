@@ -241,7 +241,10 @@ selectionProperties (SInitInterval mx my) =
   in ["init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))]
 
 selectionProperties (On e) = ["on" .= e]
-selectionProperties (Clear e) = ["clear" .= if T.null e then toJSON False else toJSON e]
+selectionProperties (Clear e) =
+  let t = T.strip e
+  in ["clear" .= if T.null t then toJSON False else toJSON t]
+
 selectionProperties Empty = ["empty" .= fromT "none"]
 selectionProperties (ResolveSelections res) = ["resolve" .= selectionResolutionLabel res]
 selectionProperties (SelectionMark markProps) = ["mark" .= object (map selectionMarkProperty markProps)]

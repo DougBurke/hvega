@@ -254,7 +254,6 @@ fromF = toJSON
 fromT :: T.Text -> VLSpec
 fromT = toJSON
 
-
 -- If there is a new-line in the text then convert to a list.
 splitOnNewline :: T.Text -> VLSpec
 splitOnNewline ts =
