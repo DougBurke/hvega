@@ -10,6 +10,9 @@ to white rather than transparent), although this is also controlled by
 how the Vega-Lite visualization is rendered, which can make tracking
 down why something has changed a bit awkward.
 
+The `pivot` encoding has been added, along with the `PivotProperty`
+preferences type. This is the inverse of `fold`.
+
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.

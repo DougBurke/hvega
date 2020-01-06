@@ -35,6 +35,7 @@ module Graphics.Vega.VegaLite.Transform
        , imputeFields_
        , bin
        , binProperty
+       , operationSpec
        , windowFieldProperty
        , windowPropertySpec
 

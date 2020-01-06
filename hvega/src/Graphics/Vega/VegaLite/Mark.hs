@@ -752,8 +752,8 @@ stopSpec (x, c) = object [ "offset" .= x, "color" .= c ]
 
 {-|
 
-Control the appearance of the gradient. Used by 'MColorGradient'
-and 'MFillGradient'.
+Control the appearance of the gradient. Used by 'MColorGradient',
+'MFillGradient', and 'MStrokeGradient'.
 
 @since 0.5.0.0
 

@@ -220,8 +220,15 @@ module Graphics.Vega.VegaLite
 
        , VL.flatten
        , VL.flattenAs
+
+         -- ** Folding and Pivoting
+         --
+         -- $foldpivot
+
        , VL.fold
        , VL.foldAs
+       , VL.pivot
+       , VL.PivotProperty(..)
 
          -- ** Relational Joining (lookup)
          --
@@ -681,8 +688,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 
 -- $flattening
 -- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
--- and [fold](https://vega.github.io/vega-lite/docs/fold.html)
 -- documentation.
+
+-- $foldpivot
+-- Data tidying operations that reshape the rows and columns of a dataset.
+-- See the Vega-Lite [fold](https://vega.github.io/vega-lite/docs/fold.html) and
+-- [pivot](https://vega.github.io/vega-lite/docs/pivot.html) documentation.
 
 -- $joining
 -- See the
@@ -976,6 +987,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- on both the version of the schema it is using, and the version of the
 -- visualization software used to display it (e.g.
 -- <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
+--
+-- __New functionality__ in this release:
+--
+-- * The 'VL.pivot' encoding has been added, along with the 'VL.PivotProperty'
+--   preferences type. This is the inverse of 'VL.fold'.
 --
 -- __Breaking changes__ in this release:
 --

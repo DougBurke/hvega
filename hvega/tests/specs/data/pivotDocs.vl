@@ -1,0 +1,57 @@
+{
+    "transform": [
+        {
+            "groupby": [
+                "city"
+            ],
+            "value": "temperature",
+            "pivot": "year"
+        }
+    ],
+    "mark": "circle",
+    "data": {
+        "values": [
+            {
+                "temperature": 12,
+                "year": 2017,
+                "city": "Bristol"
+            },
+            {
+                "temperature": 14,
+                "year": 2018,
+                "city": "Bristol"
+            },
+            {
+                "temperature": 11,
+                "year": 2017,
+                "city": "Sheffield"
+            },
+            {
+                "temperature": 13,
+                "year": 2018,
+                "city": "Sheffield"
+            },
+            {
+                "temperature": 7,
+                "year": 2017,
+                "city": "Glasgow"
+            },
+            {
+                "temperature": 10,
+                "year": 2018,
+                "city": "Glasgow"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "2017",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "city",
+            "type": "nominal"
+        }
+    }
+}

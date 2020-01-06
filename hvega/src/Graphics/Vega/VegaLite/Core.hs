@@ -40,6 +40,8 @@ module Graphics.Vega.VegaLite.Core
        , flattenAs
        , fold
        , foldAs
+       , pivot
+       , PivotProperty(..)
 
        , lookup
        , lookupAs
@@ -269,6 +271,7 @@ import Graphics.Vega.VegaLite.Transform
   , imputeFields_
   , bin
   , binProperty
+  , operationSpec
   , windowFieldProperty
   , windowPropertySpec
   )
@@ -2668,6 +2671,23 @@ transform transforms =
                                                              , ("as", toJSON [vs V.! 1, vs V.! 2]) ]
               _ -> A.Null
 
+          "pivot" ->
+            case dval of
+              Just (A.Array vs)
+                | V.length vs == 5 ->
+                  let addField _ A.Null = []
+                      addField f v = [(f, v)]
+
+                      ols = [ ("pivot", vs V.! 0)
+                            , ("value",  vs V.! 1) ]
+                            <> addField "groupby" (vs V.! 2)
+                            <> addField "limit" (vs V.! 3)
+                            <> addField "op" (vs V.! 4)
+
+                  in object ols
+
+              _ -> A.Null
+
           "stack" ->
             case dval of
               Just (A.Array vs) | V.length vs == 6 ->
@@ -3172,13 +3192,10 @@ flattenAs fields names ols = ("flattenAs" .= [fields, names]) : ols
 {-|
 
 Perform a /gather/ operation to /tidy/ a table. Collapse multiple data fields
-into two new data fields: @key@ containing the original data field names and @value@
-containing the corresponding data values. This performs the same function as the
-<https://tidyr.tidyverse.org/dev/articles/pivot.html pivot_longer> and
-<https://tidyr.tidyverse.org/reference/gather.html gather>
-operations in the R tidyverse.
+into two new data fields: @key@ containing the original data field names and
+@value@ containing the corresponding data values.
 
-See also 'foldAs'.
+It is the inverse of 'pivot'. See also 'foldAs'.
 
 @
 dvals =
@@ -3222,6 +3239,104 @@ foldAs ::
   -> BuildLabelledSpecs
 foldAs fields keyName valName ols =
   ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
+
+
+{-|
+
+Perform a /pivot/ operation on a table. Spreads a key-value pair of fields
+across multiple fields according to the data in the /key/ field.
+
+It is the inverse of 'fold'.
+
+@
+dvals =
+    'Graphics.Vega.VegaLite.dataFromColumns' []
+        . 'Graphics.Vega.VegaLite.dataColumn' \"city\" ('Strings' [ \"Bristol\", \"Bristol\", \"Sheffield\", \"Sheffield\", \"Glasgow\", \"Glasgow\" ])
+        . 'Graphics.Vega.VegaLite.dataColumn' \"temperature\" ('Numbers' [ 12, 14, 11, 13, 7, 10 ])
+        . 'Graphics.Vega.VegaLite.dataColumn' \"year\" ('Numbers' [ 2017, 2018, 2017, 2018, 2017, 2018 ])
+
+trans =
+    'transform'
+        . 'pivot' "year" "temperature" [ 'PiGroupBy' [ \"city\" ] ]
+
+enc =
+    'encoding'
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"2017\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"city\", 'PmType' 'Graphics.Vega.VegaLite.Nominal' ]
+@
+
+@since 0.5.0.0
+-}
+
+pivot ::
+  T.Text
+  -- ^ The key field.
+  -> T.Text
+  -- ^ The value field.
+  -> [PivotProperty]
+  -> BuildLabelledSpecs
+pivot field valField pProps ols =
+  ("pivot" .= [ toJSON field
+              , toJSON valField
+              , pivotPropertySpec PPLGroupBy pProps
+              , pivotPropertySpec PPLLimit pProps
+              , pivotPropertySpec PPLOp pProps
+              ]) : ols
+
+
+{-|
+Configure the 'pivot' operation.
+
+@since 0.5.0.0
+-}
+
+data PivotProperty
+  = PiGroupBy [T.Text]
+    -- ^ The data fields to group by when pivoting. If unspecified
+    --   then a single group containing all the data objects will
+    --   be used.
+  | PiLimit Natural
+    -- ^ The maximum number of fields to generate when pivoting. If
+    --   0 or unspecified all fields are pivoted. The pivot names
+    --   are sorted into ascending order before the limit is
+    --   applied.
+  | PiOp Operation
+    -- ^ The aggregation operation to apply to grouped fields.
+
+
+data PivotPropertyLabel = PPLGroupBy | PPLLimit | PPLOp
+
+-- Multiple properties will lead to no output; in some ways
+-- this makes sense (aka "you are telling me multiple things,
+-- so I give up") and is used elsewhere.
+--
+pivotPropertySpec ::
+  PivotPropertyLabel
+  -> [PivotProperty]
+  -> VLSpec
+pivotPropertySpec PPLGroupBy ps =
+  let wanted (PiGroupBy xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+pivotPropertySpec PPLLimit ps =
+  let wanted (PiLimit xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+pivotPropertySpec PPLOp ps =
+  let wanted (PiOp xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> operationSpec x
+    _ -> A.Null
 
 
 {-|
