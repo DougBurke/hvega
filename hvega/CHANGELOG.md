@@ -51,6 +51,13 @@ lets you specify the text content as a literal.
 Two new projections - `EqualEarth` and `NaturalEarth1` - have been
 added to the `Projection` type.
 
+Support for color gradients has been added for marks via the
+`MColorGradient`, `MFillGradient`, and `MStrokeGradient` constructors of
+`MarkProperty`, along with the new `ColorGradient` and
+`GradientProperty` types for defining the appearance of the
+gradient. The `GradientCoord` and `GradientStops` type aliases
+have also been added (although they provides no type safety).
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

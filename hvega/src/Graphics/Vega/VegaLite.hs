@@ -108,6 +108,8 @@ module Graphics.Vega.VegaLite
        , VL.BuildLabelledSpecs
        , VL.Angle
        , VL.Color
+       , VL.GradientCoord
+       , VL.GradientStops
        , VL.Opacity
        , VL.ZIndex
        , VL.combineSpecs
@@ -275,6 +277,8 @@ module Graphics.Vega.VegaLite
        , VL.LineMarker(..)
        , VL.MarkErrorExtent(..)
        , VL.TooltipContent(..)
+       , VL.ColorGradient(..)
+       , VL.GradientProperty(..)
 
          -- ** Cursors
          --
@@ -1024,6 +1028,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * Two new projections - 'VL.EqualEarth' and 'VL.NaturalEarth1' - have been
 --   added to the 'VL.Projection' type.
+--
+-- * Support for color gradients has been added for marks via the
+--   'VL.MColorGradient', 'VL.MFillGradient', and
+--   'VL.MStrokeGradient' constructors of
+--   'VL.MarkProperty', along with the new 'VL.ColorGradient' and
+--   'VL.GradientProperty' types for defining the appearance of the
+--   gradient. The 'VL.GradientCoord' and 'VL.GradientStops' type aliases
+--   have also been added (although they provides no type safety).
 --
 -- __Bug Fixes__ in this release:
 --

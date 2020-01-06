@@ -21,6 +21,10 @@ module Graphics.Vega.VegaLite.Mark
        , PointMarker(..)
        , LineMarker(..)
        , MarkErrorExtent(..)
+       , GradientCoord
+       , GradientStops
+       , ColorGradient(..)
+       , GradientProperty(..)
 
          -- not for external export
        , mprops_
@@ -34,6 +38,7 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.List (sortOn)
 
 
 import Graphics.Vega.VegaLite.Foundation
@@ -237,6 +242,20 @@ data MarkProperty
     | MColor Color
       -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
       --   precedence and will override this if specified.
+    | MColorGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MColorGradient'
+      --       'GrRadial'
+      --       [ ( 0, \"red\" ), ( 1, \"blue\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
@@ -259,6 +278,20 @@ data MarkProperty
     | MFilled Bool
       -- ^ Should a mark's color should be used as the fill color instead of
       --   stroke color.
+    | MFillGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to the interior of a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MFillGradient'
+      --       'GrLinear'
+      --       [ ( 0, \"orange\" ), ( 1, \"green\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | MFillOpacity Opacity
       -- ^ Fill opacity of a mark.
     | MFont T.Text
@@ -346,6 +379,20 @@ data MarkProperty
       --   sequence of line lengths, in pixels.
     | MStrokeDashOffset Double
       -- ^ The number of pixels before the first line dash is drawn.
+    | MStrokeGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to the boundary of a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MStrokeGradient'
+      --       'GrLinear'
+      --       [ ( 0, \"pink\" ), ( 1, \"violet\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | MStrokeJoin StrokeJoin
       -- ^ Line segment join style of a mark's stroke.
       --
@@ -488,6 +535,25 @@ markProperty (MXOffset x) = "xOffset" .= x
 markProperty (MYOffset x) = "yOffset" .= x
 markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
+
+-- color gradients
+markProperty (MColorGradient dir stops opts) =
+  "color" .= gradientSpec dir stops opts
+markProperty (MFillGradient dir stops opts) =
+  "fill" .= gradientSpec dir stops opts
+markProperty (MStrokeGradient dir stops opts) =
+  "stroke" .= gradientSpec dir stops opts
+
+
+-- unlike elm, need to sort the stops list (although it's
+-- not obvious this is actually needed).
+--
+gradientSpec :: ColorGradient -> GradientStops -> [GradientProperty] -> VLSpec
+gradientSpec dir stops props =
+  let sortedStops = sortOn fst stops
+  in object ([ "gradient" .= colorGradientLabel dir
+             , "stops" .= map stopSpec sortedStops ]
+             ++ map gradientProperty props)
 
 
 {-|
@@ -632,3 +698,104 @@ markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
 markErrorExtentLSpec ExRange            = extent_ "min-max"
 markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
+
+
+{-|
+Define the form of the
+<https://vega.github.io/vega-lite/docs/types.html#gradient color gradient>
+(for use with 'MColorGradient' and 'MFillGradient').
+
+@since 0.5.0.0
+
+-}
+
+data ColorGradient
+  = GrLinear
+    -- ^ A linear gradient.
+  | GrRadial
+    -- ^ A radial gradient.
+
+
+colorGradientLabel :: ColorGradient -> T.Text
+colorGradientLabel GrLinear = "linear"
+colorGradientLabel GrRadial = "radial"
+
+
+{-|
+
+Convenience type-annotation to label a normalized coordinate
+for color gradients. The value should be in the range 0 to 1,
+inclusive. There is __no attempt__ to validate that the number
+lies within this range.
+
+@since 0.5.0.0
+-}
+type GradientCoord = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate the color interpolation
+points - i.e. the colors to use at points along the
+normalized range 0 to 1 (inclusive).
+
+The list does not have to be sorted.
+
+@since 0.5.0.0
+-}
+type GradientStops = [(GradientCoord, Color)]
+
+
+stopSpec :: (GradientCoord, Color) -> VLSpec
+stopSpec (x, c) = object [ "offset" .= x, "color" .= c ]
+
+
+{-|
+
+Control the appearance of the gradient. Used by 'MColorGradient'
+and 'MFillGradient'.
+
+@since 0.5.0.0
+
+-}
+
+data GradientProperty
+  = GrX1 GradientCoord
+    -- ^ The start of the color gradient (X axis); for radial
+    --   gradients it represents the center of the inner circle.
+    --
+    --   The default for linear gradients is 0, and for radial
+    --   gradients it is 0.5.
+  | GrY1 GradientCoord
+    -- ^ The start of the color gradient (Y axis); for radial
+    --   gradients it represents the center of the inner circle.
+    --
+    --   The default for linear gradients is 0, and for radial
+    --   gradients it is 0.5.
+  | GrX2 GradientCoord
+    -- ^ The end of the color gradient (X axis); for radial
+    --   gradients it represents the center of the outer circle.
+    --
+    --   The default for linear gradients is 1, and for radial
+    --   gradients it is 0.5.
+  | GrY2 GradientCoord
+    -- ^ The end of the color gradient (Y axis); for radial
+    --   gradients it represents the center of the outer circle.
+    --
+    --   The default for linear gradients is 1, and for radial
+    --   gradients it is 0.5.
+  | GrR1 GradientCoord
+    -- ^ The radius of the inner circle (radial color gradients
+    --   only). The default is 0.
+  | GrR2 GradientCoord
+    -- ^ The radius of the outer circle (radial color gradients
+    --   only). The default is 0.5.
+
+
+gradientProperty :: GradientProperty -> LabelledSpec
+gradientProperty (GrX1 x) = "x1" .= x
+gradientProperty (GrX2 x) = "x2" .= x
+gradientProperty (GrY1 x) = "y1" .= x
+gradientProperty (GrY2 x) = "y2" .= x
+gradientProperty (GrR1 x) = "r1" .= x
+gradientProperty (GrR2 x) = "r2" .= x
