@@ -251,6 +251,13 @@ module Graphics.Vega.VegaLite
 
        , VL.sample
 
+         -- ** Density Estimation
+         --
+         -- $density
+
+       , VL.density
+       , VL.DensityProperty(..)
+
          -- ** Window Transformations
          --
          -- $window
@@ -710,7 +717,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html#transform).
 
 -- $sampling
--- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html)
+-- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html).
+
+-- $density
+-- See the [Vega-Lite density documentation](https://vega.github.io/vega-lite/docs/density.html).
 
 -- $window
 -- See the Vega-Lite
@@ -1003,6 +1013,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The 'VL.pivot' encoding has been added, along with the 'VL.PivotProperty'
 --   preferences type. This is the inverse of 'VL.fold'.
+--
+-- * The 'VL.density' encoding has been added, along with the 'VL.DensityProperty'
+--   type, to support kernel density estimation (such as generating a
+--   continuous distribution from a discrete one).
 --
 -- * The 'VL.url' encoding has been added for displaying images (via the
 --   new 'VL.Image' mark type.

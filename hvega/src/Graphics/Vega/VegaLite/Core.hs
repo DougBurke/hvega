@@ -50,6 +50,9 @@ module Graphics.Vega.VegaLite.Core
 
        , sample
 
+       , density
+       , DensityProperty(..)
+
        , window
 
        , mark
@@ -2642,6 +2645,28 @@ transform transforms =
                                     in object ols
               _ -> A.Null
 
+          "density" ->
+            case dval of
+              Just (A.Array vs)
+                | V.length vs == 10 ->
+                    let addField _ A.Null = []
+                        addField f v = [(f, v)]
+
+                        ols = [ ("density", vs V.! 0) ]
+                              <> addField "groupby" (vs V.! 1)
+                              <> addField "cumulative" (vs V.! 2)
+                              <> addField "counts" (vs V.! 3)
+                              <> addField "bandwidth" (vs V.! 4)
+                              <> addField "extent" (vs V.! 5)
+                              <> addField "minsteps" (vs V.! 6)
+                              <> addField "maxsteps" (vs V.! 7)
+                              <> addField "steps" (vs V.! 8)
+                              <> addField "as" (vs V.! 9)
+
+                    in object ols
+
+              _ -> A.Null
+
           "lookup" ->
             case dval of
               Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
@@ -2928,6 +2953,165 @@ For example, the following randomly samples 50 values from a sine curve:
 
 sample :: Int -> BuildLabelledSpecs
 sample maxSize ols = ("sample" .= maxSize) : ols
+
+
+{-|
+
+Configure the kernel density estimation process.
+
+@since 0.5.0.0
+-}
+
+data DensityProperty
+  = DnAs T.Text T.Text
+    -- ^ Name the outputs of a density transform. The first argument is the
+    --   name of the field containing the samples and the second the name
+    --   for the field containing the density estimates.
+    --
+    --   The defaults are @\"value\"@ and @\"density\"@ respectively.
+  | DnBandwidth Double
+    -- ^ The bandwidth (standard deviation) of the Gaussian kernel to be
+    --   used in the KDE. If not given, or set to 0, then
+    --   [Scott's method](https://stats.stackexchange.com/questions/90656/kernel-bandwidth-scotts-vs-silvermans-rules)
+    --   is used.
+  | DnCounts Bool
+    -- ^ If @'True'@ then the KDE generates counts, if @'False'@ it
+    --   generates probabilities.
+    --
+    --   The default is probabilities.
+  | DnCumulative Bool
+    -- ^ Should the density estimates be cumulative?
+    --
+    --   The default is @'False'@.
+  | DnExtent DataValue DataValue
+    -- ^ The domain (minimum to maximum) from which to sample a distribution
+    --   for the density estimation.
+    --
+    --   The default is to use the full extent of the input values.
+  | DnGroupBy [T.Text]
+    -- ^ The data fields to group by.
+    --
+    --   The default is to use a single group containing all the data objects.
+  | DnMaxSteps Natural
+    -- ^ The maximum number of samples to take from the extent domain.
+    --
+    --   The default is 200.
+  | DnMinSteps Natural
+    -- ^ The minimum number of samples to take from the extent domain.
+    --
+    --   The default is 25.
+  | DnSteps Natural
+    -- ^ This overrides the 'DnMinSteps' and 'DnMaxSteps' options and
+    --   specified an exact number of steps to take from the extent
+    --   domain.
+    --
+    --   It can be used with 'DnExtent' to ensure a consistent
+    --   set of sample points for stacked densities.
+
+
+data DensityPropertyLabel =
+  DPLGroupby | DPLCumulative | DPLCounts | DPLBandwidth | DPLExtent |
+  DPLMinsteps | DPLMaxsteps | DPLSteps | DPLAs
+
+
+densityPropertySpec :: DensityPropertyLabel -> [DensityProperty] -> VLSpec
+densityPropertySpec DPLGroupby ps =
+  let wanted (DnGroupBy xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLCumulative ps =
+  let wanted (DnCumulative xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLCounts ps =
+  let wanted (DnCounts xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLBandwidth ps =
+  let wanted (DnBandwidth xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLExtent ps =
+  let wanted (DnExtent xs ys) = Just (map dataValueSpec [xs, ys])
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLMinsteps ps =
+  let wanted (DnMinSteps xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLMaxsteps ps =
+  let wanted (DnMaxSteps xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLSteps ps =
+  let wanted (DnSteps xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+densityPropertySpec DPLAs ps =
+  let wanted (DnAs xs ys) = Just [xs, ys]
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+
+
+{-|
+
+Apply /Kernel Density Estimation/ to a data stream to generate a new stream
+of samples of the estimated density. This is useful for representing
+probability distributions and generating continuous distributions from
+discrete samples.
+
+@since 0.5.0.0
+-}
+
+density :: T.Text -> [DensityProperty] -> BuildLabelledSpecs
+density field dps ols =
+  ("density" .= [ toJSON field
+                , densityPropertySpec DPLGroupby dps
+                , densityPropertySpec DPLCumulative dps
+                , densityPropertySpec DPLCounts dps
+                , densityPropertySpec DPLBandwidth dps
+                , densityPropertySpec DPLExtent dps
+                , densityPropertySpec DPLMinsteps dps
+                , densityPropertySpec DPLMaxsteps dps
+                , densityPropertySpec DPLSteps dps
+                , densityPropertySpec DPLAs dps
+                ]) : ols
 
 
 {-|

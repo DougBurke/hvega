@@ -1,0 +1,45 @@
+{
+    "transform": [
+        {
+            "as": [
+                "measurement",
+                "value"
+            ],
+            "fold": [
+                "petalWidth",
+                "petalLength",
+                "sepalWidth",
+                "sepalLength"
+            ]
+        },
+        {
+            "groupby": [
+                "measurement"
+            ],
+            "bandwidth": 0.3,
+            "density": "value"
+        }
+    ],
+    "height": 50,
+    "mark": "area",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/iris.json"
+    },
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "row": {
+            "field": "measurement",
+            "type": "nominal"
+        },
+        "x": {
+            "field": "value",
+            "title": "width/length (cm)",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "density",
+            "type": "quantitative"
+        }
+    }
+}
