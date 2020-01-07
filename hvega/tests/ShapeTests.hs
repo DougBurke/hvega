@@ -38,6 +38,12 @@ testSpecs = [ ("defNominal", scatter1)
             , ("point5", point5)
             , ("point6", point6)
             , ("point7", point7)
+            , ("rounded1", rounded1)
+            , ("rounded2", rounded2)
+            , ("rounded3", rounded3)
+            , ("rounded4", rounded4)
+            , ("rounded5", rounded5)
+            , ("rounded6", rounded6)
             ]
 
 
@@ -316,3 +322,29 @@ point6 = pointChart "arrow-filled" True SymArrow
 
 point7 :: VegaLite
 point7 = pointChart "wedge-unfilled" False SymWedge
+
+
+rectTest :: [MarkProperty] -> VegaLite
+rectTest mps =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+      enc = encoding
+            . position X [ PName "Origin", PmType Nominal ]
+            . position Y [ PName "Cylinders", PmType Ordinal ]
+
+      -- using MSize here returns the warning
+      -- 'Cannot apply size to non-oriented mark "rect".'
+      -- from Vega Embed. If we take it out the visualization doesn't
+      -- "look as good".
+      --
+      rect = mark Rect (MSize 30 : MOpacity 0.6 : mps)
+
+  in toVegaLite [ width 200, height 200, dvals, enc [], rect ]
+
+
+rounded1, rounded2, rounded3, rounded4, rounded5, rounded6 :: VegaLite
+rounded1 = rectTest [ MCornerRadius 8 ]
+rounded2 = rectTest [ MCornerRadiusTL 8 ]
+rounded3 = rectTest [ MCornerRadiusTR 8 ]
+rounded4 = rectTest [ MCornerRadiusBL 8 ]
+rounded5 = rectTest [ MCornerRadiusBR 8 ]
+rounded6 = rectTest [ MCornerRadius 16, MCornerRadiusBL 0, MCornerRadiusTR 0 ]

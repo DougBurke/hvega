@@ -268,6 +268,38 @@ data MarkProperty
       --   @
       --
       --   @since 0.5.0.0
+    | MCornerRadius Double
+      -- ^ Corner radius of all corners of a rectangular mark, in pixels.
+      --
+      --   The default is 0. This value is over-ridden by any of
+      --   'MCornerRadiusTL', 'MCornerRadiusTR', 'MCornerRadiusBL',
+      --   or 'MCornerRadiusBR'.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusTL Double
+      -- ^ Top-left corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusTR Double
+      -- ^ Top-right corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusBL Double
+      -- ^ Bottom-left corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusBR Double
+      -- ^ Bottom-right corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
     | MContinuousBandSize Double
@@ -486,6 +518,11 @@ markProperty (MBorders mps) = mprops_ "borders" mps
 markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= col
+markProperty (MCornerRadius x) = "cornerRadius" .= x
+markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .= x
+markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
+markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
+markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
 markProperty (MFill col) = "fill" .= cleanT col
 markProperty (MHeight x) = "height" .= x
