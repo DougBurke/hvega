@@ -9,6 +9,8 @@ module Gallery.Advanced (testSpecs) where
 import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, lookup)
+import Data.Aeson (Value, toJSON)
+
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("advanced1", advanced1)
@@ -22,13 +24,23 @@ testSpecs = [ ("advanced1", advanced1)
             , ("advanced9", advanced9)
             , ("density1", density1)
             , ("density2", density2)
+            , ("filter1", filter1)
+            , ("filter2", filter2)
+            , ("transform1", transform1)
+            , ("layered1", layered1)
+            , ("layered2", layered2)
+            , ("layered3", layered3)
+            , ("benchmark", benchmark)
             ]
 
 
 -- helpers
 --
-pQuant :: PositionChannel
+pQuant, pNominal, pOrdinal, pTemporal :: PositionChannel
 pQuant = PmType Quantitative
+pNominal = PmType Nominal
+pOrdinal = PmType Ordinal
+pTemporal = PmType Temporal
 
 fNominal :: FacetChannel
 fNominal = FmType Nominal
@@ -465,153 +477,6 @@ advanced9 =
     toVegaLite [ desc, dvals [], enc [], mark Bar [] ]
 
 
-{-
-
--- advanced7 in elm
-advanced7 : Spec
-advanced7 =
-    let
-        des =
-            description "Filtering the top-k items"
-
-        data =
-            dataFromColumns []
-                << dataColumn "student" (strs [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" ])
-                << dataColumn "score" (nums [ 100, 56, 88, 65, 45, 23, 66, 67, 13, 12, 50, 78, 66, 30, 97, 75, 24, 42, 76, 78, 21, 46 ])
-
-        trans =
-            transform
-                << window [ ( [ wiOp woRank ], "rank" ) ]
-                    [ wiSort [ wiDescending "score" ] ]
-                << filter (fiExpr "datum.rank <=5")
-
-        enc =
-            encoding
-                << position X [ pName "score", pQuant ]
-                << position Y
-                    [ pName "student"
-                    , pNominal
-                    , pSort [ soByField "score" opMean, soDescending ]
-                    ]
-    in
-    toVegaLite [ des, data [], trans [], enc [], bar [] ]
-
-
-advanced8 : Spec
-advanced8 =
-    let
-        des =
-            description "Top-k items with 'others'"
-
-        data =
-            dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
-
-        trans =
-            transform
-                << aggregate [ opAs opMean "Worldwide_Gross" "aggregateGross" ] [ "Director" ]
-                << window [ ( [ wiOp woRowNumber ], "rank" ) ]
-                    [ wiSort [ wiDescending "aggregateGross" ] ]
-                << calculateAs "datum.rank < 10 ? datum.Director : 'All Others'" "rankedDirector"
-
-        enc =
-            encoding
-                << position X
-                    [ pName "aggregateGross"
-                    , pQuant
-                    , pAggregate opMean
-                    , pTitle ""
-                    ]
-                << position Y
-                    [ pName "rankedDirector"
-                    , pOrdinal
-                    , pSort [ soByField "aggregateGross" opMean, soDescending ]
-                    , pTitle ""
-                    ]
-    in
-    toVegaLite
-        [ des
-        , title "Top Directors by Average Worldwide Gross" []
-        , data
-        , trans []
-        , enc []
-        , bar []
-        ]
-
-advanced10 : Spec
-advanced10 =
-    let
-        des =
-            description "Cumulative Frequency Distribution"
-
-        data =
-            dataFromUrl "https://gicentre.github.io/data/putneyAirQuality2018.csv"
-                [ parse [ ( "NOX", foNum ) ] ]
-
-        trans =
-            transform
-                << window [ ( [ wiAggregateOp opCount ], "cumulativeCount" ) ]
-                    [ wiSort [ wiAscending "NOX" ] ]
-
-        enc =
-            encoding
-                << position X
-                    [ pName "NOX"
-                    , pQuant
-                    , pTitle "NOX concentration (μg/㎥)"
-                    ]
-                << position Y [ pName "cumulativeCount", pQuant ]
-    in
-    toVegaLite [ des, width 500, data, trans [], enc [], area [] ]
-
-
-advanced11 : Spec
-advanced11 =
-    let
-        des =
-            description "Layered Histogram and Cumulative Histogram"
-
-        data =
-            dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
-
-        trans =
-            transform
-                << binAs [] "IMDB_Rating" "binIMDB_Rating"
-                << aggregate [ opAs opCount "" "count" ] [ "binIMDB_Rating", "binIMDB_Rating_end" ]
-                << filter (fiExpr "datum.binIMDB_Rating !== null")
-                << window [ ( [ wiAggregateOp opSum, wiField "count" ], "cumulativeCount" ) ]
-                    [ wiSort [ wiAscending "binIMDB_Rating" ], wiFrame Nothing (Just 0) ]
-
-        enc =
-            encoding
-                << position X
-                    [ pName "binIMDB_Rating"
-                    , pQuant
-                    , pScale [ scZero False ]
-                    , pTitle "IMDB Rating"
-                    ]
-                << position X2 [ pName "binIMDB_Rating_end" ]
-
-        enc1 =
-            encoding
-                << position Y [ pName "cumulativeCount", pQuant ]
-
-        enc2 =
-            encoding
-                << position Y [ pName "count", pQuant ]
-    in
-    toVegaLite
-        [ des
-        , data
-        , trans []
-        , enc []
-        , layer
-            [ asSpec [ enc1 [], bar [] ]
-            , asSpec [ enc2 [], bar [ maColor "yellow", maOpacity 0.5 ] ]
-            ]
-        ]
-
--}
-
 -- advanced12 in elm
 --
 -- TODO: overplot the actual values
@@ -654,115 +519,235 @@ density2 =
   in toVegaLite [ width 400, height 100, dvals, trans [], enc [], mark Area [ MOpacity 0.5 ] ]
 
 
-{-
-advanced16 : Spec
-advanced16 =
-    let
-        desc =
-            description "Plot showing average data with raw values in the background."
+-- advanced7 in elm
+filter1 :: VegaLite
+filter1 =
+  let des = description "Filtering the top-k items"
 
-        data =
-            dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+      dvals = dataFromColumns []
+              . dataColumn "student" (Strings [ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V" ])
+              . dataColumn "score" (Numbers [ 100, 56, 88, 65, 45, 23, 66, 67, 13, 12, 50, 78, 66, 30, 97, 75, 24, 42, 76, 78, 21, 46 ])
 
-        trans =
-            transform << filter (fiExpr "datum.symbol === 'GOOG'")
+      trans = transform
+              . window [ ( [ WOp Rank ], "rank" ) ]
+                       [ WSort [ WDescending "score" ] ]
+              . filter (FExpr "datum.rank <=5")
 
-        encRaw =
-            encoding
-                << position X [ pName "date", pTemporal, pTimeUnit year ]
-                << position Y [ pName "price", pQuant ]
+      enc = encoding
+            . position X [ PName "score", pQuant ]
+            . position Y
+                 [ PName "student"
+                 , pNominal
+                 -- , PSort [ ByFieldOp "score" Mean, Descending ]
+                 , PSort [ ByChannel ChX, Descending ]
+                 ]
 
-        specRaw =
-            asSpec [ encRaw [], point [ maOpacity 0.3 ] ]
-
-        encAv =
-            encoding
-                << position X [ pName "date", pTemporal, pTimeUnit year ]
-                << position Y [ pName "price", pAggregate opMean, pQuant ]
-
-        specAv =
-            asSpec [ encAv [], line [] ]
-    in
-    toVegaLite [ desc, data, trans [], layer [ specRaw, specAv ] ]
+  in toVegaLite [ des, dvals [], trans [], enc [], mark Bar [] ]
 
 
-advanced17 : Spec
-advanced17 =
-    let
-        desc =
-            description "Plot showing a 30 day rolling average with raw values in the background."
+-- advanced8 in elm
+filter2 :: VegaLite
+filter2 =
+  let des = description "Top-k items with 'others'"
 
-        data =
-            dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
 
-        trans =
-            transform
-                << window [ ( [ wiAggregateOp opMean, wiField "temp_max" ], "rollingMean" ) ]
-                    [ wiFrame (Just -15) (Just 15) ]
+      trans = transform
+              . aggregate [ opAs Mean "Worldwide_Gross" "aggregateGross" ] [ "Director" ]
+              . window [ ( [ WOp RowNumber ], "rank" ) ]
+                       [ WSort [ WDescending "aggregateGross" ] ]
+              . calculateAs "datum.rank < 10 ? datum.Director : 'All Others'" "rankedDirector"
 
-        encRaw =
-            encoding
-                << position X [ pName "date", pTitle "Date", pTemporal ]
-                << position Y [ pName "temp_max", pTitle "Maximum temperature", pQuant ]
+      enc = encoding
+            . position X
+                    [ PName "aggregateGross"
+                    , pQuant
+                    , PAggregate Mean
+                    , PNoTitle
+                    ]
+            . position Y
+                    [ PName "rankedDirector"
+                    , pOrdinal
+                    , PSort [ ByChannel ChX, Descending ]
+                    , PNoTitle
+                    ]
 
-        specRaw =
-            asSpec [ encRaw [], point [ maOpacity 0.3 ] ]
-
-        encAv =
-            encoding
-                << position X [ pName "date", pTemporal ]
-                << position Y [ pName "rollingMean", pQuant ]
-
-        specAv =
-            asSpec [ encAv [], line [ maColor "red", maSize 3 ] ]
-    in
-    toVegaLite [ desc, width 400, height 300, data, trans [], layer [ specRaw, specAv ] ]
+  in toVegaLite
+        [ des
+        , title "Top Directors by Average Worldwide Gross" []
+        , dvals
+        , trans []
+        , enc []
+        , mark Bar []
+        ]
 
 
-advanced18 : Spec
-advanced18 =
-    let
-        desc =
-            description "Line chart to show benchmarking results."
+-- advanced10 in elm
+transform1 :: VegaLite
+transform1 =
+  let des = description "Cumulative Frequency Distribution"
 
-        falconData =
-            JE.list JE.float [ 16.81999969482422, 19.759998321533203, 16.079999923706055, 19.579999923706055, 16.420000076293945, 16.200000762939453, 16.020000457763672, 15.9399995803833, 16.280000686645508, 16.119998931884766, 16.15999984741211, 16.119998931884766, 16.139999389648438, 16.100000381469727, 16.200000762939453, 16.260000228881836, 19.35999870300293, 19.700000762939453, 15.9399995803833, 19.139999389648438, 16.200000762939453, 16.119998931884766, 19.520000457763672, 19.700000762939453, 16.200000762939453, 20.979999542236328, 16.299999237060547, 16.420000076293945, 16.81999969482422, 16.5, 16.560001373291016, 16.18000030517578, 16.079999923706055, 16.239999771118164, 16.040000915527344, 16.299999237060547, 19.399999618530273, 15.699999809265137, 16.239999771118164, 15.920000076293945, 16.259998321533203, 16.219999313354492, 16.520000457763672, 16.459999084472656, 16.360000610351563, 15.719999313354492, 16.060001373291016, 15.960000991821289, 16.479999542236328, 16.600000381469727, 16.240001678466797, 16.940000534057617, 16.220001220703125, 15.959999084472656, 15.899999618530273, 16.479999542236328, 16.31999969482422, 15.75999927520752, 15.999998092651367, 16.18000030517578, 16.219999313354492, 15.800000190734863, 16.139999389648438, 16.299999237060547, 16.360000610351563, 16.260000228881836, 15.959999084472656, 15.9399995803833, 16.53999900817871, 16.139999389648438, 16.259998321533203, 16.200000762939453, 15.899999618530273, 16.079999923706055, 16.079999923706055, 15.699999809265137, 15.660000801086426, 16.139999389648438, 23.100000381469727, 16.600000381469727, 16.420000076293945, 16.020000457763672, 15.619999885559082, 16.35999870300293, 15.719999313354492, 15.920001029968262, 15.5600004196167, 16.34000015258789, 22.82000160217285, 15.660000801086426, 15.5600004196167, 16, 16, 15.819999694824219, 16.399999618530273, 16.46000099182129, 16.059999465942383, 16.239999771118164, 15.800000190734863, 16.15999984741211, 16.360000610351563, 19.700000762939453, 16.10000228881836, 16.139999389648438, 15.819999694824219, 16.439998626708984, 16.139999389648438, 16.020000457763672, 15.860000610351563, 16.059999465942383, 16.020000457763672, 15.920000076293945, 15.819999694824219, 16.579999923706055, 15.880000114440918, 16.579999923706055, 15.699999809265137, 19.380001068115234, 19.239999771118164, 16, 15.980000495910645, 15.959999084472656, 16.200000762939453, 15.980000495910645, 16.34000015258789, 16.31999969482422, 16.260000228881836, 15.920000076293945, 15.540000915527344, 16.139999389648438, 16.459999084472656, 16.34000015258789, 15.819999694824219, 19.719999313354492, 15.75999927520752, 16.499998092651367, 15.719999313354492, 16.079999923706055, 16.439998626708984, 16.200000762939453, 15.959999084472656, 16, 16.100000381469727, 19.31999969482422, 16.100000381469727, 16.18000030517578, 15.959999084472656, 22.639999389648438, 15.899999618530273, 16.279998779296875, 16.100000381469727, 15.920000076293945, 16.079999923706055, 16.260000228881836, 15.899999618530273, 15.820001602172852, 15.699999809265137, 15.979998588562012, 16.380001068115234, 16.040000915527344, 19.420000076293945, 15.9399995803833, 16.15999984741211, 15.960000991821289, 16.259998321533203, 15.780000686645508, 15.880000114440918, 15.980000495910645, 16.060001373291016, 16.119998931884766, 23.020000457763672, 15.619999885559082, 15.920000076293945, 16.060001373291016, 14.780000686645508, 16.260000228881836, 19.520000457763672, 16.31999969482422, 16.600000381469727, 16.219999313354492, 19.740001678466797, 19.46000099182129, 15.940000534057617, 15.839999198913574, 16.100000381469727, 16.46000099182129, 16.17999839782715, 16.100000381469727, 15.9399995803833, 16.060001373291016, 15.860000610351563, 15.819999694824219, 16.03999900817871, 16.17999839782715, 15.819999694824219, 17.299999237060547, 15.9399995803833, 15.739999771118164, 15.719999313354492, 15.679998397827148, 15.619999885559082, 15.600000381469727, 16.03999900817871, 15.5, 15.600001335144043, 19.439998626708984, 15.960000991821289, 16.239999771118164, 16.040000915527344, 16.239999771118164 ]
+      dvals = dataFromUrl "https://gicentre.github.io/data/putneyAirQuality2018.csv"
+                [ Parse [ ( "NOX", FoNumber ) ] ]
 
-        squareData =
-            JE.list JE.float [ 24.200000762939453, 17.899999618530273, 15.800000190734863, 58.400001525878906, 151, 2523.10009765625, 245.3000030517578, 136, 72.30000305175781, 55.70000076293945, 42.400001525878906, 37.70000076293945, 30.100000381469727, 30.100000381469727, 21.799999237060547, 20.600000381469727, 21.799999237060547, 17.600000381469727, 18.200000762939453, 21, 941.7000122070313, 177.39999389648438, 2821.800048828125, 359.20001220703125, 318, 217.10000610351563, 126, 69, 57.79999923706055, 45.29999923706055, 35.599998474121094, 29.100000381469727, 23.799999237060547, 44.20000076293945, 17.700000762939453, 17.700000762939453, 15.699999809265137, 27.799999237060547, 22.799999237060547, 3853.60009765625, 91.5999984741211, 181.39999389648438, 476.29998779296875, 265.8999938964844, 254.60000610351563, 2583.199951171875, 124.80000305175781, 73.19999694824219, 56.400001525878906, 48.70000076293945, 41.599998474121094, 21.100000381469727, 20.299999237060547, 21.299999237060547, 18.299999237060547, 17.100000381469727, 19.5, 828.2000122070313, 162.1999969482422, 217.89999389648438, 205.5, 197.60000610351563, 2249.800048828125, 103.0999984741211, 71.69999694824219, 57.599998474121094, 41.400001525878906, 34.5, 22, 20.5, 21.700000762939453, 18.299999237060547, 17.299999237060547, 19.399999618530273, 666.7999877929688, 214.89999389648438, 212.3000030517578, 125.80000305175781, 67.69999694824219, 56.099998474121094, 45.79999923706055, 38.29999923706055, 33, 35.400001525878906, 22.700000762939453, 19.399999618530273, 19.899999618530273, 24.100000381469727, 19.299999237060547, 21.299999237060547, 3508.699951171875, 204.10000610351563, 125.4000015258789, 65.30000305175781, 60.79999923706055, 44.099998474121094, 36.29999923706055, 30.5, 28.600000381469727, 16.5, 18.600000381469727, 23.700000762939453, 22.299999237060547, 17.600000381469727, 19.200000762939453, 448.79998779296875, 124.4000015258789, 66.5999984741211, 53.5, 51, 45.20000076293945, 28.399999618530273, 29.200000762939453, 26.700000762939453, 25.899999618530273, 18.100000381469727, 17.600000381469727, 20.100000381469727, 25.200000762939453, 3332, 67.5, 53.599998474121094, 56.599998474121094, 39.900001525878906, 27.600000381469727, 29.600000381469727, 33.5, 17.200000762939453, 18.799999237060547, 25.200000762939453, 16.700000762939453, 16.899999618530273, 240.1999969482422, 52.400001525878906, 42.099998474121094, 33.900001525878906, 28, 28.600000381469727, 17.299999237060547, 20, 21, 22.799999237060547, 16.700000762939453, 19.200000762939453, 175.39999389648438, 43.5, 34.70000076293945, 29.700000762939453, 34.900001525878906, 25.799999237060547, 17.299999237060547, 22.600000381469727, 17.600000381469727, 17.200000762939453, 19.200000762939453, 111.80000305175781, 35.400001525878906, 27.600000381469727, 25.399999618530273, 21.899999618530273, 18.600000381469727, 18.100000381469727, 21.200000762939453, 17.899999618530273, 17, 80.5999984741211, 29.799999237060547, 30.100000381469727, 16, 26.799999237060547, 17.5, 22.299999237060547, 16.799999237060547, 22.399999618530273, 77.4000015258789, 31, 29.700000762939453, 28.700000762939453, 26, 16.899999618530273, 15.800000190734863, 19, 52.599998474121094, 25.200000762939453, 16.700000762939453, 17.899999618530273, 21, 19.799999237060547, 18.799999237060547, 46.5, 17.5, 16.799999237060547, 18.299999237060547, 18.299999237060547, 14.899999618530273, 41, 18.299999237060547, 17.299999237060547, 17, 17.5, 32.29999923706055, 22.600000381469727, 16.600000381469727, 17.899999618530273, 25.600000381469727, 17.5, 20.299999237060547, 25.200000762939453, 18.600000381469727, 17.700000762939453 ]
+      trans = transform
+              . window [ ( [ WAggregateOp Count ], "cumulativeCount" ) ]
+                       [ WSort [ WAscending "NOX" ] ]
 
-        transSquare =
-            transform
-                << window [ ( [ wiOp woRowNumber ], "row" ) ] []
-                << calculateAs "1000/datum.data" "fps"
-                << calculateAs "'Square Crossfilter (3M)'" "system"
+      enc = encoding
+                . position X
+                    [ PName "NOX"
+                    , pQuant
+                    , PTitle "NOX concentration (μg/㎥)"
+                    ]
+                . position Y [ PName "cumulativeCount", pQuant ]
 
-        transFalcon =
-            transform
-                << window [ ( [ wiOp woRowNumber ], "row" ) ] []
-                << calculateAs "1000/datum.data" "fps"
-                << calculateAs "'Falcon'" "system"
+      grStops = [ (0, "white"), (1, "black") ]
+      orangeStops = [ (0, "orange"), (0.5, "green"), (1, "purple") ]
 
-        enc =
-            encoding
-                << position X [ pName "row", pQuant, pAxis [ axGrid False, axTitle "Trial" ], pScale [ scNice niFalse ] ]
-                << position Y [ pName "fps", pQuant, pAxis [ axGrid False, axTitle "Frames per Second (fps)" ], pScale [ scType scLog ] ]
-                << color [ mName "system", mNominal, mLegend [ leOrient loBottomRight, leTitle "System" ] ]
-                << size [ mNum 1 ]
+      -- setting these doesn't really make a difference
+      grOpts = [ GrX1 0, GrX2 1, GrY1 1, GrY2 1 ]
+      markOpts = [ MFillOpacity 0.5
+                 , MFillGradient GrLinear grStops grOpts
+                 , MStroke "orange"
+                 , MStrokeWidth 2
+                 , MStrokeOpacity 0.8
+                 , MStrokeDash [10, 6, 6, 6]
+                 , MStrokeDashOffset 5
+                 , MStrokeGradient GrLinear orangeStops []
+                 ]
 
-        specFalcon =
-            asSpec [ dataFromSource "falcon" [], transFalcon [], line [] ]
+  in toVegaLite [ des, width 500, dvals, trans [], enc [], mark Area markOpts ]
 
-        specSquare =
-            asSpec [ dataFromSource "square" [], transSquare [], line [] ]
-    in
-    toVegaLite
+
+-- advanced11 in elm
+layered1 :: VegaLite
+layered1 =
+  let des = description "Layered Histogram and Cumulative Histogram"
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      trans = transform
+                . binAs [] "IMDB_Rating" "binIMDB_Rating"
+                . aggregate [ opAs Count "" "count" ] [ "binIMDB_Rating", "binIMDB_Rating_end" ]
+                . filter (FExpr "datum.binIMDB_Rating !== null")
+                . window [ ( [ WAggregateOp Sum, WField "count" ], "cumulativeCount" ) ]
+                         [ WSort [ WAscending "binIMDB_Rating" ], WFrame Nothing (Just 0) ]
+
+      enc = encoding
+                . position X
+                    [ PName "binIMDB_Rating"
+                    , pQuant
+                    -- the SZero setting is ignored here (presumably as close to 0 anyway)
+                    , PScale [ SZero False ]
+                    , PTitle "IMDB Rating"
+                    ]
+                . position X2 [ PName "binIMDB_Rating_end" ]
+
+      enc1 = encoding
+                . position Y [ PName "cumulativeCount", pQuant ]
+
+      enc2 = encoding
+                . position Y [ PName "count", pQuant ]
+
+  in toVegaLite
+        [ des
+        , dvals
+        , trans []
+        , enc []
+        , layer
+            [ asSpec [ enc1 [], mark Bar [] ]
+            , asSpec [ enc2 [], mark Bar [ MColor "yellow", MOpacity 0.5 ] ]
+            ]
+        ]
+
+
+-- advanced16 in elm
+layered2 :: VegaLite
+layered2 =
+  let desc = description "Plot showing average data with raw values in the background."
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+
+      trans = transform . filter (FExpr "datum.symbol === 'GOOG'")
+
+      encRaw = encoding
+                . position X [ PName "date", pTemporal, PTimeUnit Year ]
+                . position Y [ PName "price", pQuant ]
+
+      encAv = encoding
+                . position X [ PName "date", pTemporal, PTimeUnit Year ]
+                . position Y [ PName "price", PAggregate Mean, pQuant ]
+
+      specRaw = asSpec [ encRaw [], mark Point [ MOpacity 0.3 ] ]
+      specAv = asSpec [ encAv [], mark Line [] ]
+
+  in toVegaLite [ desc, dvals, trans [], layer [ specRaw, specAv ] ]
+
+
+-- advanced17 in elm
+layered3 :: VegaLite
+layered3 =
+  let desc = description "Plot showing a 30 day rolling average with raw values in the background."
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+
+      trans = transform
+                . window [ ( [ WAggregateOp Mean, WField "temp_max" ], "rollingMean" ) ]
+                         [ WFrame (Just (-15)) (Just 15) ]
+
+      encRaw = encoding
+                . position X [ PName "date", PTitle "Date", pTemporal ]
+                . position Y [ PName "temp_max", PTitle "Maximum temperature", pQuant ]
+      encAv = encoding
+                . position X [ PName "date", pTemporal ]
+                . position Y [ PName "rollingMean", pQuant ]
+
+      specRaw = asSpec [ encRaw [], mark Point [ MOpacity 0.3 ] ]
+      specAv = asSpec [ encAv [], mark Line [ MColor "red", MSize 3 ] ]
+
+  in toVegaLite [ desc, width 400, height 300, dvals, trans [], layer [ specRaw, specAv ] ]
+
+
+-- advanced18 in elm
+benchmark :: VegaLite
+benchmark =
+  let desc = description "Line chart to show benchmarking results."
+
+      toData :: [ Double ] -> Value
+      toData = toJSON
+
+      falconData = [ 16.81999969482422, 19.759998321533203, 16.079999923706055, 19.579999923706055, 16.420000076293945, 16.200000762939453, 16.020000457763672, 15.9399995803833, 16.280000686645508, 16.119998931884766, 16.15999984741211, 16.119998931884766, 16.139999389648438, 16.100000381469727, 16.200000762939453, 16.260000228881836, 19.35999870300293, 19.700000762939453, 15.9399995803833, 19.139999389648438, 16.200000762939453, 16.119998931884766, 19.520000457763672, 19.700000762939453, 16.200000762939453, 20.979999542236328, 16.299999237060547, 16.420000076293945, 16.81999969482422, 16.5, 16.560001373291016, 16.18000030517578, 16.079999923706055, 16.239999771118164, 16.040000915527344, 16.299999237060547, 19.399999618530273, 15.699999809265137, 16.239999771118164, 15.920000076293945, 16.259998321533203, 16.219999313354492, 16.520000457763672, 16.459999084472656, 16.360000610351563, 15.719999313354492, 16.060001373291016, 15.960000991821289, 16.479999542236328, 16.600000381469727, 16.240001678466797, 16.940000534057617, 16.220001220703125, 15.959999084472656, 15.899999618530273, 16.479999542236328, 16.31999969482422, 15.75999927520752, 15.999998092651367, 16.18000030517578, 16.219999313354492, 15.800000190734863, 16.139999389648438, 16.299999237060547, 16.360000610351563, 16.260000228881836, 15.959999084472656, 15.9399995803833, 16.53999900817871, 16.139999389648438, 16.259998321533203, 16.200000762939453, 15.899999618530273, 16.079999923706055, 16.079999923706055, 15.699999809265137, 15.660000801086426, 16.139999389648438, 23.100000381469727, 16.600000381469727, 16.420000076293945, 16.020000457763672, 15.619999885559082, 16.35999870300293, 15.719999313354492, 15.920001029968262, 15.5600004196167, 16.34000015258789, 22.82000160217285, 15.660000801086426, 15.5600004196167, 16, 16, 15.819999694824219, 16.399999618530273, 16.46000099182129, 16.059999465942383, 16.239999771118164, 15.800000190734863, 16.15999984741211, 16.360000610351563, 19.700000762939453, 16.10000228881836, 16.139999389648438, 15.819999694824219, 16.439998626708984, 16.139999389648438, 16.020000457763672, 15.860000610351563, 16.059999465942383, 16.020000457763672, 15.920000076293945, 15.819999694824219, 16.579999923706055, 15.880000114440918, 16.579999923706055, 15.699999809265137, 19.380001068115234, 19.239999771118164, 16, 15.980000495910645, 15.959999084472656, 16.200000762939453, 15.980000495910645, 16.34000015258789, 16.31999969482422, 16.260000228881836, 15.920000076293945, 15.540000915527344, 16.139999389648438, 16.459999084472656, 16.34000015258789, 15.819999694824219, 19.719999313354492, 15.75999927520752, 16.499998092651367, 15.719999313354492, 16.079999923706055, 16.439998626708984, 16.200000762939453, 15.959999084472656, 16, 16.100000381469727, 19.31999969482422, 16.100000381469727, 16.18000030517578, 15.959999084472656, 22.639999389648438, 15.899999618530273, 16.279998779296875, 16.100000381469727, 15.920000076293945, 16.079999923706055, 16.260000228881836, 15.899999618530273, 15.820001602172852, 15.699999809265137, 15.979998588562012, 16.380001068115234, 16.040000915527344, 19.420000076293945, 15.9399995803833, 16.15999984741211, 15.960000991821289, 16.259998321533203, 15.780000686645508, 15.880000114440918, 15.980000495910645, 16.060001373291016, 16.119998931884766, 23.020000457763672, 15.619999885559082, 15.920000076293945, 16.060001373291016, 14.780000686645508, 16.260000228881836, 19.520000457763672, 16.31999969482422, 16.600000381469727, 16.219999313354492, 19.740001678466797, 19.46000099182129, 15.940000534057617, 15.839999198913574, 16.100000381469727, 16.46000099182129, 16.17999839782715, 16.100000381469727, 15.9399995803833, 16.060001373291016, 15.860000610351563, 15.819999694824219, 16.03999900817871, 16.17999839782715, 15.819999694824219, 17.299999237060547, 15.9399995803833, 15.739999771118164, 15.719999313354492, 15.679998397827148, 15.619999885559082, 15.600000381469727, 16.03999900817871, 15.5, 15.600001335144043, 19.439998626708984, 15.960000991821289, 16.239999771118164, 16.040000915527344, 16.239999771118164 ]
+
+      squareData = [ 24.200000762939453, 17.899999618530273, 15.800000190734863, 58.400001525878906, 151, 2523.10009765625, 245.3000030517578, 136, 72.30000305175781, 55.70000076293945, 42.400001525878906, 37.70000076293945, 30.100000381469727, 30.100000381469727, 21.799999237060547, 20.600000381469727, 21.799999237060547, 17.600000381469727, 18.200000762939453, 21, 941.7000122070313, 177.39999389648438, 2821.800048828125, 359.20001220703125, 318, 217.10000610351563, 126, 69, 57.79999923706055, 45.29999923706055, 35.599998474121094, 29.100000381469727, 23.799999237060547, 44.20000076293945, 17.700000762939453, 17.700000762939453, 15.699999809265137, 27.799999237060547, 22.799999237060547, 3853.60009765625, 91.5999984741211, 181.39999389648438, 476.29998779296875, 265.8999938964844, 254.60000610351563, 2583.199951171875, 124.80000305175781, 73.19999694824219, 56.400001525878906, 48.70000076293945, 41.599998474121094, 21.100000381469727, 20.299999237060547, 21.299999237060547, 18.299999237060547, 17.100000381469727, 19.5, 828.2000122070313, 162.1999969482422, 217.89999389648438, 205.5, 197.60000610351563, 2249.800048828125, 103.0999984741211, 71.69999694824219, 57.599998474121094, 41.400001525878906, 34.5, 22, 20.5, 21.700000762939453, 18.299999237060547, 17.299999237060547, 19.399999618530273, 666.7999877929688, 214.89999389648438, 212.3000030517578, 125.80000305175781, 67.69999694824219, 56.099998474121094, 45.79999923706055, 38.29999923706055, 33, 35.400001525878906, 22.700000762939453, 19.399999618530273, 19.899999618530273, 24.100000381469727, 19.299999237060547, 21.299999237060547, 3508.699951171875, 204.10000610351563, 125.4000015258789, 65.30000305175781, 60.79999923706055, 44.099998474121094, 36.29999923706055, 30.5, 28.600000381469727, 16.5, 18.600000381469727, 23.700000762939453, 22.299999237060547, 17.600000381469727, 19.200000762939453, 448.79998779296875, 124.4000015258789, 66.5999984741211, 53.5, 51, 45.20000076293945, 28.399999618530273, 29.200000762939453, 26.700000762939453, 25.899999618530273, 18.100000381469727, 17.600000381469727, 20.100000381469727, 25.200000762939453, 3332, 67.5, 53.599998474121094, 56.599998474121094, 39.900001525878906, 27.600000381469727, 29.600000381469727, 33.5, 17.200000762939453, 18.799999237060547, 25.200000762939453, 16.700000762939453, 16.899999618530273, 240.1999969482422, 52.400001525878906, 42.099998474121094, 33.900001525878906, 28, 28.600000381469727, 17.299999237060547, 20, 21, 22.799999237060547, 16.700000762939453, 19.200000762939453, 175.39999389648438, 43.5, 34.70000076293945, 29.700000762939453, 34.900001525878906, 25.799999237060547, 17.299999237060547, 22.600000381469727, 17.600000381469727, 17.200000762939453, 19.200000762939453, 111.80000305175781, 35.400001525878906, 27.600000381469727, 25.399999618530273, 21.899999618530273, 18.600000381469727, 18.100000381469727, 21.200000762939453, 17.899999618530273, 17, 80.5999984741211, 29.799999237060547, 30.100000381469727, 16, 26.799999237060547, 17.5, 22.299999237060547, 16.799999237060547, 22.399999618530273, 77.4000015258789, 31, 29.700000762939453, 28.700000762939453, 26, 16.899999618530273, 15.800000190734863, 19, 52.599998474121094, 25.200000762939453, 16.700000762939453, 17.899999618530273, 21, 19.799999237060547, 18.799999237060547, 46.5, 17.5, 16.799999237060547, 18.299999237060547, 18.299999237060547, 14.899999618530273, 41, 18.299999237060547, 17.299999237060547, 17, 17.5, 32.29999923706055, 22.600000381469727, 16.600000381469727, 17.899999618530273, 25.600000381469727, 17.5, 20.299999237060547, 25.200000762939453, 18.600000381469727, 17.700000762939453 ]
+
+      trans = transform
+              . window [ ( [ WOp RowNumber ], "row" ) ] []
+              . calculateAs "1000/datum.data" "fps"
+
+      transSquare = trans . calculateAs "'Square Crossfilter (3M)'" "system"
+      transFalcon = trans . calculateAs "'Falcon'" "system"
+
+      enc = encoding
+            . position X [ PName "row"
+                         , pQuant
+                         , PAxis [ AxGrid False, AxTitle "Trial" ]
+                         , PScale [ SNice (IsNice False) ] ]
+            . position Y [ PName "fps"
+                         , pQuant
+                         , PAxis [ AxGrid False, AxTitle "Frames per Second (fps)" ]
+                         , PScale [ SType ScLog ] ]
+            . color [ MName "system"
+                    , mNominal
+                    , MLegend [ LOrient LOBottomRight, LTitle "System" ] ]
+            . size [ MNumber 1 ]
+
+      specFalcon = asSpec [ dataFromSource "falcon" [], transFalcon [], mark Line [] ]
+      specSquare = asSpec [ dataFromSource "square" [], transSquare [], mark Line [] ]
+
+  in toVegaLite
         [ desc
-        , width 400
-        , height 200
-        , datasets [ ( "falcon", dataFromJson falconData [] ), ( "square", dataFromJson squareData [] ) ]
+        , width 500
+        , height 300
+        , datasets [ ( "falcon", dataFromJson (toData falconData) [] )
+                   , ( "square", dataFromJson (toData squareData) [] ) ]
         , enc []
         , layer [ specFalcon, specSquare ]
         ]
-
--}

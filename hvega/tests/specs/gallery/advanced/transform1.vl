@@ -1,0 +1,87 @@
+{
+    "transform": [
+        {
+            "window": [
+                {
+                    "op": "count",
+                    "as": "cumulativeCount"
+                }
+            ],
+            "sort": [
+                {
+                    "field": "NOX",
+                    "order": "ascending"
+                }
+            ]
+        }
+    ],
+    "mark": {
+        "strokeWidth": 2,
+        "stroke": {
+            "stops": [
+                {
+                    "color": "orange",
+                    "offset": 0
+                },
+                {
+                    "color": "green",
+                    "offset": 0.5
+                },
+                {
+                    "color": "purple",
+                    "offset": 1
+                }
+            ],
+            "gradient": "linear"
+        },
+        "fill": {
+            "x2": 1,
+            "y1": 1,
+            "stops": [
+                {
+                    "color": "white",
+                    "offset": 0
+                },
+                {
+                    "color": "black",
+                    "offset": 1
+                }
+            ],
+            "gradient": "linear",
+            "y2": 1,
+            "x1": 0
+        },
+        "strokeDashOffset": 5,
+        "strokeDash": [
+            10,
+            6,
+            6,
+            6
+        ],
+        "strokeOpacity": 0.8,
+        "type": "area",
+        "fillOpacity": 0.5
+    },
+    "data": {
+        "url": "https://gicentre.github.io/data/putneyAirQuality2018.csv",
+        "format": {
+            "parse": {
+                "NOX": "number"
+            }
+        }
+    },
+    "width": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "NOX",
+            "title": "NOX concentration (μg/㎥)",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "cumulativeCount",
+            "type": "quantitative"
+        }
+    },
+    "description": "Cumulative Frequency Distribution"
+}
