@@ -24,7 +24,21 @@ testSpecs = [ ("boxplot1", boxplot1)
             , ("errorbar1", errorbar1)
             , ("errorbar2", errorbar2)
             , ("errorbar3", errorbar3)
+            , ("errorbar4", errorbar4)
+            , ("errorbar5", errorbar5)
+            , ("errorbar6", errorbar6)
+            , ("errorbar7", errorbar7)
             ]
+
+
+-- help in converting from the Elm version
+pName :: T.Text -> PositionChannel
+pName = PName
+
+pOrdinal, pQuant :: PositionChannel
+pOrdinal = PmType Ordinal
+pQuant = PmType Quantitative
+
 
 bPlot :: MarkErrorExtent -> VegaLite
 bPlot ext =
@@ -204,3 +218,99 @@ errorbar3 =
         , dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
         , layer [ specErrorBars, specPoints ]
         ]
+
+
+yieldData :: [DataColumn] -> Data
+yieldData =
+  dataFromColumns []
+  . dataColumn "yieldError" (Numbers [ 7.55, 6.98, 3.92, 11.97 ])
+  . dataColumn "yieldError2" (Numbers [ -10.55, -3.98, -0.92, -15.97 ])
+  . dataColumn "yield" (Numbers [ 32.4, 30.97, 33.96, 30.45 ])
+  . dataColumn "variety" (Strings [ "Glabron", "Manchuria", "No. 457", "No. 462" ])
+
+  
+errorbar4 :: VegaLite
+errorbar4 =
+  let des = description "Symetric error bars encoded with xError channel"
+
+      specErrorBars = asSpec [ mark ErrorBar [ MTicks [] ], encErrorBars [] ]
+
+      encErrorBars = encoding
+                     . position X [ pName "yield", pQuant
+                                  , PScale [ SZero False ] ]
+                     . position Y [ pName "variety", pOrdinal ]
+                     . position XError [ pName "yieldError" ]
+
+      specPoints = asSpec [ mark Point [ MFilled True, MColor "black" ]
+                          , encPoints [] ]
+
+      encPoints = encoding
+                  . position X [ pName "yield", pQuant ]
+                  . position Y [ pName "variety", pOrdinal ]
+
+  in toVegaLite [ des, yieldData []
+                , layer [ specErrorBars, specPoints ]
+                ]
+
+
+errorbar5 :: VegaLite
+errorbar5 =
+  let des = description "Asymetric error bars encoded with xError and xError2 channels"
+  
+      specErrorBars = asSpec [ mark ErrorBar [ MTicks [] ]
+                             , encErrorBars [] ]
+
+      encErrorBars =
+        encoding
+        . position X [ pName "yield", pQuant, PScale [ SZero False ] ]
+        . position Y [ pName "variety", pOrdinal ]
+        . position XError [ pName "yieldError" ]
+        . position XError2 [ pName "yieldError2" ]
+
+      specPoints = asSpec [ mark Point [ MFilled True, MColor "black" ]
+                          , encPoints [] ]
+
+      encPoints = encoding
+                  . position X [ pName "yield", pQuant ]
+                  . position Y [ pName "variety", pOrdinal ]
+
+  in toVegaLite [ des, yieldData [], layer [ specErrorBars, specPoints ] ]
+
+
+errorbar6 :: VegaLite
+errorbar6 =
+  let des = description "Symetric error bars encoded with yError channel"
+
+      specErrorBars = asSpec [ mark ErrorBar [ MTicks [] ], encErrorBars [] ]
+      encErrorBars = encoding
+                     . position Y [ pName "yield", pQuant, PScale [ SZero False ] ]
+                     . position X [ pName "variety", pOrdinal ]
+                     . position YError [ pName "yieldError" ]
+
+      specPoints = asSpec [ mark Point [ MFilled True, MColor "black" ]
+                          , encPoints [] ]
+      encPoints = encoding
+                  . position Y [ pName "yield", pQuant ]
+                  . position X [ pName "variety", pOrdinal ]
+
+  in toVegaLite [ des, yieldData [], layer [ specErrorBars, specPoints ] ]
+
+
+errorbar7 :: VegaLite
+errorbar7 =
+  let des = description "Asymetric error bars encoded with yError and yError2 channels"
+
+      specErrorBars = asSpec [ mark ErrorBar [ MTicks [] ], encErrorBars [] ]
+      encErrorBars = encoding
+                     . position Y [ pName "yield", pQuant, PScale [ SZero False ] ]
+                     . position X [ pName "variety", pOrdinal ]
+                     . position YError [ pName "yieldError" ]
+                     . position YError2 [ pName "yieldError2" ]
+
+      specPoints = asSpec [ mark Point [ MFilled True, MColor "black" ]
+                          , encPoints [] ]
+      encPoints = encoding
+                  . position Y [ pName "yield", pQuant ]
+                  . position X [ pName "variety", pOrdinal ]
+
+  in toVegaLite [ des, yieldData [], layer [ specErrorBars, specPoints ] ]
