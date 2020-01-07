@@ -17,6 +17,13 @@ The `density` encoding has been added, along with the `DensityProperty`
 configuration type, to support kernel density estimation (e.g. to
 generate a continuous distribtion from a discrete one).
 
+The `loess` encoding has been added, along with the `LoessProperty`
+configuration type, to support scatterplot smoothing.
+
+The `regression` encoding has been added, along with the `RegressionProperty`
+and `RegressionMethod` configuration types, to support regression
+analysis.
+
 The `url` encoding has been added, which allows you to view images (e.g.
 PNG) via the (new) `Image` mark type has been added. The `MAspect`
 `MarkProperty` has been added as a configuration option.

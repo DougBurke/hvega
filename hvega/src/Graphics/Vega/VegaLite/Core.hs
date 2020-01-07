@@ -53,6 +53,13 @@ module Graphics.Vega.VegaLite.Core
        , density
        , DensityProperty(..)
 
+       , loess
+       , LoessProperty(..)
+
+       , regression
+       , RegressionProperty(..)
+       , RegressionMethod(..)
+
        , window
 
        , mark
@@ -2667,6 +2674,43 @@ transform transforms =
 
               _ -> A.Null
 
+          "loess" ->
+            case dval of
+              Just (A.Array vs)
+                | V.length vs == 5 ->
+                    let addField _ A.Null = []
+                        addField f v = [(f, v)]
+
+                        ols = [ ("loess", vs V.! 0)
+                              , ("on", vs V.! 1) ]
+                              <> addField "groupby" (vs V.! 2)
+                              <> addField "bandwidth" (vs V.! 3)
+                              <> addField "as" (vs V.! 4)
+
+                    in object ols
+
+              _ -> A.Null
+
+          "regression" ->
+            case dval of
+              Just (A.Array vs)
+                | V.length vs == 8 ->
+                    let addField _ A.Null = []
+                        addField f v = [(f, v)]
+
+                        ols = [ ("regression", vs V.! 0)
+                              , ("on", vs V.! 1) ]
+                              <> addField "groupby" (vs V.! 2)
+                              <> addField "method" (vs V.! 3)
+                              <> addField "order" (vs V.! 4)
+                              <> addField "extent" (vs V.! 5)
+                              <> addField "params" (vs V.! 6)
+                              <> addField "as" (vs V.! 7)
+
+                    in object ols
+
+              _ -> A.Null
+
           "lookup" ->
             case dval of
               Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
@@ -2957,7 +3001,7 @@ sample maxSize ols = ("sample" .= maxSize) : ols
 
 {-|
 
-Configure the kernel density estimation process.
+Configure the kernel density estimation process. Used by 'density'.
 
 @since 0.5.0.0
 -}
@@ -3096,6 +3140,25 @@ of samples of the estimated density. This is useful for representing
 probability distributions and generating continuous distributions from
 discrete samples.
 
+The following example creates a faceted display of the smoothed
+length and width distributions from the iris dataset.
+
+@
+dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"https:\/\/vega.github.io\/vega-lite\/data\/iris.json" []
+
+colNames = [ \"petalWidth\", \"petalLength\", \"sepalWidth\", \"sepalLength\" ]
+trans = 'transform'
+        . 'foldAs' colNames \"measurement\" \"value\"
+        . 'density' \"value\" [ 'DnGroupBy' [ \"measurement\" ] ]
+
+enc = 'encoding'
+      . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"value\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+      . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"density\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+      . 'row' [ 'FName' \"measurement\", 'FmType' 'Graphics.Vega.VegaLite.Nominal' ]
+
+layer = 'Graphics.Vega.VegaLite.asSpec' [ trans [], enc [], 'mark' 'Graphics.Vega.VegaLite.Area' [ 'Graphics.Vega.VegaLite.MOpacity' 0.7 ] ]
+@
+
 @since 0.5.0.0
 -}
 
@@ -3112,6 +3175,286 @@ density field dps ols =
                 , densityPropertySpec DPLSteps dps
                 , densityPropertySpec DPLAs dps
                 ]) : ols
+
+
+{-|
+
+Configure the trend fitting used by the 'loess' encoding.
+
+@since 0.5.0.0
+-}
+data LoessProperty
+  = LsAs T.Text T.Text
+    -- ^ Name the outputs of a loess transform. The first argument is the
+    --   name of the field containing the smoothed independent variable
+    --   and the second the name for the field containing the smoothed
+    --   dependent variable.
+    --
+    --   If not specified the original field names will be used.
+  | LsBandwidth Double
+    -- ^ The amount of smoothing. The value should be in the range 0 to 1,
+    --   inclusive.
+    --
+    --   The default is 0.3.
+  | LsGroupBy [T.Text]
+    -- ^ The data fields to group by.
+    --
+    --   The default is to use a single group containing all the data objects.
+
+
+data LoessPropertyLabel = LLAs | LLBandwidth | LLGroupBy
+
+loessPropertySpec :: LoessPropertyLabel -> [LoessProperty] -> VLSpec
+loessPropertySpec LLAs ps =
+  let wanted (LsAs xs ys) = Just [xs, ys]
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+loessPropertySpec LLBandwidth ps =
+  let wanted (LsBandwidth xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+loessPropertySpec LLGroupBy ps =
+  let wanted (LsGroupBy xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+
+{-|
+
+Generate a /loess/ (locally-estimated scatterplot smoothing) trendline
+through a pair of data fields.
+
+See also 'regression'.
+
+The following example overlays the trendline generated by 'loess'
+(the \"xsm\", \"ysm\" points) on the raw points (assuming the data
+source has fields called \"xraw\" and \"yraw\" for the independent
+and dependent fields, respectively).
+
+@
+transLS = 'transform'
+          . 'loess' \"yraw\" \"xraw\" [ 'LsAs' \"xsm\" \"ysm\" ]
+
+encRaw = 'encoding'
+         . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"xraw\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+         . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"yraw\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+
+encLS = 'encoding'
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"xsm\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"ysm\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+
+layers = 'layer' [ 'Graphics.Vega.VegaLite.asSpec' [ encRaw [], 'mark' 'Graphics.Vega.VegaLite.Point' [ 'Graphics.Vega.VegaLite.MOpacity' 0.5 ] ]
+               , 'Graphics.Vega.VegaLite.asSpec' [ transLS [], encLS [], 'mark' 'Graphics.Vega.VegaLite.Line' [ 'Graphics.Vega.VegaLite.MColor' \"firebrick\" ] ]
+               ]
+@
+
+@since 0.5.0.0
+-}
+
+loess ::
+  T.Text
+  -- ^ The field representing the dependent variable (often displayed on
+  --   the y axis).
+  -> T.Text
+  -- ^ The field representing the independent variable (often the x axis).
+  -> [LoessProperty]
+  -- ^ Customize the trend fitting.
+  -> BuildLabelledSpecs
+loess depField indField lsp ols =
+  ("loess" .= [ toJSON depField
+              , toJSON indField
+              , loessPropertySpec LLGroupBy lsp
+              , loessPropertySpec LLBandwidth lsp
+              , loessPropertySpec LLAs lsp
+              ]) : ols
+
+
+{-|
+
+The functional form of the regression analysis. Used by 'RgMethod'.
+
+@since 0.5.0.0
+-}
+data RegressionMethod
+  = RgLinear
+    -- ^ Linear regression.
+  | RgLog
+    -- ^ Logarithmic regression.
+  | RgExp
+    -- ^ Exponential regression.
+  | RgPow
+    -- ^ Power regression.
+  | RgQuad
+    -- ^ Quadratic regression.
+  | RgPoly
+    -- ^ A polynomial. The order to use is given by the 'RgOrder'
+    --   constructor, and defaults to 3.
+
+regressionMethodSpec :: RegressionMethod -> VLSpec
+regressionMethodSpec RgLinear = fromT "linear"
+regressionMethodSpec RgLog = fromT "log"
+regressionMethodSpec RgExp = fromT "exp"
+regressionMethodSpec RgPow = fromT "pow"
+regressionMethodSpec RgQuad = fromT "quad"
+regressionMethodSpec RgPoly = fromT "poly"
+
+
+{-|
+
+Configure the regression process (used by 'regression').
+
+@since 0.5.0.0
+-}
+
+data RegressionProperty
+  = RgAs T.Text T.Text
+    -- ^ Name the outputs of the regression analysis. The first argument is the
+    --   name of the field containing the independent variable, the second
+    --   the dependent variable.
+    --
+    --   If not specified the original field names will be used.
+  | RgExtent DataValue DataValue
+    -- ^ The domain (minimum to maximum) over which to estimate the dependent
+    --   variable in the regression.
+    --
+    --   The default is to use the full extent of the input values.
+  | RgGroupBy [T.Text]
+    -- ^ The data fields to group by.
+    --
+    --   The default is to use a single group containing all the data objects.
+  | RgMethod RegressionMethod
+    -- ^ The type of regression model to use.
+  | RgOrder Natural
+    -- ^ The order of the polynomial model.
+    --
+    --   This is only used if @'RgMethod' 'RgPoly'@ is set.
+  | RgParams Bool
+    -- ^ Should the transform return the regression model parameters, one object
+    --   per group, rather than the trend line points.
+    --
+    --   If set, the returned objects include a @\"coef\"@ array of fitted
+    --   coefficient values, starting with the intercept term and then including
+    --   terms of increasing order, and a @\"rSquared\"@ value, indicating
+    --   the total variance explained by the model.
+    --
+    --   The default is @'False'@.
+
+
+data RegressionPropertyLabel =
+  RPLAs | RPLExtent | RPLGroupBy | RPLMethod | RPLOrder | RPLParams
+
+
+regressionPropertySpec :: RegressionPropertyLabel -> [RegressionProperty] -> VLSpec
+regressionPropertySpec RPLAs ps =
+  let wanted (RgAs xs ys) = Just [xs, ys]
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+regressionPropertySpec RPLExtent ps =
+  let wanted (RgExtent xs ys) = Just (map dataValueSpec [xs, ys])
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+regressionPropertySpec RPLGroupBy ps =
+  let wanted (RgGroupBy xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+regressionPropertySpec RPLMethod ps =
+  let wanted (RgMethod xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> regressionMethodSpec x
+    _ -> A.Null
+
+regressionPropertySpec RPLOrder ps =
+  let wanted (RgOrder xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+regressionPropertySpec RPLParams ps =
+  let wanted (RgParams xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+
+{-|
+
+Generate a 2d regression model for smoothing and predicting data.
+
+See also 'loess'.
+
+The following example overlays the points generated by 'regression'
+(the \"xrg\", \"yrg\" points) on the raw points (assuming the data
+source has fields called \"xraw\" and \"yraw\" for the independent
+and dependent fields, respectively).
+
+@
+transLS = 'transform'
+          . 'regression' \"yraw\" \"xraw\" [ 'LsAs' \"xrg\" \"yrg\" ]
+
+encRaw = 'encoding'
+         . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"xraw\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+         . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"yraw\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+
+encLS = 'encoding'
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"xrg\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+        . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"yrg\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+
+layers = 'layer' [ 'Graphics.Vega.VegaLite.asSpec' [ encRaw [], 'mark' 'Graphics.Vega.VegaLite.Point' [ 'Graphics.Vega.VegaLite.MOpacity' 0.5 ] ]
+               , 'Graphics.Vega.VegaLite.asSpec' [ transLS [], encLS [], 'mark' 'Graphics.Vega.VegaLite.Line' [ 'Graphics.Vega.VegaLite.MColor' \"firebrick\" ] ]
+               ]
+@
+
+@since 0.5.0.0
+-}
+
+regression ::
+  T.Text
+  -- ^ The field representing the dependent variable (often displayed on
+  --   the y axis).
+  -> T.Text
+  -- ^ The field representing the independent variable (often the x axis).
+  -> [RegressionProperty]
+  -- ^ Customize the regression.
+  -> BuildLabelledSpecs
+regression depField indField rps ols =
+  ("regression" .= [ toJSON depField
+                   , toJSON indField
+                   , regressionPropertySpec RPLGroupBy rps
+                   , regressionPropertySpec RPLMethod rps
+                   , regressionPropertySpec RPLOrder rps
+                   , regressionPropertySpec RPLExtent rps
+                   , regressionPropertySpec RPLParams rps
+                   , regressionPropertySpec RPLAs rps
+                   ]) : ols
 
 
 {-|

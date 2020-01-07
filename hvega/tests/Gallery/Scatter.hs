@@ -22,7 +22,13 @@ testSpecs = [ ("scatter1", scatter1)
             , ("scatter9", scatter9)
             , ("scatter10", scatter10)
             , ("scatter11", scatter11)
+            , ("smoothing1", smoothing1)
+            , ("smoothing2", smoothing2)
             ]
+
+
+pQuant :: PositionChannel
+pQuant = PmType Quantitative
 
 
 scatter1 :: VegaLite
@@ -277,3 +283,67 @@ scatter11 =
         , mark Text []
         , enc []
         ]
+
+
+-- combines scatter12 and scatter13 from elm
+--
+-- TODO: how to add a legend to indicate which line is which?
+--
+smoothing1 :: VegaLite
+smoothing1 =
+  let desc = description "How can we 'smooth' data?"
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      ltrans = transform
+              . loess "IMDB_Rating" "Rotten_Tomatoes_Rating" [ LsBandwidth 0.1 ]
+
+      rtrans = transform
+              . regression "IMDB_Rating" "Rotten_Tomatoes_Rating"
+                           [ RgMethod RgPoly, RgOrder 3, RgExtent (Number 10) (Number 90) ]
+
+      enc = encoding
+            . position X [ PName "Rotten_Tomatoes_Rating", pQuant ]
+            . position Y [ PName "IMDB_Rating", pQuant ]
+
+      pointSpec = asSpec [ mark Point [ MFilled True, MOpacity 0.3 ] ]
+      trendSpec = asSpec [ ltrans [], mark Line [ MColor "firebrick" ] ]
+      regSpec = asSpec [ rtrans [], mark Line [ MColor "orange" ] ]
+
+      layers = layer [ pointSpec, trendSpec, regSpec ]
+
+  in toVegaLite [ desc, width 300, height 300, dvals, enc [], layers ]
+
+
+-- smoothing1 but rename the columns in the transform
+-- and use the default regression values
+--
+smoothing2 :: VegaLite
+smoothing2 =
+  let desc = description "How can we 'smooth' and rename data?"
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      ltrans = transform
+              . loess "IMDB_Rating" "Rotten_Tomatoes_Rating"
+                      [ LsAs "Rotten_Tomatoes_Rating" "ly" ]
+
+      rtrans = transform
+              . regression "IMDB_Rating" "Rotten_Tomatoes_Rating"
+                           [ RgAs "Rotten_Tomatoes_Rating" "ry" ]
+
+      enc y = encoding
+              . position X [ PName "Rotten_Tomatoes_Rating", pQuant ]
+              . position Y [ PName y, pQuant ]
+
+      pointSpec = asSpec [ enc "IMDB_Rating" []
+                         , mark Point [ MFilled True, MOpacity 0.3 ]
+                         ]
+      trendSpec = asSpec [ enc "ly" []
+                         , ltrans []
+                         , mark Line [ MColor "firebrick" ] ]
+      regSpec = asSpec [ enc "ry" []
+                       , rtrans []
+                       , mark Line [ MColor "orange" ] ]
+
+      layers = layer [ pointSpec, trendSpec, regSpec ]
+
+  in toVegaLite [ desc, width 300, height 300, dvals, layers ]

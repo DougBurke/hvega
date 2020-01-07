@@ -258,6 +258,21 @@ module Graphics.Vega.VegaLite
        , VL.density
        , VL.DensityProperty(..)
 
+         -- ** Loess Trend Calculation
+         --
+         -- $loess
+
+       , VL.loess
+       , VL.LoessProperty(..)
+
+         -- ** Regression Calculation
+         --
+         -- $regression
+
+       , VL.regression
+       , VL.RegressionProperty(..)
+       , VL.RegressionMethod(..)
+
          -- ** Window Transformations
          --
          -- $window
@@ -722,6 +737,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $density
 -- See the [Vega-Lite density documentation](https://vega.github.io/vega-lite/docs/density.html).
 
+-- $loess
+-- See the [Vega-Lite loess documentation](https://vega.github.io/vega-lite/docs/loess.html).
+
+-- $regression
+-- See the [Vega-Lite regression documentation](https://vega.github.io/vega-lite/docs/regression.html).
+
 -- $window
 -- See the Vega-Lite
 -- [window transform field](https://vega.github.io/vega-lite/docs/window.html#field-def)
@@ -1017,6 +1038,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.density' encoding has been added, along with the 'VL.DensityProperty'
 --   type, to support kernel density estimation (such as generating a
 --   continuous distribution from a discrete one).
+--
+-- * The 'VL.loess' encoding has been added, along with the 'VL.LoessProperty'
+--   type, to support estimating a trend (scatterplot smoothing).
+--
+-- * The 'VL.regression' encoding has been added, along with the 'VL.RegressionProperty'
+--   and 'VL.RegressionMethod' types, to support regression analysis.
 --
 -- * The 'VL.url' encoding has been added for displaying images (via the
 --   new 'VL.Image' mark type.
