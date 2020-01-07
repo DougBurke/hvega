@@ -28,6 +28,7 @@ extra-source-files:  README.md
                      tests/specs/fillstroke/*.vl
                      tests/specs/geo/*.vl
                      tests/specs/hyperlink/*.vl
+                     tests/specs/image/*.vl
                      tests/specs/interaction/*.vl
                      tests/specs/legend/*.vl
                      tests/specs/null/*.vl
@@ -158,6 +159,7 @@ test-suite test
                        FillStrokeTests
                        GeoTests
                        HyperlinkTests
+                       ImageTests
                        InteractionTests
                        LegendTests
                        NullTests

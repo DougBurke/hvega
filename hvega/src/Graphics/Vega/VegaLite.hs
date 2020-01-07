@@ -384,6 +384,12 @@ module Graphics.Vega.VegaLite
        , VL.hyperlink
        , VL.HyperlinkChannel(..)
 
+         -- ** URL Channel
+         --
+         -- $urlchannel
+
+       , VL.url
+
          -- ** Order Channel
          --
          -- $order
@@ -776,6 +782,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- option of changing the cursor style when hovering, so an encoding will usually
 -- pair hyperlinks with other visual channels such as marks or texts.
 
+-- $urlchannel
+-- Data-driven URL used for 'VL.Image' specification: a data field can contain
+-- URL strings defining the location of image files, or the URL can be
+-- given directly.
+
 -- $order
 -- Channels that relate to the order of data fields such as for sorting stacking order
 -- or order of data points in a connected scatterplot. See the
@@ -993,6 +1004,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.pivot' encoding has been added, along with the 'VL.PivotProperty'
 --   preferences type. This is the inverse of 'VL.fold'.
 --
+-- * The 'VL.url' encoding has been added for displaying images (via the
+--   new 'VL.Image' mark type.
+--
 -- __Breaking changes__ in this release:
 --
 -- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
@@ -1037,7 +1051,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The 'VL.SelectionProperty' type has gained the 'VL.BindLegend'
 --   constructor - and associated 'VL.BindLegendProperty' type - to
---   allow selection of legend (categorical data only).
+--   allow selection of legend items (for categorical data only).
 --
 -- * The 'VL.TextChannel' type has gained 'VL.TString', which lets you specify
 --   the text content as a literal.
@@ -1052,6 +1066,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.GradientProperty' types for defining the appearance of the
 --   gradient. The 'VL.GradientCoord' and 'VL.GradientStops' type aliases
 --   have also been added (although they provides no type safety).
+--
+-- * The 'VL.Image' constructor has been added to 'VL.Mark', for use
+--   with the new 'VL.url' encoding, and 'VL.MAspect' to 'VL.MarkProperty'.
 --
 -- __Bug Fixes__ in this release:
 --

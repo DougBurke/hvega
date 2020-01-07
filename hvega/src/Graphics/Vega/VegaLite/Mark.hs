@@ -149,6 +149,13 @@ data Mark
     | Geoshape
       -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
       --   determined by geographically referenced coordinates.
+    | Image
+      -- ^ [Vega Lite image mark](https://vega.github.io/vega-lite/docs/image.html),
+      --   where the image to display is given via the
+      --   'Graphics.Vega.VegaLite.url' channel, and the width and height
+      --   defined by the 'MWidth' and 'MHeight' properties.
+      --
+      --   @since 0.5.0.0
     | Line
       -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
       --   for symbolising a sequence of values.
@@ -185,6 +192,7 @@ markLabel ErrorBar = "errorbar"
 markLabel ErrorBand = "errorband"
 markLabel Line = "line"
 markLabel Geoshape = "geoshape"
+markLabel Image = "image"
 markLabel Point = "point"
 markLabel Rect = "rect"
 markLabel Rule = "rule"
@@ -220,6 +228,10 @@ data MarkProperty
       -- ^ Horizontal alignment of a text mark.
     | MAngle Angle
       -- ^ Rotation angle of a text mark.
+    | MAspect Bool
+      -- ^ Should the aspect ratio of an 'Image' mark be preserved?
+      --
+      --   @since 0.5.0.0
     | MBandSize Double
       -- ^ Band size of a bar mark.
     | MBaseline VAlign
@@ -535,6 +547,7 @@ markProperty (MXOffset x) = "xOffset" .= x
 markProperty (MYOffset x) = "yOffset" .= x
 markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
+markProperty (MAspect b) = "aspect" .= b
 
 -- color gradients
 markProperty (MColorGradient dir stops opts) =

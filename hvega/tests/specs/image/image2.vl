@@ -1,0 +1,41 @@
+{
+    "mark": {
+        "height": 25,
+        "width": 25,
+        "type": "image"
+    },
+    "data": {
+        "values": [
+            {
+                "img": "https://vega.github.io/vega-lite/data/ffox.png",
+                "x": 0.5,
+                "y": 0.5
+            },
+            {
+                "img": "https://vega.github.io/vega-lite/data/gimp.png",
+                "x": 1.5,
+                "y": 1.5
+            },
+            {
+                "img": "https://vega.github.io/vega-lite/data/7zip.png",
+                "x": 2.5,
+                "y": 2.5
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "url": {
+            "field": "img",
+            "type": "nominal"
+        },
+        "x": {
+            "field": "x",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "y",
+            "type": "quantitative"
+        }
+    }
+}

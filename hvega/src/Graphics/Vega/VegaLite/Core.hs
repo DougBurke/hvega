@@ -85,6 +85,8 @@ module Graphics.Vega.VegaLite.Core
        , hyperlink
        , HyperlinkChannel(..)
 
+       , url
+
        , order
        , OrderChannel(..)
 
@@ -3337,6 +3339,45 @@ pivotPropertySpec PPLOp ps =
   in case mapMaybe wanted ps of
     [x] -> operationSpec x
     _ -> A.Null
+
+
+{-|
+
+Encode a URL for use with the 'Graphics.Vega.VegaLite.Image' mark type.
+
+The URL can be encoded directly:
+
+@
+let axVals = 'Numbers' [ 0.5, 1.5, 2.5 ]
+
+    dvals = 'Graphics.Vega.VegaLite.dataFromColumns' []
+            . 'Graphics.Vega.VegaLite.dataColumn' "x" axVals
+            . 'Graphics.Vega.VegaLite.dataColumn' "y" axVals
+
+    enc = 'encoding'
+          . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' "x", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+          . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' "y", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+          . 'url' [ 'HString' \"wonderful-image.png\" ]
+
+    imMark = 'mark' 'Graphics.Vega.VegaLite.Image' [ 'Graphics.Vega.VegaLite.MWidth' 50, 'Graphics.Vega.VegaLite.MHeight' 25 ]
+
+in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals [], enc [], imMark ]
+@
+
+or by referencing a data field containing the URL values:
+
+@
+... 'Graphics.Vega.VegaLite.dataColumn' "img" ('Strings' [ \"i1.png\", \"i2.png\", \"i4.png\" ])
+
+... 'url' [ 'HName' \"img\", 'HmType' 'Graphics.Vega.VegaLite.Nominal' ]
+@
+
+@since 0.5.0.0
+-}
+
+url :: [HyperlinkChannel] -> BuildLabelledSpecs
+url hPs ols =
+  ("url" .= object (concatMap hyperlinkChannelProperty hPs)) : ols
 
 
 {-|

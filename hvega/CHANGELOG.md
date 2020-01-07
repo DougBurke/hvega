@@ -13,6 +13,10 @@ down why something has changed a bit awkward.
 The `pivot` encoding has been added, along with the `PivotProperty`
 preferences type. This is the inverse of `fold`.
 
+The `url` encoding has been added, which allows you to view images (e.g.
+PNG) via the (new) `Image` mark type has been added. The `MAspect`
+`MarkProperty` has been added as a configuration option.
+
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.
