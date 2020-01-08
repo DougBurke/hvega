@@ -35,26 +35,24 @@ cfg =
 
 geo1 :: VegaLite
 geo1 =
-    let
-        countyData =
-            dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json"
-                [ TopojsonFeature "counties" ]
+  let countyData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json"
+        [ TopojsonFeature "counties" ]
 
-        unemploymentData =
-            dataFromUrl "https://vega.github.io/vega-lite/data/unemployment.tsv" []
+      unemploymentData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/unemployment.tsv" []
 
-        trans =
-            transform
-                . lookup "id" unemploymentData "id" [ "rate" ]
+      trans =
+        transform
+        . lookup "id" unemploymentData "id" (LuFields [ "rate" ])
 
-        proj =
-            projection [ PrType AlbersUsa ]
+      proj = projection [ PrType AlbersUsa ]
 
-        enc =
-            encoding
-                . color [ MName "rate", MmType Quantitative, MSort [ Descending ] ]
-    in
-    toVegaLite [ cfg [], width 500, height 300, countyData, proj, trans [], enc [], mark Geoshape [] ]
+      enc = encoding
+            . color [ MName "rate", MmType Quantitative, MSort [ Descending ] ]
+
+  in toVegaLite [ cfg [], width 500, height 300, countyData
+                , proj, trans [], enc [], mark Geoshape [] ]
 
 
 geo2 :: VegaLite
@@ -119,54 +117,52 @@ geo3 =
 
 geo4 :: VegaLite
 geo4 =
-    let
-        backdropSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
-                , mark Geoshape []
-                , encoding (color [ MString "#eee" ] [])
-                ]
+  let backdropSpec =
+        asSpec
+        [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
+        , mark Geoshape []
+        , encoding (color [ MString "#eee" ] [])
+        ]
 
-        airportsEnc =
-            encoding
-                . position Longitude [ PName "longitude", PmType Quantitative ]
-                . position Latitude [ PName "latitude", PmType Quantitative ]
-                . size [ MNumber 5 ]
-                . color [ MString "gray" ]
+      airportsEnc =
+        encoding
+        . position Longitude [ PName "longitude", PmType Quantitative ]
+        . position Latitude [ PName "latitude", PmType Quantitative ]
+        . size [ MNumber 5 ]
+        . color [ MString "gray" ]
 
-        airportsSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
-                , mark Circle []
-                , airportsEnc []
-                ]
+      airportData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
+        
+      airportsSpec =
+        asSpec
+        [ airportData
+        , mark Circle []
+        , airportsEnc []
+        ]
 
-        trans =
-            transform
-                . filter (FEqual "origin" (Str "SEA"))
-                . lookup "origin" (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []) "iata" [ "latitude", "longitude" ]
-                . calculateAs "datum.latitude" "origin_latitude"
-                . calculateAs "datum.longitude" "origin_longitude"
-                . lookup "destination" (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []) "iata" [ "latitude", "longitude" ]
-                . calculateAs "datum.latitude" "dest_latitude"
-                . calculateAs "datum.longitude" "dest_longitude"
+      trans =
+        transform
+        . filter (FEqual "origin" (Str "SEA"))
+        . lookup "origin" airportData "iata" (LuAs "o")
+        . lookup "destination" airportData "iata" (LuAs "d")
 
-        flightsEnc =
-            encoding
-                . position Longitude [ PName "origin_longitude", PmType Quantitative ]
-                . position Latitude [ PName "origin_latitude", PmType Quantitative ]
-                . position Longitude2 [ PName "dest_longitude" ]
-                . position Latitude2 [ PName "dest_latitude" ]
+      flightsEnc = 
+        encoding
+        . position Longitude [ PName "o.longitude", PmType Quantitative ]
+        . position Latitude [ PName "o.latitude", PmType Quantitative ]
+        . position Longitude2 [ PName "d.longitude" ]
+        . position Latitude2 [ PName "d.latitude" ]
 
-        flightsSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/flights-airport.csv" []
-                , trans []
-                , mark Rule []
-                , flightsEnc []
-                ]
-    in
-    toVegaLite
+      flightsSpec =
+        asSpec
+        [ dataFromUrl "https://vega.github.io/vega-lite/data/flights-airport.csv" []
+        , trans []
+        , mark Rule []
+        , flightsEnc []
+        ]
+
+  in toVegaLite
         [ cfg []
         , description "Rules (line segments) connecting SEA to every airport reachable via direct flight"
         , width 800
@@ -184,12 +180,16 @@ geo5 =
                 . shape [ MName "geo", MmType GeoFeature ]
                 . color [ MRepeat Row, MmType Quantitative, MSort [ Descending ] ]
 
+        statesData =
+          dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json"
+                      [ TopojsonFeature "states" ]
+
         spec =
             asSpec
                 [ width 500
                 , height 300
                 , dataFromUrl "https://vega.github.io/vega-lite/data/population_engineers_hurricanes.csv" []
-                , transform (lookupAs "id" (dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]) "id" "geo" [])
+                , transform (lookup "id" statesData "id" (LuAs "geo") [])
                 , projection [ PrType AlbersUsa ]
                 , mark Geoshape []
                 , enc []
@@ -242,52 +242,55 @@ geo6 =
 
 geo7 :: VegaLite
 geo7 =
-    let
-        backdropSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
-                , mark Geoshape []
-                , encoding (color [ MString "#eee" ] [])
-                ]
+  let backdropSpec =
+        asSpec
+        [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
+        , mark Geoshape []
+        , encoding (color [ MString "#eee" ] [])
+        ]
 
-        airportsEnc =
-            encoding
-                . position Longitude [ PName "longitude", PmType Quantitative ]
-                . position Latitude [ PName "latitude", PmType Quantitative ]
-                . size [ MNumber 5 ]
-                . color [ MString "gray" ]
+      airportsEnc =
+        encoding
+        . position Longitude [ PName "longitude", PmType Quantitative ]
+        . position Latitude [ PName "latitude", PmType Quantitative ]
+        . size [ MNumber 5 ]
+        . color [ MString "gray" ]
 
-        airportsSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
-                , mark Circle []
-                , airportsEnc []
-                ]
+      airportData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
 
-        itinerary =
-            dataFromColumns []
-                . dataColumn "airport" (Strings [ "SEA", "SFO", "LAX", "LAS", "DFW", "DEN", "ORD", "JFK", "ATL" ])
-                . dataColumn "order" (Numbers [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ])
+      airportsSpec =
+        asSpec
+        [ airportData
+        , mark Circle []
+        , airportsEnc []
+        ]
 
-        trans =
-            transform
-                . lookup "airport" (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []) "iata" [ "latitude", "longitude" ]
+      itinerary =
+        dataFromColumns []
+        . dataColumn "airport" (Strings [ "SEA", "SFO", "LAX", "LAS", "DFW", "DEN", "ORD", "JFK", "ATL" ])
+        . dataColumn "order" (Numbers [ 1, 2, 3, 4, 5, 6, 7, 8, 9 ])
 
-        flightsEnc =
-            encoding
-                . position Longitude [ PName "longitude", PmType Quantitative ]
-                . position Latitude [ PName "latitude", PmType Quantitative ]
-                . order [ OName "order", OmType Ordinal ]
+      trans =
+        transform
+        . lookup "airport" airportData "iata"
+            (LuFields [ "latitude", "longitude" ])
 
-        flightsSpec =
-            asSpec
-                [ itinerary []
-                , trans []
-                , mark Line []
-                , flightsEnc []
-                ]
-    in
-    toVegaLite
+      flightsEnc =
+        encoding
+        . position Longitude [ PName "longitude", PmType Quantitative ]
+        . position Latitude [ PName "latitude", PmType Quantitative ]
+        . order [ OName "order", OmType Ordinal ]
+
+      flightsSpec =
+        asSpec
+        [ itinerary []
+        , trans []
+        , mark Line []
+        , flightsEnc []
+        ]
+
+  in toVegaLite
         [ cfg []
         , description "Line drawn between airports in the U.S. simulating a flight itinerary"
         , width 800
@@ -299,7 +302,9 @@ geo7 =
 
 geo8 :: VegaLite
 geo8 =
-    let
+    let geoData =
+          dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
+
         enc =
             encoding
                 . shape [ MName "geo", MmType GeoFeature ]
@@ -312,7 +317,7 @@ geo8 =
         , width 500
         , height 300
         , dataFromUrl "https://vega.github.io/vega-lite/data/income.json" []
-        , transform (lookupAs "id" (dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]) "id" "geo" [])
+        , transform (lookup "id" geoData "id" (LuAs "geo") [])
         , projection [ PrType AlbersUsa ]
         , mark Geoshape []
         , enc []

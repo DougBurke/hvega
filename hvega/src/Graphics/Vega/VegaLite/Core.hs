@@ -45,6 +45,7 @@ module Graphics.Vega.VegaLite.Core
 
        , lookup
        , lookupAs
+       , LookupFields(..)
 
        , impute
 
@@ -2713,21 +2714,24 @@ transform transforms =
 
           "lookup" ->
             case dval of
-              Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
-                                                             , ("from",
-                                                                object [ ("data", vs V.! 1)
-                                                                       , ("key", vs V.! 2)
-                                                                       , ("fields", vs V.! 3) ] )
-                                                             ]
-              _ -> A.Null
+              Just (A.Array vs)
+                | V.length vs == 6 ->
+                    let addField _ A.Null = []
+                        addField f v = [(f, v)]
 
-          "lookupAs" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 4 -> object [ ("lookup", vs V.! 0)
-                                                             , ("from",
-                                                                object [ ("data", vs V.! 1)
-                                                                       , ("key", vs V.! 2) ] )
-                                                             , ("as", vs V.! 3) ]
+                        -- this doesn't quite match the code used in Elm,
+                        -- but I think/hope it matches the intent.
+                        fs = [ ("data", vs V.! 1)
+                             , ("key", vs V.! 2) ]
+                             <> addField "fields" (vs V.! 3)
+
+                        ols = [ ("lookup", vs V.! 0)
+                              , ("from", object fs) ]
+                              <> addField "as" (vs V.! 4)
+                              <> addField "default" (vs V.! 5)
+
+                    in object ols
+
               _ -> A.Null
 
           "flattenAs" ->
@@ -3939,11 +3943,6 @@ Perform a lookup of named fields between two data sources. This allows
 you to find values in one data source based on the values in another
 (like a relational join).
 
-Unlike 'lookupAs', this function will only return the specific fields
-named in the fourth parameter. If you wish to return the entire set of
-fields in the secondary data source as a single object, use
-'lookupAs'.
-
 See the <https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
 for further details.
 
@@ -3952,9 +3951,28 @@ The following would return the values in the @age@ and @height@ fields from
 file matches the value of @person@ in the primary data source.
 
 @
+peopleData = 'Graphics.Vega.VegaLite.dataFromUrl' \"data/lookup_people.csv\" []
+lfields = 'LuFields' [\"age\", \"height\"]
 trans = 'transform'
-          . 'lookup' \"person\" ('Graphics.Vega.VegaLite.dataFromUrl' \"data/lookup_people.csv\" []) \"name\" [\"age\", \"height\"]
+          . 'lookup' \"person\" peopleData \"name\" lfields
 @
+
+Note that the interface has changed in version @0.5.0.0@: the
+output field names argument now uses the new 'LookupFields'
+type. This provides greater flexibility in naming and
+default behaviour. The conversion from version 0.4 is
+simple: change
+
+@
+lookup key1 dataSource key2 fields
+@
+
+to
+
+@
+lookup key1 dataSource key2 (LuFields fields)
+@
+
 -}
 lookup ::
   T.Text
@@ -3965,48 +3983,84 @@ lookup ::
   -> T.Text
   -- ^ The name of the field in the secondary data source to match against
   --   the primary key.
-  -> [T.Text]
+  -> LookupFields
   -- ^ The list of fields to store when the keys match.
+  --
+  --   This was changed from @[T.Text]@ in vesion 0.5.0.0.
   -> BuildLabelledSpecs
-lookup key1 (_, spec) key2 fields ols =
-  let js = [toJSON key1, spec, toJSON key2, toJSON (map toJSON fields)]
-  in ("lookup" .= js) : ols
+lookup key1 (_, spec) key2 lfields ols =
+  let js = case lfields of
+             LuFields fs -> [ toJSON fs, A.Null, A.Null ]
+             LuFieldAs fas -> [ get1 fas, get2 fas, A.Null ]
+             LuAs s -> [ A.Null, toJSON s, A.Null ]
+             LuFieldsWithDefault fs def
+               -> [ toJSON fs, A.Null, toJSON def ]
+             LuFieldsAsWithDefault fas def
+               -> [ get1 fas, get2 fas, toJSON def ]
+             LuAsWithDefault s def -> [ A.Null, toJSON s, toJSON def ]
+
+      get1 = toJSON . map fst
+      get2 = toJSON . map snd
+
+  in ("lookup" .= ([toJSON key1, spec, toJSON key2] ++ js)) : ols
+
+
+{-|
+Configure the field selection in 'lookup'.
+
+@since 0.5.0.0
+-}
+data LookupFields
+  = LuFields [T.Text]
+    -- ^ The name of the fields to return from the secondary data
+    --   source.
+  | LuFieldAs [(T.Text, T.Text)]
+    -- ^ Select fields from the secondary data source (first
+    --   argument) and allow them to be referred to with a
+    --   new name (second argument).
+  | LuAs T.Text
+    -- ^ Create a single name for all the fields in the
+    --   secondary data source. The individual fields use dot
+    --   notation to combine the given name with the field name.
+    --
+    --   @
+    --   dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"data/flights.airport.csv" []
+    --   trans = 'transform'
+    --           . 'lookup' \"origin\" dvals "iata" ('LuAs' \"o\")
+    --   enc = 'encoding'
+    --         . 'position' 'Graphics.Vega.VegaLite.Longitude' [ 'PName' \"o.longitude\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    --         . 'position' 'Graphics.Vega.VegaLite.Lattude' [ 'PName' \"o.latitude\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+    --   @
+  | LuFieldsWithDefault [T.Text] T.Text
+    -- ^ The name of the fields to retrn from the secondary
+    --   data source, along with the default value to use
+    --   if the lookup fails.
+  | LuFieldsAsWithDefault [(T.Text, T.Text)] T.Text
+    -- ^ Allow fields to be renamed and provide a default for
+    --   when the lookup fails.
+  | LuAsWithDefault T.Text T.Text
+    -- ^ Create a single name for all the fields in the
+    --   secondary data source, but the second parameter
+    --   gives the default value for when the lookup fails.
 
 
 {-|
 
-Perform an object lookup between two data sources. This allows you to
-find values in one data source based on the values in another (like a
-relational join).  Unlike 'lookup', this function returns the entire
-set of field values from the secondary data source when keys
-match. Those fields are stored as an object with the name provided in
-the fourth parameter.
-
-In the following example, @personDetails@ would reference all the
-field values in @lookup_people.csv@ for each row where the value in
-the @name@ column in that file matches the value of @person@ in the
-primary data source.
+This routine is deprecated (as of version @0.5.0.0@) in favor
+of 'lookup', as
 
 @
-'transform'
-    . 'lookupAs' "person" ('Graphics.Vega.VegaLite.dataFromUrl' "data/lookup_people.csv" []) "name" "personDetails"
+lookupAs "key1" dataSource "key2" "matchName"
 @
 
-If the data contained columns called @age@ and @height@ then they would
-then be accessed as @personDetails.age@ and @personDetails.height@ - for
-example:
+can be written as
 
 @
-'encoding'
-  . 'position' X ['PName' "personDetails.age", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Year', 'PTitle' \"Age\"]
-  . 'position' Y ['PName' "personDetails.height", 'PmType' 'Graphics.Vega.VegaLite.Quantitative', 'PTitle' \"Height\"]
+lookup "key1" dataSource "key2" (LuAs "matchName")
 @
-
-See the
-<https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
-for further details.
 
 -}
+{-# DEPRECATED lookupAs "Please change 'lookupAs ... alias' to 'lookup ... (LuAs alias)'" #-}
 lookupAs ::
   T.Text
   -- ^ The field in the primary data structure acting as the key.
@@ -4019,8 +4073,8 @@ lookupAs ::
   -> T.Text
   -- ^ The field name for the new data.
   -> BuildLabelledSpecs
-lookupAs key1 (_, spec) key2 asName ols =
-  ("lookupAs" .= [toJSON key1, spec, toJSON key2, toJSON asName]) : ols
+lookupAs key1 sData key2 asName =
+  lookup key1 sData key2 (LuAs asName)
 
 
 {-|

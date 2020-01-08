@@ -346,26 +346,18 @@ advanced6 =
 -- advanced9 in elm
 advanced7 :: VegaLite
 advanced7 =
-    let
-        des =
-            description "Using the lookup transform to combine data"
+  let des = description "Using the lookup transform to combine data"
+      groupData = dataFromUrl "https://vega.github.io/vega-lite/data/lookup_groups.csv" []
+      peopleData = dataFromUrl "https://vega.github.io/vega-lite/data/lookup_people.csv" []
 
-        dvals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/lookup_groups.csv"
+      trans = transform
+              . lookup "person" peopleData "name" (LuFields [ "age", "height" ])
 
-        trans =
-            transform
-                . lookup "person"
-                    (dataFromUrl "https://vega.github.io/vega-lite/data/lookup_people.csv" [])
-                    "name"
-                    [ "age", "height" ]
+      enc = encoding
+            . position X [ PName "group", PmType Ordinal ]
+            . position Y [ PName "age", PmType Quantitative, PAggregate Mean ]
 
-        enc =
-            encoding
-                . position X [ PName "group", PmType Ordinal ]
-                . position Y [ PName "age", PmType Quantitative, PAggregate Mean ]
-    in
-    toVegaLite [ des, dvals [], trans [], enc [], mark Bar [] ]
+  in toVegaLite [ des, groupData, trans [], enc [], mark Bar [] ]
 
 
 -- advanced14 in elm

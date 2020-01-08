@@ -33,46 +33,24 @@
                     }
                 },
                 {
+                    "as": "o",
                     "from": {
                         "data": {
                             "url": "https://vega.github.io/vega-lite/data/airports.csv"
                         },
-                        "key": "iata",
-                        "fields": [
-                            "latitude",
-                            "longitude"
-                        ]
+                        "key": "iata"
                     },
                     "lookup": "origin"
                 },
                 {
-                    "as": "oLat",
-                    "calculate": "datum.latitude"
-                },
-                {
-                    "as": "oLon",
-                    "calculate": "datum.longitude"
-                },
-                {
+                    "as": "d",
                     "from": {
                         "data": {
                             "url": "https://vega.github.io/vega-lite/data/airports.csv"
                         },
-                        "key": "iata",
-                        "fields": [
-                            "latitude",
-                            "longitude"
-                        ]
+                        "key": "iata"
                     },
                     "lookup": "destination"
-                },
-                {
-                    "as": "dLat",
-                    "calculate": "datum.latitude"
-                },
-                {
-                    "as": "dLon",
-                    "calculate": "datum.longitude"
                 }
             ],
             "mark": {
@@ -85,18 +63,18 @@
             },
             "encoding": {
                 "latitude": {
-                    "field": "oLat",
+                    "field": "o.latitude",
                     "type": "quantitative"
                 },
                 "latitude2": {
-                    "field": "dLat"
+                    "field": "d.latitude"
                 },
                 "longitude": {
-                    "field": "oLon",
+                    "field": "o.longitude",
                     "type": "quantitative"
                 },
                 "longitude2": {
-                    "field": "dLon"
+                    "field": "d.longitude"
                 }
             }
         },
@@ -120,6 +98,7 @@
                         },
                         "key": "iata",
                         "fields": [
+                            "name",
                             "state",
                             "latitude",
                             "longitude"
@@ -161,6 +140,10 @@
                 "latitude": {
                     "field": "latitude",
                     "type": "quantitative"
+                },
+                "tooltip": {
+                    "field": "name",
+                    "type": "nominal"
                 },
                 "longitude": {
                     "field": "longitude",

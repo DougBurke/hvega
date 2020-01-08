@@ -28,6 +28,12 @@ The `url` encoding has been added, which allows you to view images (e.g.
 PNG) via the (new) `Image` mark type has been added. The `MAspect`
 `MarkProperty` has been added as a configuration option.
 
+The `lookup` encoding has been changed so that the list of fields
+stored when the keys match is now specified by the `LookupFields`
+type (rather than a list of field names). This supports providing
+aliases and handling of default values, and now subsumes the `lookupAs`
+encoding, which has been marked as deprecated.
+
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.

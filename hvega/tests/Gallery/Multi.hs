@@ -383,81 +383,72 @@ multi6 =
 
 multi7 :: VegaLite
 multi7 =
-    let
-        des =
-            description "One dot per airport in the US overlayed on geoshape"
+  let des = description "One dot per airport in the US overlayed on geoshape"
 
-        cfg =
-            configure
-                . configuration (View [ ViewStroke Nothing ])
+      cfg = configure
+            . configuration (View [ ViewStroke Nothing ])
 
-        backdropSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
-                , mark Geoshape [ MFill "#ddd", MStroke "#fff" ]
-                ]
+      backdropSpec =
+        asSpec
+        [ dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "states" ]
+        , mark Geoshape [ MFill "#ddd", MStroke "#fff" ]
+        ]
 
-        lineTrans =
-            transform
-                . filter (FSelection "mySelection")
-                . lookup "origin"
-                    (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" [])
-                    "iata"
-                    [ "latitude", "longitude" ]
-                . calculateAs "datum.latitude" "oLat"
-                . calculateAs "datum.longitude" "oLon"
-                . lookup "destination"
-                    (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" [])
-                    "iata"
-                    [ "latitude", "longitude" ]
-                . calculateAs "datum.latitude" "dLat"
-                . calculateAs "datum.longitude" "dLon"
+      airportData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
+      flightData =
+        dataFromUrl "https://vega.github.io/vega-lite/data/flights-airport.csv" []
 
-        lineEnc =
-            encoding
-                . position Longitude [ PName "oLon", PmType Quantitative ]
-                . position Latitude [ PName "oLat", PmType Quantitative ]
-                . position Longitude2 [ PName "dLon" ]
-                . position Latitude2 [ PName "dLat" ]
+      lineTrans =
+        transform
+        . filter (FSelection "mySelection")
+        . lookup "origin" airportData "iata" (LuAs "o")
+        . lookup "destination" airportData "iata" (LuAs "d")
 
-        lineSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/flights-airport.csv" []
-                , lineTrans []
-                , lineEnc []
-                , mark Rule [ MColor "black", MOpacity 0.35 ]
-                ]
+      lineEnc =
+        encoding
+        . position Longitude [ PName "o.longitude", PmType Quantitative ]
+        . position Latitude [ PName "o.latitude", PmType Quantitative ]
+        . position Longitude2 [ PName "d.longitude" ]
+        . position Latitude2 [ PName "d.latitude" ]
 
-        airportTrans =
-            transform
-                . aggregate [ opAs Count "" "routes" ] [ "origin" ]
-                . lookup "origin"
-                    (dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" [])
-                    "iata"
-                    [ "state", "latitude", "longitude" ]
-                . filter (FExpr "datum.state !== 'PR' && datum.state !== 'VI'")
+      lineSpec =
+        asSpec
+        [ flightData
+        , lineTrans []
+        , lineEnc []
+        , mark Rule [ MColor "black", MOpacity 0.35 ]
+        ]
 
-        airportEnc =
-            encoding
-                . position Longitude [ PName "longitude", PmType Quantitative ]
-                . position Latitude [ PName "latitude", PmType Quantitative ]
-                . size [ MName "routes", MmType Quantitative, MScale [ SRange (RNumbers [ 0, 1000 ]) ], MLegend [] ]
-                . order [ OName "routes", OmType Quantitative, OSort [ Descending ] ]
+      airportTrans =
+        transform
+        . aggregate [ opAs Count "" "routes" ] [ "origin" ]
+        . lookup "origin" airportData "iata"
+              (LuFields [ "name", "state", "latitude", "longitude" ])
+        . filter (FExpr "datum.state !== 'PR' && datum.state !== 'VI'")
 
-        sel =
-            selection
-                . select "mySelection" Single [ On "mouseover", Nearest True, Empty, Fields [ "origin" ] ]
+      airportEnc =
+        encoding
+        . position Longitude [ PName "longitude", PmType Quantitative ]
+        . position Latitude [ PName "latitude", PmType Quantitative ]
+        . size [ MName "routes", MmType Quantitative, MScale [ SRange (RNumbers [ 0, 1000 ]) ], MLegend [] ]
+        . order [ OName "routes", OmType Quantitative, OSort [ Descending ] ]
+        . tooltip [ TName "name", TmType Nominal ]
 
-        airportSpec =
-            asSpec
-                [ dataFromUrl "https://vega.github.io/vega-lite/data/flights-airport.csv" []
-                , airportTrans []
-                , sel []
-                , mark Circle []
-                , airportEnc []
-                ]
-    in
-    toVegaLite
+      sel =
+        selection
+        . select "mySelection" Single [ On "mouseover", Nearest True, Empty, Fields [ "origin" ] ]
+
+      airportSpec =
+        asSpec
+        [ flightData
+        , airportTrans []
+        , sel []
+        , mark Circle []
+        , airportEnc []
+        ]
+
+  in toVegaLite
         [ des
         , cfg []
         , width 900

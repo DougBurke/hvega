@@ -236,6 +236,7 @@ module Graphics.Vega.VegaLite
 
        , VL.lookup
        , VL.lookupAs
+       , VL.LookupFields(..)
 
          -- ** Data Imputation
          --
@@ -724,7 +725,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- [pivot](https://vega.github.io/vega-lite/docs/pivot.html) documentation.
 
 -- $joining
--- See the
+-- Create lookups between data tables in order to join values from
+-- multiple sources. See the
 -- [Vega-Lite lookup documentation](https://vega.github.io/vega-lite/docs/lookup.html).
 
 -- $imputation
@@ -1049,6 +1051,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   new 'VL.Image' mark type.
 --
 -- __Breaking changes__ in this release:
+--
+-- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
+--   type rather than a list of field names. The 'VL.lookupAs' function
+--   is deprecated, as its functionality is now possible with
+--   'VL.lookup'.
 --
 -- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
 --   marking a subset of axis properties as being conditional on their
