@@ -24,6 +24,8 @@ testSpecs = [ ("axis1", axis1)
             , ("axisOverlapParity", axisOverlapParity)
             , ("axisOverlapGreedy", axisOverlapGreedy)
             , ("zorder", zorder)
+            , ("responsiveWidth", responsiveWidth)
+            , ("responsiveHeight", responsiveHeight)
             ]
 
 
@@ -218,3 +220,17 @@ zorder =
                 , enc []
                 , mark Circle [ MSize 5000, MOpacity 1 ]
                 ]
+
+
+responsive :: PropertySpec -> VegaLite
+responsive prop =
+  let enc = encoding
+            . position X [PName "x", PmType Quantitative]
+            . position Y [PName "y", PmType Quantitative]
+
+  in toVegaLite [ prop, simpleData [], enc []
+                , mark Line [MPoint (PMMarker [])] ]
+
+responsiveWidth, responsiveHeight :: VegaLite
+responsiveWidth = responsive widthOfContainer
+responsiveHeight = responsive heightOfContainer

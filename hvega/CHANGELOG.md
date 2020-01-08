@@ -38,6 +38,9 @@ The `lookupSelection` transform has been added to support joining
 data via a selection. The `SelectionLabel` type alias has been added
 to help the documentation.
 
+The `heightOfContainer` and `widthOfContainer` functions
+have been added to support responsive sizing.
+
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
 `MarkProperty`.

@@ -140,8 +140,10 @@ module Graphics.Vega.VegaLite.Core
        , name
        , description
        , height
+       , heightOfContainer
        , heightStep
        , width
+       , widthOfContainer
        , widthStep
        , padding
        , autosize
@@ -2363,7 +2365,9 @@ facetFlow fFields = (VLFacet, object (map facetChannelProperty fFields))
 Overrides the default height of the visualization. If not specified the height
 will be calculated based on the content of the visualization. See
 'autosize' for customization of the content sizing relative to this
-setting, and 'heightStep' for setting the height of discrete fields.
+setting, 'heightOfContainer' for setting the height to that of
+the surrounding container,
+and 'heightStep' for setting the height of discrete fields.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -2376,6 +2380,19 @@ setting, and 'heightStep' for setting the height of discrete fields.
 -}
 height :: Double -> PropertySpec
 height h = (VLHeight, toJSON h)
+
+
+{-|
+Set the height of the view to that of the surrounding container,
+to allow for responsive sizing.
+
+Please see the [Vega Lite responsive sizing](https://vega.github.io/vega-lite/docs/size.html#specifying-responsive-width-and-height)
+documentation for caveats and limitations.
+
+@since 0.5.0.0
+-}
+heightOfContainer :: PropertySpec
+heightOfContainer = (VLHeight, fromT "container")
 
 
 {-|
@@ -2873,7 +2890,9 @@ vConcat specs = (VLVConcat, toJSON specs)
 Override the default width of the visualization. If not specified the width
 will be calculated based on the content of the visualization. See
 'autosize' for customization of the content sizing relative to this
-setting, and 'widthStep' for setting the width of discrete fields.
+setting, 'widthOfContainer' for setting the width to that of
+the surrounding container,
+and 'widthStep' for setting the width of discrete fields.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -2886,6 +2905,19 @@ setting, and 'widthStep' for setting the width of discrete fields.
 -}
 width :: Double -> PropertySpec
 width w = (VLWidth, toJSON w)
+
+
+{-|
+Set the width of the view to that of the surrounding container,
+to allow for responsive sizing.
+
+Please see the [Vega Lite responsive sizing](https://vega.github.io/vega-lite/docs/size.html#specifying-responsive-width-and-height)
+documentation for caveats and limitations.
+
+@since 0.5.0.0
+-}
+widthOfContainer :: PropertySpec
+widthOfContainer = (VLWidth, fromT "container")
 
 
 {-|

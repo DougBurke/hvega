@@ -536,8 +536,10 @@ module Graphics.Vega.VegaLite
        , VL.name
        , VL.description
        , VL.height
+       , VL.heightOfContainer
        , VL.heightStep
        , VL.width
+       , VL.widthOfContainer
        , VL.widthStep
        , VL.padding
        , VL.autosize
@@ -1055,6 +1057,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.lookupSelection' transform has been added to support
 --   joining data via a selection. The 'VL.SelectionLabel' type alias
 --   has been added as a guide for the documentation.
+--
+-- * The 'VL.heightOfContainer' and 'VL.widthOfContainer' functions
+--   have been added to support responsive sizing.
 --
 -- __Breaking changes__ in this release:
 --
