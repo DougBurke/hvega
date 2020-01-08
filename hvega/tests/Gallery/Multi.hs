@@ -18,6 +18,7 @@ testSpecs = [ ("multi1", multi1)
             , ("multi5", multi5)
             , ("multi6", multi6)
             , ("multi7", multi7)
+            , ("multi8", multi8)
             ]
 
 
@@ -456,3 +457,34 @@ multi7 =
         , projection [ PrType AlbersUsa ]
         , layer [ backdropSpec, lineSpec, airportSpec ]
         ]
+
+
+multi8 :: VegaLite
+multi8 =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/flights-5k.json"
+              [ Parse [ ( "date", FoDate "" ) ] ]
+
+      trans = transform
+              . calculateAs "hours(datum.date) + minutes(datum.date) / 60" "time"
+      sel = selection
+            . select "brush" Interval [ Encodings [ ChX ]
+                                      , SInitInterval
+                                        (Just (Number 6, Number 12))
+                                        Nothing
+                                      ]
+
+      enc1 = encoding
+             . position X [ PName "time"
+                          , PBin [ MaxBins 30 ]
+                          , PmType Quantitative ]
+             . position Y [ PAggregate Count, PmType Quantitative ]
+      spec1 = asSpec [ width 963, height 100, sel [], enc1 [], mark Bar [] ]
+
+      enc2 = encoding
+             . position X [ PName "time"
+                          , PBin [ MaxBins 30, SelectionExtent "brush" ]
+                          , PmType Quantitative ]
+             . position Y [ PAggregate Count, PmType Quantitative ]
+      spec2 = asSpec [ width 963, height 100, enc2 [], mark Bar [] ]
+
+  in toVegaLite [ dvals, trans [], vConcat [ spec1, spec2 ] ]

@@ -1132,6 +1132,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
 --
+-- * The 'VL.BinProperty' type has gained the 'VL.SelectionExtent'
+--   constructor, which defines the bin range as an interval selection.
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The use of 'VL.ONone' now generates the correct output.

@@ -92,6 +92,9 @@ set the corner radii of rectangular marks.
 
 The `DTMonthNum` constructor has been added to `DateTime`.
 
+The `BinProperty` type has gained the `SelectionExtent`
+constructor, for defining a bin range via an interval selection.
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Transform
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -55,7 +55,8 @@ import Graphics.Vega.VegaLite.Data
   , dataValuesSpecs
   )
 import Graphics.Vega.VegaLite.Foundation
-  ( SortField
+  ( SelectionLabel
+  , SortField
   , sortFieldSpec
   , field_
   , fromT
@@ -299,6 +300,22 @@ data BinProperty
       --   such as multiples of ten.
       --
       --   Default is @True@.
+    | SelectionExtent SelectionLabel
+      -- ^ Set the range based on an interactive selection. The label
+      --   must reference an interval selection, but this constraint is
+      --   /not enforced/ at compile or run time.
+      --
+      --   @
+      --   sel = 'Graphics.Vega.VegaLite.selection'
+      --         . 'Graphics.Vega.VegaLite.select' \"brush\" 'Graphics.Vega.VegaLite.Interval' [ 'Graphics.Vega.VegaLite.Encodings' [ 'Graphics.Vega.VegaLite.ChX' ] ]
+      --   enc = 'Graphics.Vega.VegaLite.encoding'
+      --         . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' \"temperature\"
+      --                      , 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Quantitative'
+      --                      , 'Graphics.Vega.VegaLite.PBin' [ 'SelectionExtent' \"brush\" ]
+      --                      ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | Step Double
       -- ^ The step size to use between bins.
       --
@@ -313,6 +330,7 @@ binProperty (BinAnchor x) = "anchor" .= x
 binProperty (Base x) = "base" .= x
 binProperty (Divide xs) = "divide" .= xs
 binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
+binProperty (SelectionExtent s) = "extent" .= object [ "selection" .= s ]
 binProperty (MaxBins n) = "maxbins" .= n
 binProperty (MinStep x) = "minstep" .= x
 binProperty (Nice b) = "nice" .= b
