@@ -946,7 +946,20 @@ data PositionChannel
       --   [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html).
       --
       --   @since 0.4.0.0
-
+    | PBand Double
+      -- ^ Specify the mark position or size relative to the band size.
+      --   The value is in the range 0 to 1, inclusive.
+      --
+      --   For rectangular-based marks ('Graphics.Vega.VegaLite.Rect', 'Graphics.Vega.VegaLite.Bar', and 'Graphics.Vega.VegaLite.Image'),
+      --   the value is the scale factor relative to the band width
+      --   (or height), or the time unit interval.
+      --
+      --   For non-rectangular marks, the relative position on a band of a
+      --   stacked, binned, time unit, or band scale is used. A value of
+      --   0 positions the band at the beginning of the band, and 1
+      --   at the end.
+      --
+      --   @since 0.5.0.0
 
 positionChannelProperty :: PositionChannel -> LabelledSpec
 positionChannelProperty (PName s) = field_ s
@@ -970,6 +983,7 @@ positionChannelProperty PHeight = value_ "height"
 positionChannelProperty PWidth = value_ "width"
 positionChannelProperty (PNumber x) = "value" .= x
 positionChannelProperty (PImpute ips) = impute_ ips
+positionChannelProperty (PBand x) = "band" .= x
 
 
 {-|

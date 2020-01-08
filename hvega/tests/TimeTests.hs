@@ -28,6 +28,7 @@ testSpecs = [ ("timeYear", timeYear)
             , ("timeMinutesSeconds", timeMinutesSeconds)
             , ("localTime", localTime)
             , ("utcTime", utcTime)
+            , ("timeBand", timeBand)
             ]
 
 
@@ -166,3 +167,21 @@ localTime = parseTime Local
 
 utcTime :: VegaLite
 utcTime = parseTime UTC
+
+
+timeBand :: VegaLite
+timeBand =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-temps.csv" []
+
+      enc = encoding
+            . position X [ PName "date", PTimeUnit Month
+                         , PmType Temporal, PBand 0.5 ]
+            . position Y [ PName "temp", PAggregate Mean
+                         , PmType Quantitative ]
+
+  in toVegaLite
+        [ width 400
+        , dvals
+        , enc []
+        , mark Line [ MPoint (PMMarker [ MFill "black" ]) ]
+        ]

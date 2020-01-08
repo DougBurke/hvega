@@ -95,6 +95,9 @@ The `DTMonthNum` constructor has been added to `DateTime`.
 The `BinProperty` type has gained the `SelectionExtent`
 constructor, for defining a bin range via an interval selection.
 
+The `PositionChannel` type has gained the `PBand` constructor,
+for defining the size of a mark relative to a band.
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

@@ -1135,6 +1135,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.BinProperty' type has gained the 'VL.SelectionExtent'
 --   constructor, which defines the bin range as an interval selection.
 --
+-- * The 'VL.PositionChannel' type has gained 'VL.PBand', for defining
+--   the size of a mark relative to a band.
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The use of 'VL.ONone' now generates the correct output.
