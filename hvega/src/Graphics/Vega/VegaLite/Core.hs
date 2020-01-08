@@ -187,6 +187,7 @@ import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
   , Opacity
+  , SelectionLabel
   , ZIndex
   , FontWeight
   , Measurement
@@ -1644,7 +1645,7 @@ data BooleanOp
       --   @
       --
       --   @since 0.4.0.0
-    | Selection T.Text  -- TODO: rename Selected since collides with Selection type
+    | Selection SelectionLabel  -- TODO: rename Selected since collides with Selection type
       -- ^ Interactive selection that will be true or false as part of
       --   a logical composition.  For example: to filter a dataset so
       --   that only items selected interactively and that have a
@@ -1654,7 +1655,7 @@ data BooleanOp
       -- 'transform'
       --    . 'filter' ('FCompose' ('And' ('Selection' "brush") ('Expr' "datum.weight > 30")))
       -- @
-    | SelectionName T.Text
+    | SelectionName SelectionLabel
     -- ^  Name a selection that is used as part of a conditional encoding.
     --
     -- @
@@ -4041,7 +4042,7 @@ trans = 'transform'
 lookupSelection ::
   T.Text
   -- ^ The field to lookup in the primary data source.
-  -> T.Text
+  -> SelectionLabel
   -- ^ The name of the selection (as set with 'Graphics.Vega.VegaLite.select').
   -> T.Text
   -- ^ The name of the field in the selection to link with the

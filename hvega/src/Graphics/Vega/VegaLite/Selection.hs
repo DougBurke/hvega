@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Selection
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -43,7 +43,9 @@ import Graphics.Vega.VegaLite.Data
   , dataValueSpec
   )
 import Graphics.Vega.VegaLite.Foundation
-  ( Opacity
+  ( Color
+  , Opacity
+  , SelectionLabel
   , Channel
   , channelLabel
   , fromT)
@@ -295,9 +297,9 @@ rectangle). For details see the
 
 -}
 data SelectionMarkProperty
-    = SMFill T.Text
+    = SMFill Color
     | SMFillOpacity Opacity
-    | SMStroke T.Text
+    | SMStroke Color
     | SMStrokeOpacity Opacity
     | SMStrokeWidth Double
     | SMStrokeDash [Double]
@@ -473,7 +475,7 @@ sel =
 
 -}
 select ::
-  T.Text
+  SelectionLabel
   -- ^ The name given to the selection.
   -> Selection
   -- ^ The type of the selection.

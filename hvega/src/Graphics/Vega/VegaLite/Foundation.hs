@@ -19,6 +19,7 @@ module Graphics.Vega.VegaLite.Foundation
        ( Angle
        , Color
        , Opacity
+       , SelectionLabel
        , ZIndex
 
        , FontWeight(..)
@@ -170,6 +171,18 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate the name, or label,
+of a selection. It is expected to be a non-empty string, but there
+is __no attempt__ to validate this.
+
+@since 0.5.0.0
+-}
+
+type SelectionLabel = T.Text
 
 
 {-|

@@ -111,6 +111,7 @@ module Graphics.Vega.VegaLite
        , VL.GradientCoord
        , VL.GradientStops
        , VL.Opacity
+       , VL.SelectionLabel
        , VL.ZIndex
        , VL.combineSpecs
        , VL.toHtml
@@ -1052,7 +1053,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   new 'VL.Image' mark type.
 --
 -- * The 'VL.lookupSelection' transform has been added to support
---   joining data via a selection.
+--   joining data via a selection. The 'VL.SelectionLabel' type alias
+--   has been added as a guide for the documentation.
 --
 -- __Breaking changes__ in this release:
 --

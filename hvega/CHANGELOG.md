@@ -35,7 +35,8 @@ aliases and handling of default values, and now subsumes the `lookupAs`
 encoding, which has been marked as deprecated.
 
 The `lookupSelection` transform has been added to support joining
-data via a selection.
+data via a selection. The `SelectionLabel` type alias has been added
+to help the documentation.
 
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
