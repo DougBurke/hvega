@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 --
--- Based on the Elm VegaLite GeoTests.elm as of version 1.12.0
+-- Based on the Elm VegaLite InteractionTests.elm as of version 1.12.0
 -- Note that the numbering / naming has diverged from Elm over
 -- time (I want to keep the old tests the same name)
 --
@@ -28,6 +28,7 @@ testSpecs = [ ("interaction1", interaction1)
             , ("bindlegend", bindLegend)
             , ("bindlegend2", bindLegendDouble)
             , ("bindlegendboth", bindLegendBoth)
+            , ("lookupSelection1", lookupSelection1)
             ]
 
 
@@ -244,3 +245,69 @@ bindLegendBoth =
                ]
 
   in iPlot sel Circle
+
+
+-- lookup into a selection
+-- based on https://vega.github.io/vega-lite/docs/lookup.html#lookup-selection
+--
+lookupSelection1 :: VegaLite
+lookupSelection1 =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv"
+                 [ CSV, Parse [("date", FoDate "")] ]
+
+      xaxis = position X [PName "date", PmType Temporal, PAxis []]
+
+      t0 = DateTime [DTYear 2005, DTMonthNum 1, DTDate 1]
+      selPoint = selection
+                 . select "index" Single
+                          [ On "mouseover"
+                          , Encodings [ChX]
+                          , Nearest True
+                          , SInit [("x", t0)]
+                          ]
+      encPoint = encoding
+                 . xaxis
+                 . opacity [MNumber 0]
+      pointSpec = [ encPoint [], selPoint [], mark Point [] ]
+
+      encLine = encoding
+                . xaxis
+                . position Y [ PName "indexed_price"
+                             , PmType Quantitative
+                             , PAxis [AxFormat "%"]
+                             ]
+                . color [ MName "symbol", MmType Nominal]
+      transLine = transform
+                  . lookupSelection "symbol" "index" "symbol"
+                  . calculateAs
+                    "datum.index && datum.index.price > 0 ? (datum.price - datum.index.price)/datum.index.price : 0"
+                    "indexed_price"
+      lineSpec = [ encLine [], transLine [], mark Line [] ]
+
+      encRule = encoding
+                . xaxis
+                . color [MString "firebrick"]
+      transRule = transform
+                  . filter (FSelection "index")
+      layerRule = layer [ asSpec [ mark Rule [MStrokeWidth 0.5] ]
+                        , asSpec [ mark Text [ MAlign AlignCenter
+                                             , MFontWeight W100 ]
+                                 , encoding
+                                   . text [ TName "date"
+                                          , TmType Temporal
+                                          , TTimeUnit YearMonth
+                                          ]
+                                   . position Y [PNumber 310]
+                                   $ []
+                                 ]
+                        ]
+      ruleSpec = [ encRule [], transRule [], layerRule ]
+
+      layers = layer (map asSpec [pointSpec, lineSpec, ruleSpec])
+
+  in toVegaLite
+     [ dvals
+     , width 650
+     , height 300
+     , layers
+     ]

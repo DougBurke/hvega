@@ -44,8 +44,9 @@ module Graphics.Vega.VegaLite.Core
        , PivotProperty(..)
 
        , lookup
-       , lookupAs
+       , lookupSelection
        , LookupFields(..)
+       , lookupAs
 
        , impute
 
@@ -2732,6 +2733,17 @@ transform transforms =
 
                     in object ols
 
+                | V.length vs == 3 ->
+                    -- lookupSelection
+                    let fs = [ ("selection", vs V.! 1)
+                             , ("key", vs V.! 2) ]
+
+                        ols = [ ("lookup", vs V.! 0)
+                              , ("from", object fs)
+                              ]
+
+                    in object ols
+
               _ -> A.Null
 
           "flattenAs" ->
@@ -3943,6 +3955,8 @@ Perform a lookup of named fields between two data sources. This allows
 you to find values in one data source based on the values in another
 (like a relational join).
 
+Use 'lookupSelection' for linking data with interactive selections.
+
 See the <https://vega.github.io/vega-lite/docs/lookup.html Vega-Lite documentation>
 for further details.
 
@@ -4003,6 +4017,38 @@ lookup key1 (_, spec) key2 lfields ols =
       get2 = toJSON . map snd
 
   in ("lookup" .= ([toJSON key1, spec, toJSON key2] ++ js)) : ols
+
+
+{-|
+
+Attach the results of an interactive selection to a primary data source.
+This is similar to 'lookup' except that the data in a selection are used
+in place of the secondary data source.
+
+See the [Vega Lite lookup selection](https://vega.github.io/vega-lite/docs/lookup.html#lookup-selection) documentation.
+
+@
+sel = 'Graphics.Vega.VegaLite.selection'
+      . 'Graphics.Vega.VegaLite.select' \"mySel\" 'Graphics.Vega.VegaLite.Single' [ 'Graphics.Vega.VegaLite.On' \"mouseover\", 'Graphics.Vega.VegaLite.Encodings' [ 'Graphics.Vega.VegaLite.ChX' ] ]
+
+trans = 'transform'
+        . 'lookupSelection' \"country\" \"mySel\" \"country\"
+@
+
+@since 0.5.0.0
+-}
+
+lookupSelection ::
+  T.Text
+  -- ^ The field to lookup in the primary data source.
+  -> T.Text
+  -- ^ The name of the selection (as set with 'Graphics.Vega.VegaLite.select').
+  -> T.Text
+  -- ^ The name of the field in the selection to link with the
+  --   primary data field.
+  -> BuildLabelledSpecs
+lookupSelection key1 selName key2 ols =
+  ("lookup" .= [key1, selName, key2]) : ols
 
 
 {-|

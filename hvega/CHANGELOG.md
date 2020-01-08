@@ -28,11 +28,14 @@ The `url` encoding has been added, which allows you to view images (e.g.
 PNG) via the (new) `Image` mark type has been added. The `MAspect`
 `MarkProperty` has been added as a configuration option.
 
-The `lookup` encoding has been changed so that the list of fields
+The `lookup` transform has been changed so that the list of fields
 stored when the keys match is now specified by the `LookupFields`
 type (rather than a list of field names). This supports providing
 aliases and handling of default values, and now subsumes the `lookupAs`
 encoding, which has been marked as deprecated.
+
+The `lookupSelection` transform has been added to support joining
+data via a selection.
 
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
@@ -85,6 +88,8 @@ have also been added (although they provides no type safety).
 The `MCornerRadius`, `MCornerRadiusTL`, `MCornerRadiusTR`, `MCornerRadiusBL`,
 and `MCornerRadiusBR` constructors have been added to `MarkProperty` to
 set the corner radii of rectangular marks.
+
+The `DTMonthNum` constructor has been added to `DateTime`.
 
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.

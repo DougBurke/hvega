@@ -235,8 +235,9 @@ module Graphics.Vega.VegaLite
          -- $joining
 
        , VL.lookup
-       , VL.lookupAs
+       , VL.lookupSelection
        , VL.LookupFields(..)
+       , VL.lookupAs
 
          -- ** Data Imputation
          --
@@ -1050,6 +1051,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.url' encoding has been added for displaying images (via the
 --   new 'VL.Image' mark type.
 --
+-- * The 'VL.lookupSelection' transform has been added to support
+--   joining data via a selection.
+--
 -- __Breaking changes__ in this release:
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
@@ -1123,6 +1127,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   you can change individual corners with one of:
 --   'VL.MCornerRadiusTL', 'VL.MCornerRadiusTR', 'VL.MCornerRadiusBL',
 --   and 'VL.MCornerRadiusBR'.
+--
+-- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
 --
 -- __Bug Fixes__ in this release:
 --

@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Time
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -56,6 +56,7 @@ data DateTime
     = DTYear Int
     | DTQuarter Int
     | DTMonth MonthName
+    | DTMonthNum Int
     | DTDate Int
     | DTDay DayName
     | DTHours Int
@@ -137,6 +138,7 @@ dateTimeProperty :: DateTime -> LabelledSpec
 dateTimeProperty (DTYear y) = "year" .= y
 dateTimeProperty (DTQuarter q) = "quarter" .= q
 dateTimeProperty (DTMonth mon) = "month" .= monthNameLabel mon
+dateTimeProperty (DTMonthNum n) = "month" .= n
 dateTimeProperty (DTDate dt) = "date" .= dt
 dateTimeProperty (DTDay day) = "day" .= dayLabel day
 dateTimeProperty (DTHours h) = "hours" .= h
