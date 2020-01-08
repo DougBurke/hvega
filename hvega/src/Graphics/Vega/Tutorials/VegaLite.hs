@@ -133,6 +133,13 @@ module Graphics.Vega.Tutorials.VegaLite (
 
   , skyPlot
 
+  -- * Choropleth
+  --
+  -- $intro-choropleth
+
+  , choroplethLookupToGeo
+  , choroplethLookupFromGeo
+  
   -- * Layered and Multi-View Compositions
   --
   -- $intro-layered
@@ -5302,6 +5309,89 @@ parallaxView =
       , bounds Flush
       , vConcat [ densLayer, tickLayer ]
       ]
+
+-- $intro-choropleth
+-- There are some things vega-lite can do, don't fit as well into the 
+-- flow of looking at astronomy data!  But having examples is helpful.
+-- So we bring our eyes back to earth, and demonstrate some basic
+-- "choropleths", maps--in the sense of pictures of bounded geographical
+-- regions--with data for each location indicated by color.
+
+{-|
+This is based on the
+<https://vega.github.io/vega-lite/examples/geo_choropleth.html Choropleth>
+example from the Vega-Lite
+<https://vega.github.io/vega-lite/examples/ Example Gallery>.
+The key elements are
+
+   * Specifying the correct format, in this case "Topojson" for the geographic data,
+     see the <https://vega.github.io/vega-lite/docs/data.html#topojson vega-lite docs>.
+   * Choosing the correct "feature" name in the geographic data, here "counties".
+   * Performing a vega-lite lookup to join the data to be plotted (the unemployment rate)
+     to the geographic data.  In this case, the column name in the unemployment data---"id"
+     given as the first argument to @lookup@---is the same as the column name in the
+     geographic data---the third argument to @lookup@. Those can be different.
+   * Specifying a projection, that is a mapping from (longitude, latitude) to (x,y)
+     coordinates. See the <https://vega.github.io/vega-lite/docs/projection.html vega-lite docs>.
+   * Using the <https://vega.github.io/vega-lite/docs/geoshape.html geoshape> mark.
+
+@
+choroplethLookupToGeo :: VegaLite
+choroplethLookupToGeo =
+  let unemploymentData =  dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
+      geoData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature "counties"]
+  in toVegaLite
+     [ geoData
+     , transform . lookup "id" unemploymentData "id" ["rate"] $ []
+     , projection [PrType AlbersUsa]
+     , encoding . color [MName "rate", MmType Quantitative] $ []
+     , mark Geoshape []
+     , width 500
+     , height 300
+     ]
+@
+
+-}
+
+usGeoData :: [Format] -> Data
+usGeoData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" 
+
+choroplethLookupToGeo :: VegaLite
+choroplethLookupToGeo =
+  let unemploymentData =  dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []  
+  in toVegaLite
+     [ usGeoData [TopojsonFeature "counties"]
+     , transform . lookup "id" unemploymentData "id" ["rate"] $ []
+     , projection [PrType AlbersUsa]
+     , encoding . color [MName "rate", MmType Quantitative] $ []
+     , mark Geoshape []
+     , width 500
+     , height 300
+     ]
+
+
+{-|
+If we want to plot more than one map from the same table of data
+we need to do the lookup in the other order, using lookup to add the
+geographic data to the data table. Charting this way requires
+specifiying a few things differently than in the previous example:
+
+  * We're using @lookupAs@ instead of @lookup@.  This gets
+    all the columns from the source rather then the set
+-}
+
+choroplethLookupFromGeo :: VegaLite
+choroplethLookupFromGeo =
+  let popEngHurrData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/population_engineers_hurricanes.csv" []
+  in toVegaLiteSchema vlSchema4
+     [ specification $ asSpec [popEngHurrData, width 300, height 500]
+     , transform . lookupAs "id" (usGeoData [TopojsonFeature "states"]) "id" "geo" $ []
+     , projection [PrType AlbersUsa]     
+     , repeat [RowFields["population", "engineers", "hurricanes"]]
+     , resolve . resolution (RScale [(ChColor, Independent)]) $ []
+     , encoding . shape [MName "geo", MmType GeoFeature] . color [MRepeat Row, MmType Quantitative] $ []
+     , mark Geoshape []
+     ]
 
 
 {-

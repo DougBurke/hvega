@@ -142,6 +142,8 @@ vl = [ ("api-vl1", vl1)
      , ("duplicateaxis", VL.duplicateAxis)
      , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
+     , ("choroplethLookupToGeo", VL.choroplethLookupToGeo)
+     , ("choroplethLookupFromGeo", VL.choroplethLookupFromGeo)
      ]
 
 
