@@ -655,7 +655,7 @@ legendConfigProperty (LeLabelFontStyle s) = "labelFontStyle" .= s
 legendConfigProperty (LeLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
 legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
-legendConfigProperty (LeLabelOpacity x) = "labelOapcity" .= x
+legendConfigProperty (LeLabelOpacity x) = "labelOpacity" .= x
 legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
 legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
 legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x

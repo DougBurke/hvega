@@ -1167,12 +1167,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __Bug Fixes__ in this release:
 --
--- * The use of 'VL.ONone' now generates the correct output.
---
 -- * The selection property @'VL.SInitInterval' Nothing Nothing@ is
 --   now a no-op (as it does nothing), rather than generating invalid JSON.
 --
--- * The output of 'VL.LSymbolStrokeWidth' has been corrected.
+-- * The following options or symbols generated incorrect JSON output:
+--   'VL.ONone', 'VL.LSymbolStrokeWidth', 'VL.LeLabelOpacity'.
 --
 
 -- $update0400

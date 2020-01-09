@@ -115,12 +115,11 @@ particular value).
 
 Bugfixes:
 
-- `ONone` now creates the correct JSON.
-
 - the selection property `SInitInterval Nothing Nothing` is now a
   no-op (as it does nothing), rather than generating invalid JSON.
 
-- the output of `LSymbolStrokeWidth` has been corrected
+- the following options or symbols generated incorrect JSON output:
+  `ONone`, `LSymbolStrokeWidth`, `LeLabelOpacity`.
 
 ## 0.4.1.2
 
