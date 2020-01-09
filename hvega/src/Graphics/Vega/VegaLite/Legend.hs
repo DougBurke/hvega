@@ -466,7 +466,7 @@ legendProperty (LSymbolOffset x) = "symbolOffset" .= x
 legendProperty (LSymbolOpacity x) = "symbolOpacity" .= x
 legendProperty (LSymbolSize x) = "symbolSize" .= x
 legendProperty (LSymbolStrokeColor s) = "symbolStrokeColor" .= s
-legendProperty (LSymbolStrokeWidth x) = "symbolStrikeWidth" .= x
+legendProperty (LSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendProperty (LSymbolType sym) = "symbolType" .= symbolLabel sym
 legendProperty (LTickCount x) = "tickCount" .= x
 legendProperty (LTickMinStep x) = "tickMinStep" .= x

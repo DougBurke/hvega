@@ -1172,6 +1172,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The selection property @'VL.SInitInterval' Nothing Nothing@ is
 --   now a no-op (as it does nothing), rather than generating invalid JSON.
 --
+-- * The output of 'VL.LSymbolStrokeWidth' has been corrected.
+--
 
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and

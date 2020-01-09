@@ -113,10 +113,14 @@ not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
 particular value).
 
-Bugfix: `ONone` now creates the correct JSON.
+Bugfixes:
 
-Bugfix: the selection property `SInitInterval Nothing Nothing` is
-now a no-op (as it does nothing), rather than generating invalid JSON.
+- `ONone` now creates the correct JSON.
+
+- the selection property `SInitInterval Nothing Nothing` is now a
+  no-op (as it does nothing), rather than generating invalid JSON.
+
+- the output of `LSymbolStrokeWidth` has been corrected
 
 ## 0.4.1.2
 
