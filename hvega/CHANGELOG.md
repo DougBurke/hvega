@@ -1,6 +1,14 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.4.2
+Added ```toHtmlWithVersions``` and ```toHtmlFileWithVersions``` to allow user
+specification of the vega, vega-lite and vega-embed version in the scripts
+put in the Html head element.  No checking is done of these versions exist
+or if they are consistent with the vega-lite features used.
+Added some supporting types (```VersionSpec```)
+and functions for version specification.
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich
