@@ -4,7 +4,7 @@
         "legend": {
             "labelOpacity": 0.6,
             "cornerRadius": 5,
-            "symbolStrokeColor": "",
+            "symbolStrokeColor": null,
             "strokeWidth": 2,
             "fillColor": "pink",
             "labelOverlap": "greedy",

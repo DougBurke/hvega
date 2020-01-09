@@ -13,7 +13,7 @@
             "legend": {
                 "labelOpacity": 0.6,
                 "cornerRadius": 5,
-                "symbolStrokeColor": "",
+                "symbolStrokeColor": null,
                 "fillColor": "pink",
                 "labelOverlap": "greedy",
                 "rowPadding": 15,
@@ -34,7 +34,7 @@
             "legend": {
                 "labelOpacity": 0.6,
                 "cornerRadius": 5,
-                "symbolStrokeColor": "",
+                "symbolStrokeColor": null,
                 "fillColor": "pink",
                 "labelOverlap": "greedy",
                 "rowPadding": 15,
@@ -55,7 +55,7 @@
             "legend": {
                 "labelOpacity": 0.6,
                 "cornerRadius": 5,
-                "symbolStrokeColor": "",
+                "symbolStrokeColor": null,
                 "fillColor": "pink",
                 "labelOverlap": "greedy",
                 "rowPadding": 15,

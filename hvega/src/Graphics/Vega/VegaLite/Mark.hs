@@ -56,6 +56,7 @@ import Graphics.Vega.VegaLite.Foundation
   , TooltipContent(TTNone)
   , HAlign
   , VAlign
+  , fromColor
   , fromDS
   , cursorLabel
   , fontWeightSpec
@@ -76,17 +77,6 @@ import Graphics.Vega.VegaLite.Specification
 -- TODO: should this turn an empty list into true?
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
 mprops_ f mps = f .= object (map markProperty mps)
-
-
--- strips leading and trailing white space and, if the result
--- is empty, returns Null, otherwise the trimmed text.
---
-cleanT :: T.Text -> VLSpec
-cleanT t =
-  let tout = T.strip t
-  in if T.null tout
-     then A.Null
-     else toJSON tout
 
 
 -- | Type of visual mark used to represent data in the visualization.
@@ -519,16 +509,16 @@ markProperty (MFilled b) = "filled" .= b
 markProperty (MBorders mps) = mprops_ "borders" mps
 markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
-markProperty (MColor col) = "color" .= col
+markProperty (MColor col) = "color" .= fromColor col
 markProperty (MCornerRadius x) = "cornerRadius" .= x
 markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .= x
 markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
 markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
 markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MFill col) = "fill" .= cleanT col
+markProperty (MFill col) = "fill" .= fromColor col
 markProperty (MHeight x) = "height" .= x
-markProperty (MStroke t) = "stroke" .= cleanT t
+markProperty (MStroke t) = "stroke" .= fromColor t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
 markProperty (MStrokeWidth w) = "strokeWidth" .= w
@@ -791,7 +781,8 @@ Convenience type-annotation label to indicate the color interpolation
 points - i.e. the colors to use at points along the
 normalized range 0 to 1 (inclusive).
 
-The list does not have to be sorted.
+The list does not have to be sorted. There is no check that the
+color is valid (i.e. not empty or a valid color specification).
 
 @since 0.5.0.0
 -}
@@ -799,7 +790,7 @@ type GradientStops = [(GradientCoord, Color)]
 
 
 stopSpec :: (GradientCoord, Color) -> VLSpec
-stopSpec (x, c) = object [ "offset" .= x, "color" .= c ]
+stopSpec (x, c) = object [ "offset" .= x, "color" .= fromColor c ]
 
 
 {-|

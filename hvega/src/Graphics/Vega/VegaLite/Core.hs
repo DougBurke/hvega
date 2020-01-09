@@ -219,6 +219,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ViewBackground
   , HeaderProperty
   , fromT
+  , fromColor
   , fromDS
   , splitOnNewline
   , field_
@@ -1015,7 +1016,7 @@ background ::
   --
   --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
   -> PropertySpec
-background colour = (VLBackground, toJSON colour)
+background colour = (VLBackground, fromColor colour)
 
 
 {-|
@@ -1424,7 +1425,7 @@ axisProperty (AxDataCondition predicate cap) =
                                              ]
                      , "value" .= elseProp]
 axisProperty (AxDomain b) = "domain" .= b
-axisProperty (AxDomainColor s) = "domainColor" .= s
+axisProperty (AxDomainColor s) = "domainColor" .= fromColor s
 axisProperty (AxDomainDash ds) = "domainDash" .= fromDS ds
 axisProperty (AxDomainDashOffset x) = "domainDashOffset" .= x
 axisProperty (AxDomainOpacity x) = "domainOpacity" .= x
@@ -1433,7 +1434,7 @@ axisProperty (AxFormat fmt) = "format" .= fmt
 axisProperty AxFormatAsNum = "formatType" .= fromT "number"
 axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
 axisProperty (AxGrid b) = "grid" .= b
-axisProperty (AxGridColor s) = "gridColor" .= s
+axisProperty (AxGridColor s) = "gridColor" .= fromColor s
 axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds
 axisProperty (AxGridDashOffset x) = "gridDashOffset" .= x
 axisProperty (AxGridOpacity x) = "gridOpacity" .= x
@@ -1445,7 +1446,7 @@ axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
 axisProperty AxLabelNoBound = "labelBound" .= False
 axisProperty AxLabelBound = "labelBound" .= True
 axisProperty (AxLabelBoundValue x) = "labelBound" .= x
-axisProperty (AxLabelColor s) = "labelColor" .= s
+axisProperty (AxLabelColor s) = "labelColor" .= fromColor s
 axisProperty (AxLabelExpr e) = "labelExpr" .= e
 axisProperty AxLabelNoFlush = "labelFlush" .= False
 axisProperty AxLabelFlush = "labelFlush" .= True
@@ -1466,7 +1467,7 @@ axisProperty (AxOffset n) = "offset" .= n
 axisProperty (AxOrient side) = "orient" .= sideLabel side
 axisProperty (AxPosition n) = "position" .= n
 axisProperty (AxTicks b) = "ticks" .= b
-axisProperty (AxTickColor s) = "tickColor" .= s
+axisProperty (AxTickColor s) = "tickColor" .= fromColor s
 axisProperty (AxTickCount n) = "tickCount" .= n
 axisProperty (AxTickDash ds) = "tickDash" .= fromDS ds
 axisProperty (AxTickDashOffset x) = "tickDashOffset" .= x
@@ -1483,7 +1484,7 @@ axisProperty (AxTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 axisProperty (AxTitleAnchor a) = "titleAnchor" .= anchorLabel a
 axisProperty (AxTitleAngle x) = "titleAngle" .= x
 axisProperty (AxTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-axisProperty (AxTitleColor s) = "titleColor" .= s
+axisProperty (AxTitleColor s) = "titleColor" .= fromColor s
 axisProperty (AxTitleFont s) = "titleFont" .= s
 axisProperty (AxTitleFontSize x) = "titleFontSize" .= x
 axisProperty (AxTitleFontStyle s) = "titleFontStyle" .= s

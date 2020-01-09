@@ -61,6 +61,7 @@ import Graphics.Vega.VegaLite.Foundation
   , vAlignLabel
 
   , fromT
+  , fromColor
   , fromDS
   , splitOnNewline
   )
@@ -430,19 +431,19 @@ legendProperty (LColumnPadding x) = "columnPadding" .= x
 legendProperty (LColumns n) = "columns" .= n
 legendProperty (LCornerRadius x) = "cornerRadius" .= x
 legendProperty (LDirection o) = "direction" .= orientationSpec o
-legendProperty (LFillColor s) = "fillColor" .= s
+legendProperty (LFillColor s) = "fillColor" .= fromColor s
 legendProperty (LFormat s) = "format" .= s
 legendProperty LFormatAsNum = "formatType" .= fromT "number"
 legendProperty LFormatAsTemporal = "formatType" .= fromT "time"
 legendProperty (LGradientLength x) = "gradientLength" .= x
 legendProperty (LGradientOpacity x) = "gradientOpacity" .= x
-legendProperty (LGradientStrokeColor s) = "gradientStrokeColor" .= s
+legendProperty (LGradientStrokeColor s) = "gradientStrokeColor" .= fromColor s
 legendProperty (LGradientStrokeWidth x) = "gradientStrokeWidth" .= x
 legendProperty (LGradientThickness x) = "gradientThickness" .= x
 legendProperty (LGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendProperty (LLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendProperty (LLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-legendProperty (LLabelColor s) = "labelColor" .= s
+legendProperty (LLabelColor s) = "labelColor" .= fromColor s
 legendProperty (LLabelFont s) = "labelFont" .= s
 legendProperty (LLabelFontSize x) = "labelFontSize" .= x
 legendProperty (LLabelFontStyle s) = "labelFontStyle" .= s
@@ -457,15 +458,15 @@ legendProperty (LOffset x) = "offset" .= x
 legendProperty (LOrient orl) = "orient" .= legendOrientLabel orl
 legendProperty (LPadding x) = "padding" .= x
 legendProperty (LRowPadding x) = "rowPadding" .= x
-legendProperty (LStrokeColor s) = "strokeColor" .= s
+legendProperty (LStrokeColor s) = "strokeColor" .= fromColor s
 
 legendProperty (LSymbolDash ds) = "symbolDash" .= fromDS ds
 legendProperty (LSymbolDashOffset x) = "symbolDashOffset" .= x
-legendProperty (LSymbolFillColor s) = "symbolFillColor" .= s
+legendProperty (LSymbolFillColor s) = "symbolFillColor" .= fromColor s
 legendProperty (LSymbolOffset x) = "symbolOffset" .= x
 legendProperty (LSymbolOpacity x) = "symbolOpacity" .= x
 legendProperty (LSymbolSize x) = "symbolSize" .= x
-legendProperty (LSymbolStrokeColor s) = "symbolStrokeColor" .= s
+legendProperty (LSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor s
 legendProperty (LSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendProperty (LSymbolType sym) = "symbolType" .= symbolLabel sym
 legendProperty (LTickCount x) = "tickCount" .= x
@@ -475,7 +476,7 @@ legendProperty LNoTitle = "title" .= A.Null
 legendProperty (LTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendProperty (LTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
 legendProperty (LTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-legendProperty (LTitleColor s) = "titleColor" .= s
+legendProperty (LTitleColor s) = "titleColor" .= fromColor s
 legendProperty (LTitleFont s) = "titleFont" .= s
 legendProperty (LTitleFontSize x) = "titleFontSize" .= x
 legendProperty (LTitleFontStyle s) = "titleFontStyle" .= s

@@ -39,7 +39,7 @@ module Graphics.Vega.VegaLite.Configuration
 import qualified Data.Aeson as A
 import qualified Data.Text as T
 
-import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson ((.=), object)
 
 
 import Graphics.Vega.VegaLite.Core
@@ -67,6 +67,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ZIndex
   , HeaderProperty
   , ViewBackground
+  , fromColor
   , fromDS
   , splitOnNewline
   , header_
@@ -632,7 +633,7 @@ legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
-legendConfigProperty (LeFillColor s) = "fillColor" .= s
+legendConfigProperty (LeFillColor s) = "fillColor" .= fromColor s
 legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
 legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
@@ -640,7 +641,7 @@ legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
 legendConfigProperty (LeGradientLabelOffset x) = "gradientLabelOffset" .= x
 legendConfigProperty (LeGradientLength x) = "gradientLength" .= x
 legendConfigProperty (LeGradientOpacity x) = "gradientOpacity" .= x
-legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= s
+legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= fromColor s
 legendConfigProperty (LeGradientStrokeWidth x) = "gradientStrokeWidth" .= x
 legendConfigProperty (LeGradientThickness x) = "gradientThickness" .= x
 legendConfigProperty (LeGradientVerticalMaxLength x) = "gradientVerticalMaxLength" .= x
@@ -648,7 +649,7 @@ legendConfigProperty (LeGradientVerticalMinLength x) = "gradientVerticalMinLengt
 legendConfigProperty (LeGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-legendConfigProperty (LeLabelColor s) = "labelColor" .= s
+legendConfigProperty (LeLabelColor s) = "labelColor" .= fromColor s
 legendConfigProperty (LeLabelFont s) = "labelFont" .= s
 legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
 legendConfigProperty (LeLabelFontStyle s) = "labelFontStyle" .= s
@@ -667,19 +668,19 @@ legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
 legendConfigProperty (LePadding x) = "padding" .= x
 legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
 legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
-legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
+legendConfigProperty (LeStrokeColor s) = "strokeColor" .= fromColor s
 legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= fromDS xs
 legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
-legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
-legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
+legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= fromColor s
+legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= fromColor s
 legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= fromDS xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
 legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
-legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
+legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= fromColor s
 legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
 legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
 legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
-legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= s
+legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor s
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
 legendConfigProperty (LeTitle s) = "title" .= s
@@ -687,7 +688,7 @@ legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
 legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-legendConfigProperty (LeTitleColor s) = "titleColor" .= s
+legendConfigProperty (LeTitleColor s) = "titleColor" .= fromColor s
 legendConfigProperty (LeTitleFont s) = "titleFont" .= s
 legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
 legendConfigProperty (LeTitleFontStyle s) = "titleFontStyle" .= s
@@ -869,11 +870,11 @@ viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
 viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
 viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
 viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
-viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null toJSON ms]
+viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null fromColor ms]
 viewConfigProperties (ViewFillOpacity x) = ["fillOpacity" .= x]
 viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
 viewConfigProperties (ViewStep x) = ["step" .= x]
-viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null toJSON ms]
+viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null fromColor ms]
 viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
 viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= fromDS xs]
 viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
@@ -1102,13 +1103,13 @@ data AxisConfig
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
-axisConfigProperty (DomainColor c) = "domainColor" .= c
+axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
 axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
 axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
 axisConfigProperty (DomainWidth w) = "domainWidth" .= w
 axisConfigProperty (Grid b) = "grid" .= b
-axisConfigProperty (GridColor c) = "gridColor" .= c
+axisConfigProperty (GridColor c) = "gridColor" .= fromColor c
 axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
 axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
@@ -1124,7 +1125,7 @@ axisConfigProperty LabelNoFlush = "labelFlush" .= False
 axisConfigProperty LabelFlush = "labelFlush" .= True
 axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
-axisConfigProperty (LabelColor c) = "labelColor" .= c
+axisConfigProperty (LabelColor c) = "labelColor" .= fromColor c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
 axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
@@ -1140,7 +1141,7 @@ axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
 axisConfigProperty (Ticks b) = "ticks" .= b
-axisConfigProperty (TickColor c) = "tickColor" .= c
+axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
 axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
 axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
 axisConfigProperty (TickExtra b) = "tickExtra" .= b
@@ -1153,7 +1154,7 @@ axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
 axisConfigProperty (TitleAnchor a) = "titleAnchor" .= anchorLabel a
 axisConfigProperty (TitleAngle x) = "titleAngle" .= x
 axisConfigProperty (TitleBaseline va) = "titleBaseline" .= vAlignLabel va
-axisConfigProperty (TitleColor c) = "titleColor" .= c
+axisConfigProperty (TitleColor c) = "titleColor" .= fromColor c
 axisConfigProperty (TitleFont f) = "titleFont" .= f
 axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
 axisConfigProperty (TitleFontStyle s) = "titleFontStyle" .= s
@@ -1286,7 +1287,7 @@ titleConfigSpec :: TitleConfig -> LabelledSpec
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
 titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
-titleConfigSpec (TColor clr) = "color" .= clr
+titleConfigSpec (TColor clr) = "color" .= fromColor clr
 titleConfigSpec (TFont fnt) = "font" .= fnt
 titleConfigSpec (TFontSize x) = "fontSize" .= x
 titleConfigSpec (TFontStyle s) = "fontStyle" .= s
@@ -1298,7 +1299,7 @@ titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
 titleConfigSpec (TStyle styles) = "style" .= styles
 titleConfigSpec (TSubtitle s) = "subtitle" .= splitOnNewline s
-titleConfigSpec (TSubtitleColor s) = "subtitleColor" .= s
+titleConfigSpec (TSubtitleColor s) = "subtitleColor" .= fromColor s
 titleConfigSpec (TSubtitleFont s) = "subtitleFont" .= s
 titleConfigSpec (TSubtitleFontSize x) = "subtitleFontSize" .= x
 titleConfigSpec (TSubtitleFontStyle s) = "subtitleFontStyle" .= s

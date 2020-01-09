@@ -100,6 +100,7 @@ module Graphics.Vega.VegaLite.Foundation
        , viewBackgroundSpec
 
        , fromT
+       , fromColor
        , fromDS
        , splitOnNewline
        , field_
@@ -155,10 +156,29 @@ Any supported HTML color specification can be used, such as:
 \"hsl(180, 50%, 50%)\"
 @
 
+A blank string is converted to the JSON null value (new in @0.5.0.0@).
+
 @since 0.4.0.0
 -}
 
 type Color = T.Text
+
+
+-- strip out trailing white space just to be sure
+fromColor :: Color -> VLSpec
+fromColor = cleanT
+
+
+-- strips leading and trailing white space and, if the result
+-- is empty, returns Null, otherwise the trimmed text.
+--
+cleanT :: T.Text -> VLSpec
+cleanT t =
+  let tout = T.strip t
+  in if T.null tout
+     then A.Null
+     else toJSON tout
+
 
 
 {-|
@@ -1404,7 +1424,7 @@ headerProperty HNoTitle = "title" .= A.Null
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
-headerProperty (HLabelColor s) = "labelColor" .= s
+headerProperty (HLabelColor s) = "labelColor" .= fromColor s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
 headerProperty (HLabelLimit x) = "labelLimit" .= x
@@ -1414,7 +1434,7 @@ headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
 headerProperty (HTitleAngle x) = "titleAngle" .= x
 headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-headerProperty (HTitleColor s) = "titleColor" .= s
+headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
 headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x

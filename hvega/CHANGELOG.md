@@ -113,6 +113,9 @@ not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
 particular value).
 
+Colors are now stripped of extraneous white space, and if empty
+converted to the JSON null value rather than an empty string.
+
 Bugfixes:
 
 - the selection property `SInitInterval Nothing Nothing` is now a

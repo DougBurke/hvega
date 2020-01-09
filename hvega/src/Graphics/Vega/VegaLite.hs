@@ -1036,6 +1036,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- a single place to explain the meaning and any constraints on a
 -- particular value).
 --
+-- Colors are now cleaned of extraneous whitespace and, if empty,
+-- converted to the JSON null value. This should not change the behavior
+-- of any existing visualization.
+--
 -- __Changes in Vega-Lite 4__:
 --
 -- * The background of a visualization is now white by default whereas in

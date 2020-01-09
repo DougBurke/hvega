@@ -51,6 +51,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Channel
   , channelLabel
   , fromT
+  , fromColor
   , fromDS
   )
 import Graphics.Vega.VegaLite.Specification
@@ -311,9 +312,9 @@ data SelectionMarkProperty
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
-selectionMarkProperty (SMFill colour) = "fill" .= colour
+selectionMarkProperty (SMFill colour) = "fill" .= fromColor colour
 selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
-selectionMarkProperty (SMStroke colour) = "stroke" .= colour
+selectionMarkProperty (SMStroke colour) = "stroke" .= fromColor colour
 selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
 selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
 selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= fromDS xs
