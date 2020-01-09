@@ -1095,6 +1095,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   @'VL.configuration' (RemoveInvalid b)@ to
 --   @'VL.configuration' ('VL.MarkStyle' ['VL.MRemoveInvalid' b])@.
 --
+-- * The @Stack@ constructor has been removed from
+--   'VL.ConfigurationProperty'.
+--
 -- * The @SRangeStep@ constructor from 'VL.ScaleProperty' has been
 --   removed. The 'VL.widthStep' and 'VL.heightStep' functions should
 --   be used instead.

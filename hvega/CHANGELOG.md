@@ -46,7 +46,7 @@ have been added to support responsive sizing.
 
 The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
 and has been replaced by the `MRemoveInvalid` constructor of
-`MarkProperty`.
+`MarkProperty`. The `Stack` constructor was removed.
 
 The `SRangeStep` constructor from `ScaleProperty` has been removed.
 The `widthStep` and `heightStep` functions should be used instead.

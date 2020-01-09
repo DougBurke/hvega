@@ -55,7 +55,6 @@ import Graphics.Vega.VegaLite.Foundation
   , Orientation
   , OverlapStrategy
   , Side
-  , StackOffset
   , StrokeCap
   , StrokeJoin
   , Symbol
@@ -78,7 +77,6 @@ import Graphics.Vega.VegaLite.Foundation
   , sideLabel
   , overlapStrategyLabel
   , symbolLabel
-  , stackOffset
   , compositionAlignmentSpec
   , paddingSpec
   , autosizeProperty
@@ -120,11 +118,16 @@ Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
 
-In @version 0.5.0.0@ the @RemoveInvalid@ constructor was removed, as
+In @version 0.5.0.0@:
+
+- the @RemoveInvalid@ constructor was removed, as
 the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 'Graphics.Vega.VegaLite.MarkProperty' type should be used instead
 (so @'configuration' (RemoveInvalid b)@ changes to
 @'configuration' ('Graphics.Vega.VegaLite.MarkStyle' ['Graphics.Vega.VegaLite.MRemoveInvalid' b])@.
+
+- the @Stack@ constructor (which was called @StackProperty@ prior
+  to version @0.4.0.0@) was removed.
 
 -}
 
@@ -228,10 +231,6 @@ data ConfigurationProperty
       -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
       -- ^  the default appearance of square marks
-    | Stack StackOffset
-      -- ^ The default stack offset style for stackable marks.
-      --
-      --   Changed from @StackProperty@ in version @0.4.0.0@.
     | TextStyle [MarkProperty]
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
@@ -286,7 +285,6 @@ configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = scaleConfig_ scs
-configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
