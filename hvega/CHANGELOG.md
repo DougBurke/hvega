@@ -10,19 +10,22 @@ to white rather than transparent), although this is also controlled by
 how the Vega-Lite visualization is rendered, which can make tracking
 down why something has changed a bit awkward.
 
-The `pivot` encoding has been added, along with the `PivotProperty`
+The `pivot` transform has been added, along with the `PivotProperty`
 preferences type. This is the inverse of `fold`.
 
-The `density` encoding has been added, along with the `DensityProperty`
+The `density` transform has been added, along with the `DensityProperty`
 configuration type, to support kernel density estimation (e.g. to
 generate a continuous distribtion from a discrete one).
 
-The `loess` encoding has been added, along with the `LoessProperty`
+The `loess` transform has been added, along with the `LoessProperty`
 configuration type, to support scatterplot smoothing.
 
-The `regression` encoding has been added, along with the `RegressionProperty`
+The `regression` transform has been added, along with the `RegressionProperty`
 and `RegressionMethod` configuration types, to support regression
 analysis.
+
+The `quantile` transform has been added, along with the `QuantileProperty`
+type, to support quantile analysis.
 
 The `url` encoding has been added, which allows you to view images (e.g.
 PNG) via the (new) `Image` mark type has been added. The `MAspect`

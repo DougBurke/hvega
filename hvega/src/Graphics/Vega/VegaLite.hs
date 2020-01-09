@@ -276,6 +276,13 @@ module Graphics.Vega.VegaLite
        , VL.RegressionProperty(..)
        , VL.RegressionMethod(..)
 
+         -- ** Qualtile Calculation
+         --
+         -- $quantile
+
+       , VL.quantile
+       , VL.QuantileProperty(..)
+
          -- ** Window Transformations
          --
          -- $window
@@ -749,6 +756,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $regression
 -- See the [Vega-Lite regression documentation](https://vega.github.io/vega-lite/docs/regression.html).
 
+-- $quantile
+-- See the [Vega-Lite quantile documentation](https://vega.github.io/vega-lite/docs/quantile.html).
+
 -- $window
 -- See the Vega-Lite
 -- [window transform field](https://vega.github.io/vega-lite/docs/window.html#field-def)
@@ -1038,18 +1048,21 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __New functionality__ in this release:
 --
--- * The 'VL.pivot' encoding has been added, along with the 'VL.PivotProperty'
+-- * The 'VL.pivot' transform has been added, along with the 'VL.PivotProperty'
 --   preferences type. This is the inverse of 'VL.fold'.
 --
--- * The 'VL.density' encoding has been added, along with the 'VL.DensityProperty'
+-- * The 'VL.density' transform has been added, along with the 'VL.DensityProperty'
 --   type, to support kernel density estimation (such as generating a
 --   continuous distribution from a discrete one).
 --
--- * The 'VL.loess' encoding has been added, along with the 'VL.LoessProperty'
+-- * The 'VL.loess' transform has been added, along with the 'VL.LoessProperty'
 --   type, to support estimating a trend (scatterplot smoothing).
 --
--- * The 'VL.regression' encoding has been added, along with the 'VL.RegressionProperty'
+-- * The 'VL.regression' transform has been added, along with the 'VL.RegressionProperty'
 --   and 'VL.RegressionMethod' types, to support regression analysis.
+--
+-- * The 'VL.quantile' transform has been added, along with the
+--   'VL.QuantileProperty' type, to support quantile analysis.
 --
 -- * The 'VL.url' encoding has been added for displaying images (via the
 --   new 'VL.Image' mark type.

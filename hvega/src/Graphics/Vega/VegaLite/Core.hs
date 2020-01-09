@@ -62,6 +62,9 @@ module Graphics.Vega.VegaLite.Core
        , RegressionProperty(..)
        , RegressionMethod(..)
 
+       , quantile
+       , QuantileProperty(..)
+
        , window
 
        , mark
@@ -2745,6 +2748,23 @@ transform transforms =
 
               _ -> A.Null
 
+          "quantile" ->
+            case dval of
+              Just (A.Array vs)
+                | V.length vs == 5 ->
+                    let addField _ A.Null = []
+                        addField f v = [(f, v)]
+
+                        ols = [ ("quantile", vs V.! 0) ]
+                              <> addField "groupby" (vs V.! 1)
+                              <> addField "probs" (vs V.! 2)
+                              <> addField "step" (vs V.! 3)
+                              <> addField "as" (vs V.! 4)
+
+                    in object ols
+
+              _ -> A.Null
+
           "lookup" ->
             case dval of
               Just (A.Array vs)
@@ -3519,6 +3539,118 @@ regression depField indField rps ols =
                    , regressionPropertySpec RPLAs rps
                    ]) : ols
 
+
+{-|
+Configure the quantile analysis performed by 'quantile'.
+
+@since 0.5.0.0
+-}
+data QuantileProperty
+  = QtAs T.Text T.Text
+    -- ^ Name the fields used to store the calculated probability and
+    --   associated quantile values.
+    --
+    --   The defaults are @\"prob\"@ and @\"value\"@.
+  | QtGroupBy [T.Text]
+    -- ^ The data fields to group by.
+    --
+    -- The default is to use a single group containing all the data objects.
+  | QtProbs [Double]
+    -- ^ The probabilites (measured in the range 0-1) for which to
+    --   compute quantile values.
+    --
+    --   The default is to use a step size of 0.01, or the
+    --   'QtStep' value if given.
+  | QtStep Double
+    -- ^ The interval between probabilities when performing a quantile
+    --   transformation.
+    --
+    --   All value from half the given step size to 1 will be sampled,
+    --   and is only used if 'QtProbs' is not set.
+
+
+data QuantilePropertyLabel =
+  QPLAs | QPLGroupBy | QPLProbs | QPLStep
+
+
+quantilePropertySpec :: QuantilePropertyLabel -> [QuantileProperty] -> VLSpec
+quantilePropertySpec QPLAs ps =
+  let wanted (QtAs xs ys) = Just [xs, ys]
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+quantilePropertySpec QPLGroupBy ps =
+  let wanted (QtGroupBy xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+quantilePropertySpec QPLProbs ps =
+  let wanted (QtProbs xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+quantilePropertySpec QPLStep ps =
+  let wanted (QtStep xs) = Just xs
+      wanted _ = Nothing
+
+  in case mapMaybe wanted ps of
+    [x] -> toJSON x
+    _ -> A.Null
+
+
+{-|
+Calculate quantile values from an input data stream. This can be useful
+for examining distributional properties of a data stream, and for
+creating
+<https://en.wikipedia.org/wiki/Q–Q_plot Q-Q plots>.
+
+As an example:
+
+@
+let dvals = 'Graphics.Vega.VegaLite.dataFromUrl' \"data/normal-2d.json\" []
+
+    trans = 'transform'
+            . 'quantile' \"u\" [ 'QtStep' 0.01, 'QtAs' \"p\" \"v\" ]
+            . 'calculateAs' \"quantileUniform(datum.p)\" \"unif\"
+            . 'calculateAs' \"quantileNormal(datum.p)\" \"norm\"
+
+    enc x y = 'encoding'
+              . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' x, 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+              . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' y, 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+
+    leftSpec = 'Graphics.Vega.VegaLite.asSpec' [ 'mark' 'Graphics.Vega.VegaLite.Point' [], enc \"unif\" \"v\" [] ]
+    rightSpec = 'Graphics.Vega.VegaLite.asSpec' [ 'mark' 'Graphics.Vega.VegaLite.Point' [], enc \"norm\" \"v\" [] ]
+
+in 'Graphics.Vega.VegaLite.toVegaLite' [ dvals, trans [], 'hConcat' [ leftSpec, rightSpec ] ]
+@
+
+@since 0.5.0.0
+-}
+quantile ::
+  T.Text
+  -- ^ The field to analyse.
+  -> [QuantileProperty]
+  -- ^ Configure the quantile analysis
+  -> BuildLabelledSpecs
+quantile field qps ols =
+  let fs = [ toJSON field
+           , quantilePropertySpec QPLGroupBy qps
+           , quantilePropertySpec QPLProbs qps
+           , quantilePropertySpec QPLStep qps
+           , quantilePropertySpec QPLAs qps
+           ]
+
+  in ("quantile" .= fs) : ols 
+  
 
 {-|
 
