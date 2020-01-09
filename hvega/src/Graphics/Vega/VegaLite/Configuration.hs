@@ -49,6 +49,8 @@ import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
   , CompositionAlignment
+  , DashStyle
+  , DashOffset
   , APosition
   , FontWeight
   , Opacity
@@ -65,6 +67,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ZIndex
   , HeaderProperty
   , ViewBackground
+  , fromDS
   , splitOnNewline
   , header_
   , anchorLabel
@@ -534,9 +537,8 @@ data LegendConfig
       -- ^ Should month and weekday names be abbreviated?
     | LeStrokeColor Color
       -- ^ The border stoke color for the full legend.
-    | LeStrokeDash [Double]
-      -- ^ The border stroke dash pattern for the full legend (alternating
-      --   stroke, space lengths in pixels).
+    | LeStrokeDash DashStyle
+      -- ^ The border stroke dash pattern for the full legend.
     | LeStrokeWidth Double
       -- ^ The border stroke width for the full legend.
     | LeSymbolBaseFillColor Color
@@ -549,14 +551,12 @@ data LegendConfig
       --   there is no \"fill\" scale color encoding for the legend.
       --
       --   @since 0.4.0.0
-    | LeSymbolDash [Double]
-      -- ^ The pattern for dashed symbol strokes (alternating
-      --   stroke, space lengths in pixels).
+    | LeSymbolDash DashStyle
+      -- ^ The pattern for dashed symbol strokes.
       --
       --   @since 0.4.0.0
-    | LeSymbolDashOffset Double
-      -- ^ The offset at which to start drawing the symbol dash pattern,
-      --   in pixels.
+    | LeSymbolDashOffset DashOffset
+      -- ^ The offset at which to start drawing the symbol dash pattern.
       --
       --   @since 0.4.0.0
     | LeSymbolDirection Orientation
@@ -668,11 +668,11 @@ legendConfigProperty (LePadding x) = "padding" .= x
 legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
 legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
 legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
-legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= xs
+legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= fromDS xs
 legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
 legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
 legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
-legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
+legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= fromDS xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
 legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
 legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
@@ -835,11 +835,10 @@ data ViewConfig
       -- ^ The stroke cap for line-ending style.
       --
       --   @since 0.4.0.0
-    | ViewStrokeDash [Double]
-      -- ^ The stroke dash style. It is defined by an alternating \"on-off\"
-      --   sequence of line lengths, in pixels.
-    | ViewStrokeDashOffset Double
-      -- ^ Number of pixels before the first line dash is drawn.
+    | ViewStrokeDash DashStyle
+      -- ^ The stroke dash pattern.
+    | ViewStrokeDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
     | ViewStrokeJoin StrokeJoin
       -- ^ The stroke line-join method.
       --
@@ -876,7 +875,7 @@ viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
 viewConfigProperties (ViewStep x) = ["step" .= x]
 viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null toJSON ms]
 viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
-viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= xs]
+viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= fromDS xs]
 viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
 viewConfigProperties (ViewStrokeJoin sj) = ["strokeJoin" .= strokeJoinLabel sj]
 viewConfigProperties (ViewStrokeMiterLimit x) = ["strokeMiterLimit" .= x]
@@ -901,13 +900,12 @@ data AxisConfig
       -- ^ Should the axis domain be displayed?
     | DomainColor Color
       -- ^ The axis domain color.
-    | DomainDash [Double]
-      -- ^ The dash style of the domain (alternating stroke, space lengths
-      --   in pixels).
+    | DomainDash DashStyle
+      -- ^ The dash pattern of the domain.
       --
       --   @since 0.4.0.0
-    | DomainDashOffset Double
-      -- ^ The pixel offset at which to start drawing the domain dash array.
+    | DomainDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | DomainOpacity Opacity
@@ -920,11 +918,10 @@ data AxisConfig
       -- ^ Should an axis grid be displayed?
     | GridColor Color
       -- ^ The color for the grid.
-    | GridDash [Double]
-      -- ^ The dash style of the grid (alternating stroke, space lengths
-      --   in pixels).
-    | GridDashOffset Double
-      -- ^ The pixel offset at which to start drawing the grid dash array.
+    | GridDash DashStyle
+      -- ^ The dash pattern of the grid.
+    | GridDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | GridOpacity Opacity
@@ -1041,11 +1038,10 @@ data AxisConfig
       -- ^ Should tick marks be drawn on an axis?
     | TickColor Color
       -- ^ The color of the ticks.
-    | TickDash [Double]
-      -- ^ The dash style of the ticks (alternating stroke, space lengths
-      --   in pixels).
-    | TickDashOffset Double
-      -- ^ The pixel offset at which to start drawing the tick dash array.
+    | TickDash DashStyle
+      -- ^ The dash pattern of the ticks.
+    | TickDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | TickExtra Bool
@@ -1107,13 +1103,13 @@ axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
 axisConfigProperty (DomainColor c) = "domainColor" .= c
-axisConfigProperty (DomainDash ds) = "domainDash" .= ds
+axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
 axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
 axisConfigProperty (DomainWidth w) = "domainWidth" .= w
 axisConfigProperty (Grid b) = "grid" .= b
 axisConfigProperty (GridColor c) = "gridColor" .= c
-axisConfigProperty (GridDash ds) = "gridDash" .= ds
+axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
 axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
 axisConfigProperty (GridWidth x) = "gridWidth" .= x
@@ -1145,7 +1141,7 @@ axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
 axisConfigProperty (Ticks b) = "ticks" .= b
 axisConfigProperty (TickColor c) = "tickColor" .= c
-axisConfigProperty (TickDash ds) = "tickDash" .= ds
+axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
 axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
 axisConfigProperty (TickExtra b) = "tickExtra" .= b
 axisConfigProperty (TickOffset x) = "tickOffset" .= x

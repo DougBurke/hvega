@@ -108,6 +108,8 @@ module Graphics.Vega.VegaLite
        , VL.BuildLabelledSpecs
        , VL.Angle
        , VL.Color
+       , VL.DashStyle
+       , VL.DashOffset
        , VL.GradientCoord
        , VL.GradientStops
        , VL.Opacity
@@ -1028,7 +1030,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Title (and subtitle) strings can now be split across multiple lines:
 -- use @'\n'@ to indicate where line breaks should occur.
 --
--- The 'VL.Color' type alias is used in more places.
+-- There is more-extensive use of type aliases, such as 'VL.Color',
+-- and the introduction of several more (e.g. 'VL.DashStyle'). These do
+-- not add any type safety, but help the documentation (as they provide
+-- a single place to explain the meaning and any constraints on a
+-- particular value).
 --
 -- __Changes in Vega-Lite 4__:
 --

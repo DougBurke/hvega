@@ -18,6 +18,8 @@ smaller modules?
 module Graphics.Vega.VegaLite.Foundation
        ( Angle
        , Color
+       , DashStyle
+       , DashOffset
        , Opacity
        , SelectionLabel
        , ZIndex
@@ -98,6 +100,7 @@ module Graphics.Vega.VegaLite.Foundation
        , viewBackgroundSpec
 
        , fromT
+       , fromDS
        , splitOnNewline
        , field_
        , header_
@@ -156,6 +159,37 @@ Any supported HTML color specification can be used, such as:
 -}
 
 type Color = T.Text
+
+
+{-|
+The dash style for a line. This is defined as a series of on and then
+off lengths, in pixels. So @[10, 4, 5, 2]@ means a long line, followed
+by a space, then a line half as long as the first segment, and then
+a short space. This pattern is then repeated.
+
+This is a convenience type annotation and there is __no validation__
+of the input.
+
+@since 0.5.0.0
+-}
+type DashStyle = [Double]
+
+
+fromDS :: DashStyle -> VLSpec
+-- fromDS [] = A.Null  -- what is the correct handling of this?
+fromDS xs = toJSON xs
+
+
+{-|
+The offset at which to start drawing the line dash (given by a
+'DashStyle' argument), in pixels.
+
+This is a convenience type annotation and there is __no validation__
+of the input.
+
+@since 0.5.0.0
+-}
+type DashOffset = Double
 
 
 {-|
@@ -1214,10 +1248,10 @@ data ViewBackground
     -- ^ The width of the line around the background, if drawn.
     | VBStrokeCap StrokeCap
     -- ^ The cap line-ending for the line around the background, if drawn.
-    | VBStrokeDash [Double]
-    -- ^ The dash style of the line around the background, if drawn.
-    | VBStrokeDashOffset Double
-    -- ^ The dash offset of the line around the background, if drawn.
+    | VBStrokeDash DashStyle
+    -- ^ The dash pattern of the line around the background, if drawn.
+    | VBStrokeDashOffset DashOffset
+    -- ^ The offset of the dash pattern for the line around the background, if drawn.
     | VBStrokeJoin StrokeJoin
     -- ^ The line-joining style of the line around the background, if drawn.
     | VBStrokeMiterLimit Double
@@ -1238,7 +1272,7 @@ viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
 viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .= x
-viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= xs
+viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= fromDS xs
 viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .= x
 viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
 

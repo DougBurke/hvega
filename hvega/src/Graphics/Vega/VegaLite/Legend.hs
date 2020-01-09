@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Legend
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -38,6 +38,8 @@ import Graphics.Vega.VegaLite.Foundation
   , Bounds
   , Color
   , CompositionAlignment
+  , DashStyle
+  , DashOffset
   , FontWeight
   , HAlign
   , Opacity
@@ -59,6 +61,7 @@ import Graphics.Vega.VegaLite.Foundation
   , vAlignLabel
 
   , fromT
+  , fromDS
   , splitOnNewline
   )
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
@@ -328,13 +331,12 @@ data LegendProperty
       -- ^ The border stroke color for the full legend.
       --
       --   @since 0.4.0.0
-    | LSymbolDash [Double]
-      -- ^ The dash style for symbols (alternating stroke, space lengths
-      --   in pixels).
+    | LSymbolDash DashStyle
+      -- ^ The dash pattern for symbols.
       --
       --   @since 0.4.0.0
-    | LSymbolDashOffset Double
-      -- ^ The pixel offset at which to start drawing the symbol dash array.
+    | LSymbolDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | LSymbolFillColor Color
@@ -457,7 +459,7 @@ legendProperty (LPadding x) = "padding" .= x
 legendProperty (LRowPadding x) = "rowPadding" .= x
 legendProperty (LStrokeColor s) = "strokeColor" .= s
 
-legendProperty (LSymbolDash ds) = "symbolDash" .= ds
+legendProperty (LSymbolDash ds) = "symbolDash" .= fromDS ds
 legendProperty (LSymbolDashOffset x) = "symbolDashOffset" .= x
 legendProperty (LSymbolFillColor s) = "symbolFillColor" .= s
 legendProperty (LSymbolOffset x) = "symbolOffset" .= x

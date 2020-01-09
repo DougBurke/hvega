@@ -191,6 +191,8 @@ import Graphics.Vega.VegaLite.Data
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
+  , DashStyle
+  , DashOffset
   , Opacity
   , SelectionLabel
   , ZIndex
@@ -217,6 +219,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ViewBackground
   , HeaderProperty
   , fromT
+  , fromDS
   , splitOnNewline
   , field_
   , header_
@@ -1101,13 +1104,12 @@ data AxisProperty
       -- ^ The axis domain color.
       --
       --   @since 0.4.0.0
-    | AxDomainDash [Double]
-      -- ^ The dash style of the domain (alternating stroke, space lengths
-      --   in pixels).
+    | AxDomainDash DashStyle
+      -- ^ The dash pattern of the domain.
       --
       --   @since 0.4.0.0
-    | AxDomainDashOffset Double
-      -- ^ The pixel offset at which to start drawing the domain dash array.
+    | AxDomainDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | AxDomainOpacity Opacity
@@ -1140,13 +1142,12 @@ data AxisProperty
       -- ^ The color for the grid.
       --
       --   @since 0.4.0.0
-    | AxGridDash [Double]
-      -- ^ The dash style of the grid (alternating stroke, space lengths
-      --   in pixels).
+    | AxGridDash DashStyle
+      -- ^ The dash pattern of the grid.
       --
       --   @since 0.4.0.0
-    | AxGridDashOffset Double
-      -- ^ The pixel offset at which to start drawing the grid dash array.
+    | AxGridDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | AxGridOpacity Opacity
@@ -1295,13 +1296,12 @@ data AxisProperty
       --   This is a hint to the system, and the actual number used will be
       --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
       --   underlying scale's range.
-    | AxTickDash [Double]
-      -- ^ The dash style of the ticks (alternating stroke, space lengths
-      --   in pixels).
+    | AxTickDash DashStyle
+      -- ^ The dash pattern of the ticks.
       --
       --   @since 0.4.0.0
-    | AxTickDashOffset Double
-      -- ^ The pixel offset at which to start drawing the tick dash array.
+    | AxTickDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | AxTickExtra Bool
@@ -1425,7 +1425,7 @@ axisProperty (AxDataCondition predicate cap) =
                      , "value" .= elseProp]
 axisProperty (AxDomain b) = "domain" .= b
 axisProperty (AxDomainColor s) = "domainColor" .= s
-axisProperty (AxDomainDash ds) = "domainDash" .= ds
+axisProperty (AxDomainDash ds) = "domainDash" .= fromDS ds
 axisProperty (AxDomainDashOffset x) = "domainDashOffset" .= x
 axisProperty (AxDomainOpacity x) = "domainOpacity" .= x
 axisProperty (AxDomainWidth x) = "domainWidth" .= x
@@ -1434,7 +1434,7 @@ axisProperty AxFormatAsNum = "formatType" .= fromT "number"
 axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
 axisProperty (AxGrid b) = "grid" .= b
 axisProperty (AxGridColor s) = "gridColor" .= s
-axisProperty (AxGridDash ds) = "gridDash" .= ds
+axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds
 axisProperty (AxGridDashOffset x) = "gridDashOffset" .= x
 axisProperty (AxGridOpacity x) = "gridOpacity" .= x
 axisProperty (AxGridWidth x) = "gridWidth" .= x
@@ -1468,7 +1468,7 @@ axisProperty (AxPosition n) = "position" .= n
 axisProperty (AxTicks b) = "ticks" .= b
 axisProperty (AxTickColor s) = "tickColor" .= s
 axisProperty (AxTickCount n) = "tickCount" .= n
-axisProperty (AxTickDash ds) = "tickDash" .= ds
+axisProperty (AxTickDash ds) = "tickDash" .= fromDS ds
 axisProperty (AxTickDashOffset x) = "tickDashOffset" .= x
 axisProperty (AxTickExtra b) = "tickExtra" .= b
 axisProperty (AxTickMinStep x) = "tickMinStep" .= x
@@ -1513,11 +1513,10 @@ is 'True', and the third is the value for when it is 'False'.
 data ConditionalAxisProperty
   = CAxGridColor Color Color
     -- ^ The color for the axis grid.
-  | CAxGridDash [Double] [Double]
-    -- ^ The dash style for the axis grid (alternating stroke, space
-    --   lengths in pixels).
-  | CAxGridDashOffset Double Double
-    -- ^ The pixel offset at which to start the dash style.
+  | CAxGridDash DashStyle DashStyle
+    -- ^ The dash pattern for the axis grid.
+  | CAxGridDashOffset DashOffset DashOffset
+    -- ^ The offset for the dash pattern.
   | CAxGridOpacity Opacity Opacity
     -- ^ The opacity of the axis grid.
   | CAxGridWidth Double Double
@@ -1546,11 +1545,10 @@ see https://github.com/vega/vega-lite/issues/5717
     -- ^ Axis label opacity.
   | CAxTickColor T.Text T.Text
     -- ^ Tick color for the axis.
-  | CAxTickDash [Double] [Double]
-    -- ^ The dash style for the axis ticks (alternating stroke, space
-    --   lengths in pixels).
-  | CAxTickDashOffset Double Double
-    -- ^ The pixel offset at which to start the dash style.
+  | CAxTickDash DashStyle DashStyle
+    -- ^ The dash pattern for the axis ticks.
+  | CAxTickDashOffset DashOffset DashOffset
+    -- ^ The offset for the dash pattern.
   | CAxTickOpacity Opacity Opacity
     -- ^ Opacity of the axis tick marks.
   | CAxTickWidth Double Double

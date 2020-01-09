@@ -44,11 +44,15 @@ import Graphics.Vega.VegaLite.Data
   )
 import Graphics.Vega.VegaLite.Foundation
   ( Color
+  , DashStyle
+  , DashOffset
   , Opacity
   , SelectionLabel
   , Channel
   , channelLabel
-  , fromT)
+  , fromT
+  , fromDS
+  )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
@@ -302,8 +306,8 @@ data SelectionMarkProperty
     | SMStroke Color
     | SMStrokeOpacity Opacity
     | SMStrokeWidth Double
-    | SMStrokeDash [Double]
-    | SMStrokeDashOffset Double
+    | SMStrokeDash DashStyle
+    | SMStrokeDashOffset DashOffset
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
@@ -312,7 +316,7 @@ selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
 selectionMarkProperty (SMStroke colour) = "stroke" .= colour
 selectionMarkProperty (SMStrokeOpacity x) = "strokeOpacity" .= x
 selectionMarkProperty (SMStrokeWidth x) = "strokeWidth" .= x
-selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= xs
+selectionMarkProperty (SMStrokeDash xs) = "strokeDash" .= fromDS xs
 selectionMarkProperty (SMStrokeDashOffset x) = "strokeDashOffset" .= x
 
 

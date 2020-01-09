@@ -44,6 +44,8 @@ import Data.List (sortOn)
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
+  , DashStyle
+  , DashOffset
   , Cursor
   , FontWeight
   , Opacity
@@ -54,6 +56,7 @@ import Graphics.Vega.VegaLite.Foundation
   , TooltipContent(TTNone)
   , HAlign
   , VAlign
+  , fromDS
   , cursorLabel
   , fontWeightSpec
   , orientationSpec
@@ -418,11 +421,10 @@ data MarkProperty
       -- ^ Cap style of a mark's stroke.
       --
       --   @since 0.4.0.0
-    | MStrokeDash [Double]
-      -- ^ The stroke dash style used by a mark, defined by an alternating \"on-off\"
-      --   sequence of line lengths, in pixels.
-    | MStrokeDashOffset Double
-      -- ^ The number of pixels before the first line dash is drawn.
+    | MStrokeDash DashStyle
+      -- ^ The stroke dash pattern used by a mark.
+    | MStrokeDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
     | MStrokeGradient ColorGradient GradientStops [GradientProperty]
       -- ^ The color gradient to apply to the boundary of a mark. The first argument
       --   determines its type, the second is the list of color
@@ -530,7 +532,7 @@ markProperty (MStroke t) = "stroke" .= cleanT t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
 markProperty (MStrokeWidth w) = "strokeWidth" .= w
-markProperty (MStrokeDash xs) = "strokeDash" .= xs
+markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
 markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
 markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
 markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x

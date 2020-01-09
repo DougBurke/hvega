@@ -107,7 +107,11 @@ for defining the size of a mark relative to a band.
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 
-The `Color` type alias is used in more places.
+There is more-extensive use of type aliases, such as 'Color',
+and the introduction of several more (e.g. 'DashStyle'). These do
+not add any type safety, but help the documentation (as they provide
+a single place to explain the meaning and any constraints on a
+particular value).
 
 Bugfix: `ONone` now creates the correct JSON.
 
