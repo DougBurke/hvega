@@ -25,11 +25,11 @@ module Graphics.Vega.VegaLite.Output
        , version
        ) where
 
-import qualified Data.Aeson.Text     as A
-import qualified Data.List.NonEmpty  as NE
-import           Data.Maybe (fromMaybe)
-import qualified Data.Text.Lazy      as TL
-import qualified Data.Text.Lazy.IO   as TL
+import qualified Data.Aeson.Text    as A
+import qualified Data.List.NonEmpty as NE
+import           Data.Maybe          (fromMaybe)
+import qualified Data.Text.Lazy     as TL
+import qualified Data.Text.Lazy.IO  as TL
 
 import Data.Aeson (Value)
 
@@ -107,10 +107,10 @@ Converts VegaLite to html Text. Uses Vega-Embed and is for when
 some control is needed over the output: 'toHtml' is a simpler
 form which just uses the default Vega-Embed options.
 
-The render you use to view the output file must support Javascript,
+The renderer you use to view the output file must support Javascript,
 since it is needed to create the visualization from the Vega-Lite
-specification. The Vega and Vega-Lite Javascript versions are pegged
-to 5 and 3, but no limit is applied to the Vega-Embed library.
+specification. The default versions are 5 for vega and 3 for vega-lite but
+you can specify them in the arguments if you so choose.
 
 @since 0.4.2.0
 -}
@@ -133,7 +133,7 @@ toHtmlWithVersions mVegaVersion mVegaLiteVersion mVegaEmbedVersion mopts vl =
       opts = maybe "" (\o -> "," <> A.encodeToLazyText o) mopts
       vegaVersion = printVersionSpec $ fromMaybe (version 5 []) mVegaVersion
       vegaLiteVersion = printVersionSpec $ fromMaybe (version 3 []) mVegaLiteVersion
-      vegaEmbedVersion = printVersionSpec $ fromMaybe (version 4 []) mVegaEmbedVersion
+      vegaEmbedVersion = maybe "" printVersionSpec mVegaEmbedVersion
   in TL.unlines
     [ "<!DOCTYPE html>"
     , "<html>"
@@ -180,6 +180,8 @@ toHtmlFileWith = toHtmlFileWithVersions Nothing Nothing Nothing
 Converts VegaLite to an html file. Uses Vega-Embed and is for when
 some control is needed over the output: 'toHtmlFile' is a simpler
 form which just uses the default Vega-Embed options and versions.
+
+Allows specifying vega, vega-lite and vega-embed versions.
 
 @since 0.4.2.0
 -}
