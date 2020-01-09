@@ -21,6 +21,9 @@ testSpecs = [ ("legend1", legend1)
             , ("legend9", legend9)
             , ("legend10", legend10)
             , ("legend11", legend11)
+            , ("legend11d", legend11direct)
+            , ("corners1", corners1)
+            , ("corners2", corners2)
             ]
 
 legendCore :: [LegendProperty] -> VegaLite
@@ -104,6 +107,7 @@ legend10 =
     in
     toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
 
+-- change a number of items using the legend configure
 legend11 :: VegaLite
 legend11 =
     legendCoreCfg
@@ -115,4 +119,68 @@ legend11 =
         , LeStrokeWidth 5
         , LePadding 30
         , LeStrokeDash [ 4, 2, 6, 1 ]
+        ]
+
+
+-- and now directly, although it looks like Vega Lite 4.0.2
+-- doesn't allow all combinations (e.g. stroke width or dash)
+-- to be specified.
+--
+legend11direct :: VegaLite
+legend11direct =
+    legendCore
+        [ LSymbolStrokeWidth 3
+        , LSymbolStrokeColor "black"
+        , LRowPadding 15
+        , LTitlePadding 20
+        , LStrokeColor "lightgrey"
+        -- , LStrokeWidth 5
+        , LPadding 30
+        -- , LStrokeDash [ 4, 2, 6, 1 ]
+        ]
+
+
+-- Show off the corner support
+corners1 :: VegaLite
+corners1 =
+    legendCoreCfg
+        [ LeSymbolStrokeWidth 1
+        , LeSymbolStrokeColor ""
+        , LeRowPadding 15
+        , LeTitlePadding 20
+        , LeStrokeColor "orange"
+        , LeStrokeWidth 2
+        , LePadding 30
+        , LeStrokeDash [ 4, 2, 6, 1 ]
+        , LeCornerRadius 5
+        , LeFillColor "pink"
+        , LeLabelOpacity 0.6
+        , LeLabelFontSize 20
+        , LeLabelColor "fireBrick"
+        , LeLabelFontWeight W600
+        , LeLabelBaseline AlignTop
+        , LeLabelAlign AlignRight
+        , LeLabelOverlap OGreedy
+        ]
+
+corners2 :: VegaLite
+corners2 =
+  legendCore
+        [ LSymbolStrokeWidth 1
+        , LSymbolStrokeColor ""
+        , LRowPadding 15
+        , LTitlePadding 20
+        , LStrokeColor "orange"
+        -- , LStrokeWidth 2
+        , LPadding 30
+        -- , LStrokeDash [ 4, 2, 6, 1 ]
+        , LCornerRadius 5
+        , LFillColor "pink"
+        , LLabelOpacity 0.6
+        , LLabelFontSize 20
+        , LLabelColor "fireBrick"
+        , LLabelFontWeight W600
+        , LLabelBaseline AlignTop
+        , LLabelAlign AlignRight
+        , LLabelOverlap OGreedy
         ]
