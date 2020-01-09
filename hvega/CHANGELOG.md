@@ -104,6 +104,10 @@ constructor, for defining a bin range via an interval selection.
 The `PositionChannel` type has gained the `PBand` constructor,
 for defining the size of a mark relative to a band.
 
+The `ShortTimeLabels`, `LeShortTimeLabels`, and `MShortTimeLabels`
+constructors - from `AxisConfig`, `LegendConfg`, and `MarkProperty`
+respectively - have been removed.
+
 Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 

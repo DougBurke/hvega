@@ -1169,6 +1169,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.PositionChannel' type has gained 'VL.PBand', for defining
 --   the size of a mark relative to a band.
 --
+-- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
+--   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
+--   and `VL.MarkProperty` respectively.
+--
 -- __Bug Fixes__ in this release:
 --
 -- * The selection property @'VL.SInitInterval' Nothing Nothing@ is

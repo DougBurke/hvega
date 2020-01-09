@@ -208,7 +208,8 @@ supported in @hvega@.
 
 In @version 0.5.0.0@ the 'MRemoveInvalid' constructor was added, which
 replaces the @RemoveInvalid@ constructor of
-'Graphics.Vega.VegaLite.ConfigurationProperty'.
+'Graphics.Vega.VegaLite.ConfigurationProperty', and the
+@MShortTimeLabels@ constuctor was removed.
 
 -}
 
@@ -399,8 +400,6 @@ data MarkProperty
       --   @since 0.4.0.0
     | MShape Symbol
       -- ^ Shape of a point mark.
-    | MShortTimeLabels Bool
-      -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
       -- ^ Size of a mark.
     | MStroke Color
@@ -562,7 +561,6 @@ markProperty (MTicks mps) = mprops_ "ticks" mps
 markProperty (MBinSpacing x) = "binSpacing" .= x
 markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
 markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
-markProperty (MShortTimeLabels b) = "shortTimeLabels" .= b
 markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null

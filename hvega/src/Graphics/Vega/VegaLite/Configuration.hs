@@ -404,6 +404,8 @@ This data type has seen significant changes in the @0.4.0.0@ release:
 
 - and new constructors were added.
 
+In @0.5.0.0@ the @LeShortTimeLabels@ constructor was removed.
+
 -}
 
 -- based on schema 3.3.0 #/definitions/LegendConfig
@@ -534,8 +536,6 @@ data LegendConfig
       -- ^ The vertical padding in pixels between symbol legend entries.
       --
       --   @since 0.4.0.0
-    | LeShortTimeLabels Bool
-      -- ^ Should month and weekday names be abbreviated?
     | LeStrokeColor Color
       -- ^ The border stoke color for the full legend.
     | LeStrokeDash DashStyle
@@ -667,7 +667,6 @@ legendConfigProperty (LeOffset x) = "offset" .= x
 legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
 legendConfigProperty (LePadding x) = "padding" .= x
 legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
-legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
 legendConfigProperty (LeStrokeColor s) = "strokeColor" .= fromColor s
 legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= fromDS xs
 legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
@@ -893,6 +892,8 @@ for more details.
 The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 @TitleLimit@ constructor should be used instead.
 
+In @0.5.0.0@ the @ShortTimeLabels@ constructor was removed.
+
 -}
 data AxisConfig
     = BandPosition Double
@@ -1033,8 +1034,6 @@ data AxisConfig
       -- ^ The orientation of the axis.
       --
       --   @since 0.4.0.0
-    | ShortTimeLabels Bool
-      -- ^ Should an axis use short time labels (abbreviated month and week-day names)?
     | Ticks Bool
       -- ^ Should tick marks be drawn on an axis?
     | TickColor Color
@@ -1139,7 +1138,6 @@ axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
 axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
-axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
 axisConfigProperty (Ticks b) = "ticks" .= b
 axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
 axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
