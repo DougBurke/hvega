@@ -3057,7 +3057,7 @@ data objects such as ranking, lead/lag analysis, running sums and averages.
 
 @
 'transform'
-    . 'window' [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Sum', 'Graphics.Vega.VegaLite.WField' "Time" ], "TotalTime" ) ]
+    . 'window' [ ( [ 'Graphics.Vega.VegaLite.WAggregateOp' 'Graphics.Vega.VegaLite.Sum', 'Graphics.Vega.VegaLite.WField' \"Time\" ], \"TotalTime\" ) ]
              [ 'Graphics.Vega.VegaLite.WFrame' Nothing Nothing ]
 @
 
