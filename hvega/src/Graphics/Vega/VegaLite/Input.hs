@@ -4,7 +4,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Input
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -56,6 +56,9 @@ import Graphics.Vega.VegaLite.Data
   ( DataValue(..)
   , DataValues(..)
   , dataValueSpec
+  )
+import Graphics.Vega.VegaLite.Foundation
+  ( FieldName
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLDatasets)
@@ -128,7 +131,7 @@ data Format
       -- ^ A topoJSON mesh format containing an object with the given name. Unlike
       --   'TopojsonFeature', the corresponding geo data are returned as a single unified mesh,
       --   not as individual GeoJSON features.
-    | Parse [(T.Text, DataType)]
+    | Parse [(FieldName, DataType)]
       -- ^ Parsing rules when processing some data text, specified as
       --   a list of tuples in the form @(fieldname,
       --   datatype)@. Useful when automatic type inference needs to
@@ -218,7 +221,7 @@ This is expected to be used with 'dataFromRows'.
 'dataRow' [(\"Animal\", 'Graphics.Vega.VegaLite.Str' \"Fish\"), (\"Age\", 'Graphics.Vega.VegaLite.Number' 28), (\"Year\", 'Graphics.Vega.VegaLite.Str' "2010")] []
 @
 -}
-dataRow :: [(T.Text, DataValue)] -> [DataRow] -> [DataRow]
+dataRow :: [(FieldName, DataValue)] -> [DataRow] -> [DataRow]
 dataRow rw = (object (map (second dataValueSpec) rw) :)
 
 
@@ -426,7 +429,7 @@ This is expected to be used with 'dataFromColumns'.
 'dataColumn' \"Animal\" ('Strings' [ \"Cat\", \"Dog\", \"Mouse\"]) []
 @
 -}
-dataColumn :: T.Text -> DataValues -> [DataColumn] -> [DataColumn]
+dataColumn :: FieldName -> DataValues -> [DataColumn] -> [DataColumn]
 dataColumn colName dVals xs =
   let col = case dVals of
         Booleans cs -> map toJSON cs
@@ -579,10 +582,10 @@ dataSequenceAs ::
   Double     -- ^ start of the sequence (inclusive)
   -> Double  -- ^ end of the sequence (exclusive)
   -> Double  -- ^ step size
-  -> T.Text  -- ^ The name of the data source
+  -> FieldName  -- ^ The name of the data source
   -> Data
 dataSequenceAs start stop step outName =
-  let vals = [("sequence", object svals)]
+  let vals = [ "sequence" .= object svals ]
       svals = [ "start" .= start
               , "stop" .= stop
               , "step" .= step

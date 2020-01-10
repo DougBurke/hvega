@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Geometry
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com

@@ -110,6 +110,7 @@ module Graphics.Vega.VegaLite
        , VL.Color
        , VL.DashStyle
        , VL.DashOffset
+       , VL.FieldName
        , VL.GradientCoord
        , VL.GradientStops
        , VL.Opacity
@@ -1031,14 +1032,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- use @'\n'@ to indicate where line breaks should occur.
 --
 -- There is more-extensive use of type aliases, such as 'VL.Color',
--- and the introduction of several more (e.g. 'VL.DashStyle'). These do
--- not add any type safety, but help the documentation (as they provide
--- a single place to explain the meaning and any constraints on a
--- particular value).
+-- and the introduction of several more (e.g. 'VL.DashStyle' and
+-- 'VL.FieldName'). These do not add any type safety, but help the
+-- documentation (as they provide a single place to explain the meaning
+-- and any constraints on a particular value).
 --
 -- Colors are now cleaned of extraneous whitespace and, if empty,
 -- converted to the JSON null value. This should not change the behavior
 -- of any existing visualization.
+--
+-- Documentation has been added to several data types.
 --
 -- __Changes in Vega-Lite 4__:
 --

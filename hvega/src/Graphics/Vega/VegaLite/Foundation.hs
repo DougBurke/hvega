@@ -20,6 +20,7 @@ module Graphics.Vega.VegaLite.Foundation
        , Color
        , DashStyle
        , DashOffset
+       , FieldName
        , Opacity
        , SelectionLabel
        , ZIndex
@@ -123,7 +124,7 @@ import Numeric.Natural (Natural)
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 
 
-field_ :: T.Text -> LabelledSpec
+field_ :: FieldName -> LabelledSpec
 field_ f = "field" .= f
 
 header_ :: [HeaderProperty] -> LabelledSpec
@@ -138,6 +139,20 @@ order_ o = "order" .= o
 allowNull :: Maybe Int -> VLSpec
 allowNull (Just a) = toJSON a
 allowNull Nothing = A.Null
+
+
+{-|
+
+The field name. This can include \"dotted\" notation, such as
+@\"o.latitude\"@.
+
+There is __no attempt__ to validate this value (e.g. check it
+is not empty, contains only valid characters, or
+remove excess whitespace).
+
+@since 0.5.0.0
+-}
+type FieldName = T.Text
 
 
 {-|
@@ -659,9 +674,9 @@ scaleLabel ScThreshold = "threshold"
 --   @since 0.4.00
 
 data SortField
-    = WAscending T.Text
+    = WAscending FieldName
     -- ^ Sort the field into ascending order.
-    | WDescending T.Text
+    | WDescending FieldName
     -- ^ Sort the field into descending order.
 
 
@@ -1172,17 +1187,13 @@ or @'Graphics.Vega.VegaLite.PRepeat' 'Graphics.Vega.VegaLite.Row'@.
 
 -}
 data RepeatFields
-    = RowFields [T.Text]
-    | ColumnFields [T.Text]
+    = RowFields [FieldName]
+    | ColumnFields [FieldName]
 
 
 repeatFieldsProperty :: RepeatFields -> LabelledSpec
-repeatFieldsProperty rfs =
-  let (nme, vs) = case rfs of
-        RowFields fields -> ("row", fields)
-        ColumnFields fields -> ("column", fields)
-
-  in nme .= map toJSON vs
+repeatFieldsProperty (RowFields fs) = "row" .= fs
+repeatFieldsProperty (ColumnFields fs) = "column" .= fs
 
 
 {-|

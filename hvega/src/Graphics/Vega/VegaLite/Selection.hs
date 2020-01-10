@@ -46,6 +46,7 @@ import Graphics.Vega.VegaLite.Foundation
   ( Color
   , DashStyle
   , DashOffset
+  , FieldName
   , Opacity
   , SelectionLabel
   , Channel
@@ -146,7 +147,7 @@ data SelectionProperty
     | Zoom T.Text
       -- ^ Zooming selection transformation used for zooming a view. See the
       --   [Vega-Lite zoom documentation](https://vega.github.io/vega-lite/docs/zoom.html).
-    | Fields [T.Text]
+    | Fields [FieldName]
       -- ^ Field names for projecting a selection.
     | Encodings [Channel]
       -- ^ Encoding channels that form a named selection.
@@ -155,7 +156,7 @@ data SelectionProperty
       --   share the same value in the color channel:
       --
       --   @sel = 'selection' . 'select' \"mySelection\" 'Multi' ['Encodings' ['Graphics.Vega.VegaLite.ChColor']]@
-    | SInit [(T.Text, DataValue)]
+    | SInit [(FieldName, DataValue)]
       -- ^ Initialise one or more selections with values from bound fields.
       --   See also 'SInitInterval'.
       --
@@ -329,11 +330,6 @@ max and step values; @InSelect@ (selector) has a list of selection label options
 For details see the
 <https://vega.github.io/vega/docs/signals/#bind Vega input element binding documentation>.
 
-The @debounce@ property, available for all input types allows a delay in input event
-handling to be added in order to avoid unnecessary event broadcasting. The @Element@
-property is an optional CSS selector indicating the parent element to which the
-input element should be added. This allows the option of the input element to be
-outside the visualization container.
 -}
 
 -- based on schema 3.3.0 #/definitions/BindRange
@@ -347,13 +343,24 @@ outside the visualization container.
 
 data InputProperty
     = Debounce Double
+      -- ^ The delay to introduce when processing input events to avoid
+      --   unnescessary event broadcasting.
     | Element T.Text
+      -- ^ CSS selector indicating the parent element to which an input
+      --   element should be added. This allows for interacting with
+      --   elements outside the visualization container.
     | InOptions [T.Text]
+      -- ^ THe options for a radio or select input element.
     | InMin Double
+      -- ^ The minimum slider value for a range input element.
     | InMax Double
+      -- ^ The maximum slider value for a range input element.
     | InName T.Text
+      -- ^ Custom label for a radio or select input element.
     | InStep Double
+      -- ^ The minimum increment for a range sliders.
     | InPlaceholder T.Text
+      -- ^ The initial text for input elements such as text fields.
 
 
 inputProperty :: InputProperty -> LabelledSpec
@@ -430,7 +437,7 @@ bindingSpec bnd =
 
 -}
 data BindLegendProperty
-  = BLField T.Text
+  = BLField FieldName
     -- ^ The data field which should be made interactive in the legend.
   | BLChannel Channel
     -- ^ Which channel should be made interactive in a legend.

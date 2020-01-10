@@ -112,13 +112,15 @@ Title (and subtitle) strings can now be split across multiple lines:
 use '\n' to indicate a line break.
 
 There is more-extensive use of type aliases, such as 'Color',
-and the introduction of several more (e.g. 'DashStyle'). These do
-not add any type safety, but help the documentation (as they provide
+and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
+These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
 particular value).
 
 Colors are now stripped of extraneous white space, and if empty
 converted to the JSON null value rather than an empty string.
+
+Minor documentation improvements.
 
 Bugfixes:
 
