@@ -115,6 +115,10 @@ module Graphics.Vega.VegaLite
        , VL.toHtmlFile
        , VL.toHtmlWith
        , VL.toHtmlFileWith
+       , VL.toHtmlWithVersions
+       , VL.toHtmlFileWithVersions
+       , VL.VersionSpec
+       , VL.version
 
          -- * Creating the Data Specification
          --
