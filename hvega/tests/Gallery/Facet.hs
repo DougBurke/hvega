@@ -92,13 +92,16 @@ facet4 :: VegaLite
 facet4 =
     let
         des =
-            description "Disitributions of car engine power for different countries of origin"
+            description "Distributions of car engine power for different countries of origin"
 
         enc =
             encoding
                 . position X [ PName "Horsepower", PmType Quantitative, PBin [ MaxBins 15 ] ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
-                . row [ FName "Origin", FmType Ordinal ]
+                . row [ FName "Origin"
+                      , FmType Ordinal
+                      , FTitle "Origin facet"
+                      ]
     in
     toVegaLite
         [ des
@@ -191,7 +194,12 @@ facet7 =
                 . row
                     [ FName "symbol"
                     , FmType Nominal
-                    , FHeader [ HTitle "Stock price", HLabelAngle 0 ]
+                    , FHeader [ HTitle "Stock price"
+                              , HLabelAngle 0
+                              -- I don't know why the labels only align
+                              -- when AlignLeft is used.
+                              , HLabelAlign AlignLeft
+                              ]
                     ]
 
         res =

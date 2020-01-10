@@ -26,7 +26,8 @@
             "field": "symbol",
             "header": {
                 "labelAngle": 0,
-                "title": "Stock price"
+                "title": "Stock price",
+                "labelAlign": "left"
             },
             "type": "nominal"
         },
