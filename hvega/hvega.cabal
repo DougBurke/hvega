@@ -96,6 +96,7 @@ extra-doc-files:     images/example.png
                      images/vl/intervalselection.png
                      images/vl/intervalselectiony.png
                      images/vl/transformselection.png
+                     images/vl/legendselection.png
                      images/vl/widgetselection.png
                      images/vl/bindscales.png
                      images/vl/coordinatedviews.png

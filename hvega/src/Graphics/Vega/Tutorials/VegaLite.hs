@@ -181,6 +181,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   --
   -- $intro-selection-binding
 
+  , legendSelection
   , widgetSelection
   , bindScales
 
@@ -2541,6 +2542,8 @@ in toVegaLite (sel [] : selectionProperties "pick" "Select a point, select a clu
 
 -}
 
+-- TODO: why did I call this transformSelection?
+
 transformSelection :: VegaLite
 transformSelection =
   let sel = selection
@@ -2551,10 +2554,49 @@ transformSelection =
          
   in toVegaLite (sel [] : selectionProperties "pick" "Select a point, select a cluster")
 
+
+-- TODO: can I think of anything to do with lookupSelection
+
+
 -- $intro-selection-binding
 -- Selection need not be limited to direct interaction with the
 -- visualization marks. We can also /bind/ the selection to other
 -- user-interface components.
+
+{-|
+
+New in Vega Lite 4 is the ability to interact with the legend via
+the 'BindLegend' option. In this case
+selecting on a cluster in the legend will highlight that cluster in
+the visualization (but not vice versa). Notice how the legend now
+also follows the 'MSelectionCondition' rules (that is, the unselected
+items in the image below are also drawn in grey and are partially
+transparent).
+
+<<images/vl/legendselection.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJUBLAG2gFNY8oATeaAVywDoARAUQH0BJAMIAlAMpgAPGAC0AJgAMkAL4BdADTgoWeLADWdSAAd0pRNEjqIkRtHh1QES81jl9AC2jQDyXAHofCAHc2AHNSaFdmACNmZBoAY3RTKlM2BKwfDnRmYIAhJx0qH1cANypg+B8tZGpYItLyn2sK8tJ4KXg2gDYARk727rkpG0jyKm74NkR0KVcqeHoaNmhkYvMNSwxsJjtDbVidgHEtYP1EVkiacygDcgAPU-PL1SgqHhv7-EgzrAvaRUUNIoLFAACTIOKzLRuDxeXw+eoTULhKJsUjoHzgyEVBFSchhQrFAAsbAAVshEmtLLFRnFoGjEHZ1tdSHE9PhiJETPR9KNgsluc8YABPAxUfTIEzBUZXEikKjkejIOgESACcgxGqQZQAiBAjQwMLS9kwKi3MyfETyqi0sDwMC8-lgfE4QWYOWmfSRdAedA4PWWZIJeiSxkOKAJciYUNhqDFeDqsWfYKwKhCykxyAJRDBukU41keXcz5qjVPKDU625hmfAwsvSC6AixNQKZYEzxpRM-0OSASgBezeIcYTdAArIKszn6Tth8xm4S5IKK7TpzW60pu5Z0AZ4HEwmnjbPm3I2ABmCeJKd5sBD+NzujdJdWlfXwzr-7AywfG+ywv6I7wCcS5xPGg6QAOsDoHQqDxrEQJQI2or6AAjswSB0jYdKlEon5QAeP4Fgq+jvDK4KgTsEFQfgMHkHBDZNihaGmGETCkNhOpgN2maJGQJzsgCihAA Open this visualization in the Vega Editor>
+
+@
+let sel = selection
+          . select "pick" Single [ 'BindLegend'
+                                   [ 'BLField' \"Cluster\" ]
+                                 ]
+
+in toVegaLite (sel [] : selectionProperties "pick" "Select a legend item")
+@
+
+-}
+
+legendSelection :: VegaLite
+legendSelection =
+  let sel = selection
+            . select "legend" Single [ BindLegend
+                                       [ BLField "Cluster" ]
+                                     ]
+
+  in toVegaLite (sel [] : selectionProperties "legend" "Select a legend item")
+
 
 {-|
 
