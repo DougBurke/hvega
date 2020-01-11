@@ -1965,12 +1965,16 @@ vertical lines represent 0 degrees, and the one at the left shows
 -180 degrees. There are no latitude lines for -90 or +90 since the
 default is to stop at ±85 degrees (see 'GrExtent' for a way to
 change this).
-This was done as I couldn't find an easy way to add labels to
-the graticules.
+
+I added the second graticule layer to see if I could get by without
+labels for the grid lines, but decided this did not work out too well,
+so ended with two layers, one each for the Right Ascension and
+Declination values, using 'dataFromColumns' to manually create the
+label positions and label content to display with the 'Text' mark.
 
 <<images/vl/skyplotwithgraticules.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAWADDgNOFAO7wAmK0GYAzAKwFGQAkAzgMZwC2AhtTChQAHVugD0YgG6xEPAHSJ4lAK4AjOfAD2Yjtx5SZPALQAbJbClY5AK1aaAdpEIRIQgE6brsdii2PMwJAoAJ5CsPxcsG7sPCiabpAAvs5QJjzBUdQA2kQQoBAFULxuANbU+YUFkKwoHiWwAOrklNQ4cnQplVA1deGYkIhusMFOuZXVtZr1APJCPOxKI5htHWOFQaF9UIiwmqzQPGGQa2DJJ5BksXwBA26x8OzKJluBNbBC2QBsBGAAjHQAXUSiTGZ0KgWKZX6Oz2ByO+CglxQ1zAgUG90ez3KE3e2V+AA4fgBOHBA4GdVHnWo8eysABm8S42ROeRZVR4rH4JgcihQyjI4QpXUgMRMmNiWwusWUXDkACUAIIAfQAkgBhOUAZTAAD4-oSwAB+MBImXy5XqrVgIy0b5gTCm2WK1UazXHLoQEFdAFCoo8Ur8BbRLG+qXI8psyDKNwmfioYSiCR3YgKJTQNTKVhRdgOFCwewoOQ5rhiAAimmUiAAQtH6mJoNJZGJeG83PXG-okfpZPBjDxjJ9fp8jDxfjgjMjVM9fvJ7JojHAeAK3HIUKxJKMPVAGW5eGgAmyXHM3FnsQBxXiIfj2GWqTII1wmAAe19v96gsCVQmfr64d4SXoeoBhRguM+Y5mQ8D2FeB5biKmjcgksFbtu8CwCYZD8N+L6+usHA8FiNy6LAkT8JI8BuOQ8Ccg+IRHP03JXqBcF0ZKACOyg0r4yK+NIm4oZAzw7PYmE3NxhFQMeBFpC+wGVMx4xpNx-IvJAdJoRh-ClgAoi6WpOFArH8BxXFKPcfEKescQIb4Hw3Op6GiVAaomJmeYJLRmzXpoXBQQRSS4akPJKCp2IOZpDHBXyAoGRs9FQCZBZmbx4RyZ6oJED6TA5vY6kwaiIKJEAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAWADDgNOFAO7wAmK0GYAzAKwFGQAkAzgMZwC2AhtTChQAHVugD0YgG6xEPAHSJ4lAK4AjOfAD2Yjtx5SZPALQAbJbClY5AK1aaAdpEIRIQgE6brsdii2PMwJAoAJ5CsPxcsG7sPCiabpAAvs5QJjzBUdQA2kQQoBAFULxuANbU+YUFkKwoHiWwAOrklNQ4cnQplVA1deGYkIhusMFOuZXVtZr1APJCPOxKI5htHWOFQaF9UIiwmqzQPGGQa2DJJ5BksXwBA26x8OzKJluBNbBC2QBsBGAAjHQAXUSiTGZ0KgWKZX6Oz2ByO+CglxQ1zAgUG90ez3KE3e2V+AA4fgBOHBA4GdVHnWo8eysABm8S42ROeRZVR4rH4JgcihQyjI4QpXUgMRMmNiWwusWUXDkACUAIIAfQAkgBhOUAZTAAD4-oSwAB+MBImXy5XqrVgIy0b5gTCm2WK1UazXHLoQEFdAFCoo8Ur8BbRLG+qXI8psyDKNwmfioYSiCR3YgKJTQNTKVhRdgOFCwewoOQ5rhiAAimmUiAAQtH6mJoNJZGJeG83PXG-okfpZPBjDxjJ9fp8jDxfjgjMjVM9fvJ7JojHAeAK3HIUKxJKMPVAGW5eGgAmyXHM3FnsQBxXiIfj2GWqTII1wmAAe19v96gsCVQmfr64d4SXoeoBhRguM+Y5mQ8D2FeB5biKmjcgksFbtu8CwCYZD8N+L6+usHA8FiNy6LAkT8JI8BuOQ8Ccg+IRHP03JXqBcF0ZKACOyg0r4yK+NIm4oZAzw7PYmE3NxhFQMeBFpC+wGVMx4xpNx-IvJAdJoRh-ClgAoi6WpOFArH8BxXFKPcfEKescQIb4Hw3Op6GiVAaomJmeYJLRmzXpoXBQQRSS4akPJKCp2IOZpDHBXyAoGRs9FQCZBZmbx4RyZ6oIUhU6yQtiZBLGAHRQARSD+FA7D5u5sVGf0eZPmgD6qBy6FQZKcQfJZiJXBGcGSARyiwJymA5ChqKCVO-BDlQD4vpgRi-AATD8kD5TgHXgmNsb9ItU1QDN1rfA+K1rQUgQmON-RYDtkB7QdUBHYFeQbfw+JXXtC1LUdbIAicHWQOBmiQdB3UekEsB1WFGlOU9nnxZAc6+fY-nHYJ9zRap4VQyMMPsZxSU8fAFmBYJUWhfZkP8Dhhlef0iXceZqU-RlYxZVUOXIcKZB7UYqxwcViClZAlHIPVkbVYZYMi3BjVZmY9iSr5ZBkFiP2hl2wPCr1rkDcyI2nedUBGFgdCxXtH3UIbdDHY9Z2bVARsm60h3UEbaUFN9XS-f9gMwZSLESxDjlcuN2PeQjSNE0pIUxWTgf9FjVOw7TyUE6lEck9Ho0YxTVXUwluN0ylSSMyBRA+kwOb2OpPvACCiRAA Open this visualization in the Vega Editor>
 
 @
 let trans = transform
@@ -1992,30 +1996,61 @@ let trans = transform
                     ]
             . tooltip [ TName \"Cluster\", TmType Nominal ]
 
-      stars = asSpec [ gaiaData, trans [], enc [], mark Circle [] ]
-      grats = asSpec [ 'graticule' [ 'GrStep' (60, 15) ]
-                     , mark 'Geoshape' [ MStroke "grey"
-                                     , 'MStrokeOpacity' 0.5
-                                     , 'MStrokeWidth' 0.5
-                                     ]
-                     ]
-      grats0 = asSpec [ graticule [ GrStep (180, 90)
+    stars = asSpec [ gaiaData, trans [], enc [], mark Circle [] ]
+    grats = asSpec [ 'graticule' [ 'GrStep' (60, 15) ]
+                   , mark 'Geoshape' [ MStroke "grey"
+                                   , 'MStrokeOpacity' 0.5
+                                   , 'MStrokeWidth' 0.5
+                                   ]
+                   ]
+    grats0 = asSpec [ graticule [ GrStep (180, 90)
+                                ]
+                    , mark Geoshape [ ]
+                    ]
+
+    raData = 'dataFromColumns' []
+                 . 'dataColumn' "x" (Numbers [ (-120), (-60), 60, 120 ])
+                 . dataColumn "y" (Numbers [ 0, 0, 0, 0 ])
+                 . dataColumn "lbl" ('Strings' [ "16h", "20h", "4h", "8h" ])
+
+    decData = dataFromColumns []
+                 . dataColumn "x" (Numbers [ 0, 0 ])
+                 . dataColumn "y" (Numbers [ (-45), 45 ])
+                 . dataColumn "lbl" (Strings [ "-45", "45" ])
+
+    encLabels = encoding
+                . position Longitude (axOpts "x")
+                . position Latitude (axOpts "y")
+                . text [ TName "lbl", TmType Nominal ]
+
+    raLabels = asSpec [ raData []
+                      , encLabels []
+                      , mark 'Text' [ 'MAlign' 'AlignCenter'
+                                  , 'MBaseline' 'AlignTop'
+                                  , 'MdY' 5
                                   ]
-                      , mark Geoshape [ ]
+                      ]
+    decLabels = asSpec [ decData []
+                       , encLabels []
+                       , mark Text [ MAlign AlignRight
+                                   , MBaseline 'AlignMiddle'
+                                   , 'MdX' (-5)
+                                   ]
                       ]
 
 in toVegaLite [ width 400
               , height 350
               , projection [ PrType Mercator ]
-              , gaiaData
-              , trans []
-              , enc []
-              , mark Circle []
+              , layer [ grats, grats0, stars, raLabels, decLabels ]
               ]
 @
 
-You can see the distortion in this particular projection, as the
-spacing between the latitude lines increases as you move towards the
+The layers are drawn in the order they are specified, which is why the
+grid lines are drawn under the data (and labels).
+
+You can see the distortion in this particular projection (the
+<https://en.wikipedia.org/wiki/Mercator_projection Mercator projection>),
+as the spacing between the latitude lines increases as you move towards the
 bottom and top of the plot.
 
 -}
@@ -2054,13 +2089,53 @@ skyPlotWithGraticules =
                       , mark Geoshape [ ]
                       ]
 
+      -- hmmm, tried to use "ᴴ" / \u1D34 but this does not get converted
+      -- properly (is there a UTF-8/16 issue going on, or am I
+      -- just failing to understand modern text encoding yet again?)
+      --
+      -- this also affects ° / \u00b0 so not sure what's going on
+      raData = dataFromColumns []
+                   . dataColumn "x"
+                     (Numbers [ (-120), (-60), 60, 120 ])
+                   . dataColumn "y"
+                     (Numbers [ 0, 0, 0, 0 ])
+                   . dataColumn "lbl"
+                     (Strings [ "16h", "20h", "4h", "8h" ])
+
+      decData = dataFromColumns []
+                   . dataColumn "x"
+                     (Numbers [ 0, 0 ])
+                   . dataColumn "y"
+                     (Numbers [ (-45), 45 ])
+                   . dataColumn "lbl"
+                     (Strings [ "-45", "45" ])
+
+      encLabels = encoding
+                  . position Longitude (axOpts "x")
+                  . position Latitude (axOpts "y")
+                  . text [ TName "lbl", TmType Nominal ]
+
+      raLabels = asSpec [ raData []
+                        , encLabels []
+                        , mark Text [ MAlign AlignCenter
+                                    , MBaseline AlignTop
+                                    , MdY 5
+                                    ]
+                        ]
+      decLabels = asSpec [ decData []
+                         , encLabels []
+                         , mark Text [ MAlign AlignRight
+                                     , MBaseline AlignMiddle
+                                     , MdX (-5)
+                                     ]
+                        ]
+
       -- don't know how to change the center
-      -- how to label the axes?
 
   in toVegaLite [ width 350
                 , height 400
                 , projection [ PrType Mercator ]
-                , layer [ grats, grats0, stars ]
+                , layer [ grats, grats0, stars, raLabels, decLabels ]
                 ]
 
 
