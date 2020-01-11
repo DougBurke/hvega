@@ -146,6 +146,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   
   , layeredPlot
   , layeredDiversion
+  , skyPlotWithGraticules
 
   -- ** Concatenating views
 
@@ -1412,38 +1413,51 @@ The trick in this case is that longitude runs from -180 to 180
 degrees, but the data has Right Ascension going from 0
 to 360 degrees. Here we take advantage of Vega Lite's
 __data transformation__ capabilities and create a new
-column - which I call @fakeLongitude@ - and is
-defined as "180 - Right Ascension". The "expression" support
+column - which I call @longitude@ - and is defined as
+\"Right Ascension - 360\" when the Right Ascension is
+greater than 180, otherwise it is just set to the
+Right Ascension value. The "expression" support
 is essentially a sub-set of Javascript, and the @datum@
 object refers to the current row. The new data column
 can then be used with the 'Longitude' channel.
+Thankfully the 'Latitude' channel can use the Declination values
+without any conversion.
+
+As can be seen, this flips the orientation compared to
+'posPlot', and makes the center of the plot have a
+longiture (or Right Ascension), of 0 degrees.
 
 <<images/vl/skyplot.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJ5k8pV4BrAUwBl1EBzAS2gFcATGyAGigDG8ADYD2w+NB75IARgAcABjABaMJ0nssAOgBKAQQD6ASQDCugMqQAvgF1e4KFniwq5SAJawBwng4iQGtDw5KAQAeywwu4AFtDQAA7IuAD0KQgA7tqs0DHsAEbsyDTejFKI0NoC6FgpACLo7EwAQpG0KTEAbjRM8CnOyFKwHd29KUF9vSzwKvAzAGyy87OyiirB+b6y8NqI6CoxNPDcsNrQyJ18jgEY2JKhkAkuxQ8A4s5M7oha+SV8UAlhAAPL4-P78SA0QyAkEyb5YX6wGzWRzWfxQAAkyAEh2csXiSVSKVGOxyeXy2hY6BS2NxfRJKmEbBoxIAzNoAFbIRhXAIJWDoDk0ATQKmIB7QACeCWkThKQmgmBs6MhiGqnBYzFC10E6GESvwYXCNxYNGEnHcMN5xqg2JEsuItJoWFlkE6XhYGrIEKlMvc+s+aJ1AV9roAjuwkKLgqLupAdUHjZAJNGuA7IKhTeb3HUAKImcxWH3S8ORipsSQsOOJ8IwdB60UJB6Zs0WmSmYRFIb-GAlr41TUiZU65OMHJp5tZtsUaj0MdsCfFv0yCNRiuxngoiA1jyMTOfQ0o6xAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJ5k8oAbdRAcwEtoBXAEwFNIAaY8pADG8WkLa140HvkgcpbLADoASgEEA+gEkAwioDKYAHxgAjAA4ADGAD8Yee2XrtewwFowAZgBs1-A8VVTV0DSAEwAF9iAF1+CEgACy5mRgToGgAWS0s4qCx4WABrGmFmWCFaHly5KXgaMgo2WFoStOgAB2RcAHpuhAB3JRZoBLYAIzZkLnKGaURoJSF0LG6AEXQ2RgAhJsKuboSANy5GeG785GlYA+PT7ocz0+Z4N3gX71NvV9NLN2h4MaVUzwJSIdBuJLwbiwJTQZCHPjhSAYbBSeqQdoFKbogDi+UYJUQijG0z4UHatAAHoTiaTeFAuBoKdTZESsCTYJAIlEIBFqv1mBwRjRPABWHLESAAEmQQiS+Va0A6XV6txBw1GYyUzHQ3Vl8rOarctFY+0OGSUACtkAxEfF2rB0JauEJoDrEOjoABPdoyPLTETQTBc6pcRBLDjMJj1JFLeic-ANQSoZhcWgcErMu3kKCy0R+4CQfVcLB+yCHMqC5jUekwH1l+gEvnheLe30lACObCQbv+buO2cElUYYYziZgrEqmYKokk1J5JGbQ6krE4BeRqfTJVWAFEXKFa22y12e6wVwOlxQg+haG72uiU2mx1AdLRJlcyXX26zllHRCGkXoJhV24B9N2fSAgOGNdPyPTtu3mM9+x4BdL2EBgUwJRMogiIA Open this visualization in the Vega Editor>
 
 @
-let enc = encoding
-            . position 'Longitude' (axOpts "fakeLongitude")
+let trans = transform
+                . 'calculateAs'
+                  "datum.RA_ICRS > 180 ? datum.RA_ICRS - 360 : datum.RA_ICRS"
+                  "longitude"
+
+    axOpts field = [ PName field, PmType Quantitative ]
+
+    enc = encoding
+            . position 'Longitude' (axOpts "longitude")
             . position 'Latitude' (axOpts \"DE_ICRS\")
             . color [ MName \"plx\"
                     , MmType Quantitative
                     , 'MScale' [ SType ScLog
                              , 'SScheme' \"viridis\" []
                              ]
+                    , MLegend [ 'LTitle' "parallax" ]
                     ]
             . 'tooltip' [ 'TName' \"Cluster\", 'TmType' Nominal ]
-                  
-      axOpts field = [ PName field, PmType Quantitative ]
-          
-      trans = transform
-                . 'calculateAs' "180 - datum.RA_ICRS" "fakeLongitude"
-                     
-in toVegaLite [ 'projection' [ 'PrType' 'Mercator' ]
+
+in toVegaLite [ width 400
+              , height 350
+              , 'projection' [ 'PrType' 'Mercator' ]
               , gaiaData
               , trans []
-              , mark Circle []
               , enc []
+              , mark Circle []
               ]
 @
 
@@ -1452,11 +1466,16 @@ color-encoded by the log of their parallax value
 rather than cluster membership,
 and the color scheme has been changed to use the \"viridis\" color
 scale.
+The 'LTitle' option is set for the legend (on the
+'color' channel) rather than use the default (which in
+this case would be @\"plx\"@).
+
 Since parallax is a numeric value, with ordering (i.e. 'Quantitative'),
 the legend has changed from a list of symbols to a gradient bar.
 To account for this lost of information, I have added a 'tooltip'
 encoding so that when the pointer is moved over a star its cluster
-name will be displayed.
+name will be displayed. This is, unfortunately,
+/only/ visible in the interactive version of the visualization.
 
 __Note that__ the tooltip behavior changed in Vega Lite 4 (or in the
 code used to display the visualizations around this time), since
@@ -1476,40 +1495,43 @@ be seen in 'pointPlot' for example), with Hyades being the closer
 of the two.
 
 It is possible to add graticules - with the aptly-named
-'graticule' function - but this appears to need to be done
-as a layer, which we haven't covered yet. I may get to it
-below, but am having teensy problems with getting it
-working in the Vega Lite viewer I use (the one provided with
-Jupyter notebook, which defaults to an earlier version
-of Vega-Lite support, which doesn't seem to like the more-recent
-capabilities of Vega Lite).
+'graticule' function - but this requires the use of layers,
+which we haven't covered yet. If you are impatient you can jump
+right to 'skyPlotWithGraticules'!
 
 -}
 
 skyPlot :: VegaLite
 skyPlot =
-  let enc = encoding
-              . position Longitude (axOpts "fakeLongitude")
+  let trans = transform
+                . calculateAs
+                  "datum.RA_ICRS > 180 ? datum.RA_ICRS - 360 : datum.RA_ICRS"
+                  "longitude"
+
+      axOpts field = [ PName field, PmType Quantitative ]
+
+      enc = encoding
+              . position Longitude (axOpts "longitude")
               . position Latitude (axOpts "DE_ICRS")
               . color [ MName "plx"
                       , MmType Quantitative
                       , MScale [ SType ScLog
                                , SScheme "viridis" []
                                ]
+                      , MLegend [ LTitle "parallax" ]
                       ]
               . tooltip [ TName "Cluster", TmType Nominal ]
-                    
-      axOpts field = [ PName field, PmType Quantitative ]
-            
-      trans = transform
-                . calculateAs "180 - datum.RA_ICRS" "fakeLongitude"
-                       
-  in toVegaLite [ projection [ PrType Mercator ]
+              -- note: opacity doesn't really help here
+
+  in toVegaLite [ width 350
+                , height 400
+                , projection [ PrType Mercator ]
                 , gaiaData
                 , trans []
-                , mark Circle []
                 , enc []
+                , mark Circle []
                 ]
+
 
 -- $intro-layered
 -- The Stacked-Histogram plot - created by 'gmagHistogramWithColor' - showed
@@ -1926,6 +1948,121 @@ layeredDiversion =
         , width 300
         , height 300
         ]
+
+
+-- TODO: can I plot the mean / median of the parallax for each cluster
+
+{-|
+
+As promised earlier (in 'skyPlot'), now that we have layers, we can
+add graticules to a projection. In this case I create two graticule layers,
+the \"base\" layer (@grats@), which creates the grey lines that cover
+the map - using a spacing of 60 degrees (4 hours) for longitude and
+15 degrees for latitude - and then an extra layer (@grats0@), which shows blue lines
+at longitude seprations of 180 degrees
+and latitude spacings of 90 degrees. In this case the central horizontal and
+vertical lines represent 0 degrees, and the one at the left shows
+-180 degrees. There are no latitude lines for -90 or +90 since the
+default is to stop at ±85 degrees (see 'GrExtent' for a way to
+change this).
+This was done as I couldn't find an easy way to add labels to
+the graticules.
+
+<<images/vl/skyplotwithgraticules.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAWADDgNOFAO7wAmK0GYAzAKwFGQAkAzgMZwC2AhtTChQAHVugD0YgG6xEPAHSJ4lAK4AjOfAD2Yjtx5SZPALQAbJbClY5AK1aaAdpEIRIQgE6brsdii2PMwJAoAJ5CsPxcsG7sPCiabpAAvs5QJjzBUdQA2kQQoBAFULxuANbU+YUFkKwoHiWwAOrklNQ4cnQplVA1deGYkIhusMFOuZXVtZr1APJCPOxKI5htHWOFQaF9UIiwmqzQPGGQa2DJJ5BksXwBA26x8OzKJluBNbBC2QBsBGAAjHQAXUSiTGZ0KgWKZX6Oz2ByO+CglxQ1zAgUG90ez3KE3e2V+AA4fgBOHBA4GdVHnWo8eysABm8S42ROeRZVR4rH4JgcihQyjI4QpXUgMRMmNiWwusWUXDkACUAIIAfQAkgBhOUAZTAAD4-oSwAB+MBImXy5XqrVgIy0b5gTCm2WK1UazXHLoQEFdAFCoo8Ur8BbRLG+qXI8psyDKNwmfioYSiCR3YgKJTQNTKVhRdgOFCwewoOQ5rhiAAimmUiAAQtH6mJoNJZGJeG83PXG-okfpZPBjDxjJ9fp8jDxfjgjMjVM9fvJ7JojHAeAK3HIUKxJKMPVAGW5eGgAmyXHM3FnsQBxXiIfj2GWqTII1wmAAe19v96gsCVQmfr64d4SXoeoBhRguM+Y5mQ8D2FeB5biKmjcgksFbtu8CwCYZD8N+L6+usHA8FiNy6LAkT8JI8BuOQ8Ccg+IRHP03JXqBcF0ZKACOyg0r4yK+NIm4oZAzw7PYmE3NxhFQMeBFpC+wGVMx4xpNx-IvJAdJoRh-ClgAoi6WpOFArH8BxXFKPcfEKescQIb4Hw3Op6GiVAaomJmeYJLRmzXpoXBQQRSS4akPJKCp2IOZpDHBXyAoGRs9FQCZBZmbx4RyZ6oJED6TA5vY6kwaiIKJEAA Open this visualization in the Vega Editor>
+
+@
+let trans = transform
+                . calculateAs
+                  "datum.RA_ICRS > 180 ? datum.RA_ICRS - 360 : datum.RA_ICRS"
+                  "longitude"
+
+    axOpts field = [ PName field, PmType Quantitative ]
+
+    enc = encoding
+            . position Longitude (axOpts "longitude")
+            . position Latitude (axOpts \"DE_ICRS\")
+            . color [ MName \"plx\"
+                    , MmType Quantitative
+                    , MScale [ SType ScLog
+                             , SScheme \"viridis\" []
+                             ]
+                    , MLegend [ LTitle "parallax" ]
+                    ]
+            . tooltip [ TName \"Cluster\", TmType Nominal ]
+
+      stars = asSpec [ gaiaData, trans [], enc [], mark Circle [] ]
+      grats = asSpec [ 'graticule' [ 'GrStep' (60, 15) ]
+                     , mark 'Geoshape' [ MStroke "grey"
+                                     , 'MStrokeOpacity' 0.5
+                                     , 'MStrokeWidth' 0.5
+                                     ]
+                     ]
+      grats0 = asSpec [ graticule [ GrStep (180, 90)
+                                  ]
+                      , mark Geoshape [ ]
+                      ]
+
+in toVegaLite [ width 400
+              , height 350
+              , projection [ PrType Mercator ]
+              , gaiaData
+              , trans []
+              , enc []
+              , mark Circle []
+              ]
+@
+
+You can see the distortion in this particular projection, as the
+spacing between the latitude lines increases as you move towards the
+bottom and top of the plot.
+
+-}
+
+skyPlotWithGraticules :: VegaLite
+skyPlotWithGraticules =
+  let trans = transform
+                . calculateAs
+                  "datum.RA_ICRS > 180 ? datum.RA_ICRS - 360 : datum.RA_ICRS"
+                  "longitude"
+
+      axOpts field = [ PName field, PmType Quantitative ]
+
+      enc = encoding
+              . position Longitude (axOpts "longitude")
+              . position Latitude (axOpts "DE_ICRS")
+              . color [ MName "plx"
+                      , MmType Quantitative
+                      , MScale [ SType ScLog
+                               , SScheme "viridis" []
+                               ]
+                      , MLegend [ LTitle "parallax" ]
+                      ]
+              . tooltip [ TName "Cluster", TmType Nominal ]
+              -- note: opacity doesn't really help here
+
+      stars = asSpec [ gaiaData, trans [], enc [], mark Circle [] ]
+      grats = asSpec [ graticule [ GrStep (60, 15) ]
+                     , mark Geoshape [ MStroke "grey"
+                                     , MStrokeOpacity 0.5
+                                     , MStrokeWidth 0.5
+                                     ]
+                     ]
+      grats0 = asSpec [ graticule [ GrStep (180, 90)
+                                  ]
+                      , mark Geoshape [ ]
+                      ]
+
+      -- don't know how to change the center
+      -- how to label the axes?
+
+  in toVegaLite [ width 350
+                , height 400
+                , projection [ PrType Mercator ]
+                , layer [ grats, grats0, stars ]
+                ]
+
 
 
 {-|

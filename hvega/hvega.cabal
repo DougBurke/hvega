@@ -85,6 +85,7 @@ extra-doc-files:     images/example.png
                      images/vl/baseplot.png
                      images/vl/layeredplot.png
                      images/vl/layereddiversion.png
+                     images/vl/skyplotwithgraticules.png
                      images/vl/concatenatedplot.png
                      images/vl/concatenatedplot2.png
                      images/vl/repeatplot.png
