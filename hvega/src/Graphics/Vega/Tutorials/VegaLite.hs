@@ -110,6 +110,9 @@ module Graphics.Vega.Tutorials.VegaLite (
   
   , yHistogram
 
+  , densityParallax
+  , densityParallaxGrouped
+
   -- ** Plotting with points
   --
   -- $intro-points
@@ -130,6 +133,8 @@ module Graphics.Vega.Tutorials.VegaLite (
 
   , smallMultiples
   , smallMultiples2
+
+  , densityMultiples
 
   -- ** One plot, two plot, red plot, blue plot
   --
@@ -232,7 +237,8 @@ import Graphics.Vega.VegaLite
 --
 -- [@Data@]: The input to visualize. Example functions: 'dataFromUrl', 'dataFromColumns', and 'dataFromRows'.
 --
--- [@Transform@]: Functions to change the data before they are visualized. Example functions: 'filter', 'calculateAs', and 'binAs'. These functions are combined with 'transform'.
+-- [@Transform@]: Functions to change the data before they are visualized. Example functions: 'filter', 'calculateAs', 'binAs', 'pivot', 'density', and
+-- 'regression'. These functions are combined with 'transform'.
 --
 -- [@Projection@]: The mapping of 3d global geospatial locations onto a 2d plane . Example function: 'projection'.
 --
@@ -257,10 +263,11 @@ import Graphics.Vega.VegaLite
 -- tutorial, you will be able to create most of them.
 
 -- $intro-extensions
--- The 'Graphics.Vega.VegaLite' module is long, but does not use any
--- complex type machinery, and so it can be loaded without any extensions,
--- although the extensive use of the 'Data.Text.Text' type means that
--- using the @OverloadedStrings@ extension is __strongly__ advised.
+-- The 'Graphics.Vega.VegaLite' module exports a large number of symbols,
+-- but does not use any complex type machinery, and so it can be loaded
+-- without any extensions, although the extensive use of the 'Data.Text.Text'
+-- type means that using the @OverloadedStrings@ extension is __strongly__
+-- advised.
 --
 -- The module does export several types that conflict with the Prelude,
 -- so one suggestion is to use
@@ -294,11 +301,11 @@ import Graphics.Vega.VegaLite
 -- (if you go through the [Vega-Lite Example Gallery](https://vega.github.io/vega-lite/examples/)
 -- you may also want to look at different data ;-), I am going to use a
 -- small datset from the [Gaia satellite](http://sci.esa.int/gaia/),
--- which has - and still is, as of Summer 2019 - radically-improved our knowledge
+-- which has - and still is, as of early 2020 - radically-improved our knowledge
 -- of our Galaxy. The data itself is from the paper
 -- \"Gaia Data Release 2: Observational Hertzsprung-Russell diagrams\"
--- [preprint on arXiV](https://arxiv.org/abs/1804.09378)
--- [NASA ADS link](https://ui.adsabs.harvard.edu/#abs/arXiv:1804.09378).
+-- [(preprint on arXiV)](https://arxiv.org/abs/1804.09378)
+-- [(NASA ADS link)](https://ui.adsabs.harvard.edu/#abs/arXiv:1804.09378).
 -- We are going to use Table 1a, which was downloaded from the
 -- [VizieR archive](http://vizier.u-strasbg.fr/viz-bin/VizieR-3?-source=J/A%2bA/616/A10/tablea1a)
 -- as a tab-separated file (aka 'TSV' format).
@@ -677,7 +684,7 @@ stripPlotWithColorOrdinal =
 {-|
 
 The 'stripPlotWithColor' visualization can be changed to show two
-variables just by adding a second position declaration:
+variables just by adding a second 'position' declaration:
 
 <<images/vl/parallaxbreakdown.png>>
 
@@ -698,7 +705,8 @@ in toVegaLite
 
 I have left the color-encoding in, as it makes it easier to compare to
 'stripPlotWithColor', even though it replicates the information provided
-by the position of the mark on the Y axis.
+by the position of the mark on the Y axis. The 'yHistogram' example
+below shows how the legend can be removed from a visualization.
 
 -}
 
@@ -991,6 +999,9 @@ gmagLineWithColor =
 -- properties (as defined by the 'Operation' type). For example, there
 -- are a number of measures of the \"spread\" of a population, such as
 -- the sample standard deviation ('Stdev').
+--
+-- You can also syntehsize new data based on existing data, with the
+-- 'transform' operation.
 
 {-|
 The aim for this visualization is to show the spread in the @Gmag@ field
@@ -1037,11 +1048,176 @@ yHistogram =
      ]  
   
 
+{-|
+
+Vega-Lite supports a number of data transformations, including the
+ability to create new data - as used in the 'skyPlot' example below.
+It also included a number of \"pre-canned\" transformations,
+including a kernel-density estimator, which I will use here to
+look for structure in the parallax distributio. The easlier
+use of a fixed-bin histogram - 'parallaxHistogram' and 'ylogHistogram' -
+showed a peak around 5 to 10 milli-arcseconds, and a secondary
+one around 20 to 25 milli-arcseconds, but can we infer anything more
+from the data?
+
+The transformations are indicated by the aptly-named 'transform'
+function, which works in a similar manner to 'encoding', in that
+it is applied to one or more transformations. In this
+case I use the 'density' transform - which is __new to Vega Lite 4__ -
+to \"smooth\" the data without having to pre-judge the data
+(although there are options to configure the density estimation).
+The transform creates new fields - called \"value\" and \"density\"
+by default - which can then be displayed as any other field. In this
+case I switch from 'Bar' or 'Line' to use the 'Area' encoding, which
+fills in the area from the value down to the axis.
+
+<<images/vl/densityparallax.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hIATAUxQEtoBPPKABwBsAPSAXwF0AacKLeLADW9UBAiR0DeAGNqdfAAYAdAHZe4qMjjohZepABGTWSI3jI22LrIAReMgAW9AgCZuYACw8+E2g318SEEyeEg+dnNSeGgw-DELAFdYJgNHaGgGZFwAehyEAHdlAHNqR0TDROQyWBl0RGgKaGU6rBzbdETigCFkvRzHADcyYvgcgW0ageHRnJIYsdHKeABaeFWANgBGDbWtxRXY4zIt+GVEdBXHUPJYZWhkQchzCQxsGNFIaVhqz4BxATFAyIRJYQw1Z6MVjA0Hg2CQyBkAD6zDYQRBYIh7HYESiABJkDJrgI0hksrkcjMzqVoOVDMpKOgcoTiWMqSsmNQyJTPMoAFbIerPPiIxB1EiURBA+K+KBosAJTSQVCUMhMEgGQbwJiJfQvCz+QJQACOiSQ0GoMUow2Fmgk8BYlGQnwt0CYRq+gm1JjYOM0kVlkAUCuVqvVBnIVFoCMNBlN5stFptfrAAYkdUQKulCpx7CAA Open this visualization in the Vega Editor>
+
+@
+let trans = 'transform'
+            . 'density' "plx" []
+
+    enc = encoding
+          . position X [ PName \"value\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"parallax\" ]
+                       ]
+          . position Y [ PName \"density\", PmType Quantitative ]
+
+in toVegaLite
+     [ gaiaData
+     , mark 'Area' [ MOpacity 0.7
+                 , 'MStroke' \"black\"
+                 , 'MStrokeDash' [ 2, 4 ]
+                 , ]
+     , trans []
+     , enc []
+     ]
+@
+
+The parallax distribution shows multiple peaks within the
+5 to 10 milli-arcsecond range, and separate peaks at 12
+and 22 milli-arcseconds.
+
+The properties of the area mark are set here to add a black,
+dashed line around the edge of the area. The 'DashStyle' configures
+the pattern by giving the lengths, in pixels,
+of the \"on\" and \"off" segments, so here the gaps are twice the
+length of the line segments. This was done more to show that it
+can be done, rather than because it aids this particular visualization!
+
+-}
+
+densityParallax :: VegaLite
+densityParallax =
+  let trans = transform
+              . density "plx" []
+
+      enc = encoding
+            . position X [ PName "value"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "parallax" ]
+                         ]
+            . position Y [ PName "density", PmType Quantitative ]
+
+  in toVegaLite
+       [ gaiaData
+       , mark Area [ MOpacity 0.7
+                   , MStroke "black"
+                   , MStrokeDash [ 2, 4 ]
+                   ]
+       , trans []
+       , enc []
+       ]
+
+
+{-|
+
+The density estimation can be configured using 'DensityProperty'.
+Here we explicitly label the new fields to create (rather than
+use the defaults), and ensure the calculation is done per cluster.
+This means that the data range for each cluster is used to
+perform the KDE, which in this case is useful (as it ensures the
+highest fidelity), but there are times when you may wish to ensure
+a consistent scale for the evaluation (in which case you'd use
+the 'DnExtent' option, as well as possibly 'DnSteps', to define
+the grid). The final change is to switch from density estimation
+to counts for the dependent axis.
+
+<<images/vl/densityparallaxgrouped.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTIBzWdAVwAcAjATz0MgGEAbW5aAU1iQAugBpi5SPGRsCkAB4BrACb9IoqMxVqxEigGM6iaDPxxa-ceQiRVKAJbRW+SPS7zIegL7FdNrPCwimzAkOj08PqOzmAADAB0AOwaMMz0ai6B-PCQXlZQyvDQOfhkFLSwXGyQABbQ0PTIuAD0zQgA7vGUjjW0jLyChsb8xvGGWM0AInSUAEIVivzNNQBu-JTwzQF8gstrG82Fxc0b9vAAtPAXAGwAjNeXt7HnxYxc-Lfw8Yjo5zXZqlg8RMK3UekgGGwRRCrkCyAypEgAHEApRqohaFhGIJ1FA3B4XBisTiUvwAPr49GY7FCLw+CB5YiQAAkyH0-wC1TqDSarX2X260F6jHi9nQzTZHM2-POXEcSxWABZ4gArZDoRBgmwjQzKeyINGlcGGLiYGGoez8LjKarcXgCIQpJzpdHoLD6+BVRmSAmkPQ2C1Wm0uJSqLXWVIulwAR1oSGgjiK9jW4ck8Hk9lMiIT0He1QACoFPVx07lvPkbDFQoHrdUtGGnWkEZBY-HEwmUyl05mYTm8y4OEYTLl6WBvVAhhbDaQfF4gA Open this visualization in the Vega Editor>
+
+@
+let trans = transform
+            . density "plx" [ 'DnAs' \"xkde\" \"ykde\"
+                            , 'DnGroupBy' [ \"Cluster\" ]
+                            , 'DnCounts' True
+                            ]
+
+    enc = encoding
+          . position X [ PName \"xkde\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Parallax\" ]
+                       ]
+          . position Y [ PName \"ykde\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Counts\" ]
+                       ]
+          . color [ MName \"Cluster\"
+                  , MmType Nominal
+                  ]
+
+in toVegaLite
+     [ gaiaData
+     , mark Area [ MOpacity 0.7 ]
+     , trans []
+     , enc []
+     ]
+@
+
+Note how the clusters separate out in pretty cleanly, but - as
+also shown in the 'pointPlot' - it is pretty busy around 7 milli arcseconds.
+
+-}
+
+densityParallaxGrouped :: VegaLite
+densityParallaxGrouped =
+  let trans = transform
+              . density "plx" [ DnAs "xkde" "ykde"
+                              , DnGroupBy [ "Cluster" ]
+                              , DnCounts True
+                              ]
+
+      enc = encoding
+            . position X [ PName "xkde"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Parallax" ]
+                         ]
+            . position Y [ PName "ykde"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Counts" ]
+                         ]
+            . color [ MName "Cluster"
+                    , MmType Nominal
+                    ]
+
+  in toVegaLite
+       [ gaiaData
+       , mark Area [ MOpacity 0.7 ]
+       , trans []
+       , enc []
+       ]
+
 
 -- $intro-points
 -- At this point we make a signifiant detour from the Elm Vega-Lite
 -- walkthtough, and look at the 'Point' mark, rather than creating
 -- small-multiple plots. Don't worry, we'll get to them later.
+--
+-- I apologize for the alliterative use of point here.
 
 {-|
 
@@ -1233,7 +1409,7 @@ a similar visualization to 'posPlot'. Here I use the
 
 The trick in this case is that longitude runs from -180 to 180
 degrees, but the data has Right Ascension going from 0
-to 360 degrees. We can take advantage of Vega Lite's
+to 360 degrees. Here we take advantage of Vega Lite's
 __data transformation__ capabilities and create a new
 column - which I call @fakeLongitude@ - and is
 defined as "180 - Right Ascension". The "expression" support
@@ -1259,7 +1435,7 @@ let enc = encoding
                   
       axOpts field = [ PName field, PmType Quantitative ]
           
-      trans = 'transform'
+      trans = transform
                 . 'calculateAs' "180 - datum.RA_ICRS" "fakeLongitude"
                      
 in toVegaLite [ 'projection' [ 'PrType' 'Mercator' ]
@@ -1279,10 +1455,12 @@ Since parallax is a numeric value, with ordering (i.e. 'Quantitative'),
 the legend has changed from a list of symbols to a gradient bar.
 To account for this lost of information, I have added a 'tooltip'
 encoding so that when the pointer is moved over a star its cluster
-name will be displayed (this replaces the default behavior when
-all the encoded channels, so in this case the position and parallax
-values, would be displayed, and it is only visible in \"interactive\"
-versions of the visualization).
+name will be displayed.
+
+__Note that__ the tooltip behavior changed in Vega Lite 4 (or in the
+code used to display the visualizations around this time), since
+prior to this tooltips were on by default. Now tooltips have to be
+explicitly enabled (with 'tooltip' or 'tooltips').
 
 From this visualization we can see that the apparent size of the cluster
 (if we approximate each cluster as a circle, then we can think of the radius
@@ -1440,6 +1618,10 @@ Note that Vega Lite does support a @\"facet\"@ field in its encodings,
 but hvega follows Elm VegaLite and requires you to use this
 <https://github.com/gicentre/elm-vegalite/issues/5#issuecomment-514501218 wrapped facet> approach.
 
+I chose 4 columns rather than 3 here to show how "empty" plots
+are encoded. You can see how a 3-column version looks in the
+nex plot, 'densityMultiples'.
+
 -}
 
 smallMultiples2 :: VegaLite
@@ -1459,6 +1641,114 @@ smallMultiples2 =
        , columns 4
        , facetFlow [ FName "Cluster", FmType Nominal ]
        , specification (asSpec [ mark Bar [], enc [] ])
+       ]
+
+
+{-|
+
+Earlier - in 'densityParallaxGrouped' - I used the Kernel-Density
+Estimation support in Vega Lite 4 to show smoothed parallax
+distributions, grouped by cluster. We can combine this with
+the 'facetFlow' approach to generate a plot per cluster
+of the parallax distribution. I have used 'DnExtent' to ensure
+that the density estimation is done on the same grid for
+each cluster.
+
+Perhaps the most important thing in this example is that I haveThis is
+
+
+used a sensible number of columns (ending up in a three by three grid)!
+The other significant changes to 'smallMultiples2' is that I have
+used the 'FHeader' option to control how the facet headers
+are displayed: the title (which in this case was @\"Cluster\"@)
+has been hidden, and the per-plot labels made larger, but moved
+down so that they lie within each plot. I am not 100% convinced
+this is an intended use of 'HLabelPadding', but it seems to work!
+
+<<images/vl/densitymultiples.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmBRk-EIF6Zjw9GIU2bmEANrrGOgYp5AsOMpk3ACeB5AAwnh85pAAugunGab37RpxLUgN3+-Heny+UFEWAkFEImyw-HBX0g-HakgkB18fQAzL4PkcznFthw7qNhpACWBZqd8WcTDgNLUSjFUkcUWJRNA2GIaqgTmdRHgcuVMmx+HhoLUni9elB4Ddll0RLJubACH1IMEWFJJah6ng8PNKZARmhKZhReLdVA-gCkWd5YrRgBHLCwCQcBBsfSsiGYWDtNiwvmQeAcYK1AAKJTVeAD00pRohQLWfqgloltWBdvNcoVoJdbo9iDDPvt30DwbQofDBagD2UMITEOpGFbSagABIKEJoiZaiRyFRaFYwuxODwmGwRNQe32jKOnHgONpdAAWJgAKwo4l9kJEz1k20I2M+WVgQn4+T5bIz1sezzMvTZ0VizRvybjTTwAEEOURhVGHU9zOL9xWjaAuR5QgnAAJjXctNVgb8ADFxHgABlNgAC86y8RCw3gCM9SwA1ELA39lxYMRahwNgWBIClTg7DZ8yVFUxDVJiqTPUQxFFXk0FmKYgA Open this visualization in the Vega Editor>
+
+@
+let trans = transform
+            . density "plx" [ DnAs \"xkde\" \"ykde\"
+                            , DnGroupBy [ \"Cluster\" ]
+                            , DnCounts True
+                            , 'DnExtent' ('Number' 0) ('Number' 30)
+                            ]
+
+    enc = encoding
+          . position X [ PName \"xkde\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Parallax\" ]
+                       ]
+          . position Y [ PName \"ykde\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Counts\" ]
+                       ]
+          . color [ MName \"Cluster\"
+                  , MmType Nominal
+                  , MLegend []
+                  ]
+
+    headerOpts = [ 'HLabelFontSize' 16
+                 , 'HLabelAlign' 'AlignRight'
+                 , 'HLabelAnchor' 'AEnd'
+                 , 'HLabelPadding' (-24)
+                 , 'HNoTitle'
+                 ]
+
+in toVegaLite
+     [ gaiaData
+     , columns 3
+     , facetFlow [ FName \"Cluster"
+                 , FmType Nominal
+                 , 'FHeader' headerOpts
+                 ]
+     , specification (asSpec [ enc [], trans [], mark Area [ ] ])
+     ]
+@
+
+-}
+
+densityMultiples :: VegaLite
+densityMultiples =
+  let trans = transform
+              . density "plx" [ DnAs "xkde" "ykde"
+                              , DnGroupBy [ "Cluster" ]
+                              , DnCounts True
+                              , DnExtent (Number 0) (Number 30)
+                              ]
+
+      enc = encoding
+            . position X [ PName "xkde"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Parallax" ]
+                         ]
+            . position Y [ PName "ykde"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Counts" ]
+                         ]
+            . color [ MName "Cluster"
+                    , MmType Nominal
+                    , MLegend []
+                    ]
+
+      headerOpts = [ HLabelFontSize 16
+                   , HLabelAlign AlignRight
+                   , HLabelAnchor AEnd
+                   , HLabelPadding (-24)
+                   , HNoTitle
+                   ]
+
+  in toVegaLite
+       [ gaiaData
+       , columns 3
+       , facetFlow [ FName "Cluster"
+                   , FmType Nominal
+                   , FHeader headerOpts
+                   ]
+       , specification (asSpec [ enc [], trans [], mark Area [ ] ])
        ]
 
 
@@ -3108,7 +3398,7 @@ the distribution (from the histogram) with that from the box plot.
 
 <<images/vl/comparingerrors.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmBRk-EIF6Zh4sACezagA2usY6BgnkCY4GrXcJamHp1Ki0GxiNajHJ6eieDnlmWz8eGgtQAwng+OYWpB4Ftll0RLJnrACH1IMEWFIgah6ng8PM7h9ICM0Fl-oDalVYDUUdxnoR4DgsPwUdDYaMAI5YWASDgINj6aYLD6nLZrIVCyCUlg4AwIfi1URYCS3MUElly9mc7mIeB8uWClWYWDtNgUco6+DBWoAOXGgjAIkyYAAyohStN8SdZiqvR88UL3gTzpc3h6MrJ+E8ueUvj9RkFYEJLn6DZBuCIiYUzDgRFpagwiBw5cmVZBlBb-m7UJkkQJ9WKoTD1VA0+02iJ8qHiwSHiIni9RSmY5M3iSAZioKDwb0oGq4QixEjIWiMYRsbi6+KM6OyaMKVSZ43ahyuebefyu+KRSPdEjGYQABy+H1C58YV8AXTmgsgABIKEJohMWoSHIKhaCsMJ2E4HgmDYERqH-QCjAgpw8ELahdAAZiYAArChxGVKAvgaMRTVQAAWb9qyEfh8hHP4xxBMEzGnBtWSgCJ50XZNIFEMQ-leNBZimIA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmBRk-EIF6Zh4sACezagA2usY6BgnkCY4GrXcJamHp1Ki0GxiNajHJ6eieDnlmWz8eGgtQAwng+OYWpB4Ftll0RLJnrACH1IMEWFIgah6ng8PM7h9ICM0Fl-oDalVYDUUdxnoR4DgsPwUdDYaMAI5YWASDgINj6aYLD6nLZrIVCyCUlg4AwIfi1URYCS3MUElly9mc7mIeB8uWClWYWDtNgUco6+DBWoAOXGgjAIkyYAAyohStN8SdZiqvR88UL3gTzpc3h6MrJ+E8ueUvj9RkFYEJLn6DZBuCIiYUzDgRFpagwiBw5cmVZBlBb-m7UJkkQJ9WKoTD1VA0+02iJ8qHiwSHiIni9RSmY5M3iSAZioKDwb0oGq4QixEjIWiMYRsbi6+KM6OyaMKVSZ43ahyuebefyu+KRSPdEjGYQABy+H1C58YV8AXTmgsgABIKEJohMWoSHIKhaCsMJ2E4HgmDYERqH-QCjAgpw8ELahdAAFiYAArChxGVKAvgaMRTVQABmb9qyEfh8hHP4xxBMEzGnBtWSgCJ50XZNIFEMQ-leNBZimIA Open this visualization in the Vega Editor>
 
 @
 let histEnc = encoding
@@ -3138,7 +3428,7 @@ let histEnc = encoding
     
 in toVegaLite
     [ gaiaData
-    , columns 4
+    , columns 3
     , facetFlow [ FName \"Cluster\", FmType Nominal ]
     , specification combinedSpec
     ]
@@ -3183,7 +3473,7 @@ comparingErrors =
      
  in toVegaLite
      [ gaiaData
-     , columns 4
+     , columns 3
      , facetFlow [ FName "Cluster", FmType Nominal ]
      , specification combinedSpec
      ]

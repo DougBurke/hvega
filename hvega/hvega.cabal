@@ -74,11 +74,14 @@ extra-doc-files:     images/example.png
                      images/vl/gmaghistogramwithcolor.png
                      images/vl/gmaglinewithcolor.png
                      images/vl/yhistogram.png
+                     images/vl/densityparallax.png
+                     images/vl/densityparallaxgrouped.png
                      images/vl/pointplot.png
                      images/vl/posplot.png
                      images/vl/skyplot.png
                      images/vl/smallmultiples.png
                      images/vl/smallmultiples2.png
+                     images/vl/densitymultiples.png
                      images/vl/baseplot.png
                      images/vl/layeredplot.png
                      images/vl/layereddiversion.png
