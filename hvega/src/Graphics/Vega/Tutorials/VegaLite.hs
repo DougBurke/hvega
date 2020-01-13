@@ -201,6 +201,13 @@ module Graphics.Vega.Tutorials.VegaLite (
   
   , crossFilter
 
+  -- * Smoothing and Regressing
+  --
+  -- $intro-smoothing
+
+  , loessExample
+  , regressionExample
+
   -- * Errors: lines, bars, bands, and boxes
   --
   -- $intro-error
@@ -217,9 +224,15 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- * Dashboard-esque
   --
   -- $intro-dashboard
-  
+
   , combinedPlot
-  
+
+  -- * The end
+  --
+  -- $otherstuff
+
+  , parallaxView
+
   ) where
 
 import qualified Data.Text as T
@@ -3267,6 +3280,262 @@ crossFilter =
             ]
     ]  
 
+
+-- $intro-smoothing
+-- Vega Lite 4 introduces several ways to \"smooth\" or \"fit\" your
+-- data. I've already played around with kernel-density estimation
+-- - via the 'density' transform that was used in 'densityParallax' -
+-- so now I get to try out 'loess' and 'regression'.
+
+{-|
+
+The 'loess' transform will generate new coordinate pairs for the
+independent and dependent values based on an existing pair.
+The name stands for
+<https://vega.github.io/vega-lite/docs/loess.html locally-estimated scatterplot smoothing>,
+and here I use it to look for any possible relationship between the
+magnitude and parallax of each star in a cluster. I don't expect
+there to really be any (as we've seen before, the distribution
+is pretty flat), but it's the data I have to play with in this
+tutorial.
+
+<<images/vl/loessexample.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJUBLAG2gFNY8oAKAE3mgFcsA6AEQFEB9AJIBhAEoBlMAD4AvGAAMASjAAyMExbtu-YeLAAeWQBZFkAL4BdADTgozaPDqgIESK1jk6kABbRoAB2RcAHoghAB3DgBzUmgvVgAjVmQaAGN0RGoMjjSsIK50VkiAITcAayogrwA3Kkj4IKx4ZGpYSpq6oLt6utJ4AFp4foA2AEYhgZG5Pvt48ioR+A5EdD6vKnhGGg5oZCrIa2coDGwWR0g-eFhks4BxRsjPRHZ4mn2oP3IAD0fn18soKh8D7ffCQJ5YF60UymGymA5QZB+KgpRw2FxrUiRHx0ABMAFY5PCXGFSIxYriCUSoOR4ABPV74Aho5xOQ7OSCNWClTx+dCkDL7ZmHSBURBpRj8h74Vls9lpciYM5kKjkRieITkJItN4wWlIx7oLD8+Aef6QOaRUVq-BPcjkOFCtmQEFgGWy9nK1WeO7wB5U90IlImqhnABeNHQdFQJuSDoDwugepDoIAjqwkNAYixSDVII7DnH45Baaj4x7SCrre8voKyy5kEG5mGI1GY1RC2XdfrU+mMlnM7n884YQGR2yOyyhzAEChjjhGUOIG6A5BIrACn54iXGZANVrXlZF+ymnQCM6dSXD3XqegqMhkDya-73ZB0t77nmy2PZVeX5zudKkDNOu5QAOqkuS+A4mawHoOUnizPAKTcmaibdtS-IhhOwqiuKkqlkWLrEJ6VbnqhSaeGmGb9jmIZmvAnykA+NqsHa2FOturokBWXqgiW5HoZAVF9vYA50VADFMXQtr2kO37Dsy5iwvCkAACQNmsjSeD4-iBCE7SLNEsQJBwpDoEEGlUI0QQGX05AxBUVSGBwABWyBvip8rsCguIqdGKRUNASo8aRe7NH8UBocmUDLEaiAmmYnnpGQUqujCphAA Open this visualization in the Vega Editor>
+
+@
+let simplify = transform
+               . filter (FExpr \"(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)\")
+
+    rawEnc = encoding
+            . position X [ PName \"Gmag\"
+                         , PmType Quantitative
+                         , PScale [ SZero False ]
+                         ]
+            . position Y [ PName \"plx\"
+                         , PmType Quantitative
+                         , PScale [ SZero False ]
+                         ]
+            . color [ MName \"Cluster\"
+                    , MmType Nominal
+                    , MLegend []
+                    ]
+
+    rawLayer = asSpec [ rawEnc [], mark Point [] ]
+
+    trans = transform
+            . 'loess' \"plx\" \"Gmag\" [ 'LsAs' \"x\" \"y\"
+                                 , 'LsGroupBy' [ \"Cluster\" ] ]
+
+    trendAx pos lbl = position pos [ PName lbl
+                                   , PmType Quantitative
+                                   , PAxis []
+                                   ]
+    trendEnc = encoding
+               . trendAx X \"x\"
+               . trendAx Y \"y\"
+
+    trendLayer = asSpec [ trans []
+                        , trendEnc []
+                        , mark Line [ MStroke \"black\"
+                                    , MStrokeWidth 2
+                                    ]
+                        ]
+
+    frameSpec = asSpec [ width 250
+                       , height 250
+                       , layer [ rawLayer, trendLayer ] ]
+
+in toVegaLite
+     [ gaiaData
+     , simplify []
+     , columns 2
+     , facetFlow [ FName \"Cluster\", FmType Nominal ]
+     , specification frameSpec
+     ]
+@
+
+The data is filtered to select only four clusters, ensuring that
+the two closest (i.e. they have the largest parallax values) are
+included as they are likely to be the most-interesting to look
+at (because of the spread of parallax values).
+
+The 'LsGroupBy' option is used to ensure the calculation is done
+per cluster, and then multiple layers are used to compare the
+raw with the "smoothed" data in a faceted display.
+
+-}
+
+loessExample :: VegaLite
+loessExample =
+  let simplify = transform
+                 . filter (FExpr "(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)")
+
+      rawEnc = encoding
+              . position X [ PName "Gmag"
+                           , PmType Quantitative
+                           , PScale [ SZero False ]
+                           ]
+              . position Y [ PName "plx"
+                           , PmType Quantitative
+                           , PScale [ SZero False ]
+                           ]
+              . color [ MName "Cluster"
+                      , MmType Nominal
+                      , MLegend []
+                      ]
+
+      rawLayer = asSpec [ rawEnc [], mark Point [] ]
+
+      trans = transform
+              . loess "plx" "Gmag" [ LsAs "x" "y"
+                                   , LsGroupBy [ "Cluster" ] ]
+
+      trendAx pos lbl = position pos [ PName lbl
+                                     , PmType Quantitative
+                                     , PAxis []
+                                     ]
+      trendEnc = encoding
+                 . trendAx X "x"
+                 . trendAx Y "y"
+
+      trendLayer = asSpec [ trans []
+                          , trendEnc []
+                          , mark Line [ MStroke "black"
+                                      , MStrokeWidth 2
+                                      ]
+                          ]
+
+      frameSpec = asSpec [ width 250
+                         , height 250
+                         , layer [ rawLayer, trendLayer ] ]
+
+  in toVegaLite
+       [ gaiaData
+       , simplify []
+       , columns 2
+       , facetFlow [ FName "Cluster", FmType Nominal ]
+       , specification frameSpec
+       ]
+
+
+{-|
+
+This is the same data as 'loessExample', but using a linear
+regression model to try and explain the data. Practically,
+the only things that have changed are switching from
+'loess' to 'regression', and displaying all the data in
+a single visualization.
+
+<<images/vl/regressionexample.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJUBLAG2gFNY8oAKAE3mgFcsA6AEQFEB9AJIBhAEoBlMAD4AvGAAMASjAAyMExbtu-YeLAAeWQBZFkAL4BdADTgoACyqkA5reh0AzHLnWIkZtHh0oBA+rLDkdJAu0AAOyLgA9PEIAO4cjqTQtqwARqzINADG6IjUJRxFWPFc6KyOAEKhANZU8bYAblSO8PFY8MjUsK0dXfF+3V2k8AC08NMAbACMczMLclP+2eRUC-AciOhT9vCMNBzQyG2Q3sEkmL2u+MTR8LD5gZAA4r2OEYjs2TQrlBouQAB6-f6AyxQKh8EHg-CQP5YAG0UymGyma6QZKkRiZdyebEAEmQBXsvQiUViCXiw126UyOQ4pHQ8TJFO69Km5AyLTahg4ACtkMUrjZIOR4ABPQH4Ag2CBBYI+XqwRoRaLoUglcUqnxURBFRg6n6PRX6yBFciYd5kKjkRgRITkPIDIEwaXRKi-dBYHXwcJYi0qyAIsDK-U3e2OiJfeA-a5RnxkwM+x6QABeNHQdFQgfyweTN2gXvTUAAjqwkNAMixSB1ICHgkXk5BpXbSA6nYj4R7U1t3tnYLn8PnyIXoZ7vREqzW67XGxio8uW0mI82YAgUBhsHQFcXI23HCPWNFsh35ZAXW7AVZm6G+vuwx6O-fiz5YJ0v8hkKzEJqYJ6h+kBioi8Y-A+YCriq76WmqGoZv0I7NAA6niBL4AATFOyHoM0ESbPABQalOpYzoivKID6rahoaxqmoEUFWugNq0BmMY9lAN79FCUDkeWSJ+gGQbrqG4bEJxETgmRZaztWJQLg2PpTvAoKkMgdB-OQ5C0Zal4RiQXaxoiHayRRlYKbW-iLipUBqRpWmsDpMEthaq5wSxiBkGaEYYqYQA Open this visualization in the Vega Editor>
+
+@
+let simplify = transform
+               . filter (FExpr \"(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)\")
+
+    rawAx pos lbl = position pos [ PName lbl
+                                 , PmType Quantitative
+                                 , PScale [ SZero False ]
+                                 ]
+    cluster = color [ MName \"Cluster\"
+                    , MmType Nominal
+                    ]
+
+    rawEnc = encoding
+             . rawAx X \"Gmag\"
+             . rawAx Y \"plx\"
+             . cluster
+
+    rawLayer = asSpec [ rawEnc [], mark Point [] ]
+
+    trans = transform
+            . 'regression' \"plx\" \"Gmag\" [ 'RgAs' \"x\" \"y\"
+                                      , 'RgGroupBy' [ \"Cluster\" ] ]
+
+    trendAx pos lbl = position pos [ PName lbl
+                                   , PmType Quantitative
+                                   , PAxis []
+                                   ]
+    trendEnc = encoding
+               . trendAx X \"x\"
+               . trendAx Y \"y\"
+               . cluster
+
+    trendLayer = asSpec [ trans []
+                        , trendEnc []
+                        , mark Line [ MStroke \"black\"
+                                    , MStrokeWidth 2
+                                    ]
+                        ]
+
+in toVegaLite
+     [ width 300
+     , height 300
+     , gaiaData
+     , simplify []
+     , layer [ rawLayer, trendLayer ]
+     ]
+@
+
+In this example I used the default method - 'RgLinear' - but other
+options are possible (set with the 'RgMethod' option).
+
+-}
+
+regressionExample :: VegaLite
+regressionExample =
+  let simplify = transform
+                 . filter (FExpr "(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)")
+
+      rawAx pos lbl = position pos [ PName lbl
+                                   , PmType Quantitative
+                                   , PScale [ SZero False ]
+                                   ]
+      cluster = color [ MName "Cluster"
+                      , MmType Nominal
+                      ]
+
+      rawEnc = encoding
+               . rawAx X "Gmag"
+               . rawAx Y "plx"
+               . cluster
+
+      rawLayer = asSpec [ rawEnc [], mark Point [] ]
+
+      trans = transform
+              . regression "plx" "Gmag" [ RgAs "x" "y"
+                                        , RgGroupBy [ "Cluster" ] ]
+
+      trendAx pos lbl = position pos [ PName lbl
+                                     , PmType Quantitative
+                                     , PAxis []
+                                     ]
+      trendEnc = encoding
+                 . trendAx X "x"
+                 . trendAx Y "y"
+                 . cluster
+
+      trendLayer = asSpec [ trans []
+                          , trendEnc []
+                          , mark Line [ MStroke "black"
+                                      , MStrokeWidth 2
+                                      ]
+                          ]
+
+  in toVegaLite
+       [ width 300
+       , height 300
+       , gaiaData
+       , simplify []
+       , layer [ rawLayer, trendLayer ]
+       ]
+
+
+-- XXX TODO: add an example showing R2 in plot title
+
+
 -- $intro-error
 -- Here we dive into some of the ways for representing the spread
 -- of a value, focussing on the \"error\" of a variable.
@@ -3736,8 +4005,9 @@ comparingErrors =
 -- $intro-dashboard
 -- In the following visualization I try to combine as many of the
 -- concepts we have explored in this tutorial into one. There are
--- layers, combined visualizations, and a selection that ties the
--- different plots together.
+-- layers, combined visualizations, and a
+-- selection that ties the different plots together! How much more
+-- could you want?
 
 {-|
 
@@ -4121,6 +4391,211 @@ combinedPlot =
      ]
 
 
+-- $otherstuff
+-- The tutorial ends not with a bang, but a few random visualizations
+-- I thought of and couldn't find a better place to put them!
+--
+-- Although, at the moment, there is only one.
+
+{-|
+
+In this example I compare the parallax values
+
+- as the raw distribution, using the ticks display we saw in
+  the very first plot, 'stripPlot', (although with a few
+  adjustments)
+
+- against a smoothed version of the distribution, calculated using
+  the 'regression' transform (e.g. 'densityParallax').
+
+The only new things here are configuration options
+for the X axis - that is, the use of 'AxLabels', along with
+'AxNoTitle', to ensure the X axis of the density plot only has
+grid lines - and the legend options to move the legend from the
+same plot to the bottom of the combined visualization, and to
+center the title.
+
+<<images/vl/parallaxview.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmLqiYkIIhADa6RDoGJjw9GIU2bkbW7toZ+dQLDjKZNwAnhuQAMJ4fOaQALoLVxmmz10sHe-BakFEWAkFG+vz+UAhUMI+yw-FhfxgUgoHCeo2GkEuGFmVx+BMgJhwGlqeDYYlBaMwDDY0E4hDcvl89KgAmCQngbHEBQJmGCLCk0HK3Bp4tGIrFYPgDzIoNGWLELGCYMybH4eGg0NQ61e7zMzS+RPO81JUlE0BpNVQOyu4JEeBygrhmC1OulUDeH16QoyFFWGodkGD0VkyvhCAMOQefmmnN2kAVSq6IlkNOBqUDwoMcodeYyOW1Elq3BEpEzuY9GT58FDUAAyjr+LywLAwEJjZ9k+dUxxggBBFZEN2jLPQaAa4vmq6WuGQETFITY90eyBAkGEXxMADM-cwy1tfIFYe3KMIHj64bbvP5YipBbE4vnFv7kBGFzrWW1utqS86WLcMQ2jQpoEzWAaQ2Q8wH3XwfigNNo0gV0alvMQ2CEaNMmBARF03FDagARywWAJA4BA2H0WtN1gdo2H1NA0NgJo8GYvCONRZCh2jeo8Dwd9dkIp0cR-TcvQA0YEUSOil2I0YyIohtqNoo8oAYpjygbJtIAAOXGQQwBETIwDMEpoWEwkCXfUSJJTclKVGPkhEpTlIEZZkiFZdkPOtERbTVDcnVEV1JjDKSfSNf1JlvRSoAiLMxBzW9ZVfQgBKEz8V1gNcFRC9EgN3JhfAAVg051Xw4R9ymK1A9zgu8eTPJ8ZRfN9A3slNv0ddEotqPFKuDYFwJgKCYINOCEKQ1NFVQ9CwSwnDCC4gjKoSyBlMoxA+XUkCtOYwpdNQgAFEpgTwBiwAAChMCgAEppi62yznNElMAAEgjfgTFqEhyCoWgrDCdhOB4Jh+WoH6TGoEGnGpSQ4YAFiYAArCgBV+cNVztXdscrSE9VqTJjR87Hli1e00FmKYgA Open this visualization in the Vega Editor>
+
+@
+let plxScale = PScale [ SType ScLog
+                      , SNice (IsNice False)
+                      , SDomain (DNumbers [3, 30])
+                      ]
+
+    opacityEnc ounsel osel =
+      opacity [ MSelectionCondition (SelectionName selName)
+                [ MNumber osel ]
+                [ MNumber ounsel ]
+              ]
+
+    tickEnc = encoding
+              . position X [ PName \"plx\"
+                           , PmType Quantitative
+                           , plxScale
+                           , PAxis [ AxTitle \"Parallax (mas)\" ]
+                           ]
+              . color [ MName \"Cluster\"
+                      , MmType Nominal
+                      , MLegend []
+                      ]
+              . opacityEnc 0.05 0.3
+
+    plotWidth = width 600
+
+    tickLayer = asSpec [ plotWidth
+                       , tickEnc []
+                       , mark Tick [ ] ]
+
+    densTrans = transform
+                . density \"plx\" [ DnGroupBy [ \"Cluster\" ]
+                                  , DnCounts True
+                                  , DnAs "value" "counts"
+                                  ]
+    densEnc = encoding
+              . position X [ PName \"value\"
+                           , PmType Quantitative
+                           , plxScale
+                           , PAxis [ AxNoTitle
+                                   , 'AxLabels' False
+                                   ]
+                           ]
+              . position Y [ PName \"counts\"
+                           , PmType Quantitative
+                           , PAxis [ AxTitle \"Number of stars\" ]
+                           ]
+              . color [ MName \"Cluster\"
+                      , MmType Nominal
+                      , MLegend [ 'LOrient' 'LOBottom'
+                                , 'LTitleAnchor' AMiddle
+                                , LTitle \"Select a cluster\"
+                                ]
+                      , MScale [ SScheme "category10" [] ]
+                      ]
+              . opacityEnc 0.3 1
+
+    densLayer = asSpec [ plotWidth
+                       , densTrans []
+                       , densEnc []
+                       , sel []
+                       , mark Line [ ]
+                       ]
+
+    selName = \"legend\"
+    sel = selection
+          . select selName Single [ BindLegend [ BLField \"Cluster\" ] ]
+
+in toVegaLite
+    [ gaiaData
+    , spacing 0
+    , bounds Flush
+    , vConcat [ densLayer, tickLayer ]
+    ]
+@
+
+I have also changed the color scheme to @\"category10\"@, which isn't
+necessarily any better than the default (@\"tableau10\"@), but is at least
+different (I was hoping to get a better separation in color space for
+the IC2391 and IC2602 clusters, but quickly gave up after
+<https://vega.github.io/vega/docs/schemes/index.html#categorical trying out a few options>).
+
+Here is the visualization after selecting the label \"@NGC2451@\"
+in the legend:
+
+<<images/vl/parallaxview-selected.png>>
+
+-}
+
+{-
+can I count up the density-calculated counts column per group and then
+display the values somewhere?
+-}
+
+parallaxView :: VegaLite
+parallaxView =
+  let plxScale = PScale [ SType ScLog
+                        , SNice (IsNice False)
+                        , SDomain (DNumbers [3, 30])
+                        ]
+
+      opacityEnc ounsel osel =
+        opacity [ MSelectionCondition (SelectionName selName)
+                  [ MNumber osel ]
+                  [ MNumber ounsel ]
+                ]
+
+      tickEnc = encoding
+                . position X [ PName "plx"
+                             , PmType Quantitative
+                             , plxScale
+                             , PAxis [ AxTitle "Parallax (mas)" ]
+                             ]
+                . color [ MName "Cluster"
+                        , MmType Nominal
+                        , MLegend []
+                        ]
+                . opacityEnc 0.05 0.3
+
+      plotWidth = width 600
+
+      tickLayer = asSpec [ plotWidth
+                         , tickEnc []
+                         , mark Tick [ ] ]
+
+      densTrans = transform
+                  . density "plx" [ DnGroupBy [ "Cluster" ]
+                                  , DnCounts True
+                                  , DnAs "value" "counts"
+                                  ]
+      densEnc = encoding
+                . position X [ PName "value"
+                             , PmType Quantitative
+                             , plxScale
+                             , PAxis [ AxNoTitle
+                                     , AxLabels False
+                                     ]
+                             ]
+                . position Y [ PName "counts"
+                             , PmType Quantitative
+                             , PAxis [ AxTitle "Number of stars" ]
+                             ]
+                . color [ MName "Cluster"
+                        , MmType Nominal
+                        , MLegend [ LOrient LOBottom
+                                  , LTitleAnchor AMiddle
+                                  , LTitle "Select a cluster"
+                                  ]
+                          -- fortunately setting the color scheme
+                          -- here applies it to the tick encoding too
+                        , MScale [ SScheme "category10" [] ]
+                        ]
+                . opacityEnc 0.3 1
+
+      densLayer = asSpec [ plotWidth
+                         , densTrans []
+                         , densEnc []
+                         , sel []
+                         , mark Line [ ]
+                         ]
+
+      selName = "legend"
+      sel = selection
+            . select selName Single [ BindLegend [ BLField "Cluster" ] ]
+
+      -- TODO: select the lines as well (and ticks?), not sure
+      -- how as VL docs suggest both On and Clear need to be set
+      -- but I couldn't quickly get it to work
+
+  in toVegaLite
+      [ gaiaData
+      , spacing 0
+      , bounds Flush
+      , vConcat [ densLayer, tickLayer ]
+      ]
+
+
 {-
 
 Other things to do:
@@ -4128,7 +4603,7 @@ Other things to do:
  - add some description of magnitude / parallax meanings
    (since talk about astronomy being awkward)
 
- - tooltips
+ - tooltips (show multiple fields)
 
 -}
 

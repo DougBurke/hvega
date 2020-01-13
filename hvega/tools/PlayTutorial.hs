@@ -127,6 +127,8 @@ vl = [ ("api-vl1", vl1)
      , ("coordinatedviews2", VL.coordinatedViews2)
      , ("contextandfocus", VL.contextAndFocus)
      , ("crossfilter", VL.crossFilter)
+     , ("loessexample", VL.loessExample)
+     , ("regressionexample", VL.regressionExample)
      , ("errormanual", VL.errorManual)
      , ("errorauto", VL.errorAuto)
      , ("errorbars", VL.errorBars)
@@ -134,6 +136,7 @@ vl = [ ("api-vl1", vl1)
      , ("errorbox", VL.errorBox)
      , ("comparingerrors", VL.comparingErrors)
      , ("combinedplot", VL.combinedPlot)
+     , ("parallaxview", VL.parallaxView)
      ]
 
 

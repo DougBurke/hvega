@@ -104,6 +104,8 @@ extra-doc-files:     images/example.png
                      images/vl/coordinatedviews2.png
                      images/vl/contextandfocus.png
                      images/vl/crossfilter.png
+                     images/vl/loessexample.png
+                     images/vl/regressionexample.png
                      images/vl/errormanual.png
                      images/vl/errormanual-zoomed.png
                      images/vl/errorauto.png
@@ -113,6 +115,8 @@ extra-doc-files:     images/example.png
                      images/vl/comparingerrors.png
                      images/vl/combinedplot.png
                      images/vl/combinedplot-selected.png
+                     images/vl/parallaxview.png
+                     images/vl/parallaxview-selected.png
 
 cabal-version:       1.18
 
