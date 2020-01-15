@@ -122,6 +122,8 @@ Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
 
+Used by 'configuration'.
+
 In @version 0.5.0.0@:
 
 - the @RemoveInvalid@ constructor was removed, as
@@ -888,6 +890,8 @@ viewConfigProperties (ViewStrokeWidth x) = ["strokeWidth" .= x]
 Axis configuration options for customising all axes. See the
 <https://vega.github.io/vega-lite/docs/axis.html#general-config Vega-Lite documentation>
 for more details.
+
+This is used by 'ConfigurationProperty'.
 
 The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 @TitleLimit@ constructor should be used instead.

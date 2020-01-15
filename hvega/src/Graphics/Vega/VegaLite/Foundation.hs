@@ -773,7 +773,12 @@ cursorLabel CGrabbing = "grabbing"
 {-|
 
 Type of overlap strategy to be applied when there is not space to show all items
-on an axis. See the
+on an axis, and is used by
+'Graphics.Vega.VegaLite.AxLabelOverlap',
+'Graphics.Vega.VegaLite.LabelOverlap',
+'Graphics.Vega.VegaLite.LLabelOverlap',
+and 'Graphics.Vega.VegaLite.LeLabelOverlap'.
+See the
 <https://vega.github.io/vega-lite/docs/axis.html#labels Vega-Lite documentation>
 for more details.
 -}
@@ -795,7 +800,21 @@ overlapStrategyLabel OParity = toJSON True  -- fromT "parity"
 overlapStrategyLabel OGreedy = fromT "greedy"
 
 
--- | Represents one side of a rectangular space.
+{-|
+
+Represents one side of a rectangular space.
+
+Used by
+'Graphics.Vega.VegaLite.AxOrient',
+'Graphics.Vega.VegaLite.HLabelOrient',
+'Graphics.Vega.VegaLite.HTitleOrient',
+'Graphics.Vega.VegaLite.LTitleOrient',
+'Graphics.Vega.VegaLite.LeTitleOrient',
+'Graphics.Vega.VegaLite.Orient',
+and
+'Graphics.Vega.VegaLite.TOrient'.
+
+-}
 
 data Side
     = STop
