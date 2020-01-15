@@ -2,7 +2,7 @@
     "transform": [
         {
             "as": [
-                "measurement",
+                "organ",
                 "value"
             ],
             "fold": [
@@ -14,7 +14,7 @@
         },
         {
             "groupby": [
-                "measurement"
+                "organ"
             ],
             "bandwidth": 0.3,
             "density": "value"
@@ -29,12 +29,12 @@
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "row": {
-            "field": "measurement",
+            "field": "organ",
             "type": "nominal"
         },
         "x": {
             "field": "value",
-            "title": "width/length (cm)",
+            "title": "value (cm)",
             "type": "quantitative"
         },
         "y": {

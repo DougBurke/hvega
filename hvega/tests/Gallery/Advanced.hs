@@ -381,15 +381,15 @@ advanced8 =
         dvals =
             dataFromUrl "https://vega.github.io/vega-lite/data/iris.json"
 
+        fields = ["petalLength", "petalWidth", "sepalLength", "sepalWidth"]
         trans =
             transform
                 . window [ ( [ WAggregateOp Count ], "index" ) ] []
-                . fold [ "petalLength", "petalWidth", "sepalLength", "sepalWidth" ]
+                . fold fields
                 . joinAggregate [ opAs Min "value" "min", opAs Max "value" "max" ] [ WGroupBy [ "key" ] ]
                 . calculateAs "(datum.value - datum.min) / (datum.max-datum.min)" "normVal"
                 . calculateAs "(datum.min + datum.max) / 2" "mid"
 
-        fields = ["petalLength", "petalWidth", "sepalLength", "sepalWidth"]
         encLine =
             encoding
                 . position X [ PName "key", PmType Nominal ]
@@ -471,19 +471,21 @@ advanced9 =
 
 -- advanced12 in elm
 --
--- TODO: overplot the actual values
+-- changed slightly to match naming used by
+-- https://vega.github.io/vega-lite/docs/density.html#example-faceted-density-estimates
+--
 density1 :: VegaLite
 density1 =
   let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/iris.json" []
 
       trans = transform
-              . foldAs [ "petalWidth", "petalLength", "sepalWidth", "sepalLength" ] "measurement" "value"
-              . density "value" [ DnBandwidth 0.3, DnGroupBy [ "measurement" ] ]
+              . foldAs [ "petalWidth", "petalLength", "sepalWidth", "sepalLength" ] "organ" "value"
+              . density "value" [ DnBandwidth 0.3, DnGroupBy [ "organ" ] ]
 
       enc = encoding
-            . position X [ PName "value", pQuant, PTitle "width/length (cm)" ]
+            . position X [ PName "value", pQuant, PTitle "value (cm)" ]
             . position Y [ PName "density", pQuant ]
-            . row [ FName "measurement", fNominal ]
+            . row [ FName "organ", fNominal ]
 
   in toVegaLite [ width 300, height 50, dvals, trans [], enc [], mark Area [] ]
 

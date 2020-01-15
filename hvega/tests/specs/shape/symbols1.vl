@@ -1,0 +1,143 @@
+{
+    "data": {
+        "values": [
+            {
+                "x": 0
+            }
+        ]
+    },
+    "concat": [
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "circle",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "square",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "diamond",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "cross",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "triangle-up",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "triangle-down",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "triangle-left",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "triangle-right",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "triangle",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "arrow",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "wedge",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "stroke",
+                "type": "point",
+                "filled": true
+            }
+        },
+        {
+            "mark": {
+                "strokeWidth": 0.5,
+                "size": 400,
+                "stroke": "black",
+                "shape": "M -1 -1 L 1 1",
+                "type": "point",
+                "filled": true
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "columns": 4
+}

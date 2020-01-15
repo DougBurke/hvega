@@ -44,6 +44,8 @@ testSpecs = [ ("defNominal", scatter1)
             , ("rounded4", rounded4)
             , ("rounded5", rounded5)
             , ("rounded6", rounded6)
+            , ("symbols1", symbols1)
+            , ("symbols2", symbols2)
             ]
 
 
@@ -348,3 +350,41 @@ rounded3 = rectTest [ MCornerRadiusTR 8 ]
 rounded4 = rectTest [ MCornerRadiusBL 8 ]
 rounded5 = rectTest [ MCornerRadiusBR 8 ]
 rounded6 = rectTest [ MCornerRadius 16, MCornerRadiusBL 0, MCornerRadiusTR 0 ]
+
+
+symbols1 :: VegaLite
+symbols1 =
+  let dvals = dataFromColumns []
+              . dataColumn "x" (Numbers [ 0 ])
+
+      shapeSpec sym = asSpec [ mark Point [ MFilled True
+                                          , MStroke "black"
+                                          , MSize 400
+                                          , MShape sym
+                                          , MStrokeWidth 0.5
+                                          ]
+                             ]
+
+      shapeList = [ SymCircle, SymSquare, SymDiamond, SymCross
+                  , SymTriangleUp, SymTriangleDown, SymTriangleLeft
+                  , SymTriangleRight, SymTriangle, SymArrow
+                  , SymWedge, SymStroke, SymPath "M -1 -1 L 1 1" ]
+
+      shapes = map shapeSpec shapeList
+
+  in toVegaLite [ dvals []
+                , columns 4
+                , vlConcat shapes
+                ]
+
+symbols2 :: VegaLite
+symbols2 =
+  chart "Legend using non-default bordered square symbols"
+        (color [ MName "Origin"
+               , MmType Nominal
+               , MLegend [ LSymbolType SymSquare
+                         , LSymbolStrokeColor "black"
+                         , LSymbolStrokeWidth 0.5
+                         ]
+               ]
+        )
