@@ -74,6 +74,8 @@ extra-doc-files:     images/example.png
                      images/vl/gmaghistogramwithcolor.png
                      images/vl/gmaglinewithcolor.png
                      images/vl/yhistogram.png
+                     images/vl/starcount.png
+                     images/vl/starcount2.png
                      images/vl/densityparallax.png
                      images/vl/densityparallaxgrouped.png
                      images/vl/pointplot.png
@@ -115,6 +117,8 @@ extra-doc-files:     images/example.png
                      images/vl/comparingerrors.png
                      images/vl/combinedplot.png
                      images/vl/combinedplot-selected.png
+                     images/vl/duplicateaxis.png
+                     images/vl/comparecounts.png
                      images/vl/parallaxview.png
                      images/vl/parallaxview-selected.png
 
@@ -151,7 +155,7 @@ library
                      , text == 1.2.*
                      , unordered-containers == 0.2.*
                      , vector >= 0.11 && < 0.13
-                     
+
   default-language:    Haskell2010
   ghc-options:         -Wall
 

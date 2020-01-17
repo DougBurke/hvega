@@ -31,7 +31,7 @@
 --     nix-shell -p nodejs
 --     npm install vega-cli
 --     npm install canvas
---     ./node_modules/.bin/vg2png stripplot.vg.json stripplot.png 
+--     ./node_modules/.bin/vg2png stripplot.vg.json stripplot.png
 --
 -- but this fails. Unclear why, tickets suggest installing 'node-canvas',
 -- which I did. Can run
@@ -97,6 +97,8 @@ vl = [ ("api-vl1", vl1)
      , ("gmaghistogramwithcolor", VL.gmagHistogramWithColor)
      , ("gmaglinewithcolor", VL.gmagLineWithColor)
      , ("yhistogram", VL.yHistogram)
+     , ("starcount", VL.starCount)
+     , ("starcount2", VL.starCount2)
      , ("densityparallax", VL.densityParallax)
      , ("densityparallaxgrouped", VL.densityParallaxGrouped)
      , ("pointplot", VL.pointPlot)
@@ -136,6 +138,8 @@ vl = [ ("api-vl1", vl1)
      , ("errorbox", VL.errorBox)
      , ("comparingerrors", VL.comparingErrors)
      , ("combinedplot", VL.combinedPlot)
+     , ("duplicateaxis", VL.duplicateAxis)
+     , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
      ]
 
@@ -148,7 +152,7 @@ run outdir = forM_ vl $ \(name, spec) -> do
       prefix = outdir </> name
 
       opts = object [T.pack "downloadFileName" .= name]
-      
+
   toHtmlFileWith (Just opts) htmlFile spec
   BL.writeFile specFile (AP.encodePretty (fromVL spec))
 
@@ -159,7 +163,7 @@ usage = do
   hPutStrLn stderr ("Usage: " <> pName <> " directory")
   exitFailure
 
-  
+
 main :: IO ()
 main = do
   args <- getArgs

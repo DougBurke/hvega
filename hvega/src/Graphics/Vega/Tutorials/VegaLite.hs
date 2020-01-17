@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -6,6 +7,8 @@ Copyright   : (c) Douglas Burke, 2019-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
+Stability   : unstable
+Portability : CPP, OverloadedStrings
 
 This tutorial is inspired by - in that it starts off as a close copy of - the
 <https://github.com/gicentre/elm-vegalite/tree/master/docs/walkthrough Elm Vega-Lite walkthrough>
@@ -37,7 +40,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- ** Comparing hvega to Elm Vega-Lite
   --
   -- $compare-to-elm
-  
+
   -- * What data are we using?
   --
   -- $datasource
@@ -45,7 +48,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- * Creating the Vega-Lite visualization
   --
   -- $output
-  
+
   -- * A Strip Plot
   --
   -- $singleview-stripplot
@@ -59,14 +62,14 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- $background-note
 
   , stripPlotWithBackground
-  
+
   -- ** Challenging the primacy of the x axis
   --
   , stripPlotY
 
   -- ** Data sources
   --
-  
+
   , gaiaData
 
   -- ** Adding color as an encoding
@@ -88,15 +91,15 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- ** Creating a value to plot: aggregating data
   --
   -- $histogram
-  
+
   , simpleHistogram
   , parallaxHistogram
   , gmagHistogram
-  
+
   -- ** Changing the scale of an axis
   --
   -- $ylog-histogram
-  
+
   , ylogHistogram
 
   -- ** Stacked Histogram
@@ -107,8 +110,11 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- ** You don't have to just count
   --
   -- $histogramChoice
-  
+
   , yHistogram
+
+  , starCount
+  , starCount2
 
   , densityParallax
   , densityParallaxGrouped
@@ -122,7 +128,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- * Making a map
   --
   -- $intro-map
-  
+
   , posPlot
 
   , skyPlot
@@ -143,7 +149,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   , basePlot
 
   -- ** Composing layers
-  
+
   , layeredPlot
   , layeredDiversion
   , skyPlotWithGraticules
@@ -156,7 +162,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- ** Repeated views
   --
   -- $intro-repeat
-  
+
   , repeatPlot
   , splomPlot
 
@@ -189,7 +195,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- *** Multiple Coordinated Views
   --
   -- $intro-coordinated-views
-  
+
   , coordinatedViews
   , coordinatedViews2
 
@@ -198,7 +204,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- *** Cross-filtering
   --
   -- $intro-crossfilter
-  
+
   , crossFilter
 
   -- * Smoothing and Regressing
@@ -211,10 +217,10 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- * Errors: lines, bars, bands, and boxes
   --
   -- $intro-error
-  
+
   , errorManual
   , errorAuto
-  
+
   , errorBars
   , errorBand
   , errorBox
@@ -231,6 +237,8 @@ module Graphics.Vega.Tutorials.VegaLite (
   --
   -- $otherstuff
 
+  , duplicateAxis
+  , compareCounts
   , parallaxView
 
   ) where
@@ -238,6 +246,10 @@ module Graphics.Vega.Tutorials.VegaLite (
 import qualified Data.Text as T
 
 import Prelude hiding (filter, lookup, repeat)
+
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite
 
@@ -301,7 +313,7 @@ import Graphics.Vega.VegaLite
 -- the [Vega-Lite schema](https://github.com/vega/schema)).
 
 -- $compare-to-elm
--- @hvega@ started out as a direct copy of 
+-- @hvega@ started out as a direct copy of
 -- [elm-vegalite](https://package.elm-lang.org/packages/gicentre/elm-vegalite/latest),
 -- and has been updated to try and match the functionality of that package.
 -- However, @hvega@ has not (yet?) followed @elm-vegalite@ into using
@@ -401,7 +413,7 @@ import Graphics.Vega.VegaLite
 -- In this section we shall concentrate on creating a single
 -- plot. Later on we shall try combining plots, after branching
 -- out to explore some of the different ways to visualize
--- multi-dimensional data sets. 
+-- multi-dimensional data sets.
 --
 -- In the examples I link to symbols that have not been used in
 -- previous visualizations, to make it easier to see the use
@@ -792,7 +804,7 @@ simpleHistogram field =
      [ gaiaData
      , mark Bar []
      , enc []
-     ]  
+     ]
 
 {-|
 
@@ -863,7 +875,7 @@ in toVegaLite
    , enc []
    , 'height' 300
    , 'title' "Gaia Parallaxes" []
-   ]  
+   ]
 @
 
 There are four new changes to the visualization created by 'simpleHistogram' (since 'PAxis'
@@ -896,7 +908,7 @@ ylogHistogram =
      , enc []
      , height 300
      , title "Gaia Parallaxes" []
-     ]  
+     ]
 
 
 {-|
@@ -921,14 +933,14 @@ let enc = encoding
 
     binning = PBin [ 'Step' 1 ]
     axis = PAxis [ 'AxValues' ('Numbers' [ 0, 5 .. 20 ]) ]
-    
+
 in toVegaLite
    [ gaiaData
    , mark Bar []
    , enc []
    , height 300
    , 'width' 400
-   ]  
+   ]
 @
 
 Note that @hvega@ will allow you to combine a 'color' encoding with a 'ScLog'
@@ -947,14 +959,14 @@ gmagHistogramWithColor =
 
       binning = PBin [ Step 1 ]
       axis = PAxis [ AxValues (Numbers [ 0, 5 .. 20 ]) ]
-      
+
   in toVegaLite
      [ gaiaData
      , mark Bar []
      , enc []
      , height 300
      , width 400
-     ]  
+     ]
 
 {-|
 
@@ -977,14 +989,14 @@ let enc = encoding
 
     binning = PBin [ Step 1 ]
     axis = PAxis [ AxValues (Numbers [ 0, 5 .. 20 ]) ]
-    
+
 in toVegaLite
    [ gaiaData
    , mark 'Line' []
    , enc []
    , height 300
    , width 400
-   ]  
+   ]
 @
 
 -}
@@ -998,14 +1010,14 @@ gmagLineWithColor =
 
       binning = PBin [ Step 1 ]
       axis = PAxis [ AxValues (Numbers [ 0, 5 .. 20 ]) ]
-      
+
   in toVegaLite
      [ gaiaData
      , mark Line []
      , enc []
      , height 300
      , width 400
-     ]  
+     ]
 
 
 -- $histogramChoice
@@ -1039,7 +1051,7 @@ in toVegaLite
    [ gaiaData
    , mark Bar [ 'MOpacity' 0.6 ]
    , enc []
-   ]  
+   ]
 @
 
 The bar opacity is reduced slightly with 'MOpacity 0.6' so that the
@@ -1060,25 +1072,224 @@ yHistogram =
      [ gaiaData
      , mark Bar [ MOpacity 0.6 ]
      , enc []
-     ]  
-  
+     ]
+
+
 
 {-|
 
-Vega-Lite supports a number of data transformations, including the
-ability to create new data - as used in the 'skyPlot' example below.
-It also included a number of \"pre-canned\" transformations,
-including a kernel-density estimator, which I will use here to
-look for structure in the parallax distributio. The easlier
+Aggregation can happen in the position channel - as we've seen with
+the 'PAggregate' option - or as a 'transform', where we create
+new data to replace or augment the existing data. In the following
+example I use the 'aggregate' transform to calculate the number of
+rows in the original dataset per cluster with the
+'Count' operation. This effectively replaces
+the data, and creates a new one with the fields @\"Cluster\"@ and
+@\"count\"@.
+
+The other two major new items in this visualization are that the
+X axis has been ordered to match the Y axis (using 'ByChannel' and
+'PSort' in the 'position' encoding), and I have specified my own SVG
+definition for the symbols with 'SymPath' and 'MShape'.
+
+<<images/vl/starcount.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhIBzWdAVwAcAjATz0MgGEAba5aAU1kgBdADRR45Sr3Lw+LAmXS0WkAMY1E0SKMjxkytdQ2QAvoOPERxSFniwA1i1AkoPKnd4B1AJYATaAAsWAEZhYghIZC8AL15ggAY40OcIuHR3ZXoOeBUHJJJIVC8ODmVGXmL0AHctMJd-eFpY-EgAWTBEgFogsAAZdoA6ACYAZmEOuKHh3rAQ8cnpieGADmEJwe6+iYA2QdX+gE4AFgW9w-3puZ29o4vFlbWNsC6xtam+uZGX+c2x7qia5LQRiNZS0dBeIzEYx5SA+GTwRy1SDUWAlZr+aDQWjIXAAelxCEq-XIXgC1Ho3H4ag0vA0-TUWFxABEaOQAEIo9y4-wANyk8FxNh4-G5fOkuLh0AF0i88A68DlWyCW3lQTiHSlmV4QXg-UQ6A6-l48B8-H60GQPIB+Qw2BkjkgtFsyCapEgAHEbORlIhqFh6PwtFBaBwAB4+v0BgTaXgAfRD4eavv9geM5gg0KsABJkCojTZlBisTj8WLdSSyfR+l50Ljc-mBWWOhxSbxcTzDv0AFbIdCIa2QWlqHwQ734Jz5RNuwrlHzKTjcPjRlyYTTjweIYej0ombRAkFJ9BYCHwEqZ5LMce1cIzjhz5oGIx5QHA12QACO1CQ0FJMi8fOtZJ4FDLw9HXH9oA4N8ADlI34MB0FQMAeGdExanTMBzygalCjHUhzGMIA Open this visualization in the Vega Editor>
+
+@
+let trans = 'transform'
+            . 'aggregate' [ 'opAs' 'Count' \"\" \"count\" ]
+                        [ \"Cluster\" ]
+
+    enc = encoding
+          . position X [ PName \"Cluster\"
+                       , PmType Nominal
+                       , 'PSort' [ 'ByChannel' 'ChY' ]
+                       ]
+          . position Y [ PName \"count\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Number of stars\" ]
+                       ]
+
+    star = 'SymPath' \"M 0,-1 L 0.23,-0.23 L 1,-0.23 L 0.38,0.21 L 0.62,0.94 L 0,0.49 L -0.62,0.94 L -0.38,0.21 L -1,-0.23 L -0.23,-0.23 L 0,-1 z\"
+
+in toVegaLite [ gaiaData
+              , trans []
+              , enc []
+              , mark 'Point' [ 'MShape' star
+                           , MStroke \"black\"
+                           , 'MStrokeWidth' 1
+                           , MFill \"yellow\"
+                           , 'MSize' 100
+                           ]
+              ]
+@
+
+Notes:
+
+- the star design is based on a
+<https://upload.wikimedia.org/wikipedia/commons/a/a5/Star_with_eyes.svg Wikipedia design>,
+after some hacking and downsizing (such as losing the cute eyes);
+
+- and when using 'Count' with 'opAs', the first 'FieldName' argument is ignored,
+so I set it to the empty string @\"\"@ (it's be great if the API were such
+we didn't have to write dummy arguments, but at present @hvega@
+doesn't provide this level of safety).
+
+-}
+
+starCount :: VegaLite
+starCount =
+  let trans = transform
+              . aggregate [ opAs Count "" "count" ]
+                          [ "Cluster" ]
+
+      enc = encoding
+            . position X [ PName "Cluster"
+                         , PmType Nominal
+                         , PSort [ ByChannel ChY ]
+                         ]
+            . position Y [ PName "count"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Number of stars" ]
+                         ]
+
+      -- based on https://upload.wikimedia.org/wikipedia/commons/a/a5/Star_with_eyes.svg
+      star = SymPath "M 0,-1 L 0.23,-0.23 L 1,-0.23 L 0.38,0.21 L 0.62,0.94 L 0,0.49 L -0.62,0.94 L -0.38,0.21 L -1,-0.23 L -0.23,-0.23 L 0,-1 z"
+
+  in toVegaLite [ gaiaData
+                , trans []
+                , enc []
+                , mark Point [ MShape star
+                             , MStroke "black"
+                             , MStrokeWidth 1
+                             , MFill "yellow"
+                             , MSize 100
+                             ]
+                ]
+
+
+{-|
+
+I've shown that the number of stars per cluster increases when
+ordered by increasing count of the number of stars per cluster,
+which is perhaps not the most informative visualization. How about
+if I ask if there's a correlation between number of stars and
+distance to the cluster (under the assumption that objects further
+away can be harder to detect, so there /might/ be some form of
+correlation)?
+
+To do this, I tweak 'starCount' so that we also calculate the
+parallax to each cluster in the 'transform' - in this case taking
+the median value of the distribution thanks to the 'Median' operation - and
+then using this new field to order the X axis with 'ByFieldOp'. Since
+parallax is inversely correlated with distance we use the
+'Descending' option to ensure the clusters are drawn from near to
+far. We can see that there is no obvious relation with distance.
+
+<<images/vl/starcount2.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTIBzWdAVwAcAjATz0MgGEAbW5aAU1iQAugBpi5SPErV+leALZFy5YJHT02kAMZ1E0SKKjxkWxLSyNBkAL7iVJNRq1Z+AEwCWSQ8dP5I9FwAHgD6rm4+kKge-FwR-oFBthIkwik2xGLEkFjwsADWbGQUfDT5-ADqHm7QABZsAIz2JR4AXvyNAAydzRCQpejlWoxc8NqFvVDRXFxazLFc6ADuhin9tfD0Hf4AsmA9ALQNYAAy+wB0AEwAzKIHnVfXp2BN94-PD9cAHKIPl8dnB4ANkuv3OAE4ACwfMGQ8HPN4gsFQhGfH5-AFgI53P5PM5vG4496Au7HVqrSTQZhbLT0dAefSQYh2bJuBTwIprWiwWb+WrQaD0ZC4AD0IoQS3OlA8dVojF4gl0+n4+nOuiwIoAInRKAAhbnlEW1ABucngItyfEERtN8hFbOg5vkXgO8HgByBDSBroanQOjpG-Aa8HOiHQB1q-HgbkE52gyGNFIoGGwCiKATyyG2pEgAHFcpQzBYrEIjAFgkXLNYy-wQolKyXbBkICy+gASZDaSO5LT8wXCsW2kPS2WMc4edAizvd81Dg5cGX8EXGyHnABWyHQiCTkBVuk8iEL+GKfSSx5SfWisXiUG4vAEpYvUE3sAMx-Umn8uSSZavcVpwRhO4kSYDGQj+DGnYqgehatioMDUtmkBhlgDLwLM6STJArDng4UQxP+-jmFWj54VSNL+AAjrQSDQDKCgeKaSaSPAQQeH4OZ0dAXBIQAcsWghgOgqBgHwmbJOQzZgHBOhbtER6kBkNhAA Open this visualization in the Vega Editor>
+
+@
+let trans = transform
+            . aggregate [ opAs Count \"\" \"count\"
+                        , opAs 'Median' \"plx\" \"plx_med\"
+                        ]
+                        [ \"Cluster\" ]
+
+    enc = encoding
+          . position X [ PName \"Cluster\"
+                       , PSort [ 'ByFieldOp' \"plx_med\" 'Max'
+                               , 'Descending'
+                               ]
+                       ]
+          . position Y [ PName \"count\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Number of stars\" ]
+                       ]
+
+    star = SymPath \"M 0,-1 L 0.23,-0.23 L 1,-0.23 L 0.38,0.21 L 0.62,0.94 L 0,0.49 L -0.62,0.94 L -0.38,0.21 L -1,-0.23 L -0.23,-0.23 L 0,-1 z\"
+
+in toVegaLite [ gaiaData
+              , trans []
+              , enc []
+              , mark Point [ MShape star
+                           , MStroke \"black\"
+                           , MStrokeWidth 1
+                           , MFill \"yellow\"
+                           , MSize 100
+                           ]
+              ]
+@
+
+Notes:
+
+- I find the \"Data Viewer\" section of the
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTIBzWdAVwAcAjATz0MgGEAbW5aAU1iQAugBpi5SPErV+leALZFy5YJHT02kAMZ1E0SKKjxkWxLSyNBkAL7iVJNRq1Z+AEwCWSQ8dP5I9FwAHgD6rm4+kKge-FwR-oFBthIkwik2xGLEkFjwsADWbGQUfDT5-ADqHm7QABZsAIz2JR4AXvyNAAydzRCQpejlWoxc8NqFvVDRXFxazLFc6ADuhin9tfD0Hf4AsmA9ALQNYAAy+wB0AEwAzKIHnVfXp2BN94-PD9cAHKIPl8dnB4ANkuv3OAE4ACwfMGQ8HPN4gsFQhGfH5-AFgI53P5PM5vG4496Au7HVqrSTQZhbLT0dAefSQYh2bJuBTwIprWiwWb+WrQaD0ZC4AD0IoQS3OlA8dVojF4gl0+n4+nOuiwIoAInRKAAhbnlEW1ABucngItyfEERtN8hFbOg5vkXgO8HgByBDSBroanQOjpG-Aa8HOiHQB1q-HgbkE52gyGNFIoGGwCiKATyyG2pEgAHFcpQzBYrEIjAFgkXLNYy-wQolKyXbBkICy+gASZDaSO5LT8wXCsW2kPS2WMc4edAizvd81Dg5cGX8EXGyHnABWyHQiCTkBVuk8iEL+GKfSSx5SfWisXiUG4vAEpYvUE3sAMx-Umn8uSSZavcVpwRhO4kSYDGQj+DGnYqgehatioMDUtmkBhlgDLwLM6STJArDng4UQxP+-jmFWj54VSNL+AAjrQSDQDKCgeKaSaSPAQQeH4OZ0dAXBIQAcsWghgOgqBgHwmbJOQzZgHBOhbtER6kBkNhAA Vega Editor>
+rather useful when creating new data columns or structures,
+as you can actually see what has been created (I find Firefox works much
+better than Chrome here);
+
+- the use of 'ByFieldOp' here is a bit un-settling, as you need to
+give it an aggregation-style operation to apply to the data field,
+but in this case we have already done this with 'opAs' (so I pick
+'Max' as we just need something that copies the value over).
+
+-}
+
+
+starCount2 :: VegaLite
+starCount2 =
+  let trans = transform
+              . aggregate [ opAs Count "" "number"
+                          , opAs Median "plx" "plx_med"
+                          ]
+                          [ "Cluster" ]
+
+      enc = encoding
+            . position X [ PName "Cluster"
+                         , PmType Nominal
+                         -- I think I want a ByField back
+                         , PSort [ ByFieldOp "plx_med" Max
+                                 , Descending
+                                 ]
+                         ]
+            . position Y [ PName "number"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Number of stars" ]
+                         ]
+
+      star = SymPath "M 0,-1 L 0.23,-0.23 L 1,-0.23 L 0.38,0.21 L 0.62,0.94 L 0,0.49 L -0.62,0.94 L -0.38,0.21 L -1,-0.23 L -0.23,-0.23 L 0,-1 z"
+
+  in toVegaLite [ gaiaData
+                , trans []
+                , enc []
+                , mark Point [ MShape star
+                             , MStroke "black"
+                             , MStrokeWidth 1
+                             , MFill "yellow"
+                             , MSize 100
+                             ]
+                ]
+
+
+
+{-|
+
+Vega-Lite supports a number of data transformations, including
+several \"pre-canned\" transformations, such as a
+kernel-density estimator, which I will use here to
+look for structure in the parallax distribution. The earlier
 use of a fixed-bin histogram - 'parallaxHistogram' and 'ylogHistogram' -
 showed a peak around 5 to 10 milli-arcseconds, and a secondary
 one around 20 to 25 milli-arcseconds, but can we infer anything more
 from the data?
 
-The transformations are indicated by the aptly-named 'transform'
-function, which works in a similar manner to 'encoding', in that
+I have already shown that the 'transform'
+function works in a similar manner to 'encoding', in that
 it is applied to one or more transformations. In this
-case I use the 'density' transform - which is __new to Vega Lite 4__ -
+example I use the 'density' transform - which is __new to Vega Lite 4__ -
 to \"smooth\" the data without having to pre-judge the data
 (although there are options to configure the density estimation).
 The transform creates new fields - called \"value\" and \"density\"
@@ -1091,8 +1302,8 @@ fills in the area from the value down to the axis.
 <https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hIATAUxQEtoBPPKABwBsAPSAXwF0AacKLeLADW9UBAiR0DeAGNqdfAAYAdAHZe4qMjjohZepABGTWSI3jI22LrIAReMgAW9AgCZuYACw8+E2g318SEEyeEg+dnNSeGgw-DELAFdYJgNHaGgGZFwAehyEAHdlAHNqR0TDROQyWBl0RGgKaGU6rBzbdETigCFkvRzHADcyYvgcgW0ageHRnJIYsdHKeABaeFWANgBGDbWtxRXY4zIt+GVEdBXHUPJYZWhkQchzCQxsGNFIaVhqz4BxATFAyIRJYQw1Z6MVjA0Hg2CQyBkAD6zDYQRBYIh7HYESiABJkDJrgI0hksrkcjMzqVoOVDMpKOgcoTiWMqSsmNQyJTPMoAFbIerPPiIxB1EiURBA+K+KBosAJTSQVCUMhMEgGQbwJiJfQvCz+QJQACOiSQ0GoMUow2Fmgk8BYlGQnwt0CYRq+gm1JjYOM0kVlkAUCuVqvVBnIVFoCMNBlN5stFptfrAAYkdUQKulCpx7CAA Open this visualization in the Vega Editor>
 
 @
-let trans = 'transform'
-            . 'density' "plx" []
+let trans = transform
+            . 'density' \"plx\" []
 
     enc = encoding
           . position X [ PName \"value\"
@@ -1104,7 +1315,7 @@ let trans = 'transform'
 in toVegaLite
      [ gaiaData
      , mark 'Area' [ MOpacity 0.7
-                 , 'MStroke' \"black\"
+                 , MStroke \"black\"
                  , 'MStrokeDash' [ 2, 4 ]
                  , ]
      , trans []
@@ -1194,7 +1405,15 @@ in toVegaLite
 @
 
 Note how the clusters separate out in pretty cleanly, but - as
-also shown in the 'pointPlot' - it is pretty busy around 7 milli arcseconds.
+also shown in the 'pointPlot' visualization below - it is pretty
+busy around 7 milli arcseconds.
+
+The counts here (the Y axis) are __significantly larger__ than
+seen than the actual count of stars, shown in 'starCount'. It
+appears that @'DnCounts' True@ option is interpreted as
+<https://vega.github.io/vega-lite/docs/density.html#example-stacked-density-estimates multiplying the density values by the number of values in a group>,
+which means that there is a bin-width effect. This is explored
+further in the 'compareCounts' plot below.
 
 -}
 
@@ -1229,7 +1448,7 @@ densityParallaxGrouped =
 
 -- $intro-points
 -- At this point we make a signifiant detour from the Elm Vega-Lite
--- walkthtough, and look at the 'Point' mark, rather than creating
+-- walkthtough, and look a bit more at the 'Point' mark, rather than creating
 -- small-multiple plots. Don't worry, we'll get to them later.
 --
 -- I apologize for the alliterative use of point here.
@@ -1263,7 +1482,7 @@ let enc = encoding
     cluster = [ MName \"Cluster\", MmType Nominal ]
 
 in toVegaLite [ gaiaData
-              , mark 'Point' []
+              , mark Point []
               , enc []
               , width 400
               , height 400
@@ -1322,7 +1541,7 @@ pointPlot =
 
       scaleOpts = [ SType ScLog, SDomain (DNumbers [3.5, 32]), SNice (IsNice False) ]
       cluster = [ MName "Cluster", MmType Nominal ]
-      
+
   in toVegaLite [ gaiaData
                 , mark Point []
                 , enc []
@@ -1359,13 +1578,13 @@ let enc = encoding
             . position X (axOpts \"RA_ICRS\" \"Right Ascension (deg)\" ++ [ raScale, 'PSort' [ 'Descending' ] ])
             . position Y (axOpts \"DE_ICRS\" \"Declination (deg)\" ++ [ decScale ])
             . color [ MName \"Cluster\", MmType Nominal ]
-                    
+
     axOpts field lbl = [ PName field, PmType Quantitative, PAxis [ AxTitle lbl ]]
-            
+
     scaleOpts minVal maxVal = [ SDomain (DNumbers [ minVal, maxVal ]), SNice (IsNice False) ]
     raScale = PScale (scaleOpts 0 360)
     decScale = PScale (scaleOpts (-90) 90)
-            
+
 in toVegaLite [ gaiaData
               , mark 'Circle' []
               , enc []
@@ -1377,7 +1596,7 @@ in toVegaLite [ gaiaData
 We can see that these clusters are indeed localised on the sky,
 with <https://en.wikipedia.org/wiki/Hyades_(star_cluster) Hyades>
 looking like it covers the largest area. However, we should be
-careful and __not forget__ either 
+careful and __not forget__ either
 <https://www.youtube.com/watch?v=E9IuXEwpU7U Grover's hard work>
 or
 <https://www.youtube.com/watch?v=MMiKyfd6hA0 Father Ted's explanation to Father Dougal>,
@@ -1400,13 +1619,13 @@ posPlot =
               . position X (axOpts "RA_ICRS" "Right Ascension (deg)" ++ [ raScale, PSort [ Descending ] ])
               . position Y (axOpts "DE_ICRS" "Declination (deg)" ++ [ decScale ])
               . color [ MName "Cluster", MmType Nominal ]
-                    
+
       axOpts field lbl = [ PName field, PmType Quantitative, PAxis [ AxTitle lbl ]]
-            
+
       scaleOpts minVal maxVal = [ SDomain (DNumbers [ minVal, maxVal ]), SNice (IsNice False) ]
       raScale = PScale (scaleOpts 0 360)
       decScale = PScale (scaleOpts (-90) 90)
-            
+
   in toVegaLite [ gaiaData
                 , mark Circle []
                 , enc []
@@ -1580,7 +1799,7 @@ let enc = encoding
             , PmType Quantitative
             , PAxis [ AxTitle \"Number of Stars\" ]
             ]
-    
+
 in toVegaLite
      [ gaiaData
      , mark Bar []
@@ -1605,7 +1824,7 @@ smallMultiples =
               , PmType Quantitative
               , PAxis [ AxTitle "Number of Stars" ]
               ]
-      
+
   in toVegaLite
        [ gaiaData
        , mark Bar []
@@ -1637,7 +1856,7 @@ let enc = encoding
             , PmType Quantitative
             , PAxis [ AxTitle \"Number of Stars\" ]
             ]
-    
+
 in toVegaLite
      [ gaiaData
      , 'columns' 4
@@ -1671,7 +1890,7 @@ smallMultiples2 =
               , PmType Quantitative
               , PAxis [ AxTitle "Number of Stars" ]
               ]
-      
+
   in toVegaLite
        [ gaiaData
        , columns 4
@@ -1826,7 +2045,7 @@ of the parallax of the stars in each cluster.
 let plx = position Y [ PName \"plx\", PmType Quantitative, PAggregate 'Median' ]
     cluster = position X [ PName \"Cluster\", PmType Nominal ]
     enc = encoding . cluster . plx
-             
+
 in toVegaLite
       [ gaiaData
       , mark Bar []
@@ -1840,7 +2059,7 @@ basePlot =
   let plx = position Y [ PName "plx", PmType Quantitative, PAggregate Median ]
       cluster = position X [ PName "Cluster", PmType Nominal ]
       enc = encoding . cluster . plx
-               
+
   in toVegaLite
         [ gaiaData
         , mark Bar []
@@ -1862,10 +2081,10 @@ indicates the median parallax for all the stars in the sample.
 @
 let plx = position Y [ PName \"plx\", PmType Quantitative, PAggregate Median ]
     cluster = position X [ PName \"Cluster\", PmType Nominal ]
-             
+
     perCluster = [ mark Bar [], encoding (cluster []) ]
     allClusters = [ mark 'Rule' [] ]
-    
+
 in toVegaLite
       [ gaiaData
       , encoding (plx [])
@@ -1888,16 +2107,16 @@ layeredPlot :: VegaLite
 layeredPlot =
   let plx = position Y [ PName "plx", PmType Quantitative, PAggregate Median ]
       cluster = position X [ PName "Cluster", PmType Nominal ]
-               
+
       perCluster = [ mark Bar [], encoding (cluster []) ]
       allClusters = [ mark Rule [] ]
-      
+
   in toVegaLite
         [ gaiaData
         , encoding (plx [])
         , layer (map asSpec [perCluster, allClusters])
         ]
-        
+
 
 {-|
 
@@ -1915,7 +2134,7 @@ of each line ('Y' is used as the start point).
 @
 let plx op = position Y [ PName \"plx\", PmType Quantitative, PAggregate op ]
     cluster = position X [ PName \"Cluster\", PmType Nominal ]
-             
+
     median = [ mark Circle [ 'MSize' 20 ]
              , encoding (plx Median [])
              ]
@@ -1925,7 +2144,7 @@ let plx op = position Y [ PName \"plx\", PmType Quantitative, PAggregate op ]
                 . position 'Y2' [ PName "plx", PAggregate 'Max' ]
                 $ []
             ]
-      
+
 in toVegaLite
       [ gaiaData
       , encoding (cluster [])
@@ -1947,13 +2166,13 @@ although there is no indication of what marks map to these operations.
 
 -}
 layeredDiversion :: VegaLite
-layeredDiversion = 
+layeredDiversion =
   let plx op = position Y [ PName "plx", PmType Quantitative, PAggregate op ]
       cluster = position X [ PName "Cluster", PmType Nominal ]
-               
+
       median = [ mark Circle [ MSize 20 ], encoding ( plx Median []) ]
       range = [ mark Rule [ ], encoding . plx Min . position Y2 [ PName "plx", PAggregate Max ] $ [] ]
-      
+
   in toVegaLite
         [ gaiaData
         , encoding (cluster [])
@@ -2167,12 +2386,12 @@ Vega-Lite this is referred to as /concatenation/:
 let enc field = encoding
                  . position X [ PName \"Cluster\", PmType Nominal ]
                  . position Y [ PName field, PmType Quantitative, PAggregate Median ]
-               
+
     parallaxes = [ mark Bar [], enc \"plx\" [] ]
     magnitudes = [ mark Bar [], enc \"Gmag\" [] ]
-    
+
     specs = map asSpec [ parallaxes, magnitudes ]
-    
+
 in toVegaLite
       [ gaiaData
       , 'vConcat' specs
@@ -2192,16 +2411,16 @@ two plots be "compatible" (they could use different data sources).
 
 
 concatenatedPlot :: VegaLite
-concatenatedPlot = 
+concatenatedPlot =
   let enc field = encoding
                    . position X [ PName "Cluster", PmType Nominal ]
                    . position Y [ PName field, PmType Quantitative, PAggregate Median ]
-               
+
       parallaxes = [ mark Bar [], enc "plx" [] ]
       magnitudes = [ mark Bar [], enc "Gmag" [] ]
-      
+
       specs = map asSpec [ parallaxes, magnitudes ]
-      
+
   in toVegaLite
         [ gaiaData
         , vConcat specs
@@ -2225,12 +2444,12 @@ let enc field flag = encoding
                        . position X ([ PName \"Cluster\", PmType Nominal ] ++
                                      if flag then [ PAxis [] ] else [])
                        . position Y [ PName field, PmType Quantitative, PAggregate Median ]
-             
+
     parallaxes = [ mark Bar [], enc \"plx\" True [] ]
     magnitudes = [ mark Bar [], enc \"Gmag\" False [] ]
-    
+
     specs = map asSpec [ parallaxes, magnitudes ]
-    
+
 in toVegaLite
       [ gaiaData
       , 'spacing' 0
@@ -2245,17 +2464,17 @@ leave using that until the grand finale.
 -}
 
 concatenatedPlot2 :: VegaLite
-concatenatedPlot2 = 
+concatenatedPlot2 =
   let enc field flag = encoding
                          . position X ([ PName "Cluster", PmType Nominal ] ++
                                        if flag then [ PAxis [] ] else [])
                          . position Y [ PName field, PmType Quantitative, PAggregate Median ]
-               
+
       parallaxes = [ mark Bar [], enc "plx" True [] ]
       magnitudes = [ mark Bar [], enc "Gmag" False [] ]
-      
+
       specs = map asSpec [ parallaxes, magnitudes ]
-      
+
   in toVegaLite
         [ gaiaData
         , spacing 0
@@ -2282,13 +2501,13 @@ Declination, parallax, and magnitude:
 let enc = encoding
            . position X [ PName \"Cluster\", PmType Nominal ]
            . position Y [ 'PRepeat' 'Row', PmType Quantitative, PAggregate Median ]
-            
+
     spec = asSpec [ gaiaData
                   , mark Bar []
                   , enc [] ]
-                        
+
     rows = [ \"RA_ICRS\", \"DE_ICRS\", \"plx\", \"Gmag\" ]
-    
+
 in toVegaLite
       [ 'repeat' [ 'RowFields' rows ]
       , 'specification' spec
@@ -2312,13 +2531,13 @@ repeatPlot =
   let enc = encoding
              . position X [ PName "Cluster", PmType Nominal ]
              . position Y [ PRepeat Row, PmType Quantitative, PAggregate Median ]
-            
+
       spec = asSpec [ gaiaData
                     , mark Bar []
                     , enc [] ]
-                          
+
       rows = [ "RA_ICRS", "DE_ICRS", "plx", "Gmag" ]
-      
+
   in toVegaLite
         [ repeat [ RowFields rows ]
         , specification spec
@@ -2340,17 +2559,17 @@ let enc = encoding
             . position X [ PRepeat 'Column', PmType Quantitative ]
             . position Y [ PRepeat Row, PmType Quantitative ]
             . color [ MName \"Cluster\", MmType Nominal ]
-          
+
     spec = asSpec [ gaiaData
                   , mark Point [ MSize 5 ]
                   , enc [] ]
-                        
+
     fields = [ \"RA_ICRS\", \"DE_ICRS\", \"plx\", \"Gmag\" ]
-    
+
 in toVegaLite
       [ repeat [ RowFields fields, 'ColumnFields' fields ]
       , specification spec
-      ]  
+      ]
 @
 
 To be honest, this is not the best dataset to use here, as
@@ -2372,17 +2591,17 @@ splomPlot =
              . position X [ PRepeat Column, PmType Quantitative ]
              . position Y [ PRepeat Row, PmType Quantitative ]
              . color [ MName "Cluster", MmType Nominal ]
-            
+
       spec = asSpec [ gaiaData
                     , mark Point [ MSize 5 ]
                     , enc [] ]
-                          
+
       fields = [ "RA_ICRS", "DE_ICRS", "plx", "Gmag" ]
-      
+
   in toVegaLite
         [ repeat [ RowFields fields, ColumnFields fields ]
         , specification spec
-        ]  
+        ]
 
 
 -- $intro-interactivity
@@ -2411,7 +2630,7 @@ I am going to introduce a helper function which creates the
 plot structure but without the selection definition, and then
 use that to build up the plots.
 
-The helper function, 'selectionProperties', takes two arguments, which are 
+The helper function, 'selectionProperties', takes two arguments, which are
 the selection name and the plot title. The selection name is used
 to identify the selection, as a visualization can support multiple
 selections, and the plot title has been added mainly to show some
@@ -2430,12 +2649,12 @@ selectionProps selName label =
       enc = encoding
                . position X (posOpts \"Gmag\")
                . position Y (posOpts \"plx\")
-               
+
                . color [ 'MSelectionCondition' ('SelectionName' selName)
                            [ MName \"Cluster\", MmType Nominal ]
                            [ 'MString' "grey" ]
                        ]
-                
+
                . 'opacity' [ MSelectionCondition (SelectionName selName)
                             [ 'MNumber' 1.0 ]
                             [ MNumber 0.3 ]
@@ -2445,10 +2664,10 @@ selectionProps selName label =
                             [ MNumber 40 ]
                             [ MNumber 5 ]
                          ]
-                         
+
       trans = transform
                  . 'filter' ('FExpr' \"datum.DE_ICRS < -20\")
-         
+
   in [ gaiaData
      , trans []
      , mark Point []
@@ -2468,7 +2687,7 @@ The main change is that the selection is used in the encoding section,
 identified by name, using 'SelectionName' and the supplied
 argument. It is used as a filter for the encoding section, where
 'MSelectionCondition' defines the properties to use
-when the selection occurs (the first list of properties) 
+when the selection occurs (the first list of properties)
 and when it does not (the second list). This is used for
 three different encodings:
 
@@ -2503,12 +2722,12 @@ selectionProperties selName label =
       enc = encoding
                . position X (posOpts "Gmag")
                . position Y (posOpts "plx")
-               
+
                . color [ MSelectionCondition (SelectionName selName)
                            [ MName "Cluster", MmType Nominal ]
                            [ MString "grey" ]
                        ]
-                
+
                . opacity [ MSelectionCondition (SelectionName selName)
                             [ MNumber 1.0 ]
                             [ MNumber 0.3 ]
@@ -2518,10 +2737,10 @@ selectionProperties selName label =
                             [ MNumber 40 ]
                             [ MNumber 5 ]
                          ]
-                         
+
       trans = transform
                  . filter (FExpr "datum.DE_ICRS < -20")
-         
+
   in [ gaiaData
      , trans []
      , mark Point []
@@ -2543,7 +2762,7 @@ defined and then added to the plot properties:
 let selLabel = "picked"
     sel = 'selection'
             . 'select' selLabel 'Single' []
-       
+
 in toVegaLite (sel [] : 'selectionProperties' selLabel "Select a point")
 @
 
@@ -2564,7 +2783,7 @@ singleSelection =
 
       sel = selection
               . select selLabel Single []
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Select a point")
 
 
@@ -2582,7 +2801,7 @@ click will be highlighted.
 let selLabel = "picked"
     sel = selection
             . select selLabel Single [ 'Nearest' True ]
-       
+
 in toVegaLite (sel [] : selectionProperties selLabel "Select nearest point")
 @
 
@@ -2600,7 +2819,7 @@ nearestSelection =
 
       sel = selection
               . select selLabel Single [ Nearest True ]
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Select nearest point")
 
 
@@ -2617,7 +2836,7 @@ to be selected, using shift-click, by swapping from 'Single' to 'Multi'.
 let selLabel = "this is just a label"
     sel = selection
             . select selLabel 'Multi' []
-       
+
 in toVegaLite (sel [] : selectionProperties selLabel "Shift click to select points")
 @
 
@@ -2629,7 +2848,7 @@ multiSelection =
 
       sel = selection
               . select selLabel Multi []
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Shift click to select points")
 
 
@@ -2646,7 +2865,7 @@ event to use, such as mouse movement over points:
 let selLabel = "picked"
     sel = selection
             . select selLabel Multi [ 'On' "mouseover" ]
-       
+
 in toVegaLite (sel [] : selectionProperties selLabel "Move the pointer to select a point")
 @
 
@@ -2664,7 +2883,7 @@ eventSelection =
 
       sel = selection
               . select selLabel Multi [ On "mouseover" ]
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Move the pointer to select a point")
 
 
@@ -2681,7 +2900,7 @@ which lets you drag a rectangle to select the interior points:
 let selLabel = "naming is hard"
     sel = selection
             . select selLabel 'Interval' [ ]
-       
+
 in toVegaLite (sel [] : selectionProperties selLabel "Drag a rectangle to select points")
 @
 
@@ -2693,7 +2912,7 @@ intervalSelection =
 
       sel = selection
               . select selLabel Interval [ ]
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Drag a rectangle to select points")
 
 
@@ -2711,7 +2930,7 @@ using 'Encodings':
 let selLabel = "naming is still hard"
     sel = selection
             . select selLabel Interval [ 'Encodings' [ 'ChY' ] ]
-       
+
 in toVegaLite (sel [] : selectionProperties selLabel "Drag to select points by parallax")
 @
 
@@ -2727,7 +2946,7 @@ intervalSelectionY =
 
       sel = selection
               . select selLabel Interval [ Encodings [ ChY ] ]
-         
+
   in toVegaLite (sel [] : selectionProperties selLabel "Drag to select points by parallax")
 
 
@@ -2761,7 +2980,7 @@ let sel = selection
                                    , 'Empty'
                                    , Nearest True
                                    ]
-       
+
 in toVegaLite (sel [] : selectionProperties "pick" "Select a point, select a cluster")
 @
 
@@ -2776,7 +2995,7 @@ transformSelection =
                                      , Empty
                                      , Nearest True
                                      ]
-         
+
   in toVegaLite (sel [] : selectionProperties "pick" "Select a point, select a cluster")
 
 
@@ -2860,7 +3079,7 @@ let picked = "picked"
 
    conf = configure
             . configuration (Background "beige")
-               
+
 in toVegaLite (conf [] :
                sel [] :
                selectionProperties picked \"Please select a cluster\")
@@ -2894,7 +3113,7 @@ widgetSelection =
 
       conf = configure
                . configuration (Background "beige")
-               
+
   in toVegaLite (conf [] :
                  sel [] :
                  selectionProperties picked "Please select a cluster")
@@ -2915,7 +3134,7 @@ let picked = "picked"
 
     sel = selection
             . select picked Interval [ Encodings [ 'ChX', ChY ], 'BindScales' ]
-       
+
 in toVegaLite (sel [] : selectionProperties picked "Drag or zoom the axes")
 @
 
@@ -2929,7 +3148,7 @@ bindScales =
 
       sel = selection
               . select picked Interval [ Encodings [ ChY, ChX ], BindScales ]
-         
+
   in toVegaLite (sel [] : selectionProperties picked "Drag or zoom the axes")
 
 
@@ -3017,7 +3236,7 @@ coordinatedViews =
                , enc []
                , sel []
                ]
-               
+
   in toVegaLite
        [ repeat
          [ RowFields [ "cosRA", "DE_ICRS" ]
@@ -3088,7 +3307,7 @@ coordinatedViews2 =
                , enc []
                , sel []
                ]
-               
+
   in toVegaLite
        [ repeat
          [ RowFields [ "RA_ICRS", "DE_ICRS" ]
@@ -3096,7 +3315,7 @@ coordinatedViews2 =
          ]
        , specification spec
        ]
-  
+
 
 {-|
 
@@ -3186,7 +3405,7 @@ contextAndFocus =
 
     specDetail =
         asSpec [ width 400, mark Point [], encDetail [] ]
-        
+
   in
     toVegaLite
       [ gaiaData
@@ -3222,14 +3441,14 @@ let sel = selection . select "brush" Interval [ Encodings [ ChX ] ]
 
     -- borrow a function from Elm
     pQuant = PmType Quantitative
-    
+
     totalEnc = encoding
                 . position X [ PRepeat Column, pQuant ]
                 . position Y [ PAggregate Count, pQuant ]
 
     selectedEnc = totalEnc
                     . color [ MString "goldenrod" ]
-            
+
 in toVegaLite
      [ repeat [ ColumnFields [ \"RA_ICRS\", \"DE_ICRS\", \"Gmag\", \"plx\" ] ]
      , specification $
@@ -3257,7 +3476,7 @@ crossFilter =
 
     -- borrow a function from Elm
     pQuant = PmType Quantitative
-    
+
     totalEnc =
         encoding
             . position X [ PRepeat Column, pQuant ]
@@ -3266,7 +3485,7 @@ crossFilter =
     selectedEnc =
         totalEnc
             . color [ MString "goldenrod" ]
-            
+
  in
  toVegaLite
     [ repeat [ ColumnFields [ "RA_ICRS", "DE_ICRS", "Gmag", "plx" ] ]
@@ -3278,7 +3497,7 @@ crossFilter =
                 , asSpec [ sel [], filterTrans [], mark Bar [], selectedEnc [] ]
                 ]
             ]
-    ]  
+    ]
 
 
 -- $intro-smoothing
@@ -3562,7 +3781,7 @@ let trans = transform
               . filter (FExpr \"datum.Cluster[0] == \'C\' || datum.Cluster[0] == \'H\'\")
               . calculateAs \"datum.plx - datum.e_plx\" \"plx_lo\"
               . calculateAs \"datum.plx + datum.e_plx\" \"plx_hi\"
-  
+
     errorEnc = encoding
                  . position X [ PName \"plx_lo\"
                               , PmType Quantitative
@@ -3572,7 +3791,7 @@ let trans = transform
                  . position 'X2' [ PName \"plx_hi\" ]
                  . position Y [ PName \"Gmag\", PmType Quantitative ]
                  . column [ FName \"Cluster\", FmType Nominal ]
-    
+
     sel = selection
             . select "picked" Interval [ BindScales ]
 
@@ -3590,7 +3809,7 @@ read in as a string, and the introduction of the 'Parse' option
 to 'gaiaData'.
 
 As can be seen, the @e_plx@ terms are generally very small. This is
-good for anyone using the data, as we want precise measurements, but 
+good for anyone using the data, as we want precise measurements, but
 makes it harder for me to come up with meaningful visualizations! I
 have taken advantage of the 'BindScales' interaction to zoom in on
 a subset of stars which show larger parallax errors:
@@ -3605,7 +3824,7 @@ errorManual =
                 . filter (FExpr "datum.Cluster[0] == 'C' || datum.Cluster[0] == 'H'")
                 . calculateAs "datum.plx - datum.e_plx" "plx_lo"
                 . calculateAs "datum.plx + datum.e_plx" "plx_hi"
-  
+
       errorEnc = encoding
                   . position X [ PName "plx_lo"
                                , PmType Quantitative
@@ -3667,7 +3886,7 @@ errorAuto :: VegaLite
 errorAuto =
   let trans = transform
                 . filter (FExpr "datum.Cluster[0] == 'C'")
-  
+
       errorEnc = encoding
                   . position Y [ PName "plx"
                                , PmType Quantitative
@@ -3702,7 +3921,7 @@ value of the distribution.
 
 @
 let cluster = position X [ PName \"Cluster\", PmType Nominal ]
-             
+
     barOpts = [ 'MExtent' 'StdDev'
               , 'MTicks' [ 'MColor' \"purple\" ]
               , 'MRule' [ MColor \"teal\" ]
@@ -3737,9 +3956,9 @@ in toVegaLite
 -}
 
 errorBars :: VegaLite
-errorBars = 
+errorBars =
   let cluster = position X [ PName "Cluster", PmType Nominal ]
-             
+
       barOpts = [ MExtent StdDev
                 , MTicks [ MColor "purple" ]
                 , MRule [ MColor "teal" ]
@@ -3788,7 +4007,7 @@ let posY extra = position Y ([ PName \"Gmag\"
                              , PmType Quantitative
                              , PScale [ SZero False ]
                              ] ++ extra) []
-           
+
     bands = [ [ encoding (posY [])
               , mark 'ErrorBand' [ MExtent StdDev ]
               ]
@@ -3807,7 +4026,7 @@ let posY extra = position Y ([ PName \"Gmag\"
                           ]
               ]
             ]
-           
+
 in toVegaLite
     [ gaiaData
     , encoding (position X [ PName \"Cluster\", PmType Nominal ] [])
@@ -3827,12 +4046,12 @@ rather than creating sensible plots!
 -}
 
 errorBand :: VegaLite
-errorBand = 
+errorBand =
   let posY extra = position Y ([ PName "Gmag"
                                , PmType Quantitative
                                , PScale [ SZero False ]
                                ] ++ extra) []
-             
+
       bands = [ [ encoding (posY [])
                 , mark ErrorBand [ MExtent StdDev ]
                 ]
@@ -3851,7 +4070,7 @@ errorBand =
                             ]
                 ]
               ]
-             
+
   in toVegaLite
       [ gaiaData
       , encoding (position X [ PName "Cluster", PmType Nominal ] [])
@@ -3901,7 +4120,7 @@ The 'Boxplot' option supports two different \"ranges\":
 -}
 
 errorBox :: VegaLite
-errorBox = 
+errorBox =
   toVegaLite
       [ gaiaData
       , encoding
@@ -3933,7 +4152,7 @@ let histEnc = encoding
                . position X [ PName \"Gmag\", PmType Quantitative ]
                . position Y [ 'PNumber' 80 ]
                . color [ MName \"Cluster\", MmType Nominal, MLegend [] ]
-    
+
     yAxis = [ PAggregate Count
             , PmType Quantitative
             , PAxis [ AxTitle \"Number of Stars\" ]
@@ -3943,12 +4162,12 @@ let histEnc = encoding
               , 'MBox' [ MStroke \"white\" ]
               , 'MNoOutliers'
               ]
-    
+
     histSpec = asSpec [ mark Bar [], histEnc [] ]
     errSpec = asSpec [ mark Boxplot boxOpts, errEnc [] ]
 
     combinedSpec = asSpec [ layer [ histSpec, errSpec ] ]
-    
+
 in toVegaLite
     [ gaiaData
     , columns 3
@@ -3978,7 +4197,7 @@ comparingErrors =
                 . position X [ PName "Gmag", PmType Quantitative ]
                 . position Y [ PNumber 80 ]
                 . color [ MName "Cluster", MmType Nominal, MLegend [] ]
-     
+
      yAxis = [ PAggregate Count
              , PmType Quantitative
              , PAxis [ AxTitle "Number of Stars" ]
@@ -3988,12 +4207,12 @@ comparingErrors =
                , MBox [ MStroke "white" ]
                , MNoOutliers
                ]
-     
+
      histSpec = asSpec [ mark Bar [], histEnc [] ]
      errSpec = asSpec [ mark Boxplot boxOpts, errEnc [] ]
 
      combinedSpec = asSpec [ layer [ histSpec, errSpec ] ]
-     
+
  in toVegaLite
      [ gaiaData
      , columns 3
@@ -4053,7 +4272,7 @@ such as
 @
 let trans = transform
               . calculateAs \"datum.RA_ICRS / 15\" \"RA\"
-              
+
     quant n = [ PName n, PmType Quantitative ]
 
     big = 400
@@ -4063,7 +4282,7 @@ let trans = transform
     wsub = width small
     hsub = height small
     noTitle = PAxis [ AxNoTitle ]
-    
+
     raAxis = [ PScale [ SDomain (DNumbers [ 0, 24 ])
                       , SNice (IsNice False)
                       ]
@@ -4097,7 +4316,7 @@ let trans = transform
                . colorEnc
 
     circleMark = mark Circle [ MOpacity 0.5 ]
-    
+
     mapSpec = asSpec [ mapEnc []
                      , circleMark
                      , wmain
@@ -4114,7 +4333,7 @@ let trans = transform
                 , PSort [ Descending ]
                 , PAxis []
                 ]
-                
+
     -- histogram of the Declination values
     --
     deBinning = [ PBin [ Extent deMin deMax
@@ -4129,11 +4348,11 @@ let trans = transform
                , noTitle
                , PScale [ SDomain (DNumbers [ 0, 3000 ]) ]
                ]
-    
+
     raEnc = encoding
               . position X (quant \"RA\" ++ raBinning)
               . position Y histAxis
-              
+
     deEnc = encoding
               . position Y (quant \"DE_ICRS\" ++ deBinning)
               . position X histAxis
@@ -4147,7 +4366,7 @@ let trans = transform
                  $ []
              , mark Bar []
              ]
-             
+
     allDE = [ deEnc []
             , mark Bar [ MColor \"gray\" ]
             ]
@@ -4167,7 +4386,7 @@ let trans = transform
                            , 'bounds' 'Flush'
                            , 'hConcat' [ mapSpec, deSpec ]
                            ]
-    
+
     histSpecs = [ raSpec, mapAndDecSpec ]
 
     -- select the cluster which the star belongs to; do not use
@@ -4185,7 +4404,7 @@ let trans = transform
               , PAxis [ AxTitle \"parallax (milli-arcsecond)\" ]
               ]
     gmagOpts = [ PAxis [ AxTitle \"G magnitude\" ] ]
-    
+
     encData = encoding
                 . position X (quant \"plx\" ++ plxOpts)
                 . position Y (quant \"Gmag\" ++ gmagOpts)
@@ -4197,14 +4416,14 @@ let trans = transform
                           , circleMark
                           , selCluster []
                           ]
-    
+
     allSpecs = [ asSpec [ spacing borderSpacing
                         , bounds Flush
                         , vConcat histSpecs
                         ]
                , parallaxSpec ]
-                 
-    
+
+
 in toVegaLite
    [ gaiaData
    , trans []
@@ -4227,7 +4446,7 @@ combinedPlot :: VegaLite
 combinedPlot =
   let trans = transform
                 . calculateAs "datum.RA_ICRS / 15" "RA"
-                
+
       quant n = [ PName n, PmType Quantitative ]
 
       big = 400
@@ -4237,7 +4456,7 @@ combinedPlot =
       wsub = width small
       hsub = height small
       noTitle = PAxis [ AxNoTitle ]
-      
+
       raAxis = [ PScale [ SDomain (DNumbers [ 0, 24 ])
                         , SNice (IsNice False)
                         ]
@@ -4271,7 +4490,7 @@ combinedPlot =
                  . colorEnc
 
       circleMark = mark Circle [ MOpacity 0.5 ]
-      
+
       mapSpec = asSpec [ mapEnc []
                        , circleMark
                        , wmain
@@ -4288,7 +4507,7 @@ combinedPlot =
                   , PSort [ Descending ]
                   , PAxis []
                   ]
-                  
+
       -- histogram of the Declination values
       --
       deBinning = [ PBin [ Extent deMin deMax
@@ -4303,11 +4522,11 @@ combinedPlot =
                  , noTitle
                  , PScale [ SDomain (DNumbers [ 0, 3000 ]) ]
                  ]
-      
+
       raEnc = encoding
                 . position X (quant "RA" ++ raBinning)
                 . position Y histAxis
-                
+
       deEnc = encoding
                 . position Y (quant "DE_ICRS" ++ deBinning)
                 . position X histAxis
@@ -4321,7 +4540,7 @@ combinedPlot =
                    $ []
                , mark Bar []
                ]
-               
+
       allDE = [ deEnc []
               , mark Bar [ MColor "gray" ]
               ]
@@ -4341,7 +4560,7 @@ combinedPlot =
                              , bounds Flush
                              , hConcat [ mapSpec, deSpec ]
                              ]
-      
+
       histSpecs = [ raSpec, mapAndDecSpec ]
 
       -- select the cluster which the star belongs to; do not use
@@ -4359,7 +4578,7 @@ combinedPlot =
                 , PAxis [ AxTitle "parallax (milli-arcsecond)" ]
                 ]
       gmagOpts = [ PAxis [ AxTitle "G magnitude" ] ]
-      
+
       encData = encoding
                   . position X (quant "plx" ++ plxOpts)
                   . position Y (quant "Gmag" ++ gmagOpts)
@@ -4371,14 +4590,14 @@ combinedPlot =
                             , circleMark
                             , selCluster []
                             ]
-      
+
       allSpecs = [ asSpec [ spacing borderSpacing
                           , bounds Flush
                           , vConcat histSpecs
                           ]
                  , parallaxSpec ]
-                   
-      
+
+
   in toVegaLite
      [ gaiaData
      , trans []
@@ -4394,8 +4613,285 @@ combinedPlot =
 -- $otherstuff
 -- The tutorial ends not with a bang, but a few random visualizations
 -- I thought of and couldn't find a better place to put them!
---
--- Although, at the moment, there is only one.
+
+{-|
+
+This visualization started out when I asked myself if I could
+repeat the X axis at the top of the plot. I started off by
+trying to use 'configuration' with the 'AxisTop' constructor,
+but this didn't work (perhaps I didn't turn on the necessary
+option), so I ended up with the following. It does show off
+the use of 'AxLabelExpr' and 'AxDataCondition', but is not
+perhaps the most-digestible visualization one could create!
+
+As I could not work out how to duplicate the X axis with only
+a single layer, I got creative and duplicated the data and
+in the second layer moved the X axis to the top of the plot
+with 'AxOrient', and ensured the data would not be displayed
+(by setting the 'Text' value to the empty string).
+
+The axis labels and the tick marks for the two X axes make
+use of the @datum.index@ field, which is in the range 0 to 1 inclusive,
+which I multiply by 8 (one less than the total number of clusters) and
+check if the result is odd or even (ignoring the possibility
+of floating-point inaccuracies in the conversion). The odd values are displayed
+on the bottom axis and the even values on the top (the first
+cluster, in this case @Blanco1@, has an index value of 0,
+so is displayed on the top axis). The 'AxLabelExpr' option
+is used to determine the label contents (if the condition
+holds then it uses a trimmed and truncated version of the
+default label, otherwise it is blank), and
+'AxDataCondition' is used to control the opacity of the
+tick marks. I had hoped to show some of the label-overlap
+strategies in play here - controlled by 'AxLabelOverlap' - but
+they didn't work well with the data and visualization size,
+and I realised I could play with the new-to-Vega-Lite-4
+'AxLabelExpr' and 'AxDataCondition' capabilities.
+
+Normally a grid is not drawn for 'Nominal' axes, but I turn
+it on (for the first layer) with 'AxGrid' just to help guide
+the eye.
+
+<<images/vl/duplicateaxis.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhIBzWdAVwAcAjATz0MgGEAba5aAU1kgBdADRR45Sr3Lw+LAmXS0WkAMY1E0SKMjxkyxNSz1+kAL6DTxEcUgATGfBagSUarA7KAFtGi1kuAHoAhAB3ADpyAEtoT2p6bn41DV4NMLUsAIARGnIAITcAa14AzwA3KXgArF0+WBLy6QD7aErpSPgAWnhOgDYARh6uvoAGDpb6Dl4++DDEdA7PXnhbfjDoZFKtYghIDGwZJ0haeFhkXkOAcWryfUNjAW1aDgAPW6MTbV4AfSfX-EgDO8BKZLBBTMIbAASZAqRbVLw+PyBAINGZRGJxMKRdABGFwyqojocaLFUoAFjCACtkOhEFsdhx4IwTPgiC5nC4oNVYAVlCpIrAVJN6ZzICk1LZIogbvgOZyoH9SNt5VBUJFeBxbMpONxaiKVVBoIxaOd-nMsFL4B4IQadvBnpE9LLlQbIIzjBwAILS4X4YY2207TDqjTKejoHzoHABwNu+AegCiz1oAn+kVQAAoM81DFjECtnmAAFRgAAcAEowABSMAAJjAAF4G31RHBqIgVDJeBm4JEsNmZLn3Rry6IAKyjsAAcin5f1tpgkRUBQA8sd+UanC6F6UrdRTWB-dvXUlJdBsXTZZBd1wDy3DbweMoB9Bc1KC8Wy5Wa-Wm30zMenLgoBLgULAkRavgba8DGC7ntAvpQDqPAmCBYCgiqwGuswzqxmqGqQVAgL3PO8owMaB6QAAjtQSDwTIkTlKRor2o6hzwYhkAAHJ3PwYDoKgYA8CcegYfKYkkBJWEkHKJCQNyvJXnwzyaP8WiGhRyjKZo0mgeK6CStKW6uoqslkfhmralwKEPGh5EmvoUaWtadmsU6SqBgy8Yat65CIUenlQMGKSqYaijMWRw4cEmKbKOmWY5lgeYfiWFbVnWjYNv6YBth2XY9uB-aJWEUWThOogznOsGuuey5rvAG44R5gVQDe+4sAFLWqLSZ4XocbV3tofBPv8L5vvmvCFql34ZU2wwAYFukLpQEEsKgVpnNVKqLghB4GBwHBoRJLhLaBTVmaKFmEQCvG2bGRoOf8NF0dEDFMVtoFuex0SIftHDHZJ25SVYAbdYgaoyqQlimEAA Open this visualization in the Vega Editor>
+
+@
+let trans = transform
+            . aggregate [ opAs Count \"\" \"number\" ]
+                        [ \"Cluster\" ]
+
+    xAxis f = position X [ PName \"Cluster\"
+                         , PmType Nominal
+                         , PAxis [ 'AxLabelAngle' 0
+                                 , 'AxOrient' (if f then SBottom else STop)
+                                 , if f
+                                   then AxTitle \"Cluster\"
+                                   else AxNoTitle
+                                 , 'AxLabelExpr' (xlabels f)
+                                 , 'AxDataCondition'
+                                   (Expr (xticks f))
+                                   ('CAxTickOpacity' 1 0)
+                                 , 'AxGrid' f
+                                 ]
+                         ]
+
+    xlabels f =
+      let v = if f then \"1\" else \"0\"
+      in \"if((datum.index * 8) % 2 ==\" <> v <> \", truncate(trim(datum.label), 5), '')\"
+
+    xticks f =
+      let v = if f then \"1\" else \"0\"
+      in \"(datum.index * 8) % 2 ==\" <> v
+
+    yAxis f = position Y [ PName \"number\"
+                         , PmType Quantitative
+                         , PAxis [ if f
+                                   then AxTitle \"Number of stars\"
+                                   else AxNoTitle ]
+                         ]
+
+    -- f is True indicates first Layer (bottom X axis, should display
+    -- the Y axis).
+    enc f = encoding
+            . xAxis f
+            . yAxis f
+
+    dataLayer = asSpec [ enc True []
+                       , mark Circle []
+                       ]
+
+    axLayer = asSpec [ enc False []
+                     , mark Text [ MText \"\" ]
+                     ]
+
+in toVegaLite [ gaiaData
+              , trans []
+              , layer [ dataLayer, axLayer ]
+              ]
+@
+
+If anyone can come up with a simpler way to duplicate the X axis I'm all
+ears!
+
+-}
+
+duplicateAxis :: VegaLite
+duplicateAxis =
+  let trans = transform
+              . aggregate [ opAs Count "" "number" ]
+                          [ "Cluster" ]
+
+      -- Encode the X axis, where True indicates the lower axis
+      -- and False the upper axis.
+      --
+      xAxis f = position X [ PName "Cluster"
+                           , PmType Nominal
+                           , PAxis [ AxLabelAngle 0
+                                   , AxOrient (if f then SBottom else STop)
+                                   , if f
+                                     then AxTitle "Cluster"
+                                     else AxNoTitle
+                                   , AxLabelExpr (xlabels f)
+                                   , AxDataCondition
+                                     (Expr (xticks f))
+                                     (CAxTickOpacity 1 0)
+                                   , AxGrid f
+                                   ]
+                           ]
+
+      -- For the bottom want every "odd" value, top every "even" value,
+      -- so that the are alternated, but how do we encode this with the
+      -- Vega expression syntax? There is a datum.index which is 0 to 1
+      --
+      -- How about just subsetting the strings for now
+      xlabels f =
+        let v = if f then "1" else "0"
+        in "if((datum.index * 8) % 2 ==" <> v <> ", truncate(trim(datum.label), 5), '')"
+
+      -- had hoped could use datum.label but there's no obvious guarantee
+      -- of ordering of operations (or when the AxLabelExpr expression is
+      -- evaluated), so repeat the logic.
+      --
+      xticks f =
+        let v = if f then "1" else "0"
+        in "(datum.index * 8) % 2 ==" <> v
+
+      yAxis f = position Y [ PName "number"
+                           , PmType Quantitative
+                           , PAxis [ if f
+                                     then AxTitle "Number of stars"
+                                     else AxNoTitle ]
+                           ]
+
+      enc f = encoding
+              . xAxis f
+              . yAxis f
+
+      dataLayer = asSpec [ enc True []
+                         , mark Circle []
+                         ]
+
+      axLayer = asSpec [ enc False []
+                       -- create an "invisible" mark
+                       , mark Text [ MText "" ]
+                       ]
+
+  in toVegaLite [ gaiaData
+                , trans []
+                , layer [ dataLayer, axLayer ]
+                ]
+
+
+{-|
+
+Way back in the tutorial I noted - in 'densityParallaxGrouped' - that
+setting the 'density' option 'DnCounts' to @True@ resulted in
+counts that were too high. This is because the values need to be
+divided by the bin width, as shown in this visualization, where I:
+
+- use an explicit grid for the density calculation, choosing the
+  'DnExtent' and 'DnSteps' parameters to create a bin width of
+  0.1 in parallax;
+
+- sum up the resulting KDE (the @\"ykde\"@ field) to create @\"ycounts\"@;
+
+- normalize the counts by the bin with using 'calculateAs' to
+  create the @\"count\"@ field;
+
+- which is plotted as a diamond, on top of a line showing the
+  actual counts (calculated following 'starCount').
+
+<<images/vl/comparecounts.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmAAkFELRJrUk5FS0VmHsnDxMbCLUK2tGu054HNq6ACxMAFYU4qnpkHiwAJ7NqADa6Qg6AwmHg9DEFGyuUIAJBIMKLBwyjI3C+MMgAGE8HxzJAALp9SCwFiIgwIfgwwoiMi1URYCQtIkUWnKBlTPGzOFgAmAjImHAaWrXMQUhZwyBSUTQNhiGqoYFcyAjNBZNj8PDQWpYnG9KDwL5kCmjCKyGWwAjzXkgyBo+VW8WZNUaln0-Jirmgg1GqAARywsAkHAQbH0bw9GVg7TYzPlkHgHGCWtZiWm9ognLhGfT7rQ9rj4MhOVkMLTufDmERyNR6O1ZmaPPLUFM6PaGjijK+bYpDfLkDpEhjYDBWH4OcV-HakgZ-wAzH0Z74e+HIHXKIQAEwAdl8Y-FcQhHFtrQ6kFLlvDCo9kErWBRR7+mOxdcmS6vxNJhkklMg1NqFAajLNqMXz9imhKOuqmrAV20x4meu5AkyLoMoSQjmkIWCfF+oy2A0TAgcmFBgNQYB+KmXKvpg-KCnay4UGwABe3rrr4O6liuYIiFotRBLAQiCghUAUEQsCGrU0qwLI4iaoJcZerUZAiDK+T2ue4qSiI0qygU7HKoUEHOqMta4oS+picaIimmI5rTLJR6XoqBlQVAoFhr2ZnepAfoBvGiDxqGgmYJG0blL5iZGYR5EelmGAxRmPZ9uIjpymgsxTEAA Open this visualization in the Vega Editor>
+
+@
+let densTrans = transform
+            . density \"plx\" [ DnAs \"xkde\" \"ykde\"
+                            , DnGroupBy [ \"Cluster\" ]
+                            , DnCounts True
+                            , DnExtent (Number 3) (Number 30)
+                            , 'DnSteps' 270
+                            ]
+            . aggregate [ opAs Sum \"ykde\" \"ycounts\" ]
+                        [ \"Cluster\" ]
+            . calculateAs \"datum.ycounts / 10\" \"count\"
+
+    enc = encoding
+          . position X [ PName \"Cluster\"
+                       , PmType Nominal
+                       ]
+          . position Y [ PName \"count\"
+                       , PmType Quantitative
+                       , PAxis [ AxTitle \"Counts\" ]
+                       ]
+
+    densLayer = asSpec [ densTrans []
+                       , enc []
+                       , mark Point [ MShape 'SymDiamond'
+                                    , MStroke \"black\"
+                                    , MSize 200
+                                    ]
+                       ]
+
+    countTrans = transform
+                 . aggregate [ opAs Count \"\" \"count\" ] [ \"Cluster\" ]
+
+    countLayer = asSpec [ countTrans [], enc [], mark Line [] ]
+
+in toVegaLite
+     [ gaiaData
+     , layer [ countLayer, densLayer ]
+     ]
+@
+
+Note that the same encoding specification is used on both layers,
+since I arranged the data transforms to create two columns -
+@\"Cluster\"@ and @\"count\"@ - in both cases.
+
+-}
+
+compareCounts :: VegaLite
+compareCounts =
+  let densTrans = transform
+              . density "plx" [ DnAs "xkde" "ykde"
+                              , DnGroupBy [ "Cluster" ]
+                              , DnCounts True
+                              , DnExtent (Number 3) (Number 30)
+                              , DnSteps 270
+                              ]
+              . aggregate [ opAs Sum "ykde" "ycounts" ]
+                          [ "Cluster" ]
+              . calculateAs "datum.ycounts / 10" "count"
+
+      enc = encoding
+            . position X [ PName "Cluster"
+                         , PmType Nominal
+                         ]
+            . position Y [ PName "count"
+                         , PmType Quantitative
+                         , PAxis [ AxTitle "Counts" ]
+                         ]
+
+      densLayer = asSpec [ densTrans []
+                         , enc []
+                         , mark Point [ MShape SymDiamond
+                                      , MStroke "black"
+                                      , MSize 200
+                                      ]
+                         ]
+
+      countTrans = transform
+                   . aggregate [ opAs Count "" "count" ] [ "Cluster" ]
+
+      countLayer = asSpec [ countTrans [], enc [], mark Line [] ]
+
+  in toVegaLite
+       [ gaiaData
+       , layer [ countLayer, densLayer ]
+       ]
+
 
 {-|
 
@@ -4451,8 +4947,7 @@ let plxScale = PScale [ SType ScLog
 
     densTrans = transform
                 . density \"plx\" [ DnGroupBy [ \"Cluster\" ]
-                                  , DnCounts True
-                                  , DnAs "value" "counts"
+                                  , DnAs "value" "density"
                                   ]
     densEnc = encoding
               . position X [ PName \"value\"
@@ -4462,9 +4957,9 @@ let plxScale = PScale [ SType ScLog
                                    , 'AxLabels' False
                                    ]
                            ]
-              . position Y [ PName \"counts\"
+              . position Y [ PName \"density\"
                            , PmType Quantitative
-                           , PAxis [ AxTitle \"Number of stars\" ]
+                           , PAxis [ AxTitle \"Density\" ]
                            ]
               . color [ MName \"Cluster\"
                       , MmType Nominal
@@ -4508,11 +5003,6 @@ in the legend:
 
 -}
 
-{-
-can I count up the density-calculated counts column per group and then
-display the values somewhere?
--}
-
 parallaxView :: VegaLite
 parallaxView =
   let plxScale = PScale [ SType ScLog
@@ -4546,8 +5036,7 @@ parallaxView =
 
       densTrans = transform
                   . density "plx" [ DnGroupBy [ "Cluster" ]
-                                  , DnCounts True
-                                  , DnAs "value" "counts"
+                                  , DnAs "value" "density"
                                   ]
       densEnc = encoding
                 . position X [ PName "value"
@@ -4557,9 +5046,9 @@ parallaxView =
                                      , AxLabels False
                                      ]
                              ]
-                . position Y [ PName "counts"
+                . position Y [ PName "density"
                              , PmType Quantitative
-                             , PAxis [ AxTitle "Number of stars" ]
+                             , PAxis [ AxTitle "Density" ]
                              ]
                 . color [ MName "Cluster"
                         , MmType Nominal
@@ -4605,5 +5094,6 @@ Other things to do:
 
  - tooltips (show multiple fields)
 
--}
+ - for errors section, could look at quantile plots?
 
+-}
