@@ -196,6 +196,7 @@ import Graphics.Vega.VegaLite.Foundation
   , FieldName
   , Opacity
   , SelectionLabel
+  , VegaExpr
   , ZIndex
   , FontWeight
   , Measurement
@@ -1198,13 +1199,11 @@ data AxisProperty
       -- ^ The label color.
       --
       --   @since 0.4.0.0
-    | AxLabelExpr T.Text
+    | AxLabelExpr VegaExpr
       -- ^ Provide the expression used to generate axis labels.
       --
-      --   The argument should be a
-      --   <https://vega.github.io/vega/docs/expressions/ Vega expression>, and
-      --   it can use @datum.value@ and @datum.label@ to access the data value
-      --   and default label text.
+      --   The expression can use @datum.value@ and @datum.label@ to access
+      --   the data value and default label text respectively.
       --
       --   The following example uses four digit years for decades and
       --   two-digit years for other years:
@@ -1627,10 +1626,8 @@ Logical compositions can be nested to any level as shown in this example
 @
 -}
 data BooleanOp
-    = Expr T.Text
+    = Expr VegaExpr
       -- ^ Expression that should evaluate to either true or false.
-      --   Can use any valid
-      --   [Vega expression](https://vega.github.io/vega/docs/expressions/).
     | FilterOp Filter
       -- ^ Convert a 'Filter' into a 'BooleanOp' so that it may be used as
       --   part of a more complex expression.
@@ -1746,7 +1743,7 @@ data Filter
       --   or equal to, the given value are used.
       --
       --   @since 0.4.0.0
-    | FExpr T.Text
+    | FExpr VegaExpr
       -- ^ Filter a data stream so that only data that satisfy the given predicate
       --   expression are used.
     | FCompose BooleanOp
@@ -3670,8 +3667,8 @@ quantile field qps ols =
            , quantilePropertySpec QPLAs qps
            ]
 
-  in ("quantile" .= fs) : ols 
-  
+  in ("quantile" .= fs) : ols
+
 
 {-|
 
@@ -3714,9 +3711,8 @@ for further details.
 @
 -}
 calculateAs ::
-  T.Text
-  -- ^ The calculation to perform, supporting the
-  --   [Vega expression syntax](https://vega.github.io/vega/docs/expressions/).
+  VegaExpr
+  -- ^ The calculation to perform.
   -> FieldName
   -- ^ The field to assign the new values.
   -> BuildLabelledSpecs

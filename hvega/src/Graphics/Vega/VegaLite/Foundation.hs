@@ -23,6 +23,7 @@ module Graphics.Vega.VegaLite.Foundation
        , FieldName
        , Opacity
        , SelectionLabel
+       , VegaExpr
        , ZIndex
 
        , FontWeight(..)
@@ -310,6 +311,26 @@ in 'Graphics.Vega.VegaLite.toVegaLite' [ cfg []
 -}
 
 type ZIndex = Natural
+
+
+{-|
+
+Convenience type-annotation label to indicate a
+<https://vega.github.io/vega/docs/expressions/ Vega Expression>.
+There is __no attempt__ to validate the expression.
+
+Examples include:
+
+@
+"datum.IMDB_Rating != null"
+"datum.height / 1000"
+"if(datum.index % 2 == 1, datum.label, '')"
+"sampleLogNormal(2.3, 0.3)"
+@
+
+@since 0.5.0.0
+-}
+type VegaExpr = T.Text
 
 
 -- | Indicates the weight options for a font.

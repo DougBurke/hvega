@@ -115,6 +115,7 @@ module Graphics.Vega.VegaLite
        , VL.GradientStops
        , VL.Opacity
        , VL.SelectionLabel
+       , VL.VegaExpr
        , VL.ZIndex
        , VL.combineSpecs
        , VL.toHtml
