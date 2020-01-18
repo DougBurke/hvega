@@ -299,7 +299,7 @@ smoothing1 =
 
       rtrans = transform
               . regression "IMDB_Rating" "Rotten_Tomatoes_Rating"
-                           [ RgMethod RgPoly, RgOrder 3, RgExtent (Number 10) (Number 90) ]
+                           [ RgMethod RgPoly, RgOrder 3, RgExtent 10 90 ]
 
       enc = encoding
             . position X [ PName "Rotten_Tomatoes_Rating", pQuant ]

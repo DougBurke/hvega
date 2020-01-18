@@ -1929,7 +1929,7 @@ let trans = transform
             . density "plx" [ DnAs \"xkde\" \"ykde\"
                             , DnGroupBy [ \"Cluster\" ]
                             , DnCounts True
-                            , 'DnExtent' ('Number' 0) ('Number' 30)
+                            , 'DnExtent' 0 30
                             ]
 
     enc = encoding
@@ -1972,7 +1972,7 @@ densityMultiples =
               . density "plx" [ DnAs "xkde" "ykde"
                               , DnGroupBy [ "Cluster" ]
                               , DnCounts True
-                              , DnExtent (Number 0) (Number 30)
+                              , DnExtent 0 30
                               ]
 
       enc = encoding
@@ -4811,7 +4811,7 @@ let densTrans = transform
             . density \"plx\" [ DnAs \"xkde\" \"ykde\"
                             , DnGroupBy [ \"Cluster\" ]
                             , DnCounts True
-                            , DnExtent (Number 3) (Number 30)
+                            , DnExtent 3 30
                             , 'DnSteps' 270
                             ]
             . aggregate [ opAs Sum \"ykde\" \"ycounts\" ]
@@ -4858,7 +4858,7 @@ compareCounts =
               . density "plx" [ DnAs "xkde" "ykde"
                               , DnGroupBy [ "Cluster" ]
                               , DnCounts True
-                              , DnExtent (Number 3) (Number 30)
+                              , DnExtent 3 30
                               , DnSteps 270
                               ]
               . aggregate [ opAs Sum "ykde" "ycounts" ]

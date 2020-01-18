@@ -501,7 +501,7 @@ density2 =
               . density "value"
                     [ DnBandwidth 0.3
                     , DnGroupBy [ "measurement" ]
-                    , DnExtent (Number 0) (Number 8)
+                    , DnExtent 0 8
                     , DnSteps 200
                     ]
 

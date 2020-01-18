@@ -3123,7 +3123,7 @@ data DensityProperty
     -- ^ Should the density estimates be cumulative?
     --
     --   The default is @'False'@.
-  | DnExtent DataValue DataValue
+  | DnExtent Double Double
     -- ^ The domain (minimum to maximum) from which to sample a distribution
     --   for the density estimation.
     --
@@ -3188,7 +3188,7 @@ densityPropertySpec DPLBandwidth ps =
     _ -> A.Null
 
 densityPropertySpec DPLExtent ps =
-  let wanted (DnExtent xs ys) = Just (map dataValueSpec [xs, ys])
+  let wanted (DnExtent xs ys) = Just [xs, ys]
       wanted _ = Nothing
 
   in case mapMaybe wanted ps of
@@ -3425,7 +3425,7 @@ data RegressionProperty
     --   the dependent variable.
     --
     --   If not specified the original field names will be used.
-  | RgExtent DataValue DataValue
+  | RgExtent Double Double
     -- ^ The domain (minimum to maximum) over which to estimate the dependent
     --   variable in the regression.
     --
@@ -3466,7 +3466,7 @@ regressionPropertySpec RPLAs ps =
     _ -> A.Null
 
 regressionPropertySpec RPLExtent ps =
-  let wanted (RgExtent xs ys) = Just (map dataValueSpec [xs, ys])
+  let wanted (RgExtent xs ys) = Just [xs, ys]
       wanted _ = Nothing
 
   in case mapMaybe wanted ps of
