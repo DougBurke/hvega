@@ -1909,9 +1909,7 @@ of the parallax distribution. I have used 'DnExtent' to ensure
 that the density estimation is done on the same grid for
 each cluster.
 
-Perhaps the most important thing in this example is that I haveThis is
-
-
+The most important thing in this example is that I have
 used a sensible number of columns (ending up in a three by three grid)!
 The other significant changes to 'smallMultiples2' is that I have
 used the 'FHeader' option to control how the facet headers
@@ -1922,13 +1920,12 @@ this is an intended use of 'HLabelPadding', but it seems to work!
 
 <<images/vl/densitymultiples.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmBRk-EIF6Zjw9GIU2bmEANrrGOgYp5AsOMpk3ACeB5AAwnh85pAAugunGab37RpxLUgN3+-Heny+UFEWAkFEImyw-HBX0g-HakgkB18fQAzL4PkcznFthw7qNhpACWBZqd8WcTDgNLUSjFUkcUWJRNA2GIaqgTmdRHgcuVMmx+HhoLUni9elB4Ddll0RLJubACH1IMEWFJJah6ng8PNKZARmhKZhReLdVA-gCkWd5YrRgBHLCwCQcBBsfSsiGYWDtNiwvmQeAcYK1AAKJTVeAD00pRohQLWfqgloltWBdvNcoVoJdbo9iDDPvt30DwbQofDBagD2UMITEOpGFbSagABIKEJoiZaiRyFRaFYwuxODwmGwRNQe32jKOnHgONpdAAWJgAKwo4l9kJEz1k20I2M+WVgQn4+T5bIz1sezzMvTZ0VizRvybjTTwAEEOURhVGHU9zOL9xWjaAuR5QgnAAJjXctNVgb8ADFxHgABlNgAC86y8RCw3gCM9SwA1ELA39lxYMRahwNgWBIClTg7DZ8yVFUxDVJiqTPUQxFFXk0FmKYgA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAmCGAutIC4yghSBXATgGxSgAt54AHAZ2QHpqdYB3AOgHMBLeIrAIywoFMcAYwD2AO3j8JTUQFtqAERFYWAIVwBrftSIA3fi1jVZsCpJw79h6nETVDbWAFpYzgGwBGNy48AGJ4jcePwesExiIk5E-LDQgkzwFLqQADTgGJAAZiI4JvCEwJBksDgCBZAA4iYshJBiWLLcgqlQZHgAHrX1jc0pUPwA+m2dqHUNTTiQAL5T6VNpmBRk-EIF6Zjw9GIU2bmEANrrGOgYp5AsOMpk3ACeB5AAwnh85pAAugunGab37RpxLUgN3+-Heny+-XakgkB18fQAzL4PkcznFthw7qNhpAUWBZqdkWcTDgNLUSjFUkdIFJRNA2GIaqgTmdRHgcuVMmx+HhoLUni9elB4Ddll0RLJ6bACH1IMEWFJeah6ng8PNcZARmhcZhOdzFVA-gDwV9IMLRaMAI5YWASDgINj6SkQzCwdpsCjleAcYK1AAKJSleFd01xaohQLWzqgup5tWBRu1QpFoMt1ttiC9juNZ1d7s93pTUAUUgoGJDEPxGErYagABIKEJoiZaiRyFRaFYwuxODwmGwRNQG02jJ2nHgONpdAAWJgAKwo4idUFZDW2hHhnyysCE-HyTKpMf1j2eZl6VOisWa+-DQaaeAAgmJG+zRgql2db9z-dA6QzCE4ACYp2zKBPzwAAxcR4AAZTYAAvQsvBA00C0IZU8GQsD73HFgxFqHA2BYEgcVOGsNmTMUJTEKUSLxTdRDETlGTQWYpiAA Open this visualization in the Vega Editor>
 
 @
 let trans = transform
             . density "plx" [ DnAs \"xkde\" \"ykde\"
                             , DnGroupBy [ \"Cluster\" ]
-                            , DnCounts True
                             , 'DnExtent' 0 30
                             ]
 
@@ -1939,7 +1936,7 @@ let trans = transform
                        ]
           . position Y [ PName \"ykde\"
                        , PmType Quantitative
-                       , PAxis [ AxTitle \"Counts\" ]
+                       , PAxis [ AxTitle \"Density\" ]
                        ]
           . color [ MName \"Cluster\"
                   , MmType Nominal
@@ -1953,14 +1950,19 @@ let trans = transform
                  , 'HNoTitle'
                  ]
 
+    spec = asSpec [ enc []
+                  , trans []
+                  , mark Area [ ]
+                  ]
+
 in toVegaLite
      [ gaiaData
      , columns 3
-     , facetFlow [ FName \"Cluster"
+     , facetFlow [ FName \"Cluster\"
                  , FmType Nominal
                  , 'FHeader' headerOpts
                  ]
-     , specification (asSpec [ enc [], trans [], mark Area [ ] ])
+     , specification spec
      ]
 @
 
@@ -1971,7 +1973,6 @@ densityMultiples =
   let trans = transform
               . density "plx" [ DnAs "xkde" "ykde"
                               , DnGroupBy [ "Cluster" ]
-                              , DnCounts True
                               , DnExtent 0 30
                               ]
 
@@ -1982,7 +1983,7 @@ densityMultiples =
                          ]
             . position Y [ PName "ykde"
                          , PmType Quantitative
-                         , PAxis [ AxTitle "Counts" ]
+                         , PAxis [ AxTitle "Density" ]
                          ]
             . color [ MName "Cluster"
                     , MmType Nominal
@@ -1996,14 +1997,23 @@ densityMultiples =
                    , HNoTitle
                    ]
 
+      spec = asSpec [ enc []
+                    , trans []
+                    , mark Area [ ]
+                    ]
+
   in toVegaLite
        [ gaiaData
        , columns 3
        , facetFlow [ FName "Cluster"
                    , FmType Nominal
                    , FHeader headerOpts
+                   -- do not have access to plx field here
+                   -- and xkde,ykde is not useful here as want to
+                   -- sort by the xkde value when ykde is max
+                   -- , FSort [ ByFieldOp "xkde" Median ]
                    ]
-       , specification (asSpec [ enc [], trans [], mark Area [ ] ])
+       , specification spec
        ]
 
 
