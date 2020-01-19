@@ -1207,19 +1207,43 @@ titleFrameSpec FrGroup = "group"
 {-|
 
 Title configuration properties. These are used to configure the default style
-of all titles within a visualization.
+of all titles within a visualization with 'title' or 'TitleStyle'.
+
 For further details see the
 <https://vega.github.io/vega-lite/docs/title.html#config Vega-Lite documentation>.
+
 -}
+
+-- NOTES:
+--   do not have a 'TTitle' field because this is handled by the first
+--   argument of title, so there's no point in having it here (also, would
+--   have to be called something different than TTitle as we already have
+--   this).
+--
+--   could move TSubtitle out too, but the ergonomics aren't great
+--   either way
+
 data TitleConfig
-    = TAnchor APosition
-      -- ^ Default anchor position when placing titles.
+    = TAlign HAlign
+      -- ^ The horizontal text alignment for title text.
+      --
+      --   @since 0.5.0.0
+    | TAnchor APosition
+      -- ^ The anchor position when placing titles.
     | TAngle Angle
-      -- ^ Default angle when orientating titles.
+      -- ^ The angle when orientating titles.
     | TBaseline VAlign
-      -- ^ Default vertical alignment when placing titles.
-    | TColor Color
-      -- ^ Default color when showing titles.
+      -- ^ The vertical alignment when placing titles.
+    | TColor Color  -- this allows for null as a color
+      -- ^ The color of title text.
+    | TdX Double
+      -- ^ The offset, in pixels, for the x coordinate of title and subtitle text.
+      --
+      --   @since 0.5.0.0
+    | TdY Double
+      -- ^ The offset, in pixels, for the x coordinate of title and subtitle text.
+      --
+      --   @since 0.5.0.0
     | TFont T.Text
       -- ^ Default font when showing titles.
     | TFontSize Double
@@ -1235,7 +1259,11 @@ data TitleConfig
       --
       --   @since 0.4.0.0
     | TLimit Double
-      -- ^ Default maximum length, in pixels, of titles.
+      -- ^ The maximum length, in pixels, of title and subtitle text.
+    | TLineHeight Double
+      -- ^ Line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.5.0.0
     | TOffset Double
       -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
@@ -1250,6 +1278,8 @@ data TitleConfig
     | TSubtitle T.Text
       -- ^ Subtitle text. This is placed below the title text. Use \n
       --   to insert line breaks into the subtitle.
+      --
+      --   This should only be used with 'title' and not 'TitleConfig'.
       --
       --   @since 0.5.0.0
     | TSubtitleColor Color
@@ -1283,19 +1313,26 @@ data TitleConfig
     | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
       --
+      --   This should only be used with 'title' and not 'TitleConfig'.
+      --
       --   @since 0.4.0.0
 
+
 titleConfigSpec :: TitleConfig -> LabelledSpec
+titleConfigSpec (TAlign ha) = "align" .= hAlignLabel ha
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
 titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
 titleConfigSpec (TColor clr) = "color" .= fromColor clr
+titleConfigSpec (TdX x) = "dx" .= x
+titleConfigSpec (TdY x) = "dy" .= x
 titleConfigSpec (TFont fnt) = "font" .= fnt
 titleConfigSpec (TFontSize x) = "fontSize" .= x
 titleConfigSpec (TFontStyle s) = "fontStyle" .= s
 titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
 titleConfigSpec (TFrame tf) = "frame" .= titleFrameSpec tf
 titleConfigSpec (TLimit x) = "limit" .= x
+titleConfigSpec (TLineHeight x) = "lineHeight" .= x
 titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed

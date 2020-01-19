@@ -1129,8 +1129,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
 --   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
 --
--- * The 'VL.TitleConfig' type gained the following subtitle-related
---   constructors: 'VL.TSubtitle', 'VL.TSubtitleColor', 'VL.TSubtitleFont',
+-- * The 'VL.TitleConfig' type gained the following constructors:
+--   'VL.TAlign', 'VL.TdX', 'VL.TdY', 'VL.TLineHeight',
+--   'VL.TSubtitle', 'VL.TSubtitleColor', 'VL.TSubtitleFont',
 --   'VL.TSubtitleFontSize', 'VL.TSubtitleFontStyle',
 --   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
 --   and 'VL.TSubtitlePadding'.

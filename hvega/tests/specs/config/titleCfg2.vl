@@ -7,10 +7,12 @@
     "width": 200,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "title": {
+        "dx": -30,
         "subtitleFontWeight": 900,
         "subtitleFont": "serif",
         "subtitleFontSize": 10,
         "subtitleLineHeight": 18,
+        "dy": 10,
         "text": [
             "Car",
             "Scatter"
@@ -22,7 +24,8 @@
             "also over two lines"
         ],
         "subtitleFontStyle": "italic",
-        "subtitleColor": "red"
+        "subtitleColor": "red",
+        "lineHeight": 20
     },
     "encoding": {
         "x": {

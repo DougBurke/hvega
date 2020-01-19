@@ -274,20 +274,29 @@ titleCfg1 =
      : titleOpts)
 
 
+cfgOpts :: [TitleConfig]
+cfgOpts =
+  [ TAnchor AEnd
+  , TSubtitleColor "red"
+  , TSubtitleFont "serif"
+  , TSubtitleFontSize 10
+  , TSubtitleFontStyle "italic"
+  , TSubtitleFontWeight W900
+  , TSubtitleLineHeight 18
+  , TSubtitlePadding 60
+  , TLineHeight 20
+  , TdX (-30)
+  , TdY (10)
+  ]
+
+subtitle :: TitleConfig
+subtitle = TSubtitle "A subtitle\nalso over two lines"
+
 titleCfg2 :: VegaLite
 titleCfg2 =
   toVegaLite
     ((title "Car\nScatter"
-      [ TSubtitle "A subtitle\nalso over two lines"
-      , TAnchor AEnd
-      , TSubtitleColor "red"
-      , TSubtitleFont "serif"
-      , TSubtitleFontSize 10
-      , TSubtitleFontStyle "italic"
-      , TSubtitleFontWeight W900
-      , TSubtitleLineHeight 18
-      , TSubtitlePadding 60
-      ])
+      (subtitle : cfgOpts))
       : titleOpts)
 
 
@@ -295,19 +304,9 @@ titleCfg3 :: VegaLite
 titleCfg3 =
   let cfg = configure
                 . configuration
-                    (TitleStyle
-                        [ TAnchor AEnd
-                        , TSubtitleColor "red"
-                        , TSubtitleFont "serif"
-                        , TSubtitleFontSize 10
-                        , TSubtitleFontStyle "italic"
-                        , TSubtitleFontWeight W900
-                        , TSubtitleLineHeight 18
-                        , TSubtitlePadding 60
-                        ]
-                    )
+                    (TitleStyle cfgOpts)
 
   in toVegaLite
      ( [ cfg []
-       , title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ]
+       , title "Car\nScatter" [ subtitle ]
        ] ++ titleOpts )

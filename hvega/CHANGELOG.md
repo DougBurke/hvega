@@ -61,10 +61,10 @@ The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
 have been removed. The new `ViewStep` constructor of `ViewConfig` should be
 used as a replacement.
 
-The `TitleConfig` type gained the following subtitle-related
-constructors: `TSubtitle`, `TSubtitleColor`, `TSubtitleFont`,
-`TSubtitleFontSize`, `TSubtitleFontStyle`, `TSubtitleFontWeight`,
-`TSubtitleLineHeight`, and `TSubtitlePadding`.
+The `TitleConfig` type gained the following constructors:
+`TAlign`, `TdX`, `TdY`, `TLineHeight`, `TSubtitle`, `TSubtitleColor`,
+`TSubtitleFont`, `TSubtitleFontSize`, `TSubtitleFontStyle`,
+`TSubtitleFontWeight`, `TSubtitleLineHeight`, and `TSubtitlePadding`.
 
 `AxisProperty` has gained the `AxDataCondition` constructor for
 marking a subset of axis properties as being conditional on their
