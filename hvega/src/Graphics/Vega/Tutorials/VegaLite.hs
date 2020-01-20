@@ -2052,7 +2052,7 @@ of the parallax of the stars in each cluster.
 <https://vega.github.io/editor/#/url/vega-lite/N4KABGBEC2CGBOBrSAuKAjBkA04oBNYAXWVMUCCSAV3gBszIALIogBwGcUB6b+WAO4A6AOYBLIk2rpqHAKbwAxgHsAdkTnqhK6NwAiy6iIBCtRHO5MAbnJGxucDhviWbd7oRLc7Y2AFpYfwA2AEYggJCABj8SdDo5ENghVWU-JjlYfAUhIg4rHDwqADNleDgiMmBINgR5SsgAcTgRRlVqaHQFHCg2OgAPVvbO+G7IOQB9XoG0SDaOroBfBbwF3CoAEg5FdLhGFnYuXjck8UlpITFlbi2d+2O-OgkLKwBmIQArDjUCqk0VfDEqhaaAolEg03IkCKYjkdHwjAAwnRZM5RkQAJ5sOStZTQQGwBirQpQdH1aGw+EzKajWAiETwWzEbEzaByAGwVRozHMqAAR2oHKIEmIYhskGWECJVBUqmhwPIywWQA Open this visualization in the Vega Editor>
 
 @
-let plx = position Y [ PName \"plx\", PmType Quantitative, PAggregate 'Median' ]
+let plx = position Y [ PName \"plx\", PmType Quantitative, PAggregate Median ]
     cluster = position X [ PName \"Cluster\", PmType Nominal ]
     enc = encoding . cluster . plx
 
