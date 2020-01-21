@@ -35,6 +35,7 @@ module Graphics.Vega.VegaLite.Foundation
 
        , HAlign(..)
        , VAlign(..)
+       , BandAlign(..)
 
        , StrokeCap(..)
        , StrokeJoin(..)
@@ -78,6 +79,7 @@ module Graphics.Vega.VegaLite.Foundation
        , orientationSpec
        , hAlignLabel
        , vAlignLabel
+       , bandAlignLabel
        , strokeCapLabel
        , strokeJoinLabel
        , scaleLabel
@@ -579,6 +581,26 @@ vAlignLabel :: VAlign -> T.Text
 vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
+
+
+{-|
+
+Where should tick marks and grid lines be placed. This is used with
+'Graphics.Vega.VegaLite.AxTickBand' and 'Graphics.Vega.VegaLite.TickBand'.
+
+@since 0.5.0.0
+-}
+
+data BandAlign
+  = BCenter
+    -- ^ Use the center of the band.
+  | BExtent
+    -- ^ Use the band extents.
+
+
+bandAlignLabel :: BandAlign -> T.Text
+bandAlignLabel BCenter = "center"
+bandAlignLabel BExtent = "extent"
 
 
 -- | How are strokes capped? This is used with 'Graphics.Vega.VegaLite.MStrokeCap', 'Graphics.Vega.VegaLite.VBStrokeCap',

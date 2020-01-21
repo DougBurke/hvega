@@ -363,10 +363,11 @@ module Graphics.Vega.VegaLite
 
          -- ** Positioning Constants
          --
-         -- *** Text Alignment
+         -- *** Alignment
 
        , VL.HAlign(..)
        , VL.VAlign(..)
+       , VL.BandAlign(..)
 
          -- *** Overlapping text
 
@@ -1029,18 +1030,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.toVegaLiteSchema' function can be used along with the
 -- 'VL.vlSchema3' to use version 3 for the output.
 --
--- Title (and subtitle) strings can now be split across multiple lines:
--- use @'\n'@ to indicate where line breaks should occur.
---
 -- There is more-extensive use of type aliases, such as 'VL.Color',
 -- and the introduction of several more (e.g. 'VL.DashStyle' and
 -- 'VL.FieldName'). These do not add any type safety, but help the
 -- documentation (as they provide a single place to explain the meaning
 -- and any constraints on a particular value).
---
--- Colors are now cleaned of extraneous whitespace and, if empty,
--- converted to the JSON null value. This should not change the behavior
--- of any existing visualization.
 --
 -- Documentation has been added to several data types.
 --
@@ -1055,12 +1049,22 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * Tooltips are now disabled by default. To enable, either use the
 --   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.
 --
+-- * Title (and subtitle) strings can now be split across multiple lines:
+--   use @'\n'@ to indicate where line breaks should occur.
+--
 -- Note that the behavior of a Vega-Lite visualization seems to depend
 -- on both the version of the schema it is using, and the version of the
 -- visualization software used to display it (e.g.
 -- <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 --
--- __New functionality__ in this release:
+-- __New functionality__:
+--
+-- This does not include new configuration options listed in the
+-- \"new constructors\" section below.
+--
+-- * Colors are now cleaned of extraneous whitespace and, if empty,
+--   converted to the JSON null value. This should not change the behavior
+--   of any existing visualization.
 --
 -- * The 'VL.pivot' transform has been added, along with the 'VL.PivotProperty'
 --   preferences type. This is the inverse of 'VL.fold'.
@@ -1088,19 +1092,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.heightOfContainer' and 'VL.widthOfContainer' functions
 --   have been added to support responsive sizing.
 --
--- __Breaking changes__ in this release:
+-- __Breaking changes__:
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
 --   type rather than a list of field names. The 'VL.lookupAs' function
 --   is deprecated, as its functionality is now possible with
 --   'VL.lookup'.
---
--- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
---   marking a subset of axis properties as being conditional on their
---   position, and the 'VL.ConditionalAxisProperty' for defining which
---   properties (grid, label, and tick) can be used in this way.
---   It has also gained the 'VL.AxLabelExpr' constructor that allows you
---   to change the content of axis labels.
 --
 -- * The @RemoveInvalid@ constructor has been removed from
 --   'VL.ConfigurationProperty'. To indicate how missing values should
@@ -1121,13 +1118,37 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   'VL.ViewDiscreteWidth', and 'VL.ViewDiscreteHeight' constructors
 --   (actually, they remain but are now deprecated and the
 --   continuous-named versions should be used instead).
---   The 'VL.ViewBackgroundStyle' constructor has been added.
 --
 -- * The @SCRangeStep@ and @SCTextXRangeStep@ constructors of
 --   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor
 --   of 'VL.ViewConfig' should be used instead. That is, users should
 --   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
 --   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
+--
+-- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
+--   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
+--   and `VL.MarkProperty` respectively.
+--
+-- __New constructors__:
+--
+-- Note that some new constructors have been described in the \"breaking
+-- changes\" section above and so are not repeated here.
+--
+-- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
+--   marking a subset of axis properties as being conditional on their
+--   position, and the 'VL.ConditionalAxisProperty' for defining which
+--   properties (grid, label, and tick) can be used in this way.
+--   It has also gained the 'VL.AxLabelExpr' constructor, which allows you
+--   to change the content of axis labels, 'VL.AxTickBand' for positioning
+--   the labels for band scales (and the associated 'VL.BandAlign' type),
+--   'VL.AxTitleLineHeight' to specify the line height, and
+--   'VL.AxTranslateOffset' for applying a translation offset to the
+--   axis group mark.
+--
+-- * 'VL.AxisConfig' has gained 'VL.TickBand', 'VL.TitleLineHeight', and
+--   'VL.TranslateOffset', matching the additions to 'VL.AxisProperty'.
+--
+-- * The 'VL.ViewBackgroundStyle' constructor has been added to 'VL.ViewConfig'.
 --
 -- * The 'VL.TitleConfig' type gained the following constructors:
 --   'VL.TAlign', 'VL.TdX', 'VL.TdY', 'VL.TLineHeight',
@@ -1173,10 +1194,6 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The 'VL.PositionChannel' type has gained 'VL.PBand', for defining
 --   the size of a mark relative to a band.
---
--- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
---   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
---   and `VL.MarkProperty` respectively.
 --
 -- __Bug Fixes__ in this release:
 --

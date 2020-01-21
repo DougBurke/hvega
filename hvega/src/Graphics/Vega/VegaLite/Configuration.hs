@@ -62,6 +62,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Symbol
   , HAlign
   , VAlign
+  , BandAlign
   , Padding
   , Autosize
   , ZIndex
@@ -76,6 +77,7 @@ import Graphics.Vega.VegaLite.Foundation
   , orientationSpec
   , hAlignLabel
   , vAlignLabel
+  , bandAlignLabel
   , strokeCapLabel
   , strokeJoinLabel
   , sideLabel
@@ -1040,6 +1042,12 @@ data AxisConfig
       --   @since 0.4.0.0
     | Ticks Bool
       -- ^ Should tick marks be drawn on an axis?
+    | TickBand BandAlign
+      -- ^ For band scales, indicates if ticks and grid lines should be
+      --   placed at the center of a band (the default) or at the band
+      --   extents to indicate intervals.
+      --
+      --   @since 0.5.0.0
     | TickColor Color
       -- ^ The color of the ticks.
     | TickDash DashStyle
@@ -1091,6 +1099,10 @@ data AxisConfig
       -- ^ The font weight of the axis title.
     | TitleLimit Double
       -- ^ The maximum allowed width of the axis title, in pixels.
+    | TitleLineHeight Double
+      -- ^ Line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.5.0.0
     | TitleOpacity Opacity
       -- ^ The opacity of the axis title.
       --
@@ -1101,6 +1113,12 @@ data AxisConfig
       -- ^ The X coordinate of the axis title, relative to the axis group.
     | TitleY Double
       -- ^ The Y coordinate of the axis title, relative to the axis group.
+    | TranslateOffset Double
+      -- ^ The translation offset in pixels applied to the axis group
+      --   mark x and y. If specified it overrides the default value
+      --   of a 0.5 offset to pixel-align stroked lines.
+      --
+      --   @since 0.5.0.0
 
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
@@ -1117,18 +1135,17 @@ axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
 axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
 axisConfigProperty (GridWidth x) = "gridWidth" .= x
-axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
 axisConfigProperty LabelNoBound = "labelBound" .= False
 axisConfigProperty LabelBound = "labelBound" .= True
 axisConfigProperty (LabelBoundValue x) = "labelBound" .= x
+axisConfigProperty (LabelColor c) = "labelColor" .= fromColor c
 axisConfigProperty LabelNoFlush = "labelFlush" .= False
 axisConfigProperty LabelFlush = "labelFlush" .= True
 axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
-axisConfigProperty (LabelColor c) = "labelColor" .= fromColor c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
 axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
@@ -1138,11 +1155,11 @@ axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
 axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
 axisConfigProperty (LabelSeparation x) = "labelSeparation" .= x
+axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
-axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
-axisConfigProperty (Ticks b) = "ticks" .= b
+axisConfigProperty (TickBand band) = "tickBand" .= bandAlignLabel band
 axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
 axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
 axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
@@ -1152,6 +1169,8 @@ axisConfigProperty (TickOpacity x) = "tickOpacity" .= x
 axisConfigProperty (TickRound b) = "tickRound" .= b
 axisConfigProperty (TickSize x) = "tickSize" .= x
 axisConfigProperty (TickWidth x) = "tickWidth" .= x
+axisConfigProperty (Ticks b) = "ticks" .= b
+axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
 axisConfigProperty (TitleAnchor a) = "titleAnchor" .= anchorLabel a
 axisConfigProperty (TitleAngle x) = "titleAngle" .= x
@@ -1162,11 +1181,12 @@ axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
 axisConfigProperty (TitleFontStyle s) = "titleFontStyle" .= s
 axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
 axisConfigProperty (TitleLimit x) = "titleLimit" .= x
+axisConfigProperty (TitleLineHeight x) = "titleLineHeight" .= x
 axisConfigProperty (TitleOpacity x) = "titleOpacity" .= x
 axisConfigProperty (TitlePadding x) = "titlePadding" .= x
 axisConfigProperty (TitleX x) = "titleX" .= x
-axisConfigProperty (TitleY y) = "titleY" .= y
-
+axisConfigProperty (TitleY x) = "titleY" .= x
+axisConfigProperty (TranslateOffset x) = "translate" .= x
 
 {-|
 

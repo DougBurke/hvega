@@ -205,6 +205,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Position
   , HAlign
   , VAlign
+  , BandAlign
   , Scale
   , OverlapStrategy
   , Side
@@ -233,6 +234,7 @@ import Graphics.Vega.VegaLite.Foundation
   , anchorLabel
   , hAlignLabel
   , vAlignLabel
+  , bandAlignLabel
   , scaleLabel
   , positionLabel
   , overlapStrategyLabel
@@ -1289,6 +1291,12 @@ data AxisProperty
       -- ^ The anchor position of the axis in pixels.
     | AxTicks Bool
       -- ^ Should tick marks be drawn on an axis?
+    | AxTickBand BandAlign
+      -- ^ For band scales, indicates if ticks and grid lines should be
+      --   placed at the center of a band (the default) or at the band
+      --   extents to indicate intervals.
+      --
+      --   @since 0.5.0.0
     | AxTickColor Color
       -- ^ The color of the ticks.
       --
@@ -1376,6 +1384,10 @@ data AxisProperty
       -- ^ The maximum allowed width of the axis title, in pixels.
       --
       --   @since 0.4.0.0
+    | AxTitleLineHeight Double
+      -- ^ Line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.5.0.0
     | AxTitleOpacity Opacity
       -- ^ The opacity of the axis title.
       --
@@ -1390,6 +1402,12 @@ data AxisProperty
       -- ^ The Y coordinate of the axis title, relative to the axis group.
       --
       --   @since 0.4.0.0
+    | AxTranslateOffset Double
+      -- ^ The translation offset in pixels applied to the axis group
+      --   mark x and y. If specified it overrides the default value
+      --   of a 0.5 offset to pixel-align stroked lines.
+      --
+      --   @since 0.5.0.0
     | AxValues DataValues
       -- ^ Set the explicit tick, grid, and label values along an axis.
       --
@@ -1468,6 +1486,7 @@ axisProperty (AxOffset n) = "offset" .= n
 axisProperty (AxOrient side) = "orient" .= sideLabel side
 axisProperty (AxPosition n) = "position" .= n
 axisProperty (AxTicks b) = "ticks" .= b
+axisProperty (AxTickBand bnd) = "tickBand" .= bandAlignLabel bnd
 axisProperty (AxTickColor s) = "tickColor" .= fromColor s
 axisProperty (AxTickCount n) = "tickCount" .= n
 axisProperty (AxTickDash ds) = "tickDash" .= fromDS ds
@@ -1491,10 +1510,12 @@ axisProperty (AxTitleFontSize x) = "titleFontSize" .= x
 axisProperty (AxTitleFontStyle s) = "titleFontStyle" .= s
 axisProperty (AxTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 axisProperty (AxTitleLimit x) = "titleLimit" .= x
+axisProperty (AxTitleLineHeight x) = "titleLineHeight" .= x
 axisProperty (AxTitleOpacity x) = "titleOpacity" .= x
 axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
 axisProperty (AxTitleX x) = "titleX" .= x
 axisProperty (AxTitleY x) = "titleY" .= x
+axisProperty (AxTranslateOffset x) = "translate" .= x
 axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
 axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
 axisProperty (AxZIndex z) = "zindex" .= z
