@@ -213,9 +213,14 @@ replaces the @RemoveInvalid@ constructor of
 
 -}
 
--- based on schema 3.3.0 #/definitions/MarkConfig
+-- based on schema
+--     #/definitions/MarkConfig
+--     #/definitions/MarkDef
+--     #/definitions/OverlayMarkDef
 --
--- but it also contains a number of other properties
+--     #/definitions/TickConfig
+--
+-- ie it conflates meaning
 
 data MarkProperty
     = MAlign HAlign
@@ -584,9 +589,9 @@ markProperty (MFillGradient dir stops opts) =
 markProperty (MStrokeGradient dir stops opts) =
   "stroke" .= gradientSpec dir stops opts
 
-
--- unlike elm, need to sort the stops list (although it's
--- not obvious this is actually needed).
+-- unlike elm, need to sort the stops list since we don't have a
+-- smart constructor (although it's not obvious this is actually needed,
+-- as I think Vega-Lite doesn't require this).
 --
 gradientSpec :: ColorGradient -> GradientStops -> [GradientProperty] -> VLSpec
 gradientSpec dir stops props =
@@ -598,24 +603,45 @@ gradientSpec dir stops props =
 
 {-|
 
-Indicates mark interpolation style. See the
+Indicates the mark interpolation style. See the
 <https://vega.github.io/vega-lite/docs/mark.html#mark-def Vega-Lite documentation>
 for details.
 -}
 data MarkInterpolation
     = Basis
+      -- ^ A B-spline interpolation between points anchored at the first
+      --   and last points.
     | BasisClosed
+      -- ^ Closed B-spline interpolation between points forming a polygon.
     | BasisOpen
+      -- ^ Open B-spline interpolation between points, which may not
+      --   intersect the first and last points.
     | Bundle
+      -- ^ Bundle curve interpolation between points. This is equivalent to 'Basis'
+      --   except that the tension parameter is used to straighten the spline.
     | Cardinal
+      -- ^ Cardinal spline interpolation between points anchored at the first
+      --   and last points.
     | CardinalClosed
+      -- ^ Closed Cardinal spline interpolation between points forming a polygon.
     | CardinalOpen
+      -- ^ Open Cardinal spline interpolation between points, which may not
+      --   intersect the first and last points.
     | Linear
+      -- ^ Linear interpolation between points.
     | LinearClosed
+      -- ^ Closed linear interpolaiton between points forming a polygon.
     | Monotone
+      -- ^ Cubic spline interpolation that preserves monotonicity between points.
     | StepAfter
+      -- ^ Piecewise (stepped) constant interpolation function after each point in a
+      --   sequence.
     | StepBefore
+      -- ^ Piecewise (stepped) constant interpolation function before each point in a
+      --   sequence.
     | Stepwise
+      -- ^ Piecewise (stepped) constant interpolation function centred on each point
+      --   in a sequence.
 
 
 markInterpolationLabel :: MarkInterpolation -> T.Text
