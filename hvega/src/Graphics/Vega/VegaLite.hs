@@ -1182,9 +1182,6 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.Image' constructor has been added to 'VL.Mark', for use
 --   with the new 'VL.url' encoding, and 'VL.MAspect' to 'VL.MarkProperty'.
 --
--- * If you have been waiting for 'VL.MType' to be added to 'VL.MarkProperty'
---   this this release is for you.
---
 -- * The 'VL.MCornerRadius' constructor has been added to 'VL.MarkProperty'
 --   to set the corner radius of rectangular marks. If that's not enough,
 --   you can change individual corners with one of:

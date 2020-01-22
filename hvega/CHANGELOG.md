@@ -125,8 +125,6 @@ Support for color gradients has been added for marks via the
 gradient. The `GradientCoord` and `GradientStops` type aliases
 have also been added (although they provides no type safety).
 
-`MType` has been added to `MarkProperty`.
-
 The `MCornerRadius`, `MCornerRadiusTL`, `MCornerRadiusTR`, `MCornerRadiusBL`,
 and `MCornerRadiusBR` constructors have been added to `MarkProperty` to
 set the corner radii of rectangular marks.
