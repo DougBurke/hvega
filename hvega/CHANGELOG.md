@@ -125,9 +125,20 @@ Support for color gradients has been added for marks via the
 gradient. The `GradientCoord` and `GradientStops` type aliases
 have also been added (although they provides no type safety).
 
+`MType` has been added to `MarkProperty`.
+
 The `MCornerRadius`, `MCornerRadiusTL`, `MCornerRadiusTR`, `MCornerRadiusBL`,
 and `MCornerRadiusBR` constructors have been added to `MarkProperty` to
 set the corner radii of rectangular marks.
+
+The `MDir`, `MEllipsis`, and `MLimit` constructors have been added to
+`MarkProperty` to control how text is truncated. The `TextDirection` type
+has been added for use with `MDir`.
+
+The `MarkProperty` type has gained `MLineBreak` and `MLineHeight` constructors
+for controlling how multi-line labels are displayed. Note that `hvega` will
+always split on the newline character (`\n`), which will over-ride the
+`MLineBreak` setting.
 
 The `DTMonthNum` constructor has been added to `DateTime`.
 
@@ -135,7 +146,8 @@ The `BinProperty` type has gained the `SelectionExtent`
 constructor, for defining a bin range via an interval selection.
 
 The `PositionChannel` type has gained the `PBand` constructor,
-for defining the size of a mark relative to a band.
+for defining the size of a mark relative to a band, and `MarkProperty`
+has added `MTimeUnitBand` and `MTimeUnitBandPosition`.
 
 ### Bug fixes
 

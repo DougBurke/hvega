@@ -322,6 +322,7 @@ module Graphics.Vega.VegaLite
        , VL.TooltipContent(..)
        , VL.ColorGradient(..)
        , VL.GradientProperty(..)
+       , VL.TextDirection(..)
 
          -- ** Cursors
          --
@@ -1181,11 +1182,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.Image' constructor has been added to 'VL.Mark', for use
 --   with the new 'VL.url' encoding, and 'VL.MAspect' to 'VL.MarkProperty'.
 --
--- * The 'VL.MCornerRadius' constructor has been added to 'VL.Mark' to
---   set the corner radius of rectangular marks. If that's not enough,
+-- * If you have been waiting for 'VL.MType' to be added to 'VL.MarkProperty'
+--   this this release is for you.
+--
+-- * The 'VL.MCornerRadius' constructor has been added to 'VL.MarkProperty'
+--   to set the corner radius of rectangular marks. If that's not enough,
 --   you can change individual corners with one of:
 --   'VL.MCornerRadiusTL', 'VL.MCornerRadiusTR', 'VL.MCornerRadiusBL',
 --   and 'VL.MCornerRadiusBR'.
+--
+-- * The 'VL.MDir', 'VL.MEllipsis', and 'VL.MLimit' constructors have
+--   been added to 'VL.MarkProperty' to control how text is
+--   truncated. The 'VL.TextDirection' type has been added for use
+--   with 'VL.MDir'.
+--
+-- * The 'VL.MarkProperty' type has gained 'VL.MLineBreak' and
+--   'VL.MLineHeight' constructors for controlling how multi-line
+--   labels are displayed. Note that @hvega@ will __always__ split on
+--   the newline character (@\\n@), which will over-ride the
+--   'VL.MLineBreak' setting.
 --
 -- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
 --
@@ -1193,7 +1208,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   constructor, which defines the bin range as an interval selection.
 --
 -- * The 'VL.PositionChannel' type has gained 'VL.PBand', for defining
---   the size of a mark relative to a band.
+--   the size of a mark relative to a band, and 'VL.MarkProperty' has
+--   added 'VL.MTimeUnitBand' and 'VL.MTimeUnitBandPosition'.
 --
 -- __Bug Fixes__ in this release:
 --

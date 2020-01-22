@@ -25,6 +25,7 @@ module Graphics.Vega.VegaLite.Mark
        , GradientStops
        , ColorGradient(..)
        , GradientProperty(..)
+       , TextDirection(..)
 
          -- not for external export
        , mprops_
@@ -301,6 +302,13 @@ data MarkProperty
       --   @since 0.5.0.0
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
+    | MDir TextDirection
+      -- ^ Direction of the text. This property determines which side of the
+      --   label is truncated by the 'MLimit' parameter. See also 'MEllipsis'.
+      --
+      --   The default is 'LTR'.
+      --
+      --   @since 0.5.0.0
     | MContinuousBandSize Double
       -- ^ Continuous band size of a bar mark.
     | MDiscreteBandSize Double
@@ -309,6 +317,13 @@ data MarkProperty
       -- ^ Horizontal offset between a text mark and its anchor.
     | MdY Double
       -- ^ Vertical offset between a text mark and its anchor.
+    | MEllipsis T.Text
+      -- ^ The ellipsis string for text truncated in response to
+      --   'MLimit'. See also 'MDir'.
+      --
+      --   The default is @\"…\"@.
+      --
+      --   @since 0.5.0.0
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
       --   'ErrorBand' marks.
@@ -357,10 +372,31 @@ data MarkProperty
       --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
       -- ^ Interpolation method used by line and area marks.
+    | MLimit Double
+      -- ^ The maximum length of the text mark in pixels. If the text is
+      --   larger then it will be truncated, with the truncation controlled
+      --   by 'MEllipsis' and 'MDir'.
+      --
+      --   The default value is @0@, which indicates no truncation.
+      --
+      --   @since 0.5.0.0
     | MLine LineMarker
       -- ^ How should the vertices of an area mark be joined?
       --
       --   @since 0.4.0.0
+    | MLineBreak T.Text
+      -- ^ A delimeter, such as a newline character, upon which to break
+      --   text strings into multiple lines.
+      --
+      --   Note that @hvega@ automatically breaks text on the @\\n@ character,
+      --   which will over-ride this setting. Therefore setting this only
+      --   makes sense if the text does not contain @\n@ characters.
+      --
+      --   @since 0.5.0.0
+    | MLineHeight Double
+      -- ^ The height, in pixels, of each line of text in a multi-line text mark.
+      --
+      --   @since 0.5.0.0
     | MMedian [MarkProperty]
       -- ^ Median-line properties for the 'Boxplot' mark.
       --
@@ -463,10 +499,28 @@ data MarkProperty
       -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
       --
       --   @since 0.4.0.0
+    | MTimeUnitBand Double
+      -- ^ The default relative band size for a time unit.
+      --
+      --   If set to 1 the bandwidth of the marks will be equal to the time unit band step,
+      --   and if set to 0.5 they will be half that.
+      --
+      --   @since 0.5.0.0
+    | MTimeUnitBandPosition Double
+      -- ^ The default relative band position for a time unit.
+      --
+      --   If set to 0 the marks will be positioned at the start of the band,
+      --   and if set to 0.5 they will be in the middle.
+      --
+      --   @since 0.5.0.0
     | MTooltip TooltipContent
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
+    | MType Mark
+      -- ^ The mark type.
+      --
+      --   @since 0.5.0.0
     | MWidth Double
       -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
       --   'MHeight'.
@@ -546,8 +600,10 @@ markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
 markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
 markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
+markProperty (MDir td) = "dir" .= textdirLabel td
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
+markProperty (MEllipsis s) = "ellipsis" .= s
 
 -- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
@@ -563,7 +619,10 @@ markProperty (MHeight x) = "height" .= x
 markProperty (MHRef s) = "href" .= s
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
+markProperty (MLimit x) = "limit" .= x
 markProperty (MLine lm) = "line" .= lineMarkerSpec lm
+markProperty (MLineBreak s) = "lineBreak" .= s
+markProperty (MLineHeight x) = "lineHeight" .= x
 
 -- BoxPlot[Config|Def] possibly others
 markProperty (MMedian mps) = mprops_ "median" mps
@@ -603,8 +662,11 @@ markProperty (MThickness x) = "thickness" .= x
 -- what uses this?
 markProperty (MTicks mps) = mprops_ "ticks" mps
 
+markProperty (MTimeUnitBand x) = "timeUnitBand" .= x
+markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+markProperty (MType m) = "type" .= markLabel m
 markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
@@ -892,3 +954,21 @@ gradientProperty (GrY1 x) = "y1" .= x
 gradientProperty (GrY2 x) = "y2" .= x
 gradientProperty (GrR1 x) = "r1" .= x
 gradientProperty (GrR2 x) = "r2" .= x
+
+
+{-|
+Determine the direction to draw the text.
+
+Used by 'MDir'.
+
+@since 0.5.0.0
+-}
+data TextDirection
+  = LTR
+    -- ^ Left to right.
+  | RTL
+    -- ^ Right to left.
+
+textdirLabel :: TextDirection -> T.Text
+textdirLabel LTR = "ltr"
+textdirLabel RTL = "rtl"
