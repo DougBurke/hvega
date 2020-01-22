@@ -509,9 +509,35 @@ data MarkProperty
 
 
 markProperty :: MarkProperty -> LabelledSpec
-markProperty (MFilled b) = "filled" .= b
+
+-- special case the gradients
+markProperty (MColorGradient dir stops opts) =
+  "color" .= gradientSpec dir stops opts
+markProperty (MFillGradient dir stops opts) =
+  "fill" .= gradientSpec dir stops opts
+markProperty (MStrokeGradient dir stops opts) =
+  "stroke" .= gradientSpec dir stops opts
+
+-- where are these defined?
+markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
+markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
+
+markProperty (MAlign algn) = "align" .= hAlignLabel algn
+markProperty (MAngle x) = "angle" .= x
+markProperty (MAspect b) = "aspect" .= b
+markProperty (MBaseline va) = "baseline" .= vAlignLabel va
+
+-- only available in TickConfig
+markProperty (MBandSize x) = "bandSize" .= x
+
+markProperty (MBinSpacing x) = "binSpacing" .= x
+
+-- only available in ErrorBand[Config|Def], PartsMixins<ErrorBandPart>
 markProperty (MBorders mps) = mprops_ "borders" mps
+
+-- BoxPlot[Config|Deg], PartsMixins<BoxPlotPart>
 markProperty (MBox mps) = mprops_ "box" mps
+
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= fromColor col
 markProperty (MCornerRadius x) = "cornerRadius" .= x
@@ -520,54 +546,63 @@ markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
 markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
 markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
 markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MFill col) = "fill" .= fromColor col
-markProperty (MHeight x) = "height" .= x
-markProperty (MStroke t) = "stroke" .= fromColor t
-markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
-markProperty (MStrokeWidth w) = "strokeWidth" .= w
-markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
-markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
-markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
-markProperty (MMedian mps) = mprops_ "median" mps
-markProperty (MOpacity x) = "opacity" .= x
-markProperty (MFillOpacity x) = "fillOpacity" .= x
-markProperty (MStyle [style]) = "style" .= style  -- special case singleton
-markProperty (MStyle styles) = "style" .= styles
-markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
-markProperty (MLine lm) = "line" .= lineMarkerSpec lm
-markProperty (MTension x) = "tension" .= x
-markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= orientationSpec orient
-markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
-markProperty (MOutliers mps) = mprops_ "outliers" mps
-markProperty MNoOutliers = "outliers" .= False
-markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
-markProperty (MShape sym) = "shape" .= symbolLabel sym
-markProperty (MSize x) = "size" .= x
-markProperty (MAngle x) = "angle" .= x
-markProperty (MAlign algn) = "align" .= hAlignLabel algn
-markProperty (MBaseline va) = "baseline" .= vAlignLabel va
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
+
+-- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
+
+markProperty (MFill col) = "fill" .= fromColor col
+markProperty (MFilled b) = "filled" .= b
+markProperty (MFillOpacity x) = "fillOpacity" .= x
 markProperty (MFont fnt) = "font" .= fnt
 markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
+markProperty (MHeight x) = "height" .= x
 markProperty (MHRef s) = "href" .= s
-markProperty (MRadius x) = "radius" .= x
+markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
+markProperty (MLine lm) = "line" .= lineMarkerSpec lm
+
+-- BoxPlot[Config|Def] possibly others
+markProperty (MMedian mps) = mprops_ "median" mps
+
+markProperty (MOpacity x) = "opacity" .= x
+markProperty (MOrder b) = "order" .= b
+markProperty (MOrient orient) = "orient" .= orientationSpec orient
+
+-- what uses this?
+markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
+markProperty (MOutliers mps) = mprops_ "outliers" mps
+markProperty MNoOutliers = "outliers" .= False
+
+markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
+markProperty (MRadius x) = "radius" .= x
+
+-- what uses this?
 markProperty (MRule mps) = mprops_ "rule" mps
+
+markProperty (MShape sym) = "shape" .= symbolLabel sym
+markProperty (MSize x) = "size" .= x
+markProperty (MStroke t) = "stroke" .= fromColor t
+markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
+markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
+markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
+markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
+markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
+markProperty (MStrokeWidth w) = "strokeWidth" .= w
+markProperty (MStyle [style]) = "style" .= style  -- special case singleton
+markProperty (MStyle styles) = "style" .= styles
+markProperty (MTension x) = "tension" .= x
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x
-markProperty (MTicks mps) = mprops_ "ticks" mps
-markProperty (MBinSpacing x) = "binSpacing" .= x
-markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
-markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
-markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
+
+-- what uses this?
+markProperty (MTicks mps) = mprops_ "ticks" mps
+
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
 markProperty (MWidth x) = "width" .= x
@@ -579,15 +614,6 @@ markProperty (MXOffset x) = "xOffset" .= x
 markProperty (MYOffset x) = "yOffset" .= x
 markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
-markProperty (MAspect b) = "aspect" .= b
-
--- color gradients
-markProperty (MColorGradient dir stops opts) =
-  "color" .= gradientSpec dir stops opts
-markProperty (MFillGradient dir stops opts) =
-  "fill" .= gradientSpec dir stops opts
-markProperty (MStrokeGradient dir stops opts) =
-  "stroke" .= gradientSpec dir stops opts
 
 -- unlike elm, need to sort the stops list since we don't have a
 -- smart constructor (although it's not obvious this is actually needed,
