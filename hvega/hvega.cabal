@@ -90,6 +90,7 @@ extra-doc-files:     images/example.png
                      images/vl/skyplotwithgraticules.png
                      images/vl/concatenatedplot.png
                      images/vl/concatenatedplot2.png
+                     images/vl/concatenatedskyplot.png
                      images/vl/repeatplot.png
                      images/vl/splomplot.png
                      images/vl/singleselection.png
