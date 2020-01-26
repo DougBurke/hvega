@@ -63,6 +63,13 @@
                         "value": 12,
                         "test": "datum.value <= 6"
                     }
+                },
+                "labelAlign": {
+                    "value": "left",
+                    "condition": {
+                        "value": "right",
+                        "test": "datum.value <= 1"
+                    }
                 }
             }
         },

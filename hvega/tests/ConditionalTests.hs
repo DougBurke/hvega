@@ -119,7 +119,7 @@ axisCondition2 =
 axisCondition3 :: VegaLite
 axisCondition3 =
   axisTest [ AxDataCondition (Expr "datum.value <= 2") (CAxLabelColor "red" "blue")
-           -- , AxDataCondition (Expr "datum.value <= 1") (CAxLabelAlign AlignRight AlignLeft)
+           , AxDataCondition (Expr "datum.value <= 1") (CAxLabelAlign AlignRight AlignLeft)
            , AxDataCondition (Expr "datum.value <= 3") (CAxLabelBaseline AlignTop AlignBottom)
            , AxDataCondition (Expr "datum.value <= 4") (CAxLabelFont "serif" "sans-serif")
            , AxDataCondition (Expr "datum.value <= 6") (CAxLabelFontSize 12 18)

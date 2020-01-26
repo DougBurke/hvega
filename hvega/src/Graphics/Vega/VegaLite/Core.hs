@@ -1533,6 +1533,11 @@ is 'True', and the third is the value for when it is 'False'.
 @since 0.5.0.0
 -}
 
+-- The 4.0.2 Vega Lite spec does not correctly map the conditional
+-- label align, so that CAxLabelAlign will generate an invalid JSON
+-- file. This has been fixed (presumably for 4.0.3); see
+-- https://github.com/vega/vega-lite/issues/5717
+
 data ConditionalAxisProperty
   = CAxGridColor Color Color
     -- ^ The color for the axis grid.
@@ -1544,14 +1549,8 @@ data ConditionalAxisProperty
     -- ^ The opacity of the axis grid.
   | CAxGridWidth Double Double
     -- ^ The width of the axis grid.
-{-
-In Vega-Lite 4.0.2, labelAlign is listed as accepting a conditional number,
-not an alignment string, so I have removed this from the list for now:
-see https://github.com/vega/vega-lite/issues/5717
-
-  = CAxLabelAlign HAlign HAlign
+  | CAxLabelAlign HAlign HAlign
     -- ^ Axis label horizontal alignment.
--}
   | CAxLabelBaseline VAlign VAlign
     -- ^ Axis label vertical alignment.
   | CAxLabelColor Color Color
@@ -1584,7 +1583,7 @@ conditionalAxisProperty (CAxGridDash t f) = (AxGridDash t, AxGridDash f)
 conditionalAxisProperty (CAxGridDashOffset t f) = (AxGridDashOffset t, AxGridDashOffset f)
 conditionalAxisProperty (CAxGridOpacity t f) = (AxGridOpacity t, AxGridOpacity f)
 conditionalAxisProperty (CAxGridWidth t f) = (AxGridWidth t, AxGridWidth f)
--- conditionalAxisProperty (CAxLabelAlign t f) = (AxLabelAlign t, AxLabelAlign f)
+conditionalAxisProperty (CAxLabelAlign t f) = (AxLabelAlign t, AxLabelAlign f)
 conditionalAxisProperty (CAxLabelBaseline t f) = (AxLabelBaseline t, AxLabelBaseline f)
 conditionalAxisProperty (CAxLabelColor t f) = (AxLabelColor t, AxLabelColor f)
 conditionalAxisProperty (CAxLabelFont t f) = (AxLabelFont t, AxLabelFont f)
