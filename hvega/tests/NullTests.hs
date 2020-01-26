@@ -138,7 +138,7 @@ filter1 =
     let
         config =
             configure
-                . configuration (RemoveInvalid False)
+                . configuration (MarkStyle [ MRemoveInvalid False ])
 
         enc =
             encoding
@@ -164,7 +164,8 @@ filter2 =
     let
         config =
             configure
-                . configuration (RemoveInvalid False)
+                -- ensure have at least one test with remove invalid set
+                . configuration (MarkStyle [ MRemoveInvalid True ])
 
         trans =
             transform

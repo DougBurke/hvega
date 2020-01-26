@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Foundation
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -18,7 +18,12 @@ smaller modules?
 module Graphics.Vega.VegaLite.Foundation
        ( Angle
        , Color
+       , DashStyle
+       , DashOffset
+       , FieldName
        , Opacity
+       , SelectionLabel
+       , VegaExpr
        , ZIndex
 
        , FontWeight(..)
@@ -30,6 +35,7 @@ module Graphics.Vega.VegaLite.Foundation
 
        , HAlign(..)
        , VAlign(..)
+       , BandAlign(..)
 
        , StrokeCap(..)
        , StrokeJoin(..)
@@ -73,6 +79,7 @@ module Graphics.Vega.VegaLite.Foundation
        , orientationSpec
        , hAlignLabel
        , vAlignLabel
+       , bandAlignLabel
        , strokeCapLabel
        , strokeJoinLabel
        , scaleLabel
@@ -97,6 +104,9 @@ module Graphics.Vega.VegaLite.Foundation
        , viewBackgroundSpec
 
        , fromT
+       , fromColor
+       , fromDS
+       , splitOnNewline
        , field_
        , header_
        , order_
@@ -117,7 +127,7 @@ import Numeric.Natural (Natural)
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 
 
-field_ :: T.Text -> LabelledSpec
+field_ :: FieldName -> LabelledSpec
 field_ f = "field" .= f
 
 header_ :: [HeaderProperty] -> LabelledSpec
@@ -136,6 +146,20 @@ allowNull Nothing = A.Null
 
 {-|
 
+The field name. This can include \"dotted\" notation, such as
+@\"o.latitude\"@.
+
+There is __no attempt__ to validate this value (e.g. check it
+is not empty, contains only valid characters, or
+remove excess whitespace).
+
+@since 0.5.0.0
+-}
+type FieldName = T.Text
+
+
+{-|
+
 Convenience type-annotation label to indicate a color value.
 There is __no attempt__ to validate that the user-supplied input
 is a valid color.
@@ -150,10 +174,60 @@ Any supported HTML color specification can be used, such as:
 \"hsl(180, 50%, 50%)\"
 @
 
+A blank string is converted to the JSON null value (new in @0.5.0.0@).
+
 @since 0.4.0.0
 -}
 
 type Color = T.Text
+
+
+-- strip out trailing white space just to be sure
+fromColor :: Color -> VLSpec
+fromColor = cleanT
+
+
+-- strips leading and trailing white space and, if the result
+-- is empty, returns Null, otherwise the trimmed text.
+--
+cleanT :: T.Text -> VLSpec
+cleanT t =
+  let tout = T.strip t
+  in if T.null tout
+     then A.Null
+     else toJSON tout
+
+
+
+{-|
+The dash style for a line. This is defined as a series of on and then
+off lengths, in pixels. So @[10, 4, 5, 2]@ means a long line, followed
+by a space, then a line half as long as the first segment, and then
+a short space. This pattern is then repeated.
+
+This is a convenience type annotation and there is __no validation__
+of the input.
+
+@since 0.5.0.0
+-}
+type DashStyle = [Double]
+
+
+fromDS :: DashStyle -> VLSpec
+-- fromDS [] = A.Null  -- what is the correct handling of this?
+fromDS xs = toJSON xs
+
+
+{-|
+The offset at which to start drawing the line dash (given by a
+'DashStyle' argument), in pixels.
+
+This is a convenience type annotation and there is __no validation__
+of the input.
+
+@since 0.5.0.0
+-}
+type DashOffset = Double
 
 
 {-|
@@ -169,6 +243,18 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate the name, or label,
+of a selection. It is expected to be a non-empty string, but there
+is __no attempt__ to validate this.
+
+@since 0.5.0.0
+-}
+
+type SelectionLabel = T.Text
 
 
 {-|
@@ -229,6 +315,26 @@ in 'Graphics.Vega.VegaLite.toVegaLite' [ cfg []
 type ZIndex = Natural
 
 
+{-|
+
+Convenience type-annotation label to indicate a
+<https://vega.github.io/vega/docs/expressions/ Vega Expression>.
+There is __no attempt__ to validate the expression.
+
+Examples include:
+
+@
+"datum.IMDB_Rating != null"
+"datum.height / 1000"
+"if(datum.index % 2 == 1, datum.label, '')"
+"sampleLogNormal(2.3, 0.3)"
+@
+
+@since 0.5.0.0
+-}
+type VegaExpr = T.Text
+
+
 -- | Indicates the weight options for a font.
 
 data FontWeight
@@ -252,6 +358,14 @@ fromF = toJSON
 
 fromT :: T.Text -> VLSpec
 fromT = toJSON
+
+-- If there is a new-line in the text then convert to a list.
+splitOnNewline :: T.Text -> VLSpec
+splitOnNewline ts =
+  case T.split (== '\n') ts of
+    [] -> fromT ""
+    [s] -> toJSON s
+    s -> toJSON s
 
 
 fontWeightSpec :: FontWeight -> VLSpec
@@ -469,6 +583,26 @@ vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
 
 
+{-|
+
+Where should tick marks and grid lines be placed. This is used with
+'Graphics.Vega.VegaLite.AxTickBand' and 'Graphics.Vega.VegaLite.TickBand'.
+
+@since 0.5.0.0
+-}
+
+data BandAlign
+  = BCenter
+    -- ^ Use the center of the band.
+  | BExtent
+    -- ^ Use the band extents.
+
+
+bandAlignLabel :: BandAlign -> T.Text
+bandAlignLabel BCenter = "center"
+bandAlignLabel BExtent = "extent"
+
+
 -- | How are strokes capped? This is used with 'Graphics.Vega.VegaLite.MStrokeCap', 'Graphics.Vega.VegaLite.VBStrokeCap',
 --   and 'Graphics.Vega.VegaLite.ViewStrokeCap'.
 --
@@ -583,9 +717,9 @@ scaleLabel ScThreshold = "threshold"
 --   @since 0.4.00
 
 data SortField
-    = WAscending T.Text
+    = WAscending FieldName
     -- ^ Sort the field into ascending order.
-    | WDescending T.Text
+    | WDescending FieldName
     -- ^ Sort the field into descending order.
 
 
@@ -682,7 +816,12 @@ cursorLabel CGrabbing = "grabbing"
 {-|
 
 Type of overlap strategy to be applied when there is not space to show all items
-on an axis. See the
+on an axis, and is used by
+'Graphics.Vega.VegaLite.AxLabelOverlap',
+'Graphics.Vega.VegaLite.LabelOverlap',
+'Graphics.Vega.VegaLite.LLabelOverlap',
+and 'Graphics.Vega.VegaLite.LeLabelOverlap'.
+See the
 <https://vega.github.io/vega-lite/docs/axis.html#labels Vega-Lite documentation>
 for more details.
 -}
@@ -698,13 +837,27 @@ data OverlapStrategy
       -- ^ Greedy overlap strategy to be applied when there is not space to show all
       --   items on an axis.
 
-overlapStrategyLabel :: OverlapStrategy -> T.Text
-overlapStrategyLabel ONone = "false"
-overlapStrategyLabel OParity = "parity"
-overlapStrategyLabel OGreedy = "greedy"
+overlapStrategyLabel :: OverlapStrategy -> VLSpec
+overlapStrategyLabel ONone = toJSON False
+overlapStrategyLabel OParity = toJSON True  -- fromT "parity"
+overlapStrategyLabel OGreedy = fromT "greedy"
 
 
--- | Represents one side of a rectangular space.
+{-|
+
+Represents one side of a rectangular space.
+
+Used by
+'Graphics.Vega.VegaLite.AxOrient',
+'Graphics.Vega.VegaLite.HLabelOrient',
+'Graphics.Vega.VegaLite.HTitleOrient',
+'Graphics.Vega.VegaLite.LTitleOrient',
+'Graphics.Vega.VegaLite.LeTitleOrient',
+'Graphics.Vega.VegaLite.Orient',
+and
+'Graphics.Vega.VegaLite.TOrient'.
+
+-}
 
 data Side
     = STop
@@ -1055,6 +1208,16 @@ data Autosize
     | AFit
       -- ^ Interpret visualization dimensions to be for the entire visualization (data
       --   rectangle is shrunk to accommodate external decorations padding).
+    | AFitX
+      -- ^ Interpret visualization width to be for the entire visualization width (data
+      --   rectangle width is shrunk to accommodate external decorations padding).
+      --
+      --   @since 0.5.0.0
+    | AFitY
+      -- ^ Interpret visualization height to be for the entire visualization height (data
+      --   rectangle height is shrunk to accommodate external decorations padding).
+      --
+      --   @since 0.5.0.0
     | ANone
       -- ^ No autosizing is applied.
     | APad
@@ -1068,12 +1231,14 @@ data Autosize
 
 
 autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad = ("type", fromT "pad")
-autosizeProperty AFit = ("type", fromT "fit")
-autosizeProperty ANone = ("type", fromT "none")
+autosizeProperty APad = "type" .= fromT "pad"
+autosizeProperty AFit = "type" .= fromT "fit"
+autosizeProperty AFitX = "type" .= fromT "fit-x"
+autosizeProperty AFitY = "type" .= fromT "fit-y"
+autosizeProperty ANone = "type" .= fromT "none"
 autosizeProperty AResize = "resize" .= True
-autosizeProperty AContent = ("contains", fromT "content")
-autosizeProperty APadding = ("contains", fromT "padding")
+autosizeProperty AContent = "contains" .= fromT "content"
+autosizeProperty APadding = "contains" .= fromT "padding"
 
 
 {-|
@@ -1084,17 +1249,13 @@ or @'Graphics.Vega.VegaLite.PRepeat' 'Graphics.Vega.VegaLite.Row'@.
 
 -}
 data RepeatFields
-    = RowFields [T.Text]
-    | ColumnFields [T.Text]
+    = RowFields [FieldName]
+    | ColumnFields [FieldName]
 
 
 repeatFieldsProperty :: RepeatFields -> LabelledSpec
-repeatFieldsProperty rfs =
-  let (nme, vs) = case rfs of
-        RowFields fields -> ("row", fields)
-        ColumnFields fields -> ("column", fields)
-
-  in nme .= map toJSON vs
+repeatFieldsProperty (RowFields fs) = "row" .= fs
+repeatFieldsProperty (ColumnFields fs) = "column" .= fs
 
 
 {-|
@@ -1148,6 +1309,9 @@ cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", 
 
 -- | The properties for a single view or layer background.
 --
+--   Used with 'Graphics.Vega.VegaLite.viewBackground' and
+--   'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
+--
 --   @since 0.4.0.0
 
 data ViewBackground
@@ -1158,25 +1322,29 @@ data ViewBackground
     --   properties.
     | VBCornerRadius Double
     -- ^ The radius in pixels of rounded corners.
-    | VBFill (Maybe T.Text)
+    | VBFill (Maybe Color)
     -- ^ Fill color.
+    --
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | VBFillOpacity Opacity
     -- ^ Fill opacity.
     | VBOpacity Opacity
     -- ^ Overall opacity.
-    | VBStroke (Maybe T.Text)
+    | VBStroke (Maybe Color)
     -- ^ The stroke color for a line around the background. If @Nothing@ then
     --   no line is drawn.
+    --
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | VBStrokeOpacity Opacity
     -- ^ The opacity of the line around the background, if drawn.
     | VBStrokeWidth Double
     -- ^ The width of the line around the background, if drawn.
     | VBStrokeCap StrokeCap
     -- ^ The cap line-ending for the line around the background, if drawn.
-    | VBStrokeDash [Double]
-    -- ^ The dash style of the line around the background, if drawn.
-    | VBStrokeDashOffset Double
-    -- ^ The dash offset of the line around the background, if drawn.
+    | VBStrokeDash DashStyle
+    -- ^ The dash pattern of the line around the background, if drawn.
+    | VBStrokeDashOffset DashOffset
+    -- ^ The offset of the dash pattern for the line around the background, if drawn.
     | VBStrokeJoin StrokeJoin
     -- ^ The line-joining style of the line around the background, if drawn.
     | VBStrokeMiterLimit Double
@@ -1197,7 +1365,7 @@ viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
 viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .= x
-viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= xs
+viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= fromDS xs
 viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .= x
 viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
 
@@ -1324,12 +1492,12 @@ headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
 headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
-headerProperty (HTitle ttl) = "title" .= ttl
+headerProperty (HTitle ttl) = "title" .= splitOnNewline ttl
 headerProperty HNoTitle = "title" .= A.Null
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
-headerProperty (HLabelColor s) = "labelColor" .= s
+headerProperty (HLabelColor s) = "labelColor" .= fromColor s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
 headerProperty (HLabelLimit x) = "labelLimit" .= x
@@ -1339,7 +1507,7 @@ headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
 headerProperty (HTitleAngle x) = "titleAngle" .= x
 headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-headerProperty (HTitleColor s) = "titleColor" .= s
+headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
 headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x

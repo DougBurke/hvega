@@ -38,9 +38,9 @@ window1 =
         enc =
             encoding
                 . position X [ PName "PercentOfTotal", PmType Quantitative, PAxis [ AxTitle "% of total time" ] ]
-                . position Y [ PName "Activity", PmType Nominal, PScale [ SRangeStep (Just 12) ] ]
+                . position Y [ PName "Activity", PmType Nominal ]
     in
-    toVegaLite [ dataVals [], trans [], mark Bar [], enc [] ]
+    toVegaLite [ dataVals [], trans [], mark Bar [], heightStep 12, enc [] ]
 
 
 window2 :: VegaLite
@@ -228,9 +228,9 @@ joinAggregate1 =
         enc =
             encoding
                 . position X [ PName "PercentOfTotal", PmType Quantitative, PAxis [ AxTitle "% of total Time" ] ]
-                . position Y [ PName "Activity", PmType Nominal, PScale [ SRangeStep (Just 12) ] ]
+                . position Y [ PName "Activity", PmType Nominal ]
                 
-    in toVegaLite [ dataVals [], trans [], enc [], mark Bar [] ]
+    in toVegaLite [ dataVals [], trans [], enc [], mark Bar [], heightStep 12 ]
 
 joinAggregate2 :: VegaLite
 joinAggregate2 =

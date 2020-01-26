@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Configuration
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -39,7 +39,7 @@ module Graphics.Vega.VegaLite.Configuration
 import qualified Data.Aeson as A
 import qualified Data.Text as T
 
-import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson ((.=), object)
 
 
 import Graphics.Vega.VegaLite.Core
@@ -49,37 +49,44 @@ import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
   , CompositionAlignment
+  , DashStyle
+  , DashOffset
   , APosition
   , FontWeight
   , Opacity
   , Orientation
   , OverlapStrategy
   , Side
-  , StackOffset
   , StrokeCap
   , StrokeJoin
   , Symbol
   , HAlign
   , VAlign
+  , BandAlign
   , Padding
   , Autosize
   , ZIndex
   , HeaderProperty
+  , ViewBackground
+  , fromColor
+  , fromDS
+  , splitOnNewline
+  , header_
   , anchorLabel
   , fontWeightSpec
   , orientationSpec
   , hAlignLabel
   , vAlignLabel
+  , bandAlignLabel
   , strokeCapLabel
   , strokeJoinLabel
   , sideLabel
   , overlapStrategyLabel
   , symbolLabel
-  , stackOffset
   , compositionAlignmentSpec
   , paddingSpec
   , autosizeProperty
-  , header_
+  , viewBackgroundSpec
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
@@ -99,7 +106,7 @@ import Graphics.Vega.VegaLite.Mark
 import Graphics.Vega.VegaLite.Selection
   ( Selection
   , SelectionProperty
-  , selectionProperty
+  , selectionProperties
   , selectionLabel
   )
 import Graphics.Vega.VegaLite.Specification
@@ -116,6 +123,19 @@ import Graphics.Vega.VegaLite.Specification
 Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
 for details.
+
+Used by 'configuration'.
+
+In @version 0.5.0.0@:
+
+- the @RemoveInvalid@ constructor was removed, as
+the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
+'Graphics.Vega.VegaLite.MarkProperty' type should be used instead
+(so @'configuration' (RemoveInvalid b)@ changes to
+@'configuration' ('Graphics.Vega.VegaLite.MarkStyle' ['Graphics.Vega.VegaLite.MRemoveInvalid' b])@.
+
+- the @Stack@ constructor (which was called @StackProperty@ prior
+  to version @0.4.0.0@) was removed.
 
 -}
 
@@ -158,8 +178,10 @@ data ConfigurationProperty
       -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
       -- ^ The default appearance of the Y axes.
-    | Background T.Text
+    | Background Color
       -- ^ The default background color of visualizations.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | BarStyle [MarkProperty]
       -- ^ The default appearance of bar marks.
     | CircleStyle [MarkProperty]
@@ -209,9 +231,6 @@ data ConfigurationProperty
       -- ^ The default range properties used when scaling.
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
-    | RemoveInvalid Bool
-      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
-      --   invalid values are skipped or filtered out when represented as marks.
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
     | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
@@ -220,10 +239,6 @@ data ConfigurationProperty
       -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
       -- ^  the default appearance of square marks
-    | Stack StackOffset
-      -- ^ The default stack offset style for stackable marks.
-      --
-      --   Changed from @StackProperty@ in version @0.4.0.0@.
     | TextStyle [MarkProperty]
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
@@ -245,7 +260,6 @@ configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
 configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (RemoveInvalid b) = "invalidValues" .= if b then "filter" else A.Null
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
 configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt
@@ -279,13 +293,12 @@ configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
 configProperty (Scale scs) = scaleConfig_ scs
-configProperty (Stack so) = stackOffset so
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) = selectionLabel sel .= object (map selectionProperty sps)
+  let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
   in "selection" .= object (map selProp selConfig)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (View vcs) = "view" .= object (map viewConfigProperty vcs)
+configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 
 {-|
@@ -294,6 +307,9 @@ Scale configuration property. These are used to configure all scales.
 For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
 
+Version @0.5.0.0@ removed the @SCRangeStep@ and @SCTextXRangeStep@
+constructors. The new 'ViewStep' constructor of 'ViewConfig' should
+be used instead.
 -}
 
 data ScaleConfig
@@ -346,13 +362,9 @@ data ScaleConfig
       -- ^ Default minimum stroke width for rule, line and trail marks.
     | SCPointPadding Double
       -- ^ Default padding for point-ordinal scales.
-    | SCRangeStep (Maybe Double)
-      -- ^ Default range step for band and point scales when the mark is not text.
     | SCRound Bool
       -- ^ Are numeric values are rounded to integers when scaling? Useful
       --   for snapping to the pixel grid.
-    | SCTextXRangeStep Double
-      -- ^ Default range step for x band and point scales of text marks.
     | SCUseUnaggregatedDomain Bool
       -- ^ Whether or not to use the source data range before aggregation.
 
@@ -395,6 +407,8 @@ This data type has seen significant changes in the @0.4.0.0@ release:
   example @Orient@ was changed to 'LeOrient');
 
 - and new constructors were added.
+
+In @0.5.0.0@ the @LeShortTimeLabels@ constructor was removed.
 
 -}
 
@@ -526,13 +540,10 @@ data LegendConfig
       -- ^ The vertical padding in pixels between symbol legend entries.
       --
       --   @since 0.4.0.0
-    | LeShortTimeLabels Bool
-      -- ^ Should month and weekday names be abbreviated?
     | LeStrokeColor Color
       -- ^ The border stoke color for the full legend.
-    | LeStrokeDash [Double]
-      -- ^ The border stroke dash pattern for the full legend (alternating
-      --   stroke, space lengths in pixels).
+    | LeStrokeDash DashStyle
+      -- ^ The border stroke dash pattern for the full legend.
     | LeStrokeWidth Double
       -- ^ The border stroke width for the full legend.
     | LeSymbolBaseFillColor Color
@@ -545,14 +556,12 @@ data LegendConfig
       --   there is no \"fill\" scale color encoding for the legend.
       --
       --   @since 0.4.0.0
-    | LeSymbolDash [Double]
-      -- ^ The pattern for dashed symbol strokes (alternating
-      --   stroke, space lengths in pixels).
+    | LeSymbolDash DashStyle
+      -- ^ The pattern for dashed symbol strokes.
       --
       --   @since 0.4.0.0
-    | LeSymbolDashOffset Double
-      -- ^ The offset at which to start deawing the symbol dash pattern,
-      --   in pixels.
+    | LeSymbolDashOffset DashOffset
+      -- ^ The offset at which to start drawing the symbol dash pattern.
       --
       --   @since 0.4.0.0
     | LeSymbolDirection Orientation
@@ -628,7 +637,7 @@ legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
-legendConfigProperty (LeFillColor s) = "fillColor" .= s
+legendConfigProperty (LeFillColor s) = "fillColor" .= fromColor s
 legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
 legendConfigProperty (LeGradientHorizontalMinLength x) = "gradientHorizontalMinLength" .= x
@@ -636,7 +645,7 @@ legendConfigProperty (LeGradientLabelLimit x) = "gradientLabelLimit" .= x
 legendConfigProperty (LeGradientLabelOffset x) = "gradientLabelOffset" .= x
 legendConfigProperty (LeGradientLength x) = "gradientLength" .= x
 legendConfigProperty (LeGradientOpacity x) = "gradientOpacity" .= x
-legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= s
+legendConfigProperty (LeGradientStrokeColor s) = "gradientStrokeColor" .= fromColor s
 legendConfigProperty (LeGradientStrokeWidth x) = "gradientStrokeWidth" .= x
 legendConfigProperty (LeGradientThickness x) = "gradientThickness" .= x
 legendConfigProperty (LeGradientVerticalMaxLength x) = "gradientVerticalMaxLength" .= x
@@ -644,14 +653,14 @@ legendConfigProperty (LeGradientVerticalMinLength x) = "gradientVerticalMinLengt
 legendConfigProperty (LeGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendConfigProperty (LeLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendConfigProperty (LeLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-legendConfigProperty (LeLabelColor s) = "labelColor" .= s
+legendConfigProperty (LeLabelColor s) = "labelColor" .= fromColor s
 legendConfigProperty (LeLabelFont s) = "labelFont" .= s
 legendConfigProperty (LeLabelFontSize x) = "labelFontSize" .= x
 legendConfigProperty (LeLabelFontStyle s) = "labelFontStyle" .= s
 legendConfigProperty (LeLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 legendConfigProperty (LeLabelLimit x) = "labelLimit" .= x
 legendConfigProperty (LeLabelOffset x) = "labelOffset" .= x
-legendConfigProperty (LeLabelOpacity x) = "labelOapcity" .= x
+legendConfigProperty (LeLabelOpacity x) = "labelOpacity" .= x
 legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
 legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
 legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
@@ -662,20 +671,19 @@ legendConfigProperty (LeOffset x) = "offset" .= x
 legendConfigProperty (LeOrient orl) = "orient" .= legendOrientLabel orl
 legendConfigProperty (LePadding x) = "padding" .= x
 legendConfigProperty (LeRowPadding x) = "rowPadding" .= x
-legendConfigProperty (LeShortTimeLabels b) = "shortTimeLabels" .= b
-legendConfigProperty (LeStrokeColor s) = "strokeColor" .= s
-legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= xs
+legendConfigProperty (LeStrokeColor s) = "strokeColor" .= fromColor s
+legendConfigProperty (LeStrokeDash xs) = "strokeDash" .= fromDS xs
 legendConfigProperty (LeStrokeWidth x) = "strokeWidth" .= x
-legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= s
-legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= s
-legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= xs
+legendConfigProperty (LeSymbolBaseFillColor s) = "symbolBaseFillColor" .= fromColor s
+legendConfigProperty (LeSymbolBaseStrokeColor s) = "symbolBaseStrokeColor" .= fromColor s
+legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= fromDS xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
 legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
-legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= s
+legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= fromColor s
 legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
 legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
 legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
-legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= s
+legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor s
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
 legendConfigProperty (LeTitle s) = "title" .= s
@@ -683,7 +691,7 @@ legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
 legendConfigProperty (LeTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-legendConfigProperty (LeTitleColor s) = "titleColor" .= s
+legendConfigProperty (LeTitleColor s) = "titleColor" .= fromColor s
 legendConfigProperty (LeTitleFont s) = "titleFont" .= s
 legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
 legendConfigProperty (LeTitleFontStyle s) = "titleFontStyle" .= s
@@ -741,9 +749,7 @@ scaleConfigProperty (SCMinSize x) = "minSize" .= x
 scaleConfigProperty (SCMaxStrokeWidth x) = "maxStrokeWidth" .= x
 scaleConfigProperty (SCMinStrokeWidth x) = "minStrokeWidth" .= x
 scaleConfigProperty (SCPointPadding x) = "pointPadding" .= x
-scaleConfigProperty (SCRangeStep numOrNull) = "rangeStep" .= maybe A.Null toJSON numOrNull
 scaleConfigProperty (SCRound b) = "round" .= b
-scaleConfigProperty (SCTextXRangeStep x) = "textXRangeStep" .= x
 scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
 
 
@@ -754,6 +760,12 @@ view within a visualization such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
 
+In version @0.5.0.0@ the @ViewWidth@ and @ViewHeight@ constructors have
+been deprecated, and replaced by
+'ViewContinuousWidth', 'ViewContinuousHeight',
+'ViewDiscreteWidth', and 'ViewDiscreteHeight'. The 'ViewBackgroundStyle'
+constructor has been added.
+
 This type has been changed in the @0.4.0.0@ release to use a consistent
 naming scheme for the constructors (everything starts with @View@). Prior to
 this release only @ViewWidth@ and @ViewHeight@ were named this way. There
@@ -763,25 +775,45 @@ are also five new constructors.
 
 -- based on schema 3.3.0 #/definitions/ViewConfig
 
+{-# DEPRECATED ViewWidth "Please change ViewWidth to ViewContinuousWidth" #-}
+{-# DEPRECATED ViewHeight "Please change ViewHeight to ViewContinuousHeight" #-}
 data ViewConfig
-    = ViewWidth Double
-      -- ^ The default width of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (x axis).
-    | ViewHeight Double
-      -- ^ The default height of the single plot or each plot in a trellis plot when the
-      --   visualization has a continuous (non-ordinal) scale or when the
-      --   'SRangeStep'/'ScRangeStep' is @Nothing@ for an ordinal scale (y axis).
+    = ViewBackgroundStyle [ViewBackground]
+      -- ^ The default single-view style.
+      --
+      --   @since 0.5.0.0
     | ViewClip Bool
       -- ^ Should the view be clipped?
+    | ViewContinuousWidth Double
+      -- ^ The default width of single views when the
+      --   visualization has a continuous x field.
+      --
+      --   @since 0.5.0.0
+    | ViewContinuousHeight Double
+      -- ^ The default height of single views when the
+      --   visualization has a continuous y field.
+      --
+      --   @since 0.5.0.0
     | ViewCornerRadius Double
       -- ^ The radius, in pixels, of rounded rectangle corners.
       --
       --   The default is @0@.
       --
       --   @since 0.4.0.0
-    | ViewFill (Maybe T.Text)
+    | ViewDiscreteWidth Double
+      -- ^ The default width of single views when the
+      --   visualization has a discrete x field.
+      --
+      --   @since 0.5.0.0
+    | ViewDiscreteHeight Double
+      -- ^ The default height of single views when the
+      --   visualization has a discrete y field.
+      --
+      --   @since 0.5.0.0
+    | ViewFill (Maybe Color)
       -- ^ The fill color.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | ViewFillOpacity Opacity
       -- ^ The fill opacity.
     | ViewOpacity Opacity
@@ -792,17 +824,25 @@ data ViewConfig
       --   otherwise.
       --
       --   @since 0.4.0.0
-    | ViewStroke (Maybe T.Text)
+    | ViewStep Double
+      -- ^ Default step size for discrete fields.
+      --
+      --   This replaces @SCRangeStep@ and @SCTextXRangeStep@ from
+      --   'ScaleConfig'.
+      --
+      --   @since 0.5.0.0
+    | ViewStroke (Maybe Color)
       -- ^ The stroke color.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | ViewStrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --
       --   @since 0.4.0.0
-    | ViewStrokeDash [Double]
-      -- ^ The stroke dash style. It is defined by an alternating \"on-off\"
-      --   sequence of line lengths, in pixels.
-    | ViewStrokeDashOffset Double
-      -- ^ Number of pixels before the first line dash is drawn.
+    | ViewStrokeDash DashStyle
+      -- ^ The stroke dash pattern.
+    | ViewStrokeDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
     | ViewStrokeJoin StrokeJoin
       -- ^ The stroke line-join method.
       --
@@ -815,24 +855,36 @@ data ViewConfig
       -- ^ The stroke opacity.
     | ViewStrokeWidth Double
       -- ^ The stroke width, in pixels.
+    | ViewWidth Double
+      -- ^ As of version @0.5.0.0@ this is deprecated and 'ViewContinuousWidth' should
+      --   be used instead.
+    | ViewHeight Double
+      -- ^ As of version @0.5.0.0@ this is deprecated and 'ViewContinuousHeight' should
+      --   be used instead.
 
 
-viewConfigProperty :: ViewConfig -> LabelledSpec
-viewConfigProperty (ViewWidth x) = "width" .= x
-viewConfigProperty (ViewHeight x) = "height" .= x
-viewConfigProperty (ViewClip b) = "clip" .= b
-viewConfigProperty (ViewCornerRadius x) = "cornerRadius" .= x
-viewConfigProperty (ViewFill ms) = "fill" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewFillOpacity x) = "fillOpacity" .= x
-viewConfigProperty (ViewOpacity x) = "opacity" .= x
-viewConfigProperty (ViewStroke ms) = "stroke" .= maybe A.Null toJSON ms
-viewConfigProperty (ViewStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-viewConfigProperty (ViewStrokeDash xs) = "strokeDash" .= xs
-viewConfigProperty (ViewStrokeDashOffset x) = "strokeDashOffset" .= x
-viewConfigProperty (ViewStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-viewConfigProperty (ViewStrokeMiterLimit x) = "strokeMiterLimit" .= x
-viewConfigProperty (ViewStrokeOpacity x) = "strokeOpacity" .= x
-viewConfigProperty (ViewStrokeWidth x) = "strokeWidth" .= x
+viewConfigProperties :: ViewConfig -> [LabelledSpec]
+viewConfigProperties (ViewBackgroundStyle bs) = map viewBackgroundSpec bs
+viewConfigProperties (ViewClip b) = ["clip" .= b]
+viewConfigProperties (ViewWidth x) = ["continuousWidth" .= x]
+viewConfigProperties (ViewHeight x) = ["continuousHeight" .= x]
+viewConfigProperties (ViewContinuousWidth x) = ["continuousWidth" .= x]
+viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
+viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
+viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
+viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
+viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewFillOpacity x) = ["fillOpacity" .= x]
+viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
+viewConfigProperties (ViewStep x) = ["step" .= x]
+viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
+viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= fromDS xs]
+viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
+viewConfigProperties (ViewStrokeJoin sj) = ["strokeJoin" .= strokeJoinLabel sj]
+viewConfigProperties (ViewStrokeMiterLimit x) = ["strokeMiterLimit" .= x]
+viewConfigProperties (ViewStrokeOpacity x) = ["strokeOpacity" .= x]
+viewConfigProperties (ViewStrokeWidth x) = ["strokeWidth" .= x]
 
 
 {-|
@@ -841,8 +893,12 @@ Axis configuration options for customising all axes. See the
 <https://vega.github.io/vega-lite/docs/axis.html#general-config Vega-Lite documentation>
 for more details.
 
+This is used by 'ConfigurationProperty'.
+
 The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 @TitleLimit@ constructor should be used instead.
+
+In @0.5.0.0@ the @ShortTimeLabels@ constructor was removed.
 
 -}
 data AxisConfig
@@ -852,13 +908,12 @@ data AxisConfig
       -- ^ Should the axis domain be displayed?
     | DomainColor Color
       -- ^ The axis domain color.
-    | DomainDash [Double]
-      -- ^ The dash style of the domain (alternating stroke, space lengths
-      --   in pixels).
+    | DomainDash DashStyle
+      -- ^ The dash pattern of the domain.
       --
       --   @since 0.4.0.0
-    | DomainDashOffset Double
-      -- ^ The pixel offset at which to start drawing the domain dash array.
+    | DomainDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | DomainOpacity Opacity
@@ -871,11 +926,10 @@ data AxisConfig
       -- ^ Should an axis grid be displayed?
     | GridColor Color
       -- ^ The color for the grid.
-    | GridDash [Double]
-      -- ^ The dash style of the grid (alternating stroke, space lengths
-      --   in pixels).
-    | GridDashOffset Double
-      -- ^ The pixel offset at which to start drawing the grid dash array.
+    | GridDash DashStyle
+      -- ^ The dash pattern of the grid.
+    | GridDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | GridOpacity Opacity
@@ -986,17 +1040,20 @@ data AxisConfig
       -- ^ The orientation of the axis.
       --
       --   @since 0.4.0.0
-    | ShortTimeLabels Bool
-      -- ^ Should an axis use short time labels (abbreviated month and week-day names)?
     | Ticks Bool
       -- ^ Should tick marks be drawn on an axis?
+    | TickBand BandAlign
+      -- ^ For band scales, indicates if ticks and grid lines should be
+      --   placed at the center of a band (the default) or at the band
+      --   extents to indicate intervals.
+      --
+      --   @since 0.5.0.0
     | TickColor Color
       -- ^ The color of the ticks.
-    | TickDash [Double]
-      -- ^ The dash style of the ticks (alternating stroke, space lengths
-      --   in pixels).
-    | TickDashOffset Double
-      -- ^ The pixel offset at which to start drawing the tick dash array.
+    | TickDash DashStyle
+      -- ^ The dash pattern of the ticks.
+    | TickDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
       --
       --   @since 0.4.0.0
     | TickExtra Bool
@@ -1042,6 +1099,10 @@ data AxisConfig
       -- ^ The font weight of the axis title.
     | TitleLimit Double
       -- ^ The maximum allowed width of the axis title, in pixels.
+    | TitleLineHeight Double
+      -- ^ Line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.5.0.0
     | TitleOpacity Opacity
       -- ^ The opacity of the axis title.
       --
@@ -1052,34 +1113,39 @@ data AxisConfig
       -- ^ The X coordinate of the axis title, relative to the axis group.
     | TitleY Double
       -- ^ The Y coordinate of the axis title, relative to the axis group.
+    | TranslateOffset Double
+      -- ^ The translation offset in pixels applied to the axis group
+      --   mark x and y. If specified it overrides the default value
+      --   of a 0.5 offset to pixel-align stroked lines.
+      --
+      --   @since 0.5.0.0
 
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
-axisConfigProperty (DomainColor c) = "domainColor" .= c
-axisConfigProperty (DomainDash ds) = "domainDash" .= ds
+axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
+axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
 axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
 axisConfigProperty (DomainWidth w) = "domainWidth" .= w
 axisConfigProperty (Grid b) = "grid" .= b
-axisConfigProperty (GridColor c) = "gridColor" .= c
-axisConfigProperty (GridDash ds) = "gridDash" .= ds
+axisConfigProperty (GridColor c) = "gridColor" .= fromColor c
+axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
 axisConfigProperty (GridOpacity o) = "gridOpacity" .= o
 axisConfigProperty (GridWidth x) = "gridWidth" .= x
-axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (LabelAlign ha) = "labelAlign" .= hAlignLabel ha
 axisConfigProperty (LabelAngle angle) = "labelAngle" .= angle
 axisConfigProperty (LabelBaseline va) = "labelBaseline" .= vAlignLabel va
 axisConfigProperty LabelNoBound = "labelBound" .= False
 axisConfigProperty LabelBound = "labelBound" .= True
 axisConfigProperty (LabelBoundValue x) = "labelBound" .= x
+axisConfigProperty (LabelColor c) = "labelColor" .= fromColor c
 axisConfigProperty LabelNoFlush = "labelFlush" .= False
 axisConfigProperty LabelFlush = "labelFlush" .= True
 axisConfigProperty (LabelFlushValue x) = "labelFlush" .= x
 axisConfigProperty (LabelFlushOffset x) = "labelFlushOffset" .= x
-axisConfigProperty (LabelColor c) = "labelColor" .= c
 axisConfigProperty (LabelFont f) = "labelFont" .= f
 axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
@@ -1089,14 +1155,13 @@ axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
 axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad
 axisConfigProperty (LabelSeparation x) = "labelSeparation" .= x
+axisConfigProperty (Labels b) = "labels" .= b
 axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
-axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
-axisConfigProperty (ShortTimeLabels b) = "shortTimeLabels" .= b
-axisConfigProperty (Ticks b) = "ticks" .= b
-axisConfigProperty (TickColor c) = "tickColor" .= c
-axisConfigProperty (TickDash ds) = "tickDash" .= ds
+axisConfigProperty (TickBand band) = "tickBand" .= bandAlignLabel band
+axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
+axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
 axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
 axisConfigProperty (TickExtra b) = "tickExtra" .= b
 axisConfigProperty (TickOffset x) = "tickOffset" .= x
@@ -1104,21 +1169,24 @@ axisConfigProperty (TickOpacity x) = "tickOpacity" .= x
 axisConfigProperty (TickRound b) = "tickRound" .= b
 axisConfigProperty (TickSize x) = "tickSize" .= x
 axisConfigProperty (TickWidth x) = "tickWidth" .= x
+axisConfigProperty (Ticks b) = "ticks" .= b
+axisConfigProperty NoTitle = "title" .= A.Null
 axisConfigProperty (TitleAlign algn) = "titleAlign" .= hAlignLabel algn
 axisConfigProperty (TitleAnchor a) = "titleAnchor" .= anchorLabel a
 axisConfigProperty (TitleAngle x) = "titleAngle" .= x
 axisConfigProperty (TitleBaseline va) = "titleBaseline" .= vAlignLabel va
-axisConfigProperty (TitleColor c) = "titleColor" .= c
+axisConfigProperty (TitleColor c) = "titleColor" .= fromColor c
 axisConfigProperty (TitleFont f) = "titleFont" .= f
 axisConfigProperty (TitleFontSize x) = "titleFontSize" .= x
 axisConfigProperty (TitleFontStyle s) = "titleFontStyle" .= s
 axisConfigProperty (TitleFontWeight w) = "titleFontWeight" .= fontWeightSpec w
 axisConfigProperty (TitleLimit x) = "titleLimit" .= x
+axisConfigProperty (TitleLineHeight x) = "titleLineHeight" .= x
 axisConfigProperty (TitleOpacity x) = "titleOpacity" .= x
 axisConfigProperty (TitlePadding x) = "titlePadding" .= x
 axisConfigProperty (TitleX x) = "titleX" .= x
-axisConfigProperty (TitleY y) = "titleY" .= y
-
+axisConfigProperty (TitleY x) = "titleY" .= x
+axisConfigProperty (TranslateOffset x) = "translate" .= x
 
 {-|
 
@@ -1159,19 +1227,43 @@ titleFrameSpec FrGroup = "group"
 {-|
 
 Title configuration properties. These are used to configure the default style
-of all titles within a visualization.
+of all titles within a visualization with 'title' or 'TitleStyle'.
+
 For further details see the
 <https://vega.github.io/vega-lite/docs/title.html#config Vega-Lite documentation>.
+
 -}
+
+-- NOTES:
+--   do not have a 'TTitle' field because this is handled by the first
+--   argument of title, so there's no point in having it here (also, would
+--   have to be called something different than TTitle as we already have
+--   this).
+--
+--   could move TSubtitle out too, but the ergonomics aren't great
+--   either way
+
 data TitleConfig
-    = TAnchor APosition
-      -- ^ Default anchor position when placing titles.
+    = TAlign HAlign
+      -- ^ The horizontal text alignment for title text.
+      --
+      --   @since 0.5.0.0
+    | TAnchor APosition
+      -- ^ The anchor position when placing titles.
     | TAngle Angle
-      -- ^ Default angle when orientating titles.
+      -- ^ The angle when orientating titles.
     | TBaseline VAlign
-      -- ^ Default vertical alignment when placing titles.
-    | TColor Color
-      -- ^ Default color when showing titles.
+      -- ^ The vertical alignment when placing titles.
+    | TColor Color  -- this allows for null as a color
+      -- ^ The color of title text.
+    | TdX Double
+      -- ^ The offset, in pixels, for the x coordinate of title and subtitle text.
+      --
+      --   @since 0.5.0.0
+    | TdY Double
+      -- ^ The offset, in pixels, for the x coordinate of title and subtitle text.
+      --
+      --   @since 0.5.0.0
     | TFont T.Text
       -- ^ Default font when showing titles.
     | TFontSize Double
@@ -1187,7 +1279,11 @@ data TitleConfig
       --
       --   @since 0.4.0.0
     | TLimit Double
-      -- ^ Default maximum length, in pixels, of titles.
+      -- ^ The maximum length, in pixels, of title and subtitle text.
+    | TLineHeight Double
+      -- ^ Line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.5.0.0
     | TOffset Double
       -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
@@ -1199,26 +1295,76 @@ data TitleConfig
       --   properties.
       --
       --   @since 0.4.0.0
+    | TSubtitle T.Text
+      -- ^ Subtitle text. This is placed below the title text. Use \n
+      --   to insert line breaks into the subtitle.
+      --
+      --   This should only be used with 'title' and not 'TitleConfig'.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleColor Color
+      -- ^ Subtitle color.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFont T.Text
+      -- ^ Subtitle font.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontSize Double
+      -- ^ Subtitle font size, in pixels.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontStyle T.Text
+      -- ^ Subtitle font style.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleFontWeight FontWeight
+      -- ^ Subtitle font weight.
+      --
+      --   @since 0.5.0.0
+    | TSubtitleLineHeight Double
+      -- ^ Subtitle line height, in pixels.
+      --
+      --   @since 0.5.0.0
+    | TSubtitlePadding Double
+      -- ^ Padding, in pixels, between the title and Subtitle.
+      --
+      --   @since 0.5.0.0
     | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
       --
+      --   This should only be used with 'title' and not 'TitleConfig'.
+      --
       --   @since 0.4.0.0
 
+
 titleConfigSpec :: TitleConfig -> LabelledSpec
+titleConfigSpec (TAlign ha) = "align" .= hAlignLabel ha
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
 titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
-titleConfigSpec (TColor clr) = "color" .= clr
+titleConfigSpec (TColor clr) = "color" .= fromColor clr
+titleConfigSpec (TdX x) = "dx" .= x
+titleConfigSpec (TdY x) = "dy" .= x
 titleConfigSpec (TFont fnt) = "font" .= fnt
 titleConfigSpec (TFontSize x) = "fontSize" .= x
 titleConfigSpec (TFontStyle s) = "fontStyle" .= s
 titleConfigSpec (TFontWeight w) = "fontWeight" .= fontWeightSpec w
 titleConfigSpec (TFrame tf) = "frame" .= titleFrameSpec tf
 titleConfigSpec (TLimit x) = "limit" .= x
+titleConfigSpec (TLineHeight x) = "lineHeight" .= x
 titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
 titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
 titleConfigSpec (TStyle styles) = "style" .= styles
+titleConfigSpec (TSubtitle s) = "subtitle" .= splitOnNewline s
+titleConfigSpec (TSubtitleColor s) = "subtitleColor" .= fromColor s
+titleConfigSpec (TSubtitleFont s) = "subtitleFont" .= s
+titleConfigSpec (TSubtitleFontSize x) = "subtitleFontSize" .= x
+titleConfigSpec (TSubtitleFontStyle s) = "subtitleFontStyle" .= s
+titleConfigSpec (TSubtitleFontWeight fw) = "subtitleFontWeight" .= fontWeightSpec fw
+titleConfigSpec (TSubtitleLineHeight x) = "subtitleLineHeight" .= x
+titleConfigSpec (TSubtitlePadding x) = "subtitlePadding" .= x
 titleConfigSpec (TZIndex z) = "zindex" .= z
 
 
@@ -1274,11 +1420,17 @@ Prior to @0.4.0.0@ there was no way to set the title options
 -}
 title ::
   T.Text
+  -- ^ The title. Any @'\n'@ characters are taken to mean a multi-line
+  --   string and indicate a line break.
+  --
+  --   In version @0.5.0.0@, support for line breaks was added.
   -> [TitleConfig]
   -- ^ Configure the appearance of the title.
   --
   --   @since 0.4.0.0
   -> PropertySpec
-title s [] = (VLTitle, toJSON s)
-title s topts = (VLTitle,
-                 object ("text" .= s : map titleConfigSpec topts))
+title s [] =
+  (VLTitle, splitOnNewline s)
+title s topts =
+  (VLTitle,
+    object ("text" .= splitOnNewline s : map titleConfigSpec topts))

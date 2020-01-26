@@ -33,6 +33,8 @@ testSpecs = [ ("data1", data1)
             , ("geodata2", geodata2)
             , ("flatten1", flatten1)
             , ("fold1", fold1)
+            , ("pivot1", pivot1)
+            , ("pivotDocs", pivotDocs)
             , ("impute1", impute1)
             , ("impute2", impute2)
             , ("impute3", impute3)
@@ -51,13 +53,15 @@ testSpecs = [ ("data1", data1)
             , ("filter2", filter2)
             , ("annotate1", annotate1)
             , ("null1", null1)
+            -- , ("key1", key1)
             ]
 
 
 -- We do not provide these in hvega, so define them here to make copying
 -- the Elm tests over easier.
 --
-pOrdinal, pQuant :: PositionChannel
+pNominal, pOrdinal, pQuant :: PositionChannel
+pNominal = PmType Nominal
 pOrdinal = PmType Ordinal
 pQuant = PmType Quantitative
 
@@ -313,6 +317,44 @@ fold1 =
                 . color [ MName "country", MmType Nominal ]
     in
     toVegaLite [ dvals [], trans [], mark Bar [], enc [] ]
+
+
+pivot1 :: VegaLite
+pivot1 =
+  let dvals = dataFromColumns []
+              . dataColumn "country" (Strings [ "USA", "USA", "Canada", "Canada" ])
+              . dataColumn "medalType" (Strings [ "gold", "silver", "gold", "silver" ])
+              . dataColumn "count" (Numbers [ 10, 20, 7, 26 ])
+
+      trans = transform
+              . pivot "medalType" "count" [ PiGroupBy [ "country" ] ]
+
+      enc = encoding
+            . position X [ pName "country", pNominal ]
+            . position Y [ PRepeat Flow, pQuant ]
+            . color [ MName "country", MmType Nominal ]
+
+      spec = asSpec [ dvals [], trans [], enc [], mark Bar [] ]
+
+  in toVegaLite [ repeatFlow [ "gold", "silver" ], specification spec ]
+
+
+-- example from the pivot documentation
+pivotDocs :: VegaLite
+pivotDocs =
+  let dvals = dataFromColumns []
+              . dataColumn "city" (Strings [ "Bristol", "Bristol", "Sheffield", "Sheffield", "Glasgow", "Glasgow" ])
+              . dataColumn "temperature" (Numbers [ 12, 14, 11, 13, 7, 10 ])
+              . dataColumn "year" (Numbers [ 2017, 2018, 2017, 2018, 2017, 2018 ])
+
+      trans = transform
+              . pivot "year" "temperature" [ PiGroupBy [ "city" ] ]
+
+      enc = encoding
+            . position X [ pName "2017", pQuant ]
+            . position Y [ pName "city", pNominal ]
+
+  in toVegaLite [ dvals [], trans [], enc [], mark Circle [] ]
 
 
 imputeData :: [DataColumn] -> Data
@@ -624,3 +666,26 @@ null1 =
                  . dataRow [("x", Number 7), ("y", Number 20)]
                  $ []
              ]
+
+
+{-
+
+In adding this test I found the output did not validate against
+version 4.0.2, so I've left out for now
+
+key1 :: VegaLite
+key1 =
+  let dvals = dataFromColumns []
+                . dataColumn "x1" (Numbers [ 4, 5, 6 ])
+                . dataColumn "x2" (Numbers [ 5, 6, 8 ])
+                . dataColumn "y" (Numbers [ 2, 2, 5 ])
+                . dataColumn "flag" (Strings [ "good", "bad", "good" ])
+
+      enc = encoding
+             . position X [ PName "x1", PmType Quantitative ]
+             . position Y [ PName "y", PmType Quantitative ]
+             . keyChannel "flag"
+
+  in toVegaLite [ dvals [], enc [], mark Line [] ]
+
+-}

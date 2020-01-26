@@ -4,11 +4,14 @@
             "filter": "datum.year == 2000"
         }
     ],
+    "height": {
+        "step": 17
+    },
     "mark": "bar",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "people",
@@ -20,9 +23,6 @@
         },
         "y": {
             "field": "age",
-            "scale": {
-                "rangeStep": 17
-            },
             "sort": "descending",
             "type": "ordinal"
         }

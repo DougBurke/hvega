@@ -1,0 +1,43 @@
+{
+    "mark": {
+        "borders": {},
+        "extent": "iqr",
+        "interpolate": "monotone",
+        "type": "errorband"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "width": 600,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "Year",
+            "timeUnit": "year",
+            "type": "temporal",
+            "axis": {
+                "gridWidth": {
+                    "value": 1,
+                    "condition": {
+                        "value": 4,
+                        "test": {
+                            "equal": {
+                                "date": 1,
+                                "month": "Jan"
+                            },
+                            "field": "value",
+                            "timeUnit": "monthdate"
+                        }
+                    }
+                }
+            }
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "scale": {
+                "zero": false
+            },
+            "type": "quantitative"
+        }
+    }
+}

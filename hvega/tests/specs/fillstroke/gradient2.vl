@@ -1,0 +1,54 @@
+{
+    "mark": {
+        "color": {
+            "x2": 1,
+            "y1": 1,
+            "stops": [
+                {
+                    "color": "red",
+                    "offset": 0
+                },
+                {
+                    "color": "blue",
+                    "offset": 1
+                }
+            ],
+            "gradient": "linear",
+            "y2": 1,
+            "x1": 0
+        },
+        "type": "bar"
+    },
+    "data": {
+        "values": [
+            {
+                "value": 10,
+                "cat": "a"
+            },
+            {
+                "value": 5,
+                "cat": "b"
+            },
+            {
+                "value": 20,
+                "cat": "c"
+            },
+            {
+                "value": 8,
+                "cat": "d"
+            }
+        ]
+    },
+    "width": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "cat",
+            "type": "nominal"
+        },
+        "y": {
+            "field": "value",
+            "type": "quantitative"
+        }
+    }
+}

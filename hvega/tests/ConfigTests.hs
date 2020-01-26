@@ -25,8 +25,18 @@ testSpecs = [ ("default", defaultCfg)
             , ("mark1", markCfg1)
             , ("mark2", markCfg2)
             , ("padding", paddingCfg)
+            , ("paddingx", paddingXCfg)
+            , ("paddingy", paddingYCfg)
+            , ("paddingContent", paddingCntCfg)
+            , ("paddingNone", paddingNoneCfg)
+            , ("paddingPad", paddingPadCfg)
+            , ("paddingPadding", paddingPaddingCfg)
+            , ("paddingResize", paddingResizeCfg)
             , ("vbTest", vbTest)
             , ("axisCfg1", axisCfg1)
+            , ("titleCfg1", titleCfg1)
+            , ("titleCfg2", titleCfg2)
+            , ("titleCfg3", titleCfg3)
             ]
 
 singleVis :: ([a] -> (VLProperty, VLSpec)) -> VegaLite
@@ -153,6 +163,7 @@ vbTest =
                         , ( "mySecondStyle", [ MFill "black", MStroke "blue" ] )
                         ]
                     )
+                . configuration (View [ ViewBackgroundStyle [ VBFill (Just "#feb") ] ])
 
         streamSpec =
             asSpec
@@ -209,12 +220,24 @@ markCfg2 =
         & compositeVis
 
 
-paddingCfg :: VegaLite
-paddingCfg =
-    configure
-        . configuration (Autosize [ AFit ])
-        . configuration (Padding (PEdges 90 60 30 0))
-        & singleVis
+paddingTest :: Autosize -> VegaLite
+paddingTest a =
+  configure
+  . configuration (Autosize [ a ])
+  . configuration (Padding (PEdges 90 60 30 0))
+  & singleVis
+
+
+paddingCfg, paddingXCfg, paddingYCfg, paddingCntCfg, paddingNoneCfg,
+  paddingPadCfg, paddingPaddingCfg, paddingResizeCfg:: VegaLite
+paddingCfg = paddingTest AFit
+paddingXCfg = paddingTest AFitX
+paddingYCfg = paddingTest AFitY
+paddingCntCfg = paddingTest AContent
+paddingNoneCfg = paddingTest ANone
+paddingPadCfg = paddingTest APad
+paddingPaddingCfg = paddingTest APadding
+paddingResizeCfg = paddingTest AResize
 
 
 axisCfg1 :: VegaLite
@@ -227,3 +250,63 @@ axisCfg1 =
                              , TitleAnchor AEnd
                              ])
        & singleVis
+
+
+titleOpts :: [PropertySpec]
+titleOpts =
+  [ dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" [],
+    width 200
+  , height 200
+  , mark Circle []
+  , encoding
+      . position X [ PName "Horsepower"
+                   , PmType Quantitative ]
+      . position Y [ PName "Miles_per_Gallon"
+                   , PmType Quantitative ]
+      $ []
+  ]
+
+
+titleCfg1 :: VegaLite
+titleCfg1 =
+  toVegaLite
+    ((title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ])
+     : titleOpts)
+
+
+cfgOpts :: [TitleConfig]
+cfgOpts =
+  [ TAnchor AEnd
+  , TSubtitleColor "red"
+  , TSubtitleFont "serif"
+  , TSubtitleFontSize 10
+  , TSubtitleFontStyle "italic"
+  , TSubtitleFontWeight W900
+  , TSubtitleLineHeight 18
+  , TSubtitlePadding 60
+  , TLineHeight 20
+  , TdX (-30)
+  , TdY (10)
+  ]
+
+subtitle :: TitleConfig
+subtitle = TSubtitle "A subtitle\nalso over two lines"
+
+titleCfg2 :: VegaLite
+titleCfg2 =
+  toVegaLite
+    ((title "Car\nScatter"
+      (subtitle : cfgOpts))
+      : titleOpts)
+
+
+titleCfg3 :: VegaLite
+titleCfg3 =
+  let cfg = configure
+                . configuration
+                    (TitleStyle cfgOpts)
+
+  in toVegaLite
+     ( [ cfg []
+       , title "Car\nScatter" [ subtitle ]
+       ] ++ titleOpts )

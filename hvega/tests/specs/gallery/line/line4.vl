@@ -3,7 +3,10 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "width": {
+        "step": 50
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "site",
@@ -12,7 +15,6 @@
         "x": {
             "field": "year",
             "scale": {
-                "rangeStep": 50,
                 "padding": 0.5
             },
             "type": "ordinal"

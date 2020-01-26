@@ -1,0 +1,35 @@
+{
+    "height": 100,
+    "mark": "text",
+    "data": {
+        "values": [
+            {
+                "x": 10,
+                "y": 2
+            },
+            {
+                "x": 30,
+                "y": 5
+            },
+            {
+                "x": 40,
+                "y": 30
+            }
+        ]
+    },
+    "width": 100,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "text": {
+            "value": "🐕"
+        },
+        "x": {
+            "field": "x",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "y",
+            "type": "quantitative"
+        }
+    }
+}

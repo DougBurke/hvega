@@ -1,0 +1,44 @@
+{
+    "height": 200,
+    "config": {
+        "title": {
+            "dx": -30,
+            "subtitleFontWeight": 900,
+            "subtitleFont": "serif",
+            "subtitleFontSize": 10,
+            "subtitleLineHeight": 18,
+            "dy": 10,
+            "subtitlePadding": 60,
+            "anchor": "end",
+            "subtitleFontStyle": "italic",
+            "subtitleColor": "red",
+            "lineHeight": 20
+        }
+    },
+    "mark": "circle",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "width": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "title": {
+        "text": [
+            "Car",
+            "Scatter"
+        ],
+        "subtitle": [
+            "A subtitle",
+            "also over two lines"
+        ]
+    },
+    "encoding": {
+        "x": {
+            "field": "Horsepower",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "type": "quantitative"
+        }
+    }
+}

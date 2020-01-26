@@ -3,10 +3,11 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "row": {
             "field": "Origin",
+            "title": "Origin facet",
             "type": "ordinal"
         },
         "x": {
@@ -21,5 +22,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Disitributions of car engine power for different countries of origin"
+    "description": "Distributions of car engine power for different countries of origin"
 }

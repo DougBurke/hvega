@@ -1,0 +1,42 @@
+{
+    "transform": [
+        {
+            "as": "YearOfManufacture",
+            "calculate": "year(datum.Year)"
+        },
+        {
+            "filter": "datum.YearOfManufacture == 1970"
+        }
+    ],
+    "mark": {
+        "type": "point",
+        "filled": true
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "Origin",
+            "type": "nominal",
+            "legend": {
+                "symbolStrokeColor": "black",
+                "symbolStrokeWidth": 0.5,
+                "symbolType": "square"
+            }
+        },
+        "opacity": {
+            "value": 0.6
+        },
+        "x": {
+            "field": "Horsepower",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "type": "quantitative"
+        }
+    },
+    "description": "Legend using non-default bordered square symbols"
+}

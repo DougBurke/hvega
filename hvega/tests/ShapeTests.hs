@@ -38,6 +38,14 @@ testSpecs = [ ("defNominal", scatter1)
             , ("point5", point5)
             , ("point6", point6)
             , ("point7", point7)
+            , ("rounded1", rounded1)
+            , ("rounded2", rounded2)
+            , ("rounded3", rounded3)
+            , ("rounded4", rounded4)
+            , ("rounded5", rounded5)
+            , ("rounded6", rounded6)
+            , ("symbols1", symbols1)
+            , ("symbols2", symbols2)
             ]
 
 
@@ -316,3 +324,67 @@ point6 = pointChart "arrow-filled" True SymArrow
 
 point7 :: VegaLite
 point7 = pointChart "wedge-unfilled" False SymWedge
+
+
+rectTest :: [MarkProperty] -> VegaLite
+rectTest mps =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+      enc = encoding
+            . position X [ PName "Origin", PmType Nominal ]
+            . position Y [ PName "Cylinders", PmType Ordinal ]
+
+      -- using MSize here returns the warning
+      -- 'Cannot apply size to non-oriented mark "rect".'
+      -- from Vega Embed. If we take it out the visualization doesn't
+      -- "look as good".
+      --
+      rect = mark Rect (MSize 30 : MOpacity 0.6 : mps)
+
+  in toVegaLite [ width 200, height 200, dvals, enc [], rect ]
+
+
+rounded1, rounded2, rounded3, rounded4, rounded5, rounded6 :: VegaLite
+rounded1 = rectTest [ MCornerRadius 8 ]
+rounded2 = rectTest [ MCornerRadiusTL 8 ]
+rounded3 = rectTest [ MCornerRadiusTR 8 ]
+rounded4 = rectTest [ MCornerRadiusBL 8 ]
+rounded5 = rectTest [ MCornerRadiusBR 8 ]
+rounded6 = rectTest [ MCornerRadius 16, MCornerRadiusBL 0, MCornerRadiusTR 0 ]
+
+
+symbols1 :: VegaLite
+symbols1 =
+  let dvals = dataFromColumns []
+              . dataColumn "x" (Numbers [ 0 ])
+
+      shapeSpec sym = asSpec [ mark Point [ MFilled True
+                                          , MStroke "black"
+                                          , MSize 400
+                                          , MShape sym
+                                          , MStrokeWidth 0.5
+                                          ]
+                             ]
+
+      shapeList = [ SymCircle, SymSquare, SymDiamond, SymCross
+                  , SymTriangleUp, SymTriangleDown, SymTriangleLeft
+                  , SymTriangleRight, SymTriangle, SymArrow
+                  , SymWedge, SymStroke, SymPath "M -1 -1 L 1 1" ]
+
+      shapes = map shapeSpec shapeList
+
+  in toVegaLite [ dvals []
+                , columns 4
+                , vlConcat shapes
+                ]
+
+symbols2 :: VegaLite
+symbols2 =
+  chart "Legend using non-default bordered square symbols"
+        (color [ MName "Origin"
+               , MmType Nominal
+               , MLegend [ LSymbolType SymSquare
+                         , LSymbolStrokeColor "black"
+                         , LSymbolStrokeWidth 0.5
+                         ]
+               ]
+        )

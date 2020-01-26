@@ -49,8 +49,7 @@ table2 =
 
         conf =
             configure
-                . configuration (View [ ViewStrokeWidth 0 ])
-                . configuration (Scale [ SCRangeStep (Just 13) ])
+                . configuration (View [ ViewStrokeWidth 0, ViewStep 13 ])
                 . configuration (Axis [ Domain False ])
 
         enc =

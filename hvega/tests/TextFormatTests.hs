@@ -15,6 +15,7 @@ import Prelude hiding (filter)
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("textFormat1", textFormat1)
             , ("textFormat2", textFormat2)
+            , ("tstring", tString)
             ]
 
 textFormat1 :: VegaLite
@@ -22,7 +23,7 @@ textFormat1 =
     let
         xs = map (T.pack . show) [1981 .. 2001 :: Int]
         ys = map (\n -> 2011 + 1991 - n) [1991 .. 2011]
-        
+
         dataVals =
             dataFromColumns []
                 . dataColumn "a" (Strings xs)
@@ -81,3 +82,20 @@ textFormat2 =
     in
     toVegaLite [ width 100, dataVals [], trans []
                , mark Bar [], enc [] ]
+
+
+-- Add a basic test to try out TString; not really text formatting but related
+--
+tString :: VegaLite
+tString =
+  let dvals = dataFromColumns []
+                . dataColumn "x" (Numbers [10, 30, 40])
+                . dataColumn "y" (Numbers [2, 5, 30])
+
+      enc = encoding
+              . position X [ PName "x", PmType Quantitative ]
+              . position Y [ PName "y", PmType Quantitative ]
+              -- dog symbol
+              . text [ TString "🐕" ]
+
+  in toVegaLite [ width 100, height 100, dvals [], enc [], mark Text [] ]

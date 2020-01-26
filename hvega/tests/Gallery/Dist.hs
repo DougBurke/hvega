@@ -18,6 +18,7 @@ testSpecs = [ ("dist1", dist1)
             , ("dist3", dist3)
             , ("dist4", dist4)
             , ("dist5", dist5)
+            , ("quantile1", quantile1)
             ]
 
 
@@ -241,3 +242,22 @@ dist5 =
         , encAge []
         , layer [ specLWhisker, specUWhisker, specBox, specBoxMid ]
         ]
+
+
+quantile1 :: VegaLite
+quantile1 =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/normal-2d.json" []
+
+      trans = transform
+              . quantile "u" [ QtStep 0.01, QtAs "p" "v" ]
+              . calculateAs "quantileUniform(datum.p)" "unif"
+              . calculateAs "quantileNormal(datum.p)" "norm"
+
+      enc x y = encoding
+                . position X [ PName x, PmType Quantitative ]
+                . position Y [ PName y, PmType Quantitative ]
+
+      leftSpec = asSpec [ mark Point [], enc "unif" "v" [] ]
+      rightSpec = asSpec [ mark Point [], enc "norm" "v" [] ]
+
+  in toVegaLite [ dvals, trans [], hConcat [ leftSpec, rightSpec ] ]

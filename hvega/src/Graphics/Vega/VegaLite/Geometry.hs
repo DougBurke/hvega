@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Geometry
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -140,6 +140,11 @@ data Projection
       --   for more information.
       --
       --   An example: @Custom "winkle3"@
+    | EqualEarth
+      -- ^ An <https://github.com/d3/d3-geo#equal-earth Equal Earth map projection>
+      --   that provides a reasonable shape approximation while retaining relative areas.
+      --
+      --   @since 0.5.0.0
     | Equirectangular
       -- ^ An equirectangular map projection that maps longitude to x and latitude to y.
       --   While showing less area distortion towards the poles than the default 'Mercator'
@@ -156,6 +161,12 @@ data Projection
       --   values if no projection is set explicitly. It preserves shape (local angle) and
       --   lines of equal angular bearing remain parallel straight lines. The area is
       --   /significantly/ enlarged towards the poles.
+    | NaturalEarth1
+      -- ^ The <https://github.com/d3/d3-geo#geoNaturalEarth1 Natural Earth projection>
+      --   is neither conformal nor equal-area, but is designed to be \"appealing to the
+      --   eye\" for small-scale maps of the whole world.
+      --
+      --   @since 0.5.0.0
     | Orthographic
       -- ^ An orthographic map projection.
     | Stereographic
@@ -173,10 +184,12 @@ projectionLabel ConicConformal = "conicConformal"
 projectionLabel ConicEqualArea = "conicEqualarea"
 projectionLabel ConicEquidistant = "conicEquidistant"
 projectionLabel (Custom pName) = pName
+projectionLabel EqualEarth = "equalEarth"
 projectionLabel Equirectangular = "equirectangular"
 projectionLabel Gnomonic = "gnomonic"
 projectionLabel Identity = "identity"
 projectionLabel Mercator = "mercator"
+projectionLabel NaturalEarth1 = "naturalEarth1"
 projectionLabel Orthographic = "orthographic"
 projectionLabel Stereographic = "stereographic"
 projectionLabel TransverseMercator = "transverseMercator"
@@ -475,5 +488,3 @@ graticuleProperty (GrStep (lng, lat)) = "step" .= [lng, lat]
 graticuleProperty (GrStepMajor (lng, lat)) = "stepMajor" .= [lng, lat]
 graticuleProperty (GrStepMinor (lng, lat)) = "stepMinor" .= [lng, lat]
 graticuleProperty (GrPrecision x) = "precision" .= x
-
-

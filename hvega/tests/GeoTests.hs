@@ -66,7 +66,8 @@ defaultSize2 :: VegaLite
 defaultSize2 =
     toVegaLite
         [ description "Default map size with view width and height specified in config."
-        , configure $ configuration (View [ ViewWidth 500, ViewHeight 300 ]) []
+        , configure $ configuration (View [ ViewContinuousWidth 500
+                                          , ViewContinuousHeight 300 ]) []
         , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "counties" ]
         , mark Geoshape []

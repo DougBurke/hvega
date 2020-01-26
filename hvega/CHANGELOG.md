@@ -1,6 +1,160 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.5.0.0
+
+Update to version 4.0 of the Vega-Lite specification (tested against
+version 4.0.2). There are several changes in default behavior due
+to this (tooltips are now disabled by default, the background now defaults
+to white rather than transparent), although this is also controlled by
+how the Vega-Lite visualization is rendered, which can make tracking
+down why something has changed a bit awkward.
+
+There is more-extensive use of type aliases, such as 'Color',
+and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
+These do not add any type safety, but help the documentation (as they provide
+a single place to explain the meaning and any constraints on a
+particular value).
+
+Minor documentation improvements.
+
+### New functionality
+
+Title (and subtitle) strings can now be split across multiple lines:
+use '\n' to indicate a line break.
+
+Colors are now stripped of extraneous white space, and if empty
+converted to the JSON null value rather than an empty string.
+
+The `pivot` transform has been added, along with the `PivotProperty`
+preferences type. This is the inverse of `fold`.
+
+The `density` transform has been added, along with the `DensityProperty`
+configuration type, to support kernel density estimation (e.g. to
+generate a continuous distribtion from a discrete one).
+
+The `loess` transform has been added, along with the `LoessProperty`
+configuration type, to support scatterplot smoothing.
+
+The `regression` transform has been added, along with the `RegressionProperty`
+and `RegressionMethod` configuration types, to support regression
+analysis.
+
+The `quantile` transform has been added, along with the `QuantileProperty`
+type, to support quantile analysis.
+
+The `url` encoding has been added, which allows you to view images (e.g.
+PNG) via the (new) `Image` mark type. The `MAspect` `MarkProperty` has
+been added as a configuration option.
+
+The `lookupSelection` transform has been added to support joining
+data via a selection. The `SelectionLabel` type alias has been added
+to help the documentation.
+
+The `heightOfContainer` and `widthOfContainer` functions
+have been added to support responsive sizing.
+
+### Breaking changes
+
+The `lookup` transform has been changed so that the list of fields
+stored when the keys match is now specified by the `LookupFields`
+type (rather than a list of field names). This supports providing
+aliases and handling of default values, and now subsumes the `lookupAs`
+encoding, which has been marked as deprecated.
+
+The `RemoveInvalid` constructor has removed from `ConfigurationProperty`,
+and has been replaced by the `MRemoveInvalid` constructor of
+`MarkProperty`. The `Stack` constructor was removed.
+
+The `SRangeStep` constructor from `ScaleProperty` has been removed.
+The `widthStep` and `heightStep` functions should be used instead.
+
+The `ViewWidth` and `ViewHeight` constuctors of `ViewConfig` have
+been replaced by `ViewContinuousWidth`, `ViewContinuousHeight`,
+`ViewDiscreteWidth`, and `ViewDiscreteHeight` (well, the symbols
+remain but have been deprecated for the continous-named versions).
+
+The `SCRangeStep` and `SCTextXRangeStep` constructors of `ScaleConfig`
+have been removed. The new `ViewStep` constructor of `ViewConfig` should be
+used as a replacement.
+
+The `ShortTimeLabels`, `LeShortTimeLabels`, and `MShortTimeLabels`
+constructors - from `AxisConfig`, `LegendConfg`, and `MarkProperty`
+respectively - have been removed.
+
+### New constructors
+
+This section does not repeat names mentioned above.
+
+`AxisProperty` has gained the `AxDataCondition` constructor for
+marking a subset of axis properties as being conditional on their
+position, and the `ConditionalAxisProperty` for defining which
+properties (grid, label, and tick) can be used in this way. It has
+also gained the `AxLabelExpr` constructor, which allows you to
+change the content of axis labels, `AxTickBand` for positioning the
+labels for band scales (and the associated `BandAlign` type),
+`AxTitleLineHeight` to specify the line height, and `AxTranslateOffset`
+for applying a translation offset to the axis group.
+
+`AxisConfig` has gained `TickBand`, `TitleLineHeight`, and
+`TranslateOffset`, matching the additions to `AxisProperty`.
+
+The `ViewBackgroundStyle` constructor has been added to `ViewConfig`.
+
+The `TitleConfig` type gained the following constructors:
+`TAlign`, `TdX`, `TdY`, `TLineHeight`, `TSubtitle`, `TSubtitleColor`,
+`TSubtitleFont`, `TSubtitleFontSize`, `TSubtitleFontStyle`,
+`TSubtitleFontWeight`, `TSubtitleLineHeight`, and `TSubtitlePadding`.
+
+Added `AFitX` and `AFitY` constructors to the `Autosize` type.
+
+The `SelectionProperty` type has gained the `BindLegend` constructor,
+and the associated `BindLegendProperty` type, to allow selection of
+a legend (categorical data only).
+
+The `TextChannel` type has gained the `TString` constructor, which
+lets you specify the text content as a literal.
+
+Two new projections - `EqualEarth` and `NaturalEarth1` - have been
+added to the `Projection` type.
+
+Support for color gradients has been added for marks via the
+`MColorGradient`, `MFillGradient`, and `MStrokeGradient` constructors of
+`MarkProperty`, along with the new `ColorGradient` and
+`GradientProperty` types for defining the appearance of the
+gradient. The `GradientCoord` and `GradientStops` type aliases
+have also been added (although they provides no type safety).
+
+The `MCornerRadius`, `MCornerRadiusTL`, `MCornerRadiusTR`, `MCornerRadiusBL`,
+and `MCornerRadiusBR` constructors have been added to `MarkProperty` to
+set the corner radii of rectangular marks.
+
+The `MDir`, `MEllipsis`, and `MLimit` constructors have been added to
+`MarkProperty` to control how text is truncated. The `TextDirection` type
+has been added for use with `MDir`.
+
+The `MarkProperty` type has gained `MLineBreak` and `MLineHeight` constructors
+for controlling how multi-line labels are displayed. Note that `hvega` will
+always split on the newline character (`\n`), which will over-ride the
+`MLineBreak` setting.
+
+The `DTMonthNum` constructor has been added to `DateTime`.
+
+The `BinProperty` type has gained the `SelectionExtent`
+constructor, for defining a bin range via an interval selection.
+
+The `PositionChannel` type has gained the `PBand` constructor,
+for defining the size of a mark relative to a band, and `MarkProperty`
+has added `MTimeUnitBand` and `MTimeUnitBandPosition`.
+
+### Bug fixes
+
+The selection property `SInitInterval Nothing Nothing` is now a
+no-op (as it does nothing), rather than generating invalid JSON.
+
+The following options or symbols generated incorrect JSON output:
+`ONone`, `LSymbolStrokeWidth`, `LeLabelOpacity`.
+
 ## 0.4.1.2
 
 Documentation fix (rendering of a URL), provided by Alexey Kuleshevich
@@ -143,7 +297,7 @@ The MarkChannel type has been expanded to include: `MBinned`, `MSort`,
 The LineMarker and PointMarker types have been added for use with
 `MLine` and `MPoint` respectively (both from `MarkProperty`).
 
-The ability to define the binning property with 
+The ability to define the binning property with
 `binAs`, `DBin`, `FBin`, `HBin`, `MBin`, `OBin`, `PBin`, and `TBin` has
 been expanded by adding the `AlreadyBinned` and `BinAnchor`
 constructors to `BinProperty`, as well as changing the `Divide`

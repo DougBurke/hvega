@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Transform
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -35,6 +35,7 @@ module Graphics.Vega.VegaLite.Transform
        , imputeFields_
        , bin
        , binProperty
+       , operationSpec
        , windowFieldProperty
        , windowPropertySpec
 
@@ -54,7 +55,9 @@ import Graphics.Vega.VegaLite.Data
   , dataValuesSpecs
   )
 import Graphics.Vega.VegaLite.Foundation
-  ( SortField
+  ( FieldName
+  , SelectionLabel
+  , SortField
   , sortFieldSpec
   , field_
   , fromT
@@ -73,7 +76,7 @@ The @Average@ constructor was removed in version @0.4.0.0@; use 'Mean' instead.
 
 -}
 data Operation
-    = ArgMax (Maybe T.Text)
+    = ArgMax (Maybe FieldName)
       -- ^ An input data object containing the maximum field value to be used
       --   in an aggregation operation.
       --
@@ -105,7 +108,7 @@ data Operation
       --   @
       --
       --   The optional field name was added in the @0.4.0.0@ release.
-    | ArgMin (Maybe T.Text)
+    | ArgMin (Maybe FieldName)
       -- ^ An input data object containing the minimum field value to be used
       --   in an aggregation operation. See 'ArgMax' for a discussion of the
       --   optional argument.
@@ -196,7 +199,7 @@ data Window
     | WParam Int
       -- ^ Numeric parameter for window-only operations that can be parameterised
       --   ('Ntile', 'Lag', 'Lead' and 'NthValue').
-    | WField T.Text
+    | WField FieldName
       -- ^ Field for which to compute a window operation. Not needed for operations
       --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
 
@@ -298,6 +301,22 @@ data BinProperty
       --   such as multiples of ten.
       --
       --   Default is @True@.
+    | SelectionExtent SelectionLabel
+      -- ^ Set the range based on an interactive selection. The label
+      --   must reference an interval selection, but this constraint is
+      --   /not enforced/ at compile or run time.
+      --
+      --   @
+      --   sel = 'Graphics.Vega.VegaLite.selection'
+      --         . 'Graphics.Vega.VegaLite.select' \"brush\" 'Graphics.Vega.VegaLite.Interval' [ 'Graphics.Vega.VegaLite.Encodings' [ 'Graphics.Vega.VegaLite.ChX' ] ]
+      --   enc = 'Graphics.Vega.VegaLite.encoding'
+      --         . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' \"temperature\"
+      --                      , 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Quantitative'
+      --                      , 'Graphics.Vega.VegaLite.PBin' [ 'SelectionExtent' \"brush\" ]
+      --                      ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | Step Double
       -- ^ The step size to use between bins.
       --
@@ -312,6 +331,7 @@ binProperty (BinAnchor x) = "anchor" .= x
 binProperty (Base x) = "base" .= x
 binProperty (Divide xs) = "divide" .= xs
 binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
+binProperty (SelectionExtent s) = "extent" .= object [ "selection" .= s ]
 binProperty (MaxBins n) = "maxbins" .= n
 binProperty (MinStep x) = "minstep" .= x
 binProperty (Nice b) = "nice" .= b
@@ -340,7 +360,7 @@ data WindowProperty
     | WIgnorePeers Bool
       -- ^ Should the sliding window in a window transform ignore peer
       --   values (those considered identical by the sort criteria).
-    | WGroupBy [T.Text]
+    | WGroupBy [FieldName]
       -- ^ The fields for partitioning data objects in a window transform
       --   into separate windows. If not specified, all points will be in a
       --   single group.
@@ -398,7 +418,7 @@ data ImputeProperty
       --
       --   When using @ImMethod 'ImValue'@, the replacement value is
       --   set with 'ImNewValue'.
-    | ImGroupBy [T.Text]
+    | ImGroupBy [FieldName]
       -- ^ Allow imputing of missing values on a per-group basis. For use with the impute
       --   transform only and not a channel encoding.
     | ImNewValue DataValue
@@ -445,15 +465,15 @@ impute_ ips = "impute" .= object (map imputeProperty ips)
 
 
 imputeFields_ ::
-  T.Text
+  FieldName
   -- ^ The data field to process.
-  -> T.Text
+  -> FieldName
   -- ^ The key field to uniquely identify data objects within a group.
   -> [ImputeProperty]
   -- ^ Define how the imputation works.
   -> LabelledSpec
-imputeFields_ fields key imProps =
-  let ags = [ fromT fields
+imputeFields_ field key imProps =
+  let ags = [ fromT field
             , fromT key
             , toSpec (mapMaybe imputePropertySpecFrame imProps)
             , toSpec (mapMaybe imputePropertySpecKeyVals imProps)

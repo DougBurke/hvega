@@ -1,6 +1,6 @@
 {-|
 Module      : Graphics.Vega.VegaLite
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -12,8 +12,8 @@ This is a port of the
 written by Jo Wood of the giCentre at the City
 University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
-to create a Vega-Lite specification, targeting __version 3__ of the
-<https://vega.github.io/schema/vega-lite/v3.json JSON schema>.  The
+to create a Vega-Lite specification, targeting __version 4__ of the
+<https://vega.github.io/schema/vega-lite/v4.json JSON schema>.  The
 ihaskell-hvega module provides an easy way to embed Vega-Lite
 visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
@@ -74,7 +74,7 @@ We can inspect how the encoded JSON looks like in an GHCi session:
 
 @
 > 'A.encode' $ 'VL.fromVL' vl1
-> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https:\/\/vega.github.io\/schema\/vega-lite\/v3.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
+> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https:\/\/vega.github.io\/schema\/vega-lite\/v4.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
 @
 
 The produced JSON can then be processed with vega-lite, which renders the following image:
@@ -108,7 +108,14 @@ module Graphics.Vega.VegaLite
        , VL.BuildLabelledSpecs
        , VL.Angle
        , VL.Color
+       , VL.DashStyle
+       , VL.DashOffset
+       , VL.FieldName
+       , VL.GradientCoord
+       , VL.GradientStops
        , VL.Opacity
+       , VL.SelectionLabel
+       , VL.VegaExpr
        , VL.ZIndex
        , VL.combineSpecs
        , VL.toHtml
@@ -218,14 +225,23 @@ module Graphics.Vega.VegaLite
 
        , VL.flatten
        , VL.flattenAs
+
+         -- ** Folding and Pivoting
+         --
+         -- $foldpivot
+
        , VL.fold
        , VL.foldAs
+       , VL.pivot
+       , VL.PivotProperty(..)
 
          -- ** Relational Joining (lookup)
          --
          -- $joining
 
        , VL.lookup
+       , VL.lookupSelection
+       , VL.LookupFields(..)
        , VL.lookupAs
 
          -- ** Data Imputation
@@ -241,6 +257,35 @@ module Graphics.Vega.VegaLite
          -- $sampling
 
        , VL.sample
+
+         -- ** Density Estimation
+         --
+         -- $density
+
+       , VL.density
+       , VL.DensityProperty(..)
+
+         -- ** Loess Trend Calculation
+         --
+         -- $loess
+
+       , VL.loess
+       , VL.LoessProperty(..)
+
+         -- ** Regression Calculation
+         --
+         -- $regression
+
+       , VL.regression
+       , VL.RegressionProperty(..)
+       , VL.RegressionMethod(..)
+
+         -- ** Qualtile Calculation
+         --
+         -- $quantile
+
+       , VL.quantile
+       , VL.QuantileProperty(..)
 
          -- ** Window Transformations
          --
@@ -275,6 +320,9 @@ module Graphics.Vega.VegaLite
        , VL.LineMarker(..)
        , VL.MarkErrorExtent(..)
        , VL.TooltipContent(..)
+       , VL.ColorGradient(..)
+       , VL.GradientProperty(..)
+       , VL.TextDirection(..)
 
          -- ** Cursors
          --
@@ -312,13 +360,15 @@ module Graphics.Vega.VegaLite
          -- $axisprops
 
        , VL.AxisProperty(..)
+       , VL.ConditionalAxisProperty(..)
 
          -- ** Positioning Constants
          --
-         -- *** Text Alignment
+         -- *** Alignment
 
        , VL.HAlign(..)
        , VL.VAlign(..)
+       , VL.BandAlign(..)
 
          -- *** Overlapping text
 
@@ -371,6 +421,12 @@ module Graphics.Vega.VegaLite
 
        , VL.hyperlink
        , VL.HyperlinkChannel(..)
+
+         -- ** URL Channel
+         --
+         -- $urlchannel
+
+       , VL.url
 
          -- ** Order Channel
          --
@@ -470,6 +526,7 @@ module Graphics.Vega.VegaLite
        , VL.Selection(..)
        , VL.SelectionProperty(..)
        , VL.Binding(..)
+       , VL.BindLegendProperty(..)
        , VL.InputProperty(..)
        , VL.SelectionMarkProperty(..)
 
@@ -492,7 +549,11 @@ module Graphics.Vega.VegaLite
        , VL.name
        , VL.description
        , VL.height
+       , VL.heightOfContainer
+       , VL.heightStep
        , VL.width
+       , VL.widthOfContainer
+       , VL.widthStep
        , VL.padding
        , VL.autosize
        , VL.background
@@ -591,6 +652,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.5
+         --
+         -- $update0500
+
          -- ** Version 0.4
          --
          -- $update0400
@@ -669,11 +734,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 
 -- $flattening
 -- See the Vega-Lite [flatten](https://vega.github.io/vega-lite/docs/flatten.html)
--- and [fold](https://vega.github.io/vega-lite/docs/fold.html)
 -- documentation.
 
+-- $foldpivot
+-- Data tidying operations that reshape the rows and columns of a dataset.
+-- See the Vega-Lite [fold](https://vega.github.io/vega-lite/docs/fold.html) and
+-- [pivot](https://vega.github.io/vega-lite/docs/pivot.html) documentation.
+
 -- $joining
--- See the
+-- Create lookups between data tables in order to join values from
+-- multiple sources. See the
 -- [Vega-Lite lookup documentation](https://vega.github.io/vega-lite/docs/lookup.html).
 
 -- $imputation
@@ -681,7 +751,19 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- [Vega-Lite impute documentation](https://vega.github.io/vega-lite/docs/impute.html#transform).
 
 -- $sampling
--- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html)
+-- See the [Vega-Lite sample documentation](https://vega.github.io/vega-lite/docs/sample.html).
+
+-- $density
+-- See the [Vega-Lite density documentation](https://vega.github.io/vega-lite/docs/density.html).
+
+-- $loess
+-- See the [Vega-Lite loess documentation](https://vega.github.io/vega-lite/docs/loess.html).
+
+-- $regression
+-- See the [Vega-Lite regression documentation](https://vega.github.io/vega-lite/docs/regression.html).
+
+-- $quantile
+-- See the [Vega-Lite quantile documentation](https://vega.github.io/vega-lite/docs/quantile.html).
 
 -- $window
 -- See the Vega-Lite
@@ -753,6 +835,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- option of changing the cursor style when hovering, so an encoding will usually
 -- pair hyperlinks with other visual channels such as marks or texts.
 
+-- $urlchannel
+-- Data-driven URL used for 'VL.Image' specification: a data field can contain
+-- URL strings defining the location of image files, or the URL can be
+-- given directly.
+
 -- $order
 -- Channels that relate to the order of data fields such as for sorting stacking order
 -- or order of data points in a connected scatterplot. See the
@@ -774,6 +861,19 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- a line chart with multiple lines to be created – one for each group. See the
 -- <https://vega.github.io/vega-lite/docs/encoding.html#detail Vega-Lite documentation>
 -- for more information.
+
+-- NOTE: at present we don't support keyChannel, but leave in in case we
+--       ever do.
+--
+-- ** Dynamic data
+--
+-- $dyndata
+-- Dynamic data (adding or changing values in an existing visualization)
+-- is possible with Vega Lite via the
+-- <https://vega.github.io/vega/docs/api/view/#data-and-scales Vega View data streaming API>.
+-- There is no direct support for this in @hvega@,
+-- which only handles setting up the original visualization, but
+-- the 'VL.keyChannel' enconding may be useful.
 
 -- $scaling
 -- Used to specify how the encoding of a data field should be applied. See the
@@ -925,6 +1025,199 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
 
+-- $update0500
+-- The @0.5.0.0@ release now creates specifications using version 4
+-- of the Vega-Lite schema (version 0.4 of @hvega@ used version 3).
+-- The 'VL.toVegaLiteSchema' function can be used along with the
+-- 'VL.vlSchema3' to use version 3 for the output.
+--
+-- There is more-extensive use of type aliases, such as 'VL.Color',
+-- and the introduction of several more (e.g. 'VL.DashStyle' and
+-- 'VL.FieldName'). These do not add any type safety, but help the
+-- documentation (as they provide a single place to explain the meaning
+-- and any constraints on a particular value).
+--
+-- Documentation has been added to several data types.
+--
+-- __Changes in Vega-Lite 4__:
+--
+-- * The background of a visualization is now white by default whereas in
+--   previous versions it was transparent. If you
+--   need a transparent background then add the following configuration
+--   to the visualization:
+--   @'VL.configuration' ('VL.Background' \"rgba(0,0,0,0)\")@.
+--
+-- * Tooltips are now disabled by default. To enable, either use the
+--   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.
+--
+-- * Title (and subtitle) strings can now be split across multiple lines:
+--   use @'\n'@ to indicate where line breaks should occur.
+--
+-- Note that the behavior of a Vega-Lite visualization seems to depend
+-- on both the version of the schema it is using, and the version of the
+-- visualization software used to display it (e.g.
+-- <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
+--
+-- __New functionality__:
+--
+-- This does not include new configuration options listed in the
+-- \"new constructors\" section below.
+--
+-- * Colors are now cleaned of extraneous whitespace and, if empty,
+--   converted to the JSON null value. This should not change the behavior
+--   of any existing visualization.
+--
+-- * The 'VL.pivot' transform has been added, along with the 'VL.PivotProperty'
+--   preferences type. This is the inverse of 'VL.fold'.
+--
+-- * The 'VL.density' transform has been added, along with the 'VL.DensityProperty'
+--   type, to support kernel density estimation (such as generating a
+--   continuous distribution from a discrete one).
+--
+-- * The 'VL.loess' transform has been added, along with the 'VL.LoessProperty'
+--   type, to support estimating a trend (scatterplot smoothing).
+--
+-- * The 'VL.regression' transform has been added, along with the 'VL.RegressionProperty'
+--   and 'VL.RegressionMethod' types, to support regression analysis.
+--
+-- * The 'VL.quantile' transform has been added, along with the
+--   'VL.QuantileProperty' type, to support quantile analysis.
+--
+-- * The 'VL.url' encoding has been added for displaying images (via the
+--   new 'VL.Image' mark type.
+--
+-- * The 'VL.lookupSelection' transform has been added to support
+--   joining data via a selection. The 'VL.SelectionLabel' type alias
+--   has been added as a guide for the documentation.
+--
+-- * The 'VL.heightOfContainer' and 'VL.widthOfContainer' functions
+--   have been added to support responsive sizing, although I have not
+--   had much success in getting them to work!
+--
+-- __Breaking changes__:
+--
+-- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
+--   type rather than a list of field names. The 'VL.lookupAs' function
+--   is deprecated, as its functionality is now possible with
+--   'VL.lookup'.
+--
+-- * The @RemoveInvalid@ constructor has been removed from
+--   'VL.ConfigurationProperty'. To indicate how missing values should
+--   be handled use the new 'VL.MRemoveInvalid' constructor from
+--   'VL.MarkProperty' instead. This means changing
+--   @'VL.configuration' (RemoveInvalid b)@ to
+--   @'VL.configuration' ('VL.MarkStyle' ['VL.MRemoveInvalid' b])@.
+--
+-- * The @Stack@ constructor has been removed from
+--   'VL.ConfigurationProperty'.
+--
+-- * The @SRangeStep@ constructor from 'VL.ScaleProperty' has been
+--   removed. The 'VL.widthStep' and 'VL.heightStep' functions should
+--   be used instead.
+--
+-- * The @ViewWidth@ and @ViewHeight@ constructors from 'VL.ViewConfig'
+--   have been replaced by 'VL.ViewContinuousWidth', 'VL.ViewContinuousHeight',
+--   'VL.ViewDiscreteWidth', and 'VL.ViewDiscreteHeight' constructors
+--   (actually, they remain but are now deprecated and the
+--   continuous-named versions should be used instead).
+--
+-- * The @SCRangeStep@ and @SCTextXRangeStep@ constructors of
+--   'VL.ScaleConfig' have been removed. The new 'VL.ViewStep' constructor
+--   of 'VL.ViewConfig' should be used instead. That is, users should
+--   change @'VL.configuration' ('VL.Scale' [SCRangeStep (Just x)])@
+--   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
+--
+-- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
+--   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
+--   and `VL.MarkProperty` respectively.
+--
+-- __New constructors__:
+--
+-- Note that some new constructors have been described in the \"breaking
+-- changes\" section above and so are not repeated here.
+--
+-- * 'VL.AxisProperty' has gained the 'VL.AxDataCondition' constructor for
+--   marking a subset of axis properties as being conditional on their
+--   position, and the 'VL.ConditionalAxisProperty' for defining which
+--   properties (grid, label, and tick) can be used in this way.
+--   It has also gained the 'VL.AxLabelExpr' constructor, which allows you
+--   to change the content of axis labels, 'VL.AxTickBand' for positioning
+--   the labels for band scales (and the associated 'VL.BandAlign' type),
+--   'VL.AxTitleLineHeight' to specify the line height, and
+--   'VL.AxTranslateOffset' for applying a translation offset to the
+--   axis group mark.
+--
+-- * 'VL.AxisConfig' has gained 'VL.TickBand', 'VL.TitleLineHeight', and
+--   'VL.TranslateOffset', matching the additions to 'VL.AxisProperty'.
+--
+-- * The 'VL.ViewBackgroundStyle' constructor has been added to 'VL.ViewConfig'.
+--
+-- * The 'VL.TitleConfig' type gained the following constructors:
+--   'VL.TAlign', 'VL.TdX', 'VL.TdY', 'VL.TLineHeight',
+--   'VL.TSubtitle', 'VL.TSubtitleColor', 'VL.TSubtitleFont',
+--   'VL.TSubtitleFontSize', 'VL.TSubtitleFontStyle',
+--   'VL.TSubtitleFontWeight', 'VL.TSubtitleLineHeight',
+--   and 'VL.TSubtitlePadding'.
+--
+-- * The 'VL.AFitX' and 'VL.AFitY' constructors have been added to the
+--   @Autosize@ type.
+--
+-- * The 'VL.SelectionProperty' type has gained the 'VL.BindLegend'
+--   constructor - and associated 'VL.BindLegendProperty' type - to
+--   allow selection of legend items (for categorical data only).
+--
+-- * The 'VL.TextChannel' type has gained 'VL.TString', which lets you specify
+--   the text content as a literal.
+--
+-- * Two new projections - 'VL.EqualEarth' and 'VL.NaturalEarth1' - have been
+--   added to the 'VL.Projection' type.
+--
+-- * Support for color gradients has been added for marks via the
+--   'VL.MColorGradient', 'VL.MFillGradient', and
+--   'VL.MStrokeGradient' constructors of
+--   'VL.MarkProperty', along with the new 'VL.ColorGradient' and
+--   'VL.GradientProperty' types for defining the appearance of the
+--   gradient. The 'VL.GradientCoord' and 'VL.GradientStops' type aliases
+--   have also been added (although they provides no type safety).
+--
+-- * The 'VL.Image' constructor has been added to 'VL.Mark', for use
+--   with the new 'VL.url' encoding, and 'VL.MAspect' to 'VL.MarkProperty'.
+--
+-- * The 'VL.MCornerRadius' constructor has been added to 'VL.MarkProperty'
+--   to set the corner radius of rectangular marks. If that's not enough,
+--   you can change individual corners with one of:
+--   'VL.MCornerRadiusTL', 'VL.MCornerRadiusTR', 'VL.MCornerRadiusBL',
+--   and 'VL.MCornerRadiusBR'.
+--
+-- * The 'VL.MDir', 'VL.MEllipsis', and 'VL.MLimit' constructors have
+--   been added to 'VL.MarkProperty' to control how text is
+--   truncated. The 'VL.TextDirection' type has been added for use
+--   with 'VL.MDir'.
+--
+-- * The 'VL.MarkProperty' type has gained 'VL.MLineBreak' and
+--   'VL.MLineHeight' constructors for controlling how multi-line
+--   labels are displayed. Note that @hvega@ will __always__ split on
+--   the newline character (@\\n@), which will over-ride the
+--   'VL.MLineBreak' setting.
+--
+-- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
+--
+-- * The 'VL.BinProperty' type has gained the 'VL.SelectionExtent'
+--   constructor, which defines the bin range as an interval selection.
+--
+-- * The 'VL.PositionChannel' type has gained 'VL.PBand', for defining
+--   the size of a mark relative to a band, and 'VL.MarkProperty' has
+--   added 'VL.MTimeUnitBand' and 'VL.MTimeUnitBandPosition'.
+--
+-- __Bug Fixes__ in this release:
+--
+-- * The selection property @'VL.SInitInterval' Nothing Nothing@ is
+--   now a no-op (as it does nothing), rather than generating invalid JSON.
+--
+-- * The following options or symbols generated incorrect JSON output:
+--   'VL.ONone', 'VL.LSymbolStrokeWidth', 'VL.LeLabelOpacity'.
+--
+
 -- $update0400
 -- The @0.4.0.0@ release added a large number of functions, types, and
 -- constructors, including:
@@ -950,11 +1243,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.spacing', 'VL.spacingRC'); 'VL.VLUserMetadata' ('VL.usermetadata'); and
 -- 'VL.VLViewBackground' ('VL.viewBackground'). It is expected that you will be
 -- using the functions rather the constructors!
--- 
+--
 -- Four new type aliases have been added: 'VL.Angle', 'VL.Color', 'VL.Opacity',
 -- and 'VL.ZIndex'. These do not provide any new functionality but do
 -- document intent.
--- 
+--
 -- The 'VL.noData' function has been added to let compositions define the
 -- source of the data (whether it is from the parent or not), and data
 -- sources can be named with 'VL.dataName'. Data can be created with
@@ -965,25 +1258,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Aeson Value and then use 'VL.dataFromJson'. Support for data imputation
 -- (creating new values based on existing data) has been added, as
 -- discussed below.
--- 
+--
 -- The alignment, size, and composition of plots can be defined and
 -- changed with 'VL.align', 'VL.alignRC', 'VL.bounds', 'VL.center', 'VL.centerRC',
 -- 'VL.columns', 'VL.spacing', and 'VL.spacingRC'.
--- 
+--
 -- Plots can be combined and arranged with: 'VL.facet', 'VL.facetFlow',
 -- 'VL.repeat', 'VL.repeatFlow', and 'VL.vlConcat'
--- 
+--
 -- New functions for use in a 'VL.transform': 'VL.flatten', 'VL.flattenAs',
 -- 'VL.fold', 'VL.foldAs', 'VL.impute', and 'VL.stack'.
--- 
+--
 -- New functions for use with 'VL.encoding': 'VL.fillOpacity', 'VL.strokeOpacity',
 -- 'VL.strokeWidth',
--- 
+--
 -- The ability to arrange specifications has added the "flow" option
 -- (aka "repeat"). This is seen in the addition of the 'VL.Flow' constructor
 -- to the 'VL.Arrangement' type - which is used with 'VL.ByRepeatOp',
 -- 'VL.HRepeat', 'VL.MRepeat', 'VL.ORepeat', 'VL.PRepeat', and 'VL.TRepeat'.
--- 
+--
 -- The 'VL.Mark' type has gained 'VL.Boxplot', 'VL.ErrorBar', 'VL.ErrorBand', and
 -- 'VL.Trail' constructors. The 'VL.MarkProperty' type has gained 'VL.MBorders',
 -- 'VL.MBox', 'VL.MExtent', 'VL.MHeight', 'VL.MHRef', 'VL.MLine', 'VL.MMedian', 'VL.MOrder',
@@ -991,52 +1284,52 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.MStrokeMiterLimit', 'VL.MTicks', 'VL.MTooltip', 'VL.MWidth', 'VL.MX', 'VL.MX2',
 -- 'VL.MXOffset', 'VL.MX2Offset', 'VL.MY', 'VL.MY2', 'VL.MYOffset', and 'VL.MY2Offset'
 -- constructors.
--- 
+--
 -- The 'VL.Position' type has added 'VL.XError', 'VL.XError2', 'VL.YError', and
 -- 'VL.YError2' constructors.
--- 
+--
 -- The 'VL.MarkErrorExtent' type was added.
--- 
+--
 -- The 'VL.BooleanOp' type has gained the 'VL.FilterOp' and 'VL.FilterOpTrans'
 -- constructors which lets you use 'VL.Filter' expressions as part of a
 -- boolean operation. The 'VL.Filter' type has also gained expresiveness,
 -- with the 'VL.FLessThan', 'VL.FLessThanEq', 'VL.FGreaterThan', 'VL.FGreaterThanEq',
 -- and 'VL.FValid'.
--- 
+--
 -- The 'VL.Format' type has gained the 'VL.DSV' constructor, which allow you
 -- to specify the separator character for column data.
--- 
+--
 -- The MarkChannel type has been expanded to include: 'VL.MBinned', 'VL.MSort',
 -- 'VL.MTitle', and 'VL.MNoTitle'. The PositionChannel type has added
 -- 'VL.PHeight', 'VL.PWidth', 'VL.PNumber', 'VL.PBinned', 'VL.PImpute', 'VL.PTitle', and
 -- 'VL.PNoTitle' constructors.
--- 
+--
 -- The LineMarker and PointMarker types have been added for use with
 -- 'VL.MLine' and 'VL.MPoint' respectively (both from 'VL.MarkProperty').
--- 
--- The ability to define the binning property with 
+--
+-- The ability to define the binning property with
 -- 'VL.binAs', 'VL.DBin', 'VL.FBin', 'VL.HBin', 'VL.MBin', 'VL.OBin', 'VL.PBin', and 'VL.TBin' has
 -- been expanded by adding the 'VL.AlreadyBinned' and 'VL.BinAnchor'
 -- constructors to 'VL.BinProperty', as well as changing the 'VL.Divide'
 -- constructor (as described below).
--- 
+--
 -- The 'VL.StrokeCap' and 'VL.StrokeJoin' types has been added. These are used
 -- with 'VL.MStrokeCap', 'VL.VBStrokeCap', and 'VL.ViewStrokeCap' and
 -- 'VL.MStrokeJoin', 'VL.VBStrokeJoin', and 'VL.ViewStrokeJoin' respectively.
--- 
+--
 -- The 'VL.StackProperty' constructor has been added with the 'VL.StOffset'
 -- and 'VL.StSort' constructors. As discussed below this is a breaking change
 -- since the old StackProperty type has been renamed to 'VL.StackOffset'.
--- 
+--
 -- The 'VL.ScaleProperty' type has seen significant enhancement, by adding
 -- the constructors: 'VL.SAlign', 'VL.SBase', 'VL.SBins', 'VL.SConstant' and
--- 'VL.SExponent'.  THe 'VL.Scale' tye has added 'VL.ScSymLog' 'VL.ScQuantile',
+-- 'VL.SExponent'.  The 'VL.Scale' tye has added 'VL.ScSymLog' 'VL.ScQuantile',
 -- 'VL.ScQuantize', and 'VL.ScThreshold'.
--- 
+--
 -- The 'VL.SortProperty' type has new constructors: 'VL.CustomSort',
 -- 'VL.ByRepeatOp', 'VL.ByFieldOp', and 'VL.ByChannel'. See the breaking-changes
 -- section below for the constructors that were removed.
--- 
+--
 -- The 'VL.AxisProperty' type has seen significant additions, including:
 -- 'VL.AxBandPosition', 'VL.AxDomainColor', 'VL.AxDomainDash',
 -- 'VL.AxDomainDashOffset', 'VL.AxDomainOpacity', 'VL.AxDomainWidth',
@@ -1052,10 +1345,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.AxTitleAnchor', 'VL.AxTitleBaseline', 'VL.AxTitleColor', 'VL.AxTitleFont',
 -- 'VL.AxTitleFontSize', 'VL.AxTitleFontStyle', 'VL.AxTitleFontWeight',
 -- 'VL.AxTitleLimit', 'VL.AxTitleOpacity', 'VL.AxTitleX', and 'VL.AxTitleY'.
--- 
+--
 -- The 'VL.AxisConfig' has seen a similar enhancement, and looks similar
 -- to the above apart from the constructors do not start with @Ax@.
--- 
+--
 -- The 'VL.LegendConfig' type has been significantly expanded and, as
 -- discussed in the Breaking Changes section, changed. It has gained:
 -- 'VL.LeClipHeight', 'VL.LeColumnPadding', 'VL.LeColumns', 'VL.LeGradientDirection',
@@ -1070,12 +1363,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.LeSymbolOffset', 'VL.LeSymbolOpacity', 'VL.LeSymbolStrokeColor', 'VL.LeTitle',
 -- 'VL.LeNoTitle', 'VL.LeTitleAnchor', 'VL.LeTitleFontStyle', 'VL.LeTitleOpacity',
 -- and 'VL.LeTitleOrient'.
--- 
+--
 -- The 'VL.LegendOrientation' type has gained 'VL.LOTop' and 'VL.LOBottom'.
--- 
+--
 -- The 'VL.LegendLayout' and 'VL.BaseLegendLayout' types are new, and used
 -- with 'VL.LeLayout' to define the legent orient group.
--- 
+--
 -- The 'VL.LegendProperty' type gained: 'VL.LClipHeight', 'VL.LColumnPadding',
 -- 'VL.LColumns', 'VL.LCornerRadius', 'VL.LDirection', 'VL.LFillColor',
 -- 'VL.LFormatAsNum', 'VL.LFormatAsTemporal', 'VL.LGradientLength',
@@ -1091,51 +1384,51 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.LTitleBaseline', 'VL.LTitleColor', 'VL.LTitleFont', 'VL.LTitleFontSize',
 -- 'VL.LTitleFontStyle', 'VL.LTitleFontWeight', 'VL.LTitleLimit', 'VL.LTitleOpacity',
 -- 'VL.LTitleOrient', 'VL.LTitlePadding', 'VL.LeX', and 'VL.LeY'.
--- 
+--
 -- 'VL.Projection' has gained the 'VL.Identity' constructor. The
 -- 'VL.ProjectionProperty' type has gained 'VL.PrScale', 'VL.PrTranslate',
 -- 'VL.PrReflectX', and 'VL.PrReflectY'. The 'VL.GraticuleProperty' type was
 -- added to configure the appearance of graticules created with
 -- 'VL.graticule'.
--- 
+--
 -- The 'VL.CompositionAlignment' type was added and is used with 'VL.align',
 -- 'VL.alignRC', 'VL.LeGridAlign', and 'VL.LGridAlign'.
--- 
+--
 -- The 'VL.Bounds' type was added for use with 'VL.bounds'.
--- 
+--
 -- The 'VL.ImputeProperty' and 'VL.ImMethod' types were added for use with
 -- 'VL.impute' and 'VL.PImpute'.
--- 
+--
 -- The 'VL.ScaleConfig' type has gained 'VL.SCBarBandPaddingInner',
 -- 'VL.SCBarBandPaddingOuter', 'VL.SCRectBandPaddingInner', and
 -- 'VL.SCRectBandPaddingOuter'.
--- 
+--
 -- The 'VL.SelectionProperty' type has gained 'VL.Clear', 'VL.SInit', and
 -- 'VL.SInitInterval'.
--- 
+--
 -- The Channel type has gained: 'VL.ChLongitude', 'VL.ChLongitude2',
 -- 'VL.ChLatitude', 'VL.ChLatitude2', 'VL.ChFill', 'VL.ChFillOpacity', 'VL.ChHref',
 -- 'VL.ChKey', 'VL.ChStroke', 'VL.ChStrokeOpacity'.  'VL.ChStrokeWidth', 'VL.ChText',
 -- and 'VL.ChTooltip'.
--- 
+--
 -- The 'VL.TitleConfig' type has gained: 'VL.TFontStyle', 'VL.TFrame', 'VL.TStyle',
 -- and 'VL.TZIndex'.
--- 
+--
 -- The 'VL.TitleFrame' type is new and used with 'VL.TFrame' from 'VL.TitleConfig'.
--- 
+--
 -- The 'VL.ViewBackground' type is new and used with 'VL.viewBackground'.
--- 
+--
 -- The 'VL.ViewConfig' type has gained 'VL.ViewCornerRadius', 'VL.ViewOpacity',
 -- 'VL.ViewStrokeCap', 'VL.ViewStrokeJoin', and 'VL.ViewStrokeMiterLimit'.
--- 
+--
 -- The 'VL.ConfigurationProperty' type, used with 'VL.configuration', has
 -- gained 'VL.ConcatStyle', 'VL.FacetStyle', 'VL.GeoshapeStyle', 'VL.HeaderStyle',
 -- 'VL.NamedStyles', and 'VL.TrailStyle' constructors.
--- 
+--
 -- The 'VL.ConcatConfig' type was added for use with the 'VL.ConcatStyle',
 -- and the 'VL.FacetConfig' type for the 'VL.FacetStyle'
 -- configuration settings.
--- 
+--
 -- The 'VL.HeaderProperty' type has gained: 'VL.HFormatAsNum',
 -- 'VL.HFormatAsTemporal', 'VL.HNoTitle', 'VL.HLabelAlign', 'VL.HLabelAnchor',
 -- 'VL.HLabelAngle', 'VL.HLabelColor', 'VL.HLabelFont', 'VL.HLabelFontSize',
@@ -1143,14 +1436,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HTitleAnchor', 'VL.HTitleAngle', 'VL.HTitleBaseline', 'VL.HTitleColor',
 -- 'VL.HTitleFont', 'VL.HTitleFontSize', 'VL.HTitleFontWeight', 'VL.HTitleLimit',
 -- 'VL.HTitleOrient', and 'VL.HTitlePadding'.
--- 
+--
 -- The 'VL.HyperlinkChannel' type has gained 'VL.HBinned'.
--- 
+--
 -- The 'VL.FacetChannel' type has gained 'VL.FSort', 'VL.FTitle', and 'VL.FNoTitle'.
--- 
+--
 -- The 'VL.TextChannel' type has gained 'VL.TBinned', 'VL.TFormatAsNum',
 -- 'VL.TFormatAsTemporal', 'VL.TTitle', and 'VL.TNoTitle'.
--- 
+--
 -- The 'VL.TooltipContent' type was added, for use with 'VL.MTooltip'.
 --
 -- The 'VL.Symbol' type has gained: 'VL.SymArrow', 'VL.SymStroke',
@@ -1236,4 +1529,3 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- * The @Legend@ type has been renamed 'VL.LegendType' and its constructors
 --   have been renamed 'VL.GradientLegend' and 'VL.SymbolLegend'.
-

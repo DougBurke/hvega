@@ -4,6 +4,8 @@
 -- Based on the Elm VegaLite GalleryBar.elm (from development of version
 -- 1.13.0)
 --
+-- TODO: update to add new tests from Elm (v2.0)
+
 module Gallery.Bar (testSpecs) where
 
 import Graphics.Vega.VegaLite
@@ -79,12 +81,13 @@ bar3 =
         enc =
             encoding
                 . position X [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "population" ] ]
-                . position Y [ PName "age", PmType Ordinal, PScale [ SRangeStep (Just 17) ], PSort [ Descending ] ]
+                . position Y [ PName "age", PmType Ordinal, PSort [ Descending ] ]
     in
     toVegaLite
         [ des
         , dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
         , mark Bar []
+        , heightStep 17
         , trans []
         , enc []
         ]
@@ -103,7 +106,7 @@ bar4 =
 
         enc =
             encoding
-                . position X [ PName "gender", PmType Nominal, PScale [ SRangeStep (Just 12) ], PAxis [ AxNoTitle ] ]
+                . position X [ PName "gender", PmType Nominal, PAxis [ AxNoTitle ] ]
                 . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "population", AxGrid False ] ]
                 . column [ FName "age", FmType Ordinal ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
@@ -117,6 +120,7 @@ bar4 =
         [ des
         , dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
         , mark Bar []
+        , widthStep 12
         , trans []
         , enc []
         , config []
@@ -190,7 +194,7 @@ bar7 =
 
         enc =
             encoding
-                . position X [ PName "age", PmType Ordinal, PScale [ SRangeStep (Just 17) ] ]
+                . position X [ PName "age", PmType Ordinal ]
                 . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ], PStack StNormalize ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
     in
@@ -199,6 +203,7 @@ bar7 =
         , dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
         , trans []
         , mark Bar []
+        , widthStep 17
         , enc []
         ]
 
@@ -257,7 +262,7 @@ bar10 =
 
         enc =
             encoding
-                . position X [ PName "age", PmType Ordinal, PScale [ SRangeStep (Just 17) ] ]
+                . position X [ PName "age", PmType Ordinal ]
                 . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ], PStack NoStack ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#e377c2", "#1f77b4" ]) ] ]
                 . opacity [ MNumber 0.7 ]
@@ -267,6 +272,7 @@ bar10 =
         , dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
         , trans []
         , mark Bar []
+        , widthStep 17
         , enc []
         ]
 

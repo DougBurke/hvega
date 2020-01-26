@@ -1,0 +1,81 @@
+{
+    "height": 600,
+    "mark": {
+        "opacity": 0.1,
+        "type": "point"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "width": 600,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "IMDB_Rating",
+            "type": "quantitative",
+            "axis": {
+                "labelOpacity": {
+                    "value": 0.8,
+                    "condition": {
+                        "value": 0.3,
+                        "test": "datum.value >=9"
+                    }
+                },
+                "labelFontStyle": {
+                    "value": "italic",
+                    "condition": {
+                        "value": "normal",
+                        "test": "datum.value <=8"
+                    }
+                },
+                "labelColor": {
+                    "value": "blue",
+                    "condition": {
+                        "value": "red",
+                        "test": "datum.value <= 2"
+                    }
+                },
+                "tickCount": 20,
+                "labelFontWeight": {
+                    "value": 100,
+                    "condition": {
+                        "value": "bold",
+                        "test": "datum.label =='4.0'"
+                    }
+                },
+                "labelBaseline": {
+                    "value": "bottom",
+                    "condition": {
+                        "value": "top",
+                        "test": "datum.value <= 3"
+                    }
+                },
+                "labelFont": {
+                    "value": "sans-serif",
+                    "condition": {
+                        "value": "serif",
+                        "test": "datum.value <= 4"
+                    }
+                },
+                "labelFontSize": {
+                    "value": 18,
+                    "condition": {
+                        "value": 12,
+                        "test": "datum.value <= 6"
+                    }
+                },
+                "labelAlign": {
+                    "value": "left",
+                    "condition": {
+                        "value": "right",
+                        "test": "datum.value <= 1"
+                    }
+                }
+            }
+        },
+        "y": {
+            "field": "Rotten_Tomatoes_Rating",
+            "type": "quantitative"
+        }
+    }
+}

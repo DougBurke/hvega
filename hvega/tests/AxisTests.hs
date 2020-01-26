@@ -18,9 +18,14 @@ testSpecs = [ ("axis1", axis1)
             , ("axis4", axis4)
             , ("axis5", axis5)
             , ("axis6", axis6)
-            -- , ("axis7", axis7)  require AxLabelExpr support (VL 4)
-            -- , ("axis8", axis8)  require AxLabelExpr support (VL 4)
+            , ("axis7", axis7)
+            , ("axis8", axis8)
+            , ("axisOverlapNone", axisOverlapNone)
+            , ("axisOverlapParity", axisOverlapParity)
+            , ("axisOverlapGreedy", axisOverlapGreedy)
             , ("zorder", zorder)
+            , ("responsiveWidth", responsiveWidth)
+            , ("responsiveHeight", responsiveHeight)
             ]
 
 
@@ -138,7 +143,6 @@ axis6 =
     toVegaLite [ temporalData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
 
 
-{-
 axis7 :: VegaLite
 axis7 =
   let enc = encoding
@@ -162,7 +166,32 @@ axis8 =
   in
     toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
 
--}
+
+overlap :: OverlapStrategy -> VegaLite
+overlap strat =
+  let dvals = dataFromColumns []
+              . dataColumn "x" (Numbers [ 0.1, 0.11, 0.2, 0.21, 0.5 ])
+              . dataColumn "y" (Numbers [ 100, 101, 102, 103, 101 ])
+
+      axisOpts = PAxis [ AxLabelOverlap strat
+                       , AxLabelFontSize 20
+                       ]
+
+      enc = encoding
+            . position X [ PName "x", PmType Quantitative, axisOpts ]
+            . position Y [ PName "y", PmType Quantitative, axisOpts ]
+
+  in toVegaLite [ dvals [], enc [], mark Circle [] ]
+
+
+axisOverlapNone :: VegaLite
+axisOverlapNone = overlap ONone
+
+axisOverlapParity :: VegaLite
+axisOverlapParity = overlap OParity
+
+axisOverlapGreedy :: VegaLite
+axisOverlapGreedy = overlap OGreedy
 
 
 -- From
@@ -191,3 +220,17 @@ zorder =
                 , enc []
                 , mark Circle [ MSize 5000, MOpacity 1 ]
                 ]
+
+
+responsive :: PropertySpec -> VegaLite
+responsive prop =
+  let enc = encoding
+            . position X [PName "x", PmType Quantitative]
+            . position Y [PName "y", PmType Quantitative]
+
+  in toVegaLite [ prop, simpleData [], enc []
+                , mark Line [MPoint (PMMarker [])] ]
+
+responsiveWidth, responsiveHeight :: VegaLite
+responsiveWidth = responsive widthOfContainer
+responsiveHeight = responsive heightOfContainer

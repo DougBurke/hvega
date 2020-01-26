@@ -31,7 +31,7 @@
 --     nix-shell -p nodejs
 --     npm install vega-cli
 --     npm install canvas
---     ./node_modules/.bin/vg2png stripplot.vg.json stripplot.png 
+--     ./node_modules/.bin/vg2png stripplot.vg.json stripplot.png
 --
 -- but this fails. Unclear why, tickets suggest installing 'node-canvas',
 -- which I did. Can run
@@ -97,16 +97,23 @@ vl = [ ("api-vl1", vl1)
      , ("gmaghistogramwithcolor", VL.gmagHistogramWithColor)
      , ("gmaglinewithcolor", VL.gmagLineWithColor)
      , ("yhistogram", VL.yHistogram)
+     , ("starcount", VL.starCount)
+     , ("starcount2", VL.starCount2)
+     , ("densityparallax", VL.densityParallax)
+     , ("densityparallaxgrouped", VL.densityParallaxGrouped)
      , ("pointplot", VL.pointPlot)
      , ("posplot", VL.posPlot)
      , ("skyplot", VL.skyPlot)
      , ("smallmultiples", VL.smallMultiples)
      , ("smallmultiples2", VL.smallMultiples2)
+     , ("densitymultiples", VL.densityMultiples)
      , ("baseplot", VL.basePlot)
      , ("layeredplot", VL.layeredPlot)
      , ("layereddiversion", VL.layeredDiversion)
+     , ("skyplotwithgraticules", VL.skyPlotWithGraticules)
      , ("concatenatedplot", VL.concatenatedPlot)
      , ("concatenatedplot2", VL.concatenatedPlot2)
+     , ("concatenatedskyplot", VL.concatenatedSkyPlot)
      , ("repeatplot", VL.repeatPlot)
      , ("splomplot", VL.splomPlot)
      , ("singleselection", VL.singleSelection)
@@ -116,12 +123,15 @@ vl = [ ("api-vl1", vl1)
      , ("intervalselection", VL.intervalSelection)
      , ("intervalselectiony", VL.intervalSelectionY)
      , ("transformselection", VL.transformSelection)
+     , ("legendselection", VL.legendSelection)
      , ("widgetselection", VL.widgetSelection)
      , ("bindscales", VL.bindScales)
      , ("coordinatedviews", VL.coordinatedViews)
      , ("coordinatedviews2", VL.coordinatedViews2)
      , ("contextandfocus", VL.contextAndFocus)
      , ("crossfilter", VL.crossFilter)
+     , ("loessexample", VL.loessExample)
+     , ("regressionexample", VL.regressionExample)
      , ("errormanual", VL.errorManual)
      , ("errorauto", VL.errorAuto)
      , ("errorbars", VL.errorBars)
@@ -129,6 +139,9 @@ vl = [ ("api-vl1", vl1)
      , ("errorbox", VL.errorBox)
      , ("comparingerrors", VL.comparingErrors)
      , ("combinedplot", VL.combinedPlot)
+     , ("duplicateaxis", VL.duplicateAxis)
+     , ("comparecounts", VL.compareCounts)
+     , ("parallaxview", VL.parallaxView)
      ]
 
 
@@ -140,7 +153,7 @@ run outdir = forM_ vl $ \(name, spec) -> do
       prefix = outdir </> name
 
       opts = object [T.pack "downloadFileName" .= name]
-      
+
   toHtmlFileWith (Just opts) htmlFile spec
   BL.writeFile specFile (AP.encodePretty (fromVL spec))
 
@@ -151,7 +164,7 @@ usage = do
   hPutStrLn stderr ("Usage: " <> pName <> " directory")
   exitFailure
 
-  
+
 main :: IO ()
 main = do
   args <- getArgs

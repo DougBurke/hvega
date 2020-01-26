@@ -63,7 +63,7 @@ form which just uses the default Vega-Embed options.
 The render you use to view the output file must support Javascript,
 since it is needed to create the visualization from the Vega-Lite
 specification. The Vega and Vega-Lite Javascript versions are pegged
-to 5 and 3, but no limit is applied to the Vega-Embed library.
+to 5 and 4, but no limit is applied to the Vega-Embed library.
 
 @since 0.4.0.0
 -}
@@ -83,9 +83,9 @@ toHtmlWith mopts vl =
     [ "<!DOCTYPE html>"
     , "<html>"
     , "<head>"
-      -- versions are fixed at vega 5, vega-lite 3
+      -- versions are fixed at vega 5, vega-lite 4
     , "  <script src=\"https://cdn.jsdelivr.net/npm/vega@5\"></script>"
-    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@3\"></script>"
+    , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-lite@4\"></script>"
     , "  <script src=\"https://cdn.jsdelivr.net/npm/vega-embed\"></script>"
     , "</head>"
     , "<body>"

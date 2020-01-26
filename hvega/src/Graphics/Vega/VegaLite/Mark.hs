@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Mark
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -21,6 +21,11 @@ module Graphics.Vega.VegaLite.Mark
        , PointMarker(..)
        , LineMarker(..)
        , MarkErrorExtent(..)
+       , GradientCoord
+       , GradientStops
+       , ColorGradient(..)
+       , GradientProperty(..)
+       , TextDirection(..)
 
          -- not for external export
        , mprops_
@@ -34,11 +39,14 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.List (sortOn)
 
 
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
+  , DashStyle
+  , DashOffset
   , Cursor
   , FontWeight
   , Opacity
@@ -49,6 +57,8 @@ import Graphics.Vega.VegaLite.Foundation
   , TooltipContent(TTNone)
   , HAlign
   , VAlign
+  , fromColor
+  , fromDS
   , cursorLabel
   , fontWeightSpec
   , orientationSpec
@@ -133,6 +143,13 @@ data Mark
     | Geoshape
       -- ^ [Geoshape](https://vega.github.io/vega-lite/docs/geoshape.html)
       --   determined by geographically referenced coordinates.
+    | Image
+      -- ^ [Vega Lite image mark](https://vega.github.io/vega-lite/docs/image.html),
+      --   where the image to display is given via the
+      --   'Graphics.Vega.VegaLite.url' channel, and the width and height
+      --   defined by the 'MWidth' and 'MHeight' properties.
+      --
+      --   @since 0.5.0.0
     | Line
       -- ^ [Line mark](https://vega.github.io/vega-lite/docs/line.html)
       --   for symbolising a sequence of values.
@@ -169,6 +186,7 @@ markLabel ErrorBar = "errorbar"
 markLabel ErrorBand = "errorband"
 markLabel Line = "line"
 markLabel Geoshape = "geoshape"
+markLabel Image = "image"
 markLabel Point = "point"
 markLabel Rect = "rect"
 markLabel Rule = "rule"
@@ -189,17 +207,31 @@ The Vega-Lite specification supports setting those properties that take
 @['MarkProperty']@ also to a boolean value. This is currently not
 supported in @hvega@.
 
+In @version 0.5.0.0@ the 'MRemoveInvalid' constructor was added, which
+replaces the @RemoveInvalid@ constructor of
+'Graphics.Vega.VegaLite.ConfigurationProperty', and the
+@MShortTimeLabels@ constuctor was removed.
+
 -}
 
--- based on schema 3.3.0 #/definitions/MarkConfig
+-- based on schema
+--     #/definitions/MarkConfig
+--     #/definitions/MarkDef
+--     #/definitions/OverlayMarkDef
 --
--- but it also contains a number of other properties
+--     #/definitions/TickConfig
+--
+-- ie it conflates meaning
 
 data MarkProperty
     = MAlign HAlign
       -- ^ Horizontal alignment of a text mark.
     | MAngle Angle
       -- ^ Rotation angle of a text mark.
+    | MAspect Bool
+      -- ^ Should the aspect ratio of an 'Image' mark be preserved?
+      --
+      --   @since 0.5.0.0
     | MBandSize Double
       -- ^ Band size of a bar mark.
     | MBaseline VAlign
@@ -222,8 +254,61 @@ data MarkProperty
     | MColor Color
       -- ^ Default color of a mark. Note that 'MFill' and 'MStroke' have higher
       --   precedence and will override this if specified.
+    | MColorGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MColorGradient'
+      --       'GrRadial'
+      --       [ ( 0, \"red\" ), ( 1, \"blue\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
+    | MCornerRadius Double
+      -- ^ Corner radius of all corners of a rectangular mark, in pixels.
+      --
+      --   The default is 0. This value is over-ridden by any of
+      --   'MCornerRadiusTL', 'MCornerRadiusTR', 'MCornerRadiusBL',
+      --   or 'MCornerRadiusBR'.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusTL Double
+      -- ^ Top-left corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusTR Double
+      -- ^ Top-right corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusBL Double
+      -- ^ Bottom-left corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
+    | MCornerRadiusBR Double
+      -- ^ Bottom-right corner radius of a rectangular mark, in pixels.
+      --
+      --   The default is 0.
+      --
+      --   @since 0.5.0.0
     | MCursor Cursor
       -- ^ Cursor to be associated with a hyperlink mark.
+    | MDir TextDirection
+      -- ^ Direction of the text. This property determines which side of the
+      --   label is truncated by the 'MLimit' parameter. See also 'MEllipsis'.
+      --
+      --   The default is 'LTR'.
+      --
+      --   @since 0.5.0.0
     | MContinuousBandSize Double
       -- ^ Continuous band size of a bar mark.
     | MDiscreteBandSize Double
@@ -232,16 +317,39 @@ data MarkProperty
       -- ^ Horizontal offset between a text mark and its anchor.
     | MdY Double
       -- ^ Vertical offset between a text mark and its anchor.
+    | MEllipsis T.Text
+      -- ^ The ellipsis string for text truncated in response to
+      --   'MLimit'. See also 'MDir'.
+      --
+      --   The default is @\"…\"@.
+      --
+      --   @since 0.5.0.0
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
       --   'ErrorBand' marks.
       --
       --   @since 0.4.0.0
-    | MFill T.Text
+    | MFill Color
       -- ^ Default fill color of a mark.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | MFilled Bool
       -- ^ Should a mark's color should be used as the fill color instead of
       --   stroke color.
+    | MFillGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to the interior of a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MFillGradient'
+      --       'GrLinear'
+      --       [ ( 0, \"orange\" ), ( 1, \"green\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | MFillOpacity Opacity
       -- ^ Fill opacity of a mark.
     | MFont T.Text
@@ -264,10 +372,31 @@ data MarkProperty
       --   @since 0.4.0.0
     | MInterpolate MarkInterpolation
       -- ^ Interpolation method used by line and area marks.
+    | MLimit Double
+      -- ^ The maximum length of the text mark in pixels. If the text is
+      --   larger then it will be truncated, with the truncation controlled
+      --   by 'MEllipsis' and 'MDir'.
+      --
+      --   The default value is @0@, which indicates no truncation.
+      --
+      --   @since 0.5.0.0
     | MLine LineMarker
       -- ^ How should the vertices of an area mark be joined?
       --
       --   @since 0.4.0.0
+    | MLineBreak T.Text
+      -- ^ A delimeter, such as a newline character, upon which to break
+      --   text strings into multiple lines.
+      --
+      --   Note that @hvega@ automatically breaks text on the @\\n@ character,
+      --   which will over-ride this setting. Therefore setting this only
+      --   makes sense if the text does not contain @\n@ characters.
+      --
+      --   @since 0.5.0.0
+    | MLineHeight Double
+      -- ^ The height, in pixels, of each line of text in a multi-line text mark.
+      --
+      --   @since 0.5.0.0
     | MMedian [MarkProperty]
       -- ^ Median-line properties for the 'Boxplot' mark.
       --
@@ -296,27 +425,50 @@ data MarkProperty
       --   @since 0.4.0.0
     | MRadius Double
       -- ^ Polar coordinate radial offset of a text mark from its origin.
+    | MRemoveInvalid Bool
+      -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
+      --   invalid values are skipped or filtered out when represented as marks,
+      --   otherwise they are taken to be @0@.
+      --
+      --   This replaces @RemoveInvalid@ from
+      --   'Graphics.Vega.VegaLite.ConfigurationProperty'
+      --   in version 0.4 of @hvega@.
+      --
+      --   @since 0.5.0.0
     | MRule [MarkProperty]
       -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
       --
       --   @since 0.4.0.0
     | MShape Symbol
       -- ^ Shape of a point mark.
-    | MShortTimeLabels Bool
-      -- ^ Aremonth and weekday names are abbreviated in a text mark?
     | MSize Double
       -- ^ Size of a mark.
-    | MStroke T.Text
+    | MStroke Color
       -- ^ Default stroke color of a mark.
+      --
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | MStrokeCap StrokeCap
       -- ^ Cap style of a mark's stroke.
       --
       --   @since 0.4.0.0
-    | MStrokeDash [Double]
-      -- ^ The stroke dash style used by a mark, defined by an alternating \"on-off\"
-      --   sequence of line lengths, in pixels.
-    | MStrokeDashOffset Double
-      -- ^ The number of pixels before the first line dash is drawn.
+    | MStrokeDash DashStyle
+      -- ^ The stroke dash pattern used by a mark.
+    | MStrokeDashOffset DashOffset
+      -- ^ The offset for the dash pattern.
+    | MStrokeGradient ColorGradient GradientStops [GradientProperty]
+      -- ^ The color gradient to apply to the boundary of a mark. The first argument
+      --   determines its type, the second is the list of color
+      --   interpolation points, and the third
+      --   allows for customization.
+      --
+      --   @
+      --   'MStrokeGradient'
+      --       'GrLinear'
+      --       [ ( 0, \"pink\" ), ( 1, \"violet\" ) ]
+      --       [ ]
+      --   @
+      --
+      --   @since 0.5.0.0
     | MStrokeJoin StrokeJoin
       -- ^ Line segment join style of a mark's stroke.
       --
@@ -347,10 +499,32 @@ data MarkProperty
       -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
       --
       --   @since 0.4.0.0
+    | MTimeUnitBand Double
+      -- ^ The default relative band size for a time unit.
+      --
+      --   If set to 1 the bandwidth of the marks will be equal to the time unit band step,
+      --   and if set to 0.5 they will be half that.
+      --
+      --   @since 0.5.0.0
+    | MTimeUnitBandPosition Double
+      -- ^ The default relative band position for a time unit.
+      --
+      --   If set to 0 the marks will be positioned at the start of the band,
+      --   and if set to 0.5 they will be in the middle.
+      --
+      --   @since 0.5.0.0
     | MTooltip TooltipContent
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
+      {- Not clear this adds anything with the current hvega design,
+         since the mark function adds this field, and other places that
+         MarkProperty can be used do not accept a type option
+    | MType Mark
+      -- ^ The mark type.
+      --
+      --   @since 0.5.0.0
+       -}
     | MWidth Double
       -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
       --   'MHeight'.
@@ -393,62 +567,112 @@ data MarkProperty
 
 
 markProperty :: MarkProperty -> LabelledSpec
-markProperty (MFilled b) = "filled" .= b
-markProperty (MBorders mps) = mprops_ "borders" mps
-markProperty (MBox mps) = mprops_ "box" mps
-markProperty (MClip b) = "clip" .= b
-markProperty (MColor col) = "color" .= col
-markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MFill col) = "fill" .= col
-markProperty (MHeight x) = "height" .= x
-markProperty (MStroke t) = "stroke" .= t
-markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
-markProperty (MStrokeWidth w) = "strokeWidth" .= w
-markProperty (MStrokeDash xs) = "strokeDash" .= xs
-markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
-markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
-markProperty (MMedian mps) = mprops_ "median" mps
-markProperty (MOpacity x) = "opacity" .= x
-markProperty (MFillOpacity x) = "fillOpacity" .= x
-markProperty (MStyle [style]) = "style" .= style  -- special case singleton
-markProperty (MStyle styles) = "style" .= styles
-markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
-markProperty (MLine lm) = "line" .= lineMarkerSpec lm
-markProperty (MTension x) = "tension" .= x
-markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= orientationSpec orient
-markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
-markProperty (MOutliers mps) = mprops_ "outliers" mps
-markProperty MNoOutliers = "outliers" .= False
-markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
-markProperty (MShape sym) = "shape" .= symbolLabel sym
-markProperty (MSize x) = "size" .= x
-markProperty (MAngle x) = "angle" .= x
+
+-- special case the gradients
+markProperty (MColorGradient dir stops opts) =
+  "color" .= gradientSpec dir stops opts
+markProperty (MFillGradient dir stops opts) =
+  "fill" .= gradientSpec dir stops opts
+markProperty (MStrokeGradient dir stops opts) =
+  "stroke" .= gradientSpec dir stops opts
+
+-- where are these defined?
+markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
+markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
+
 markProperty (MAlign algn) = "align" .= hAlignLabel algn
+markProperty (MAngle x) = "angle" .= x
+markProperty (MAspect b) = "aspect" .= b
 markProperty (MBaseline va) = "baseline" .= vAlignLabel va
+
+-- only available in TickConfig
+markProperty (MBandSize x) = "bandSize" .= x
+
+markProperty (MBinSpacing x) = "binSpacing" .= x
+
+-- only available in ErrorBand[Config|Def], PartsMixins<ErrorBandPart>
+markProperty (MBorders mps) = mprops_ "borders" mps
+
+-- BoxPlot[Config|Deg], PartsMixins<BoxPlotPart>
+markProperty (MBox mps) = mprops_ "box" mps
+
+markProperty (MClip b) = "clip" .= b
+markProperty (MColor col) = "color" .= fromColor col
+markProperty (MCornerRadius x) = "cornerRadius" .= x
+markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .= x
+markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
+markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
+markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
+markProperty (MCursor cur) = "cursor" .= cursorLabel cur
+markProperty (MDir td) = "dir" .= textdirLabel td
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
+markProperty (MEllipsis s) = "ellipsis" .= s
+
+-- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
+
+markProperty (MFill col) = "fill" .= fromColor col
+markProperty (MFilled b) = "filled" .= b
+markProperty (MFillOpacity x) = "fillOpacity" .= x
 markProperty (MFont fnt) = "font" .= fnt
 markProperty (MFontSize x) = "fontSize" .= x
 markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
+markProperty (MHeight x) = "height" .= x
 markProperty (MHRef s) = "href" .= s
+markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
+markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
+markProperty (MLimit x) = "limit" .= x
+markProperty (MLine lm) = "line" .= lineMarkerSpec lm
+markProperty (MLineBreak s) = "lineBreak" .= s
+markProperty (MLineHeight x) = "lineHeight" .= x
+
+-- BoxPlot[Config|Def] possibly others
+markProperty (MMedian mps) = mprops_ "median" mps
+
+markProperty (MOpacity x) = "opacity" .= x
+markProperty (MOrder b) = "order" .= b
+markProperty (MOrient orient) = "orient" .= orientationSpec orient
+
+-- what uses this?
+markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
+markProperty (MOutliers mps) = mprops_ "outliers" mps
+markProperty MNoOutliers = "outliers" .= False
+
+markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MRadius x) = "radius" .= x
+
+-- what uses this?
 markProperty (MRule mps) = mprops_ "rule" mps
+
+markProperty (MShape sym) = "shape" .= symbolLabel sym
+markProperty (MSize x) = "size" .= x
+markProperty (MStroke t) = "stroke" .= fromColor t
+markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
+markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
+markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
+markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
+markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
+markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
+markProperty (MStrokeWidth w) = "strokeWidth" .= w
+markProperty (MStyle [style]) = "style" .= style  -- special case singleton
+markProperty (MStyle styles) = "style" .= styles
+markProperty (MTension x) = "tension" .= x
 markProperty (MText txt) = "text" .= txt
 markProperty (MTheta x) = "theta" .= x
-markProperty (MTicks mps) = mprops_ "ticks" mps
-markProperty (MBinSpacing x) = "binSpacing" .= x
-markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
-markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
-markProperty (MShortTimeLabels b) = "shortTimeLabels" .= b
-markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MThickness x) = "thickness" .= x
+
+-- what uses this?
+markProperty (MTicks mps) = mprops_ "ticks" mps
+
+markProperty (MTimeUnitBand x) = "timeUnitBand" .= x
+markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
+{-
+markProperty (MType m) = "type" .= markLabel m
+-}
 markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
@@ -459,27 +683,59 @@ markProperty (MYOffset x) = "yOffset" .= x
 markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
 
+-- unlike elm, need to sort the stops list since we don't have a
+-- smart constructor (although it's not obvious this is actually needed,
+-- as I think Vega-Lite doesn't require this).
+--
+gradientSpec :: ColorGradient -> GradientStops -> [GradientProperty] -> VLSpec
+gradientSpec dir stops props =
+  let sortedStops = sortOn fst stops
+  in object ([ "gradient" .= colorGradientLabel dir
+             , "stops" .= map stopSpec sortedStops ]
+             ++ map gradientProperty props)
+
 
 {-|
 
-Indicates mark interpolation style. See the
+Indicates the mark interpolation style. See the
 <https://vega.github.io/vega-lite/docs/mark.html#mark-def Vega-Lite documentation>
 for details.
 -}
 data MarkInterpolation
     = Basis
+      -- ^ A B-spline interpolation between points anchored at the first
+      --   and last points.
     | BasisClosed
+      -- ^ Closed B-spline interpolation between points forming a polygon.
     | BasisOpen
+      -- ^ Open B-spline interpolation between points, which may not
+      --   intersect the first and last points.
     | Bundle
+      -- ^ Bundle curve interpolation between points. This is equivalent to 'Basis'
+      --   except that the tension parameter is used to straighten the spline.
     | Cardinal
+      -- ^ Cardinal spline interpolation between points anchored at the first
+      --   and last points.
     | CardinalClosed
+      -- ^ Closed Cardinal spline interpolation between points forming a polygon.
     | CardinalOpen
+      -- ^ Open Cardinal spline interpolation between points, which may not
+      --   intersect the first and last points.
     | Linear
+      -- ^ Linear interpolation between points.
     | LinearClosed
+      -- ^ Closed linear interpolaiton between points forming a polygon.
     | Monotone
+      -- ^ Cubic spline interpolation that preserves monotonicity between points.
     | StepAfter
+      -- ^ Piecewise (stepped) constant interpolation function after each point in a
+      --   sequence.
     | StepBefore
+      -- ^ Piecewise (stepped) constant interpolation function before each point in a
+      --   sequence.
     | Stepwise
+      -- ^ Piecewise (stepped) constant interpolation function centred on each point
+      --   in a sequence.
 
 
 markInterpolationLabel :: MarkInterpolation -> T.Text
@@ -602,3 +858,123 @@ markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
 markErrorExtentLSpec ExRange            = extent_ "min-max"
 markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
+
+
+{-|
+Define the form of the
+<https://vega.github.io/vega-lite/docs/types.html#gradient color gradient>
+(for use with 'MColorGradient' and 'MFillGradient').
+
+@since 0.5.0.0
+
+-}
+
+data ColorGradient
+  = GrLinear
+    -- ^ A linear gradient.
+  | GrRadial
+    -- ^ A radial gradient.
+
+
+colorGradientLabel :: ColorGradient -> T.Text
+colorGradientLabel GrLinear = "linear"
+colorGradientLabel GrRadial = "radial"
+
+
+{-|
+
+Convenience type-annotation to label a normalized coordinate
+for color gradients. The value should be in the range 0 to 1,
+inclusive. There is __no attempt__ to validate that the number
+lies within this range.
+
+@since 0.5.0.0
+-}
+type GradientCoord = Double
+
+
+{-|
+
+Convenience type-annotation label to indicate the color interpolation
+points - i.e. the colors to use at points along the
+normalized range 0 to 1 (inclusive).
+
+The list does not have to be sorted. There is no check that the
+color is valid (i.e. not empty or a valid color specification).
+
+@since 0.5.0.0
+-}
+type GradientStops = [(GradientCoord, Color)]
+
+
+stopSpec :: (GradientCoord, Color) -> VLSpec
+stopSpec (x, c) = object [ "offset" .= x, "color" .= fromColor c ]
+
+
+{-|
+
+Control the appearance of the gradient. Used by 'MColorGradient',
+'MFillGradient', and 'MStrokeGradient'.
+
+@since 0.5.0.0
+
+-}
+
+data GradientProperty
+  = GrX1 GradientCoord
+    -- ^ The start of the color gradient (X axis); for radial
+    --   gradients it represents the center of the inner circle.
+    --
+    --   The default for linear gradients is 0, and for radial
+    --   gradients it is 0.5.
+  | GrY1 GradientCoord
+    -- ^ The start of the color gradient (Y axis); for radial
+    --   gradients it represents the center of the inner circle.
+    --
+    --   The default for linear gradients is 0, and for radial
+    --   gradients it is 0.5.
+  | GrX2 GradientCoord
+    -- ^ The end of the color gradient (X axis); for radial
+    --   gradients it represents the center of the outer circle.
+    --
+    --   The default for linear gradients is 1, and for radial
+    --   gradients it is 0.5.
+  | GrY2 GradientCoord
+    -- ^ The end of the color gradient (Y axis); for radial
+    --   gradients it represents the center of the outer circle.
+    --
+    --   The default for linear gradients is 1, and for radial
+    --   gradients it is 0.5.
+  | GrR1 GradientCoord
+    -- ^ The radius of the inner circle (radial color gradients
+    --   only). The default is 0.
+  | GrR2 GradientCoord
+    -- ^ The radius of the outer circle (radial color gradients
+    --   only). The default is 0.5.
+
+
+gradientProperty :: GradientProperty -> LabelledSpec
+gradientProperty (GrX1 x) = "x1" .= x
+gradientProperty (GrX2 x) = "x2" .= x
+gradientProperty (GrY1 x) = "y1" .= x
+gradientProperty (GrY2 x) = "y2" .= x
+gradientProperty (GrR1 x) = "r1" .= x
+gradientProperty (GrR2 x) = "r2" .= x
+
+
+{-|
+Determine the direction to draw the text.
+
+Used by 'MDir'.
+
+@since 0.5.0.0
+-}
+data TextDirection
+  = LTR
+    -- ^ Left to right.
+  | RTL
+    -- ^ Right to left.
+
+textdirLabel :: TextDirection -> T.Text
+textdirLabel LTR = "ltr"
+textdirLabel RTL = "rtl"

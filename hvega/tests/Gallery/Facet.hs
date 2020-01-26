@@ -39,12 +39,12 @@ facet1 =
 
         enc =
             encoding
-                . position X [ PName "age", PmType Ordinal, PScale [ SRangeStep (Just 17) ] ]
+                . position X [ PName "age", PmType Ordinal ]
                 . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ] ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
                 . row [ FName "gender", FmType Nominal ]
     in
-    toVegaLite [ des, dvals [], trans [], mark Bar [], enc [] ]
+    toVegaLite [ des, dvals [], trans [], mark Bar [], widthStep 17, enc [] ]
 
 
 facet2 :: VegaLite
@@ -92,13 +92,16 @@ facet4 :: VegaLite
 facet4 =
     let
         des =
-            description "Disitributions of car engine power for different countries of origin"
+            description "Distributions of car engine power for different countries of origin"
 
         enc =
             encoding
                 . position X [ PName "Horsepower", PmType Quantitative, PBin [ MaxBins 15 ] ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
-                . row [ FName "Origin", FmType Ordinal ]
+                . row [ FName "Origin"
+                      , FmType Ordinal
+                      , FTitle "Origin facet"
+                      ]
     in
     toVegaLite
         [ des
@@ -144,7 +147,6 @@ facet6 =
                 . position Y
                     [ PName "variety"
                     , PmType Ordinal
-                    , PScale [ SRangeStep (Just 12) ]
                     , PSort [ ByChannel ChX, Descending ]
                     ]
                 . color [ MName "year", MmType Nominal ]
@@ -159,7 +161,7 @@ facet6 =
             , FSort [ ByFieldOp "yield" Median ]
             , FHeader [ HNoTitle ]
             ]
-        , specification (asSpec [ enc [], mark Point [] ])
+        , specification (asSpec [ enc [], heightStep 12, mark Point [] ])
         ]
 
 
@@ -192,7 +194,12 @@ facet7 =
                 . row
                     [ FName "symbol"
                     , FmType Nominal
-                    , FHeader [ HTitle "Stock price", HLabelAngle 0 ]
+                    , FHeader [ HTitle "Stock price"
+                              , HLabelAngle 0
+                              -- I don't know why the labels only align
+                              -- when AlignLeft is used.
+                              , HLabelAlign AlignLeft
+                              ]
                     ]
 
         res =

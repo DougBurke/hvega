@@ -6,7 +6,7 @@
         }
     },
     "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "projection": {
         "type": "albersUsa"
     },
@@ -57,46 +57,24 @@
                     }
                 },
                 {
+                    "as": "o",
                     "from": {
                         "data": {
                             "url": "https://vega.github.io/vega-lite/data/airports.csv"
                         },
-                        "key": "iata",
-                        "fields": [
-                            "latitude",
-                            "longitude"
-                        ]
+                        "key": "iata"
                     },
                     "lookup": "origin"
                 },
                 {
-                    "as": "origin_latitude",
-                    "calculate": "datum.latitude"
-                },
-                {
-                    "as": "origin_longitude",
-                    "calculate": "datum.longitude"
-                },
-                {
+                    "as": "d",
                     "from": {
                         "data": {
                             "url": "https://vega.github.io/vega-lite/data/airports.csv"
                         },
-                        "key": "iata",
-                        "fields": [
-                            "latitude",
-                            "longitude"
-                        ]
+                        "key": "iata"
                     },
                     "lookup": "destination"
-                },
-                {
-                    "as": "dest_latitude",
-                    "calculate": "datum.latitude"
-                },
-                {
-                    "as": "dest_longitude",
-                    "calculate": "datum.longitude"
                 }
             ],
             "mark": "rule",
@@ -105,18 +83,18 @@
             },
             "encoding": {
                 "latitude": {
-                    "field": "origin_latitude",
+                    "field": "o.latitude",
                     "type": "quantitative"
                 },
                 "latitude2": {
-                    "field": "dest_latitude"
+                    "field": "d.latitude"
                 },
                 "longitude": {
-                    "field": "origin_longitude",
+                    "field": "o.longitude",
                     "type": "quantitative"
                 },
                 "longitude2": {
-                    "field": "dest_longitude"
+                    "field": "d.longitude"
                 }
             }
         }

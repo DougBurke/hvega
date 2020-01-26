@@ -1,6 +1,6 @@
 name:                hvega
-version:             0.4.1.3
-synopsis:            Create Vega-Lite visualizations (version 3) in Haskell.
+version:             0.5.0.0
+synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
                      by Jo Wood of the giCentre at the City University of London.
@@ -10,7 +10,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Douglas Burke
 maintainer:          dburke.gw@gmail.com
-copyright:           2018-2019 Douglas Burke
+copyright:           2018-2020 Douglas Burke
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md
@@ -28,6 +28,7 @@ extra-source-files:  README.md
                      tests/specs/fillstroke/*.vl
                      tests/specs/geo/*.vl
                      tests/specs/hyperlink/*.vl
+                     tests/specs/image/*.vl
                      tests/specs/interaction/*.vl
                      tests/specs/legend/*.vl
                      tests/specs/null/*.vl
@@ -73,16 +74,23 @@ extra-doc-files:     images/example.png
                      images/vl/gmaghistogramwithcolor.png
                      images/vl/gmaglinewithcolor.png
                      images/vl/yhistogram.png
+                     images/vl/starcount.png
+                     images/vl/starcount2.png
+                     images/vl/densityparallax.png
+                     images/vl/densityparallaxgrouped.png
                      images/vl/pointplot.png
                      images/vl/posplot.png
                      images/vl/skyplot.png
                      images/vl/smallmultiples.png
                      images/vl/smallmultiples2.png
+                     images/vl/densitymultiples.png
                      images/vl/baseplot.png
                      images/vl/layeredplot.png
                      images/vl/layereddiversion.png
+                     images/vl/skyplotwithgraticules.png
                      images/vl/concatenatedplot.png
                      images/vl/concatenatedplot2.png
+                     images/vl/concatenatedskyplot.png
                      images/vl/repeatplot.png
                      images/vl/splomplot.png
                      images/vl/singleselection.png
@@ -92,12 +100,15 @@ extra-doc-files:     images/example.png
                      images/vl/intervalselection.png
                      images/vl/intervalselectiony.png
                      images/vl/transformselection.png
+                     images/vl/legendselection.png
                      images/vl/widgetselection.png
                      images/vl/bindscales.png
                      images/vl/coordinatedviews.png
                      images/vl/coordinatedviews2.png
                      images/vl/contextandfocus.png
                      images/vl/crossfilter.png
+                     images/vl/loessexample.png
+                     images/vl/regressionexample.png
                      images/vl/errormanual.png
                      images/vl/errormanual-zoomed.png
                      images/vl/errorauto.png
@@ -107,6 +118,10 @@ extra-doc-files:     images/example.png
                      images/vl/comparingerrors.png
                      images/vl/combinedplot.png
                      images/vl/combinedplot-selected.png
+                     images/vl/duplicateaxis.png
+                     images/vl/comparecounts.png
+                     images/vl/parallaxview.png
+                     images/vl/parallaxview-selected.png
 
 cabal-version:       1.18
 
@@ -141,7 +156,7 @@ library
                      , text == 1.2.*
                      , unordered-containers == 0.2.*
                      , vector >= 0.11 && < 0.13
-                     
+
   default-language:    Haskell2010
   ghc-options:         -Wall
 
@@ -158,6 +173,7 @@ test-suite test
                        FillStrokeTests
                        GeoTests
                        HyperlinkTests
+                       ImageTests
                        InteractionTests
                        LegendTests
                        NullTests

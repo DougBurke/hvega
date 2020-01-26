@@ -7,11 +7,16 @@ module ConditionalTests (testSpecs) where
 
 import Graphics.Vega.VegaLite
 
+import Data.Function ((&))
 import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("markCondition1", markCondition1)
             , ("markCondition2", markCondition2)
+            , ("axisCondition1", axisCondition1)
+            , ("axisCondition2", axisCondition2)
+            , ("axisCondition3", axisCondition3)
+            , ("axisDateCondition1", axisDateCondition1)
             , ("selectionCondition1", selectionCondition1)
             , ("selectionCondition2", selectionCondition2)
             , ("selectionCondition3", selectionCondition3)
@@ -29,7 +34,7 @@ markCondition1 =
 
         config =
             configure
-                . configuration (RemoveInvalid False)
+                . configuration (MarkStyle [ MRemoveInvalid False ])
 
         enc =
             encoding
@@ -45,7 +50,12 @@ markCondition1 =
                         [ MString "#0099ee" ]
                     ]
     in
-    toVegaLite [ config [], dataVals, mark Point [], enc [] ]
+    toVegaLite [ config []
+               , dataVals
+               -- Vega-Lite 4 turned off tooltips by default, so
+               -- enable them here
+               , mark Point [ MTooltip TTEncoding ]
+               , enc [] ]
 
 
 markCondition2 :: VegaLite
@@ -69,10 +79,88 @@ markCondition2 =
     in
     toVegaLite [ width 400, dataVals [], mark Circle [ MSize 800 ], enc [] ]
 
+
+axisTest :: [AxisProperty] -> VegaLite
+axisTest axConds =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      enc = encoding
+                . position X
+                    [ PName "IMDB_Rating"
+                    , PmType Quantitative
+                    , PAxis (AxTickCount 20 : axConds)
+                    ]
+                . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
+
+  in toVegaLite [ width 600, height 600, dvals, mark Point [ MOpacity 0.1 ], enc [] ]
+
+
+axisCondition1 :: VegaLite
+axisCondition1 =
+  axisTest [ AxDataCondition (Expr "datum.value <= 5") (CAxGridDash [ 5, 5 ] [])
+           , AxDataCondition (Expr "datum.value <= 7") (CAxGridColor "green" "red")
+           ]
+
+
+axisCondition2 :: VegaLite
+axisCondition2 =
+  axisTest [ AxDataCondition (Expr "datum.value <= 2") (CAxTickColor "red" "blue")
+           , AxDataCondition (Expr "datum.value >=8") (CAxTickOpacity 0.3 0.8)
+           , AxDataCondition (Expr "datum.label =='4.0'") (CAxTickWidth 5 2)
+           , AxDataCondition (Expr "(datum.value >= 5) && (datum.value <= 8)")
+                              (CAxTickDash [2, 2] [])
+           {- Vega-Embed (Early Jan 2020) doesn't seem to display this well
+           , AxDataCondition (Expr "(datum.value >= 3) && (datum.value <= 7)")
+                              (CAxTickDashOffset 4 0)
+           -}
+           ]
+
+
+axisCondition3 :: VegaLite
+axisCondition3 =
+  axisTest [ AxDataCondition (Expr "datum.value <= 2") (CAxLabelColor "red" "blue")
+           , AxDataCondition (Expr "datum.value <= 1") (CAxLabelAlign AlignRight AlignLeft)
+           , AxDataCondition (Expr "datum.value <= 3") (CAxLabelBaseline AlignTop AlignBottom)
+           , AxDataCondition (Expr "datum.value <= 4") (CAxLabelFont "serif" "sans-serif")
+           , AxDataCondition (Expr "datum.value <= 6") (CAxLabelFontSize 12 18)
+           , AxDataCondition (Expr "datum.value <=8") (CAxLabelFontStyle "normal" "italic")
+           , AxDataCondition (Expr "datum.label =='4.0'") (CAxLabelFontWeight Bold W100)
+           , AxDataCondition (Expr "datum.value >=9") (CAxLabelOpacity 0.3 0.8)
+           ]
+
+
+-- add a basic test of date handling (so that I can check the example given in the
+-- documentation, or at least one similar to it, even if in this case it affects
+-- all grid lines).
+--
+axisDateCondition1 :: VegaLite
+axisDateCondition1 =
+  let dataVals = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+      enc =
+        encoding
+          . position X [ PName "Year"
+                       , PmType Temporal
+                       , PTimeUnit Year
+                       , PAxis [ AxDataCondition
+                                 (FEqual "value" (DateTime [DTMonth Jan, DTDate 1])
+                                   & FilterOpTrans (MTimeUnit MonthDate))
+                                 (CAxGridWidth 4 1)
+                               ]
+                       ]
+          . position Y [ PName "Miles_per_Gallon"
+                       , PmType Quantitative
+                       , PScale [ SZero False ]
+                       ]
+
+      mopts = [ MExtent Iqr, MInterpolate Monotone, MBorders [] ]
+
+  in toVegaLite [ width 600, dataVals, enc [], mark ErrorBand mopts ]
+
+
 selectionCondition1 :: VegaLite
 selectionCondition1 =
-    let
-        dataVals =
+    let dataVals =
             dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
 
         sel =
