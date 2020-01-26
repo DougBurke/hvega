@@ -1091,7 +1091,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   has been added as a guide for the documentation.
 --
 -- * The 'VL.heightOfContainer' and 'VL.widthOfContainer' functions
---   have been added to support responsive sizing.
+--   have been added to support responsive sizing, although I have not
+--   had much success in getting them to work!
 --
 -- __Breaking changes__:
 --
@@ -1322,7 +1323,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.ScaleProperty' type has seen significant enhancement, by adding
 -- the constructors: 'VL.SAlign', 'VL.SBase', 'VL.SBins', 'VL.SConstant' and
--- 'VL.SExponent'.  THe 'VL.Scale' tye has added 'VL.ScSymLog' 'VL.ScQuantile',
+-- 'VL.SExponent'.  The 'VL.Scale' tye has added 'VL.ScSymLog' 'VL.ScQuantile',
 -- 'VL.ScQuantize', and 'VL.ScThreshold'.
 --
 -- The 'VL.SortProperty' type has new constructors: 'VL.CustomSort',
