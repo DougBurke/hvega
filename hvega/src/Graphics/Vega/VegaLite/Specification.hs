@@ -25,7 +25,7 @@ module Graphics.Vega.VegaLite.Specification
        , PropertySpec
        , LabelledSpec
        , BuildLabelledSpecs
-       , TransformSpec
+       , TransformSpec(..)
        , BuildTransformSpecs
        , combineSpecs
        , asSpec
@@ -288,13 +288,11 @@ type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
 
 Represent a transformation (input to 'Graphics.Vega.VegaLite.transform').
 
-At present there is no difference to 'LabelledSpec', other than having
-a different name (as it is a type alias).
-
 @since 0.5.0.0
+
 -}
 
-type TransformSpec = (T.Text, VLSpec)
+newtype TransformSpec = TS { unTS :: (T.Text, VLSpec) }
 
 {-|
 Represent the functions that can be chained together and sent to

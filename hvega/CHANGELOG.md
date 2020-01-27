@@ -57,6 +57,12 @@ much success in getting them to work!
 
 ### Breaking changes
 
+The `transform` function now accepts a list of `TransformSpec` rather
+than `LabelledSpec` in an attempt to encode the schema structure in
+the types (i.e. make it harder to generate invalid Vega Lite
+JSON). This **should not** change valid visualizations, but please
+report an issue if you find this change breaks your code.
+
 The `lookup` transform has been changed so that the list of fields
 stored when the keys match is now specified by the `LookupFields`
 type (rather than a list of field names). This supports providing

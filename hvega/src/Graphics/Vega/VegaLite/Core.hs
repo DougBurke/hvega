@@ -278,7 +278,7 @@ import Graphics.Vega.VegaLite.Specification
   , PropertySpec
   , LabelledSpec
   , BuildLabelledSpecs
-  , TransformSpec
+  , TransformSpec(..)
   , BuildTransformSpecs
   )
 import Graphics.Vega.VegaLite.Time
@@ -628,7 +628,7 @@ stack f grp start end sProps ols =
       toSpec [x] = x
       toSpec _ = A.Null
 
-  in ("stack" .= ags) : ols
+  in TS ("stack" .= ags) : ols
 
 
 {-|
@@ -2674,9 +2674,19 @@ The supported transformations include: 'aggregate', 'binAs',
 
 -}
 
-transform :: [TransformSpec] -> PropertySpec
+transform ::
+  [TransformSpec]
+  -- ^ The transformations to apply.
+  --
+  --   Prior to @0.5.0.0@ this argument was @[LabelledSpec]@. There should be
+  --   no difference to valid programs with this change, but it should catch
+  --   cases where the wrong argument was used with earlier versions. Please
+  --   <https://github.com/DougBurke/hvega/issues report an issue>
+  --   if you've got a visualization that should
+  --   compile but doesn't because of this change!
+  -> PropertySpec
 transform transforms =
-  let js = if null transforms then A.Null else toJSON (map assemble transforms)
+  let js = if null transforms then A.Null else toJSON (map (assemble . unTS) transforms)
 
       -- use the same approach as Elm of encoding the spec, then decoding it,
       -- rather than inspecting the structure of the JSON
@@ -3031,7 +3041,7 @@ aggregate ::
   -> BuildTransformSpecs
 aggregate ops groups ols =
   let ags = toJSON [toJSON ops, toJSON (map toJSON groups)]
-  in ("aggregate", ags) : ols
+  in TS ("aggregate", ags) : ols
 
 
 {-|
@@ -3066,7 +3076,7 @@ joinAggregate ::
   -> BuildTransformSpecs
 joinAggregate ops wProps ols =
   let ags = toJSON ops : windowPropertySpec wProps
-  in ("joinaggregate", toJSON ags) : ols
+  in TS ("joinaggregate", toJSON ags) : ols
 
 
 {-|
@@ -3093,7 +3103,7 @@ window wss wProps ols =
   let args = toJSON wargs : windowPropertySpec wProps
       wargs = map winFieldDef wss
       winFieldDef (ws, out) = object ("as" .= out : map windowFieldProperty ws)
-  in ("window" .= toJSON args) : ols
+  in TS ("window" .= toJSON args) : ols
 
 
 {-|
@@ -3114,7 +3124,7 @@ For example, the following randomly samples 50 values from a sine curve:
 -}
 
 sample :: Int -> BuildTransformSpecs
-sample maxSize ols = ("sample" .= maxSize) : ols
+sample maxSize ols = TS ("sample" .= maxSize) : ols
 
 
 {-|
@@ -3287,7 +3297,7 @@ density ::
   -- ^ Configure the calculation.
   -> BuildTransformSpecs
 density field dps ols =
-  ("density" .= [ toJSON field
+  TS ("density" .= [ toJSON field
                 , densityPropertySpec DPLGroupby dps
                 , densityPropertySpec DPLCumulative dps
                 , densityPropertySpec DPLCounts dps
@@ -3395,7 +3405,7 @@ loess ::
   -- ^ Customize the trend fitting.
   -> BuildTransformSpecs
 loess depField indField lsp ols =
-  ("loess" .= [ toJSON depField
+  TS ("loess" .= [ toJSON depField
               , toJSON indField
               , loessPropertySpec LLGroupBy lsp
               , loessPropertySpec LLBandwidth lsp
@@ -3569,7 +3579,7 @@ regression ::
   -- ^ Customize the regression.
   -> BuildTransformSpecs
 regression depField indField rps ols =
-  ("regression" .= [ toJSON depField
+  TS ("regression" .= [ toJSON depField
                    , toJSON indField
                    , regressionPropertySpec RPLGroupBy rps
                    , regressionPropertySpec RPLMethod rps
@@ -3689,7 +3699,7 @@ quantile field qps ols =
            , quantilePropertySpec QPLAs qps
            ]
 
-  in ("quantile" .= fs) : ols
+  in TS ("quantile" .= fs) : ols
 
 
 {-|
@@ -3718,7 +3728,7 @@ binAs bProps field label ols =
   let js = if null bProps
            then [toJSON True, toJSON field, toJSON label]
            else [object (map binProperty bProps), toJSON field, toJSON label]
- in ("bin" .= js) : ols
+ in TS ("bin" .= js) : ols
 
 
 {-|
@@ -3738,7 +3748,7 @@ calculateAs ::
   -> FieldName
   -- ^ The field to assign the new values.
   -> BuildTransformSpecs
-calculateAs expr label ols = ("calculate" .= [expr, label]) : ols
+calculateAs expr label ols = TS ("calculate" .= [expr, label]) : ols
 
 
 {-|
@@ -3918,7 +3928,7 @@ with @"datum."@).
 
 -}
 filter :: Filter -> BuildTransformSpecs
-filter f ols = ("filter" .= filterSpec f) : ols
+filter f ols = TS ("filter" .= filterSpec f) : ols
 
 
 
@@ -3933,7 +3943,7 @@ See also 'flattenAs'.
 -}
 
 flatten :: [FieldName] -> BuildTransformSpecs
-flatten fields ols = ("flatten" .= fields) : ols
+flatten fields ols = TS ("flatten" .= fields) : ols
 
 
 {-|
@@ -3949,7 +3959,7 @@ flattenAs ::
   -> [FieldName]
   -- ^ The names of the output fields.
   -> BuildTransformSpecs
-flattenAs fields names ols = ("flattenAs" .= [fields, names]) : ols
+flattenAs fields names ols = TS ("flattenAs" .= [fields, names]) : ols
 
 
 {-|
@@ -3985,7 +3995,7 @@ fold ::
   [FieldName]
   -- ^ The data fields to fold.
   -> BuildTransformSpecs
-fold fields ols = ("fold" .= fields) : ols
+fold fields ols = TS ("fold" .= fields) : ols
 
 
 {-|
@@ -4005,7 +4015,7 @@ foldAs ::
   -- ^ The name for the @value@ field.
   -> BuildTransformSpecs
 foldAs fields keyName valName ols =
-  ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
+  TS ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
 
 
 {-|
@@ -4043,7 +4053,7 @@ pivot ::
   -> [PivotProperty]
   -> BuildTransformSpecs
 pivot field valField pProps ols =
-  ("pivot" .= [ toJSON field
+  TS ("pivot" .= [ toJSON field
               , toJSON valField
               , pivotPropertySpec PPLGroupBy pProps
               , pivotPropertySpec PPLLimit pProps
@@ -4238,7 +4248,7 @@ lookup key1 (_, spec) key2 lfields ols =
       get1 = toJSON . map fst
       get2 = toJSON . map snd
 
-  in ("lookup" .= ([toJSON key1, spec, toJSON key2] ++ js)) : ols
+  in TS ("lookup" .= ([toJSON key1, spec, toJSON key2] ++ js)) : ols
 
 
 {-|
@@ -4270,7 +4280,7 @@ lookupSelection ::
   --   primary data field.
   -> BuildTransformSpecs
 lookupSelection key1 selName key2 ols =
-  ("lookup" .= [key1, selName, key2]) : ols
+  TS ("lookup" .= [key1, selName, key2]) : ols
 
 
 {-|
@@ -4382,7 +4392,7 @@ impute ::
   -- ^ Define how the imputation works.
   -> BuildTransformSpecs
 impute fields keyField imProps ols =
-  (imputeFields_ fields keyField imProps) : ols
+  TS (imputeFields_ fields keyField imProps) : ols
 
 
 {-|
@@ -4642,7 +4652,7 @@ timeUnitAs ::
   -- ^ The name of the binned data created by this routine.
   -> BuildTransformSpecs
 timeUnitAs tu field label ols =
-  ("timeUnit" .= [timeUnitLabel tu, field, label]) : ols
+  TS ("timeUnit" .= [timeUnitLabel tu, field, label]) : ols
 
 
 {-|
