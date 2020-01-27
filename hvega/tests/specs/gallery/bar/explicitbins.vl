@@ -1,0 +1,64 @@
+{
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "binEnd": 10,
+                "count": 7,
+                "binStart": 8
+            },
+            {
+                "binEnd": 12,
+                "count": 29,
+                "binStart": 10
+            },
+            {
+                "binEnd": 14,
+                "count": 71,
+                "binStart": 12
+            },
+            {
+                "binEnd": 16,
+                "count": 127,
+                "binStart": 14
+            },
+            {
+                "binEnd": 18,
+                "count": 94,
+                "binStart": 16
+            },
+            {
+                "binEnd": 20,
+                "count": 54,
+                "binStart": 18
+            },
+            {
+                "binEnd": 22,
+                "count": 17,
+                "binStart": 20
+            },
+            {
+                "binEnd": 24,
+                "count": 5,
+                "binStart": 22
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x2": {
+            "field": "binEnd"
+        },
+        "x": {
+            "field": "binStart",
+            "bin": {
+                "step": 2
+            },
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "count",
+            "type": "quantitative"
+        }
+    }
+}
