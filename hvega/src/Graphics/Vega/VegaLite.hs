@@ -1101,7 +1101,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.transform' function now takes a list of 'VL.TransformSpec'
 --   rather than 'VL.LabelledSpec' in an attempt to encode
 --   the schema structure in the types (i.e. make it harder to
---   generate invalid Vega Lite JSON). This **should not** change
+--   generate invalid Vega Lite JSON). This __should not__ change
 --   valid visualizations, but please
 --   <https://github.com/DougBurke/hvega/issues report an issue> if you
 --   find this change breaks your code.

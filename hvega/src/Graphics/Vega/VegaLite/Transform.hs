@@ -405,7 +405,7 @@ windowTS wss wps =
                <> addField "groupby" wpGroupBy
                <> addField "sort" wpSort
 
-  in TS ("window", object fields)
+  in TS (object fields)
 
 
 joinAggregateTS :: [VLSpec] -> [WindowProperty] -> TransformSpec
@@ -420,7 +420,7 @@ joinAggregateTS ops wps =
                <> addField "groupby" wpGroupBy
                <> addField "sort" wpSort
 
-  in TS ("joinaggregate", object fields)
+  in TS (object fields)
 
 
 -- | This is used with 'Graphics.Vega.VegaLite.impute' and 'Graphics.Vega.VegaLite.PImpute'.
@@ -513,7 +513,7 @@ imputeTS field key imProps =
                <> addField "groupby" imputePropertySpecGroupBy
                <> addField "value" imputePropertySpecValue
 
-  in TS ("impute", object fields)
+  in TS (object fields)
 
 
 -- | Imputation method to use when replacing values.

@@ -292,7 +292,7 @@ Represent a transformation (input to 'Graphics.Vega.VegaLite.transform').
 
 -}
 
-newtype TransformSpec = TS { unTS :: (T.Text, VLSpec) }
+newtype TransformSpec = TS { unTS :: VLSpec }
 
 {-|
 Represent the functions that can be chained together and sent to

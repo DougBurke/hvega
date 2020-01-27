@@ -631,7 +631,7 @@ stack f grp start end sProps ols =
                <> addField "offset" mOffset
                <> addField "sort" mSort
 
-  in TS ("stack", object fields) : ols
+  in TS (object fields) : ols
 
 
 {-|
@@ -2689,7 +2689,7 @@ transform ::
   --   compile but doesn't because of this change!
   -> PropertySpec
 transform transforms =
-  let js = if null transforms then A.Null else toJSON (map (snd . unTS) transforms)
+  let js = if null transforms then A.Null else toJSON (map unTS transforms)
   in (VLTransform, js)
 
 
@@ -2798,7 +2798,7 @@ aggregate ::
 aggregate ops groups ols =
   let fields = [ "aggregate" .= ops
                , "groupby" .= groups ]
-  in TS ("aggregate", object fields) : ols
+  in TS (object fields) : ols
 
 
 {-|
@@ -2875,7 +2875,7 @@ For example, the following randomly samples 50 values from a sine curve:
 -}
 
 sample :: Int -> BuildTransformSpecs
-sample maxSize ols = TS ("sample", object [ "sample" .= maxSize ]) : ols
+sample maxSize ols = TS (object [ "sample" .= maxSize ]) : ols
 
 
 {-|
@@ -3063,7 +3063,7 @@ density field dps ols =
                 <> addField "steps" DPLSteps
                 <> addField "as" DPLAs
 
-  in TS ("density", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3171,7 +3171,7 @@ loess depField indField lsp ols =
                 <> addField "bandwidth" LLBandwidth
                 <> addField "as" LLAs
 
-  in TS ("loess", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3353,7 +3353,7 @@ regression depField indField rps ols =
                 <> addField "params" RPLParams
                 <> addField "as" RPLAs
 
-  in TS ("regression", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3468,7 +3468,7 @@ quantile field qps ols =
                 <> addField "step" QPLStep
                 <> addField "as" QPLAs
 
-  in TS ("quantile", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3500,7 +3500,7 @@ binAs bProps field label ols =
 
       binObj = object (map binProperty bProps)
 
- in TS ("bin", object fields) : ols
+ in TS (object fields) : ols
 
 
 {-|
@@ -3522,7 +3522,7 @@ calculateAs ::
   -> BuildTransformSpecs
 calculateAs expr label ols =
   let fields = [ "calculate" .= expr, "as" .= label ]
-  in TS ("calculate", object fields) : ols
+  in TS (object fields) : ols
 
 
 {-|
@@ -3702,7 +3702,7 @@ with @"datum."@).
 
 -}
 filter :: Filter -> BuildTransformSpecs
-filter f ols = TS ("filter", object [ "filter" .= filterSpec f ]) : ols
+filter f ols = TS (object [ "filter" .= filterSpec f ]) : ols
 
 
 
@@ -3717,7 +3717,7 @@ See also 'flattenAs'.
 -}
 
 flatten :: [FieldName] -> BuildTransformSpecs
-flatten fields ols = TS ("flatten", object [ "flatten" .= fields ]) : ols
+flatten fields ols = TS (object [ "flatten" .= fields ]) : ols
 
 
 {-|
@@ -3735,7 +3735,7 @@ flattenAs ::
   -> BuildTransformSpecs
 flattenAs fields names ols =
   let ofields = [ "flatten" .= fields, "as" .= names ]
-  in TS ("flattenAs", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3771,7 +3771,7 @@ fold ::
   [FieldName]
   -- ^ The data fields to fold.
   -> BuildTransformSpecs
-fold fields ols = TS ("fold", object [ "fold" .= fields ]) : ols
+fold fields ols = TS (object [ "fold" .= fields ]) : ols
 
 
 {-|
@@ -3794,7 +3794,7 @@ foldAs fields keyName valName ols =
   let ofields = [ "fold" .= fields
                 , "as" .= [ keyName, valName ]
                 ]
-  in TS ("foldAs", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -3842,7 +3842,7 @@ pivot field valField pProps ols =
                 <> addField "limit" PPLLimit
                 <> addField "op" PPLOp
 
-  in TS ("pivot", object ofields ) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -4052,7 +4052,7 @@ lookup key1 (_, spec) key2 lfields ols =
                 <> addField "as" mas
                 <> addField "default" mdefault
 
-  in TS ("lookup", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -4089,7 +4089,7 @@ lookupSelection key1 selName key2 ols =
                                    , "key" .= key2 ]
                 ]
 
-  in TS ("lookup", object ofields) : ols
+  in TS (object ofields) : ols
 
 
 {-|
@@ -4463,7 +4463,7 @@ timeUnitAs tu field label ols =
   let fields = [ "timeUnit" .= timeUnitLabel tu
                , "field" .= field
                , "as" .= label ]
-  in TS ("timeUnit", object fields) : ols
+  in TS (object fields) : ols
 
 
 {-|
