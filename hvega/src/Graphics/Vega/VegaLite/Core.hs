@@ -170,9 +170,8 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 import qualified Data.Text as T
-import qualified Data.Vector as V
 
-import Data.Aeson (decode, encode, object, toJSON, (.=))
+import Data.Aeson (object, toJSON, (.=))
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -298,12 +297,12 @@ import Graphics.Vega.VegaLite.Transform
   , op_
   , binned_
   , impute_
-  , imputeFields_
   , bin
   , binProperty
   , operationSpec
-  , windowFieldProperty
-  , windowPropertySpec
+  , windowTS
+  , joinAggregateTS
+  , imputeTS
   )
 
 --- helpers
@@ -620,15 +619,19 @@ stack ::
   -- ^ Offset and sort properties.
   -> BuildTransformSpecs
 stack f grp start end sProps ols =
-  let ags = [ toJSON f, toJSON grp, toJSON start, toJSON end
-            , toSpec (mapMaybe stackPropertySpecOffset sProps)
-            , toSpec (mapMaybe stackPropertySpecSort sProps)
-            ]
+  let addField n [x] = [n .= x]
+      addField _ _ = []
 
-      toSpec [x] = x
-      toSpec _ = A.Null
+      mOffset = mapMaybe stackPropertySpecOffset sProps
+      mSort = mapMaybe stackPropertySpecSort sProps
 
-  in TS ("stack" .= ags) : ols
+      fields = [ "stack" .= f
+               , "groupby" .= grp
+               , "as" .= [ start, end ] ]
+               <> addField "offset" mOffset
+               <> addField "sort" mSort
+
+  in TS ("stack", object fields) : ols
 
 
 {-|
@@ -2686,255 +2689,8 @@ transform ::
   --   compile but doesn't because of this change!
   -> PropertySpec
 transform transforms =
-  let js = if null transforms then A.Null else toJSON (map (assemble . unTS) transforms)
-
-      -- use the same approach as Elm of encoding the spec, then decoding it,
-      -- rather than inspecting the structure of the JSON
-      --
-      assemble :: LabelledSpec -> VLSpec
-      assemble (str, val) =
-
-        let dval = decode (encode val) :: Maybe A.Value
-        in case str of
-          "aggregate" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 2 -> object [ ("aggregate", vs V.! 0)
-                                                             , ("groupby", vs V.! 1) ]
-              _ -> A.Null
-
-          "bin" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 3 -> object [ ("bin", vs V.! 0)
-                                                             , ("field", vs V.! 1)
-                                                             , ("as", vs V.! 2) ]
-              _ -> A.Null
-
-          "calculate" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 2 -> object [ ("calculate", vs V.! 0)
-                                                             , ("as", vs V.! 1) ]
-              _ -> A.Null
-
-
-          "impute" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 8 ->
-                                    let [imp, keyField, frameObj, keyValsObj, keyValsSequenceObj, methodObj, groupbyObj, valueObj] = V.toList vs
-
-                                        addField _ A.Null = []
-                                        addField f v = [(f, v)]
-
-                                        ols = [ ("impute", imp)
-                                              , ("key", keyField) ]
-                                              <> addField "frame" frameObj
-                                              <> addField "keyvals" keyValsObj
-                                              <> addField "keyvals" keyValsSequenceObj
-                                              <> addField "method" methodObj
-                                              <> addField "groupby" groupbyObj
-                                              <> addField "value" valueObj
-
-                                    in object ols
-              _ -> A.Null
-
-          "density" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 10 ->
-                    let addField _ A.Null = []
-                        addField f v = [(f, v)]
-
-                        ols = [ ("density", vs V.! 0) ]
-                              <> addField "groupby" (vs V.! 1)
-                              <> addField "cumulative" (vs V.! 2)
-                              <> addField "counts" (vs V.! 3)
-                              <> addField "bandwidth" (vs V.! 4)
-                              <> addField "extent" (vs V.! 5)
-                              <> addField "minsteps" (vs V.! 6)
-                              <> addField "maxsteps" (vs V.! 7)
-                              <> addField "steps" (vs V.! 8)
-                              <> addField "as" (vs V.! 9)
-
-                    in object ols
-
-              _ -> A.Null
-
-          "loess" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 5 ->
-                    let addField _ A.Null = []
-                        addField f v = [(f, v)]
-
-                        ols = [ ("loess", vs V.! 0)
-                              , ("on", vs V.! 1) ]
-                              <> addField "groupby" (vs V.! 2)
-                              <> addField "bandwidth" (vs V.! 3)
-                              <> addField "as" (vs V.! 4)
-
-                    in object ols
-
-              _ -> A.Null
-
-          "regression" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 8 ->
-                    let addField _ A.Null = []
-                        addField f v = [(f, v)]
-
-                        ols = [ ("regression", vs V.! 0)
-                              , ("on", vs V.! 1) ]
-                              <> addField "groupby" (vs V.! 2)
-                              <> addField "method" (vs V.! 3)
-                              <> addField "order" (vs V.! 4)
-                              <> addField "extent" (vs V.! 5)
-                              <> addField "params" (vs V.! 6)
-                              <> addField "as" (vs V.! 7)
-
-                    in object ols
-
-              _ -> A.Null
-
-          "quantile" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 5 ->
-                    let addField _ A.Null = []
-                        addField f v = [(f, v)]
-
-                        ols = [ ("quantile", vs V.! 0) ]
-                              <> addField "groupby" (vs V.! 1)
-                              <> addField "probs" (vs V.! 2)
-                              <> addField "step" (vs V.! 3)
-                              <> addField "as" (vs V.! 4)
-
-                    in object ols
-
-              _ -> A.Null
-
-          "lookup" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 6 ->
-                    let addField _ A.Null = []
-                        addField f v = [(f, v)]
-
-                        -- this doesn't quite match the code used in Elm,
-                        -- but I think/hope it matches the intent.
-                        fs = [ ("data", vs V.! 1)
-                             , ("key", vs V.! 2) ]
-                             <> addField "fields" (vs V.! 3)
-
-                        ols = [ ("lookup", vs V.! 0)
-                              , ("from", object fs) ]
-                              <> addField "as" (vs V.! 4)
-                              <> addField "default" (vs V.! 5)
-
-                    in object ols
-
-                | V.length vs == 3 ->
-                    -- lookupSelection
-                    let fs = [ ("selection", vs V.! 1)
-                             , ("key", vs V.! 2) ]
-
-                        ols = [ ("lookup", vs V.! 0)
-                              , ("from", object fs)
-                              ]
-
-                    in object ols
-
-              _ -> A.Null
-
-          "flattenAs" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 2 -> object [ ("flatten", vs V.! 0)
-                                                             , ("as", vs V.! 1) ]
-              _ -> A.Null
-
-          "foldAs" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 3 -> object [ ("fold", vs V.! 0)
-                                                             , ("as", toJSON [vs V.! 1, vs V.! 2]) ]
-              _ -> A.Null
-
-          "pivot" ->
-            case dval of
-              Just (A.Array vs)
-                | V.length vs == 5 ->
-                  let addField _ A.Null = []
-                      addField f v = [(f, v)]
-
-                      ols = [ ("pivot", vs V.! 0)
-                            , ("value",  vs V.! 1) ]
-                            <> addField "groupby" (vs V.! 2)
-                            <> addField "limit" (vs V.! 3)
-                            <> addField "op" (vs V.! 4)
-
-                  in object ols
-
-              _ -> A.Null
-
-          "stack" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 6 ->
-                                    let [field, grp, start, end, offsetObj, sortObj] = V.toList vs
-
-                                        addField _ A.Null = []
-                                        addField f v = [(f, v)]
-
-                                        ols = [ ("stack", field)
-                                              , ("groupby", grp)
-                                              , ("as", toJSON [start, end]) ]
-                                              <> addField "offset" offsetObj
-                                              <> addField "sort" sortObj
-
-                                    in object ols
-              _ -> A.Null
-
-          "timeUnit" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 3 -> object [ ("timeUnit", vs V.! 0)
-                                                             , ("field", vs V.! 1)
-                                                             , ("as", vs V.! 2) ]
-              _ -> A.Null
-
-          "window" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 5 ->
-                                    let [winObj, frameObj, peersObj, groupbyObj, sortObj] = V.toList vs
-
-                                        addField _ A.Null = []
-                                        addField f v = [(f, v)]
-
-                                        ols = [("window", winObj)]
-                                              <> addField "frame" frameObj
-                                              <> addField "ignorePeers" peersObj
-                                              <> addField "groupby" groupbyObj
-                                              <> addField "sort" sortObj
-
-                                    in object ols
-              _ -> A.Null
-
-          "joinaggregate" ->
-            case dval of
-              Just (A.Array vs) | V.length vs == 5 ->
-                                    let [joinObjs, frameObj, peersObj, groupbyObj, sortObj] = V.toList vs
-
-                                        addField _ A.Null = []
-                                        addField f v = [(f, v)]
-
-                                        ols = [("joinaggregate", joinObjs)]
-                                              <> addField "frame" frameObj
-                                              <> addField "ignorePeers" peersObj
-                                              <> addField "groupby" groupbyObj
-                                              <> addField "sort" sortObj
-
-                                    in object ols
-              _ -> A.Null
-
-          _ -> object [(str, val)]
-
-    in (VLTransform, js)
+  let js = if null transforms then A.Null else toJSON (map (snd . unTS) transforms)
+  in (VLTransform, js)
 
 
 {-|
@@ -3040,8 +2796,9 @@ aggregate ::
   -- ^ The \"group by\" fields.
   -> BuildTransformSpecs
 aggregate ops groups ols =
-  let ags = toJSON [toJSON ops, toJSON (map toJSON groups)]
-  in TS ("aggregate", ags) : ols
+  let fields = [ "aggregate" .= ops
+               , "groupby" .= groups ]
+  in TS ("aggregate", object fields) : ols
 
 
 {-|
@@ -3074,9 +2831,7 @@ joinAggregate ::
   [VLSpec]
   -> [WindowProperty]
   -> BuildTransformSpecs
-joinAggregate ops wProps ols =
-  let ags = toJSON ops : windowPropertySpec wProps
-  in TS ("joinaggregate", toJSON ags) : ols
+joinAggregate ops wProps ols = joinAggregateTS ops wProps : ols
 
 
 {-|
@@ -3099,11 +2854,7 @@ window ::
   -> [WindowProperty]
   -- ^ The window transform.
   -> BuildTransformSpecs
-window wss wProps ols =
-  let args = toJSON wargs : windowPropertySpec wProps
-      wargs = map winFieldDef wss
-      winFieldDef (ws, out) = object ("as" .= out : map windowFieldProperty ws)
-  in TS ("window" .= toJSON args) : ols
+window wss wProps ols = windowTS wss wProps : ols
 
 
 {-|
@@ -3124,7 +2875,7 @@ For example, the following randomly samples 50 values from a sine curve:
 -}
 
 sample :: Int -> BuildTransformSpecs
-sample maxSize ols = TS ("sample" .= maxSize) : ols
+sample maxSize ols = TS ("sample", object [ "sample" .= maxSize ]) : ols
 
 
 {-|
@@ -3297,17 +3048,22 @@ density ::
   -- ^ Configure the calculation.
   -> BuildTransformSpecs
 density field dps ols =
-  TS ("density" .= [ toJSON field
-                , densityPropertySpec DPLGroupby dps
-                , densityPropertySpec DPLCumulative dps
-                , densityPropertySpec DPLCounts dps
-                , densityPropertySpec DPLBandwidth dps
-                , densityPropertySpec DPLExtent dps
-                , densityPropertySpec DPLMinsteps dps
-                , densityPropertySpec DPLMaxsteps dps
-                , densityPropertySpec DPLSteps dps
-                , densityPropertySpec DPLAs dps
-                ]) : ols
+  let addField n p = case densityPropertySpec p dps of
+                       A.Null -> []
+                       x -> [ n .= x ]
+
+      ofields = [ "density" .= field ]
+                <> addField "groupby" DPLGroupby
+                <> addField "cumulative" DPLCumulative
+                <> addField "counts" DPLCounts
+                <> addField "bandwidth" DPLBandwidth
+                <> addField "extent" DPLExtent
+                <> addField "minsteps" DPLMinsteps
+                <> addField "maxsteps" DPLMaxsteps
+                <> addField "steps" DPLSteps
+                <> addField "as" DPLAs
+
+  in TS ("density", object ofields) : ols
 
 
 {-|
@@ -3405,12 +3161,17 @@ loess ::
   -- ^ Customize the trend fitting.
   -> BuildTransformSpecs
 loess depField indField lsp ols =
-  TS ("loess" .= [ toJSON depField
-              , toJSON indField
-              , loessPropertySpec LLGroupBy lsp
-              , loessPropertySpec LLBandwidth lsp
-              , loessPropertySpec LLAs lsp
-              ]) : ols
+  let addField n p = case loessPropertySpec p lsp of
+                       A.Null -> []
+                       x -> [ n .= x ]
+
+      ofields = [ "loess" .= depField
+                , "on" .= indField ]
+                <> addField "groupby" LLGroupBy
+                <> addField "bandwidth" LLBandwidth
+                <> addField "as" LLAs
+
+  in TS ("loess", object ofields) : ols
 
 
 {-|
@@ -3579,15 +3340,20 @@ regression ::
   -- ^ Customize the regression.
   -> BuildTransformSpecs
 regression depField indField rps ols =
-  TS ("regression" .= [ toJSON depField
-                   , toJSON indField
-                   , regressionPropertySpec RPLGroupBy rps
-                   , regressionPropertySpec RPLMethod rps
-                   , regressionPropertySpec RPLOrder rps
-                   , regressionPropertySpec RPLExtent rps
-                   , regressionPropertySpec RPLParams rps
-                   , regressionPropertySpec RPLAs rps
-                   ]) : ols
+  let addField n p = case regressionPropertySpec p rps of
+                       A.Null -> []
+                       x -> [ n .= x ]
+
+      ofields = [ "regression" .= depField
+                , "on" .= indField ]
+                <> addField "groupby" RPLGroupBy
+                <> addField "method" RPLMethod
+                <> addField "order" RPLOrder
+                <> addField "extent" RPLExtent
+                <> addField "params" RPLParams
+                <> addField "as" RPLAs
+
+  in TS ("regression", object ofields) : ols
 
 
 {-|
@@ -3692,14 +3458,17 @@ quantile ::
   -- ^ Configure the quantile analysis
   -> BuildTransformSpecs
 quantile field qps ols =
-  let fs = [ toJSON field
-           , quantilePropertySpec QPLGroupBy qps
-           , quantilePropertySpec QPLProbs qps
-           , quantilePropertySpec QPLStep qps
-           , quantilePropertySpec QPLAs qps
-           ]
+  let addField n p = case quantilePropertySpec p qps of
+                       A.Null -> []
+                       x -> [ n .= x ]
 
-  in TS ("quantile" .= fs) : ols
+      ofields = [ "quantile" .= field ]
+                <> addField "groupby" QPLGroupBy
+                <> addField "probs" QPLProbs
+                <> addField "step" QPLStep
+                <> addField "as" QPLAs
+
+  in TS ("quantile", object ofields) : ols
 
 
 {-|
@@ -3725,10 +3494,13 @@ binAs ::
   -- ^ The label for the binned data.
   -> BuildTransformSpecs
 binAs bProps field label ols =
-  let js = if null bProps
-           then [toJSON True, toJSON field, toJSON label]
-           else [object (map binProperty bProps), toJSON field, toJSON label]
- in TS ("bin" .= js) : ols
+  let fields = [ "bin" .= if null bProps then toJSON True else binObj
+               , "field" .= field
+               , "as" .= label ]
+
+      binObj = object (map binProperty bProps)
+
+ in TS ("bin", object fields) : ols
 
 
 {-|
@@ -3748,7 +3520,9 @@ calculateAs ::
   -> FieldName
   -- ^ The field to assign the new values.
   -> BuildTransformSpecs
-calculateAs expr label ols = TS ("calculate" .= [expr, label]) : ols
+calculateAs expr label ols =
+  let fields = [ "calculate" .= expr, "as" .= label ]
+  in TS ("calculate", object fields) : ols
 
 
 {-|
@@ -3928,7 +3702,7 @@ with @"datum."@).
 
 -}
 filter :: Filter -> BuildTransformSpecs
-filter f ols = TS ("filter" .= filterSpec f) : ols
+filter f ols = TS ("filter", object [ "filter" .= filterSpec f ]) : ols
 
 
 
@@ -3943,7 +3717,7 @@ See also 'flattenAs'.
 -}
 
 flatten :: [FieldName] -> BuildTransformSpecs
-flatten fields ols = TS ("flatten" .= fields) : ols
+flatten fields ols = TS ("flatten", object [ "flatten" .= fields ]) : ols
 
 
 {-|
@@ -3959,7 +3733,9 @@ flattenAs ::
   -> [FieldName]
   -- ^ The names of the output fields.
   -> BuildTransformSpecs
-flattenAs fields names ols = TS ("flattenAs" .= [fields, names]) : ols
+flattenAs fields names ols =
+  let ofields = [ "flatten" .= fields, "as" .= names ]
+  in TS ("flattenAs", object ofields) : ols
 
 
 {-|
@@ -3995,7 +3771,7 @@ fold ::
   [FieldName]
   -- ^ The data fields to fold.
   -> BuildTransformSpecs
-fold fields ols = TS ("fold" .= fields) : ols
+fold fields ols = TS ("fold", object [ "fold" .= fields ]) : ols
 
 
 {-|
@@ -4015,7 +3791,10 @@ foldAs ::
   -- ^ The name for the @value@ field.
   -> BuildTransformSpecs
 foldAs fields keyName valName ols =
-  TS ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
+  let ofields = [ "fold" .= fields
+                , "as" .= [ keyName, valName ]
+                ]
+  in TS ("foldAs", object ofields) : ols
 
 
 {-|
@@ -4053,12 +3832,17 @@ pivot ::
   -> [PivotProperty]
   -> BuildTransformSpecs
 pivot field valField pProps ols =
-  TS ("pivot" .= [ toJSON field
-              , toJSON valField
-              , pivotPropertySpec PPLGroupBy pProps
-              , pivotPropertySpec PPLLimit pProps
-              , pivotPropertySpec PPLOp pProps
-              ]) : ols
+  let addField n p = case pivotPropertySpec p pProps of
+                       A.Null -> []
+                       x -> [n .= x]
+
+      ofields = [ "pivot" .= field
+                , "value" .= valField ]
+                <> addField "groupby" PPLGroupBy
+                <> addField "limit" PPLLimit
+                <> addField "op" PPLOp
+
+  in TS ("pivot", object ofields ) : ols
 
 
 {-|
@@ -4087,6 +3871,7 @@ data PivotPropertyLabel = PPLGroupBy | PPLLimit | PPLOp
 -- this makes sense (aka "you are telling me multiple things,
 -- so I give up") and is used elsewhere.
 --
+-- TODO: this should return a Maybe VLSpec
 pivotPropertySpec ::
   PivotPropertyLabel
   -> [PivotProperty]
@@ -4235,20 +4020,39 @@ lookup ::
   --   This was changed from @[T.Text]@ in vesion 0.5.0.0.
   -> BuildTransformSpecs
 lookup key1 (_, spec) key2 lfields ols =
-  let js = case lfields of
-             LuFields fs -> [ toJSON fs, A.Null, A.Null ]
-             LuFieldAs fas -> [ get1 fas, get2 fas, A.Null ]
-             LuAs s -> [ A.Null, toJSON s, A.Null ]
+  let get1 = jj . map fst
+      get2 = jj . map snd
+
+      jj :: A.ToJSON a => a -> Maybe A.Value
+      jj = Just . toJSON
+
+      res = case lfields of               
+             LuFields fs -> ( jj fs, Nothing, Nothing )
+             LuFieldAs fas -> ( get1 fas, get2 fas, Nothing )
+             LuAs s -> ( Nothing, jj s, Nothing )
              LuFieldsWithDefault fs def
-               -> [ toJSON fs, A.Null, toJSON def ]
+               -> ( jj fs, Nothing , jj def )
              LuFieldsAsWithDefault fas def
-               -> [ get1 fas, get2 fas, toJSON def ]
-             LuAsWithDefault s def -> [ A.Null, toJSON s, toJSON def ]
+               -> ( get1 fas, get2 fas, jj def )
+             LuAsWithDefault s def -> ( Nothing, jj s, jj def )
 
-      get1 = toJSON . map fst
-      get2 = toJSON . map snd
+      (mfields, mas, mdefault) = res
 
-  in TS ("lookup" .= ([toJSON key1, spec, toJSON key2] ++ js)) : ols
+      addField n (Just x) = [ (n, x) ]
+      addField _ _ = []
+
+      fromFields = [ "data" .= spec
+                   , "key" .= key2
+                   ]
+                   <> addField "fields" mfields
+
+      ofields = [ "lookup" .= key1
+                , "from" .= object fromFields
+                ]
+                <> addField "as" mas
+                <> addField "default" mdefault
+
+  in TS ("lookup", object ofields) : ols
 
 
 {-|
@@ -4280,7 +4084,12 @@ lookupSelection ::
   --   primary data field.
   -> BuildTransformSpecs
 lookupSelection key1 selName key2 ols =
-  TS ("lookup" .= [key1, selName, key2]) : ols
+  let ofields = [ "lookup" .= key1
+                , "from" .= object [ "selection" .= selName
+                                   , "key" .= key2 ]
+                ]
+
+  in TS ("lookup", object ofields) : ols
 
 
 {-|
@@ -4391,8 +4200,7 @@ impute ::
   -> [ImputeProperty]
   -- ^ Define how the imputation works.
   -> BuildTransformSpecs
-impute fields keyField imProps ols =
-  TS (imputeFields_ fields keyField imProps) : ols
+impute fields keyField imProps ols = imputeTS fields keyField imProps : ols
 
 
 {-|
@@ -4652,7 +4460,10 @@ timeUnitAs ::
   -- ^ The name of the binned data created by this routine.
   -> BuildTransformSpecs
 timeUnitAs tu field label ols =
-  TS ("timeUnit" .= [timeUnitLabel tu, field, label]) : ols
+  let fields = [ "timeUnit" .= timeUnitLabel tu
+               , "field" .= field
+               , "as" .= label ]
+  in TS ("timeUnit", object fields) : ols
 
 
 {-|
