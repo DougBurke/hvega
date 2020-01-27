@@ -278,6 +278,8 @@ import Graphics.Vega.VegaLite.Specification
   , PropertySpec
   , LabelledSpec
   , BuildLabelledSpecs
+  , TransformSpec
+  , BuildTransformSpecs
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
@@ -616,7 +618,7 @@ stack ::
   -- ^ The output field name (end).
   -> [StackProperty]
   -- ^ Offset and sort properties.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 stack f grp start end sProps ols =
   let ags = [ toJSON f, toJSON grp, toJSON start, toJSON end
             , toSpec (mapMaybe stackPropertySpecOffset sProps)
@@ -2672,7 +2674,7 @@ The supported transformations include: 'aggregate', 'binAs',
 
 -}
 
-transform :: [LabelledSpec] -> PropertySpec
+transform :: [TransformSpec] -> PropertySpec
 transform transforms =
   let js = if null transforms then A.Null else toJSON (map assemble transforms)
 
@@ -3026,7 +3028,7 @@ aggregate ::
   -- ^ The named aggregation operations to apply.
   -> [FieldName]
   -- ^ The \"group by\" fields.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 aggregate ops groups ols =
   let ags = toJSON [toJSON ops, toJSON (map toJSON groups)]
   in ("aggregate", ags) : ols
@@ -3061,7 +3063,7 @@ See also 'aggregate'.
 joinAggregate ::
   [VLSpec]
   -> [WindowProperty]
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 joinAggregate ops wProps ols =
   let ags = toJSON ops : windowPropertySpec wProps
   in ("joinaggregate", toJSON ags) : ols
@@ -3086,7 +3088,7 @@ window ::
   -- ^ The window-transform definition and associated output name.
   -> [WindowProperty]
   -- ^ The window transform.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 window wss wProps ols =
   let args = toJSON wargs : windowPropertySpec wProps
       wargs = map winFieldDef wss
@@ -3111,7 +3113,7 @@ For example, the following randomly samples 50 values from a sine curve:
 
 -}
 
-sample :: Int -> BuildLabelledSpecs
+sample :: Int -> BuildTransformSpecs
 sample maxSize ols = ("sample" .= maxSize) : ols
 
 
@@ -3283,7 +3285,7 @@ density ::
   -- ^ The field used for the KDE.
   -> [DensityProperty]
   -- ^ Configure the calculation.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 density field dps ols =
   ("density" .= [ toJSON field
                 , densityPropertySpec DPLGroupby dps
@@ -3391,7 +3393,7 @@ loess ::
   -- ^ The field representing the independent variable (often the x axis).
   -> [LoessProperty]
   -- ^ Customize the trend fitting.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 loess depField indField lsp ols =
   ("loess" .= [ toJSON depField
               , toJSON indField
@@ -3565,7 +3567,7 @@ regression ::
   -- ^ The field representing the independent variable (often the x axis).
   -> [RegressionProperty]
   -- ^ Customize the regression.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 regression depField indField rps ols =
   ("regression" .= [ toJSON depField
                    , toJSON indField
@@ -3678,7 +3680,7 @@ quantile ::
   -- ^ The field to analyse.
   -> [QuantileProperty]
   -- ^ Configure the quantile analysis
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 quantile field qps ols =
   let fs = [ toJSON field
            , quantilePropertySpec QPLGroupBy qps
@@ -3711,7 +3713,7 @@ binAs ::
   -- ^ The field to bin.
   -> FieldName
   -- ^ The label for the binned data.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 binAs bProps field label ols =
   let js = if null bProps
            then [toJSON True, toJSON field, toJSON label]
@@ -3735,7 +3737,7 @@ calculateAs ::
   -- ^ The calculation to perform.
   -> FieldName
   -- ^ The field to assign the new values.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 calculateAs expr label ols = ("calculate" .= [expr, label]) : ols
 
 
@@ -3915,7 +3917,7 @@ describes the supported format (e.g. the requirement to precede column names
 with @"datum."@).
 
 -}
-filter :: Filter -> BuildLabelledSpecs
+filter :: Filter -> BuildTransformSpecs
 filter f ols = ("filter" .= filterSpec f) : ols
 
 
@@ -3930,7 +3932,7 @@ See also 'flattenAs'.
 
 -}
 
-flatten :: [FieldName] -> BuildLabelledSpecs
+flatten :: [FieldName] -> BuildTransformSpecs
 flatten fields ols = ("flatten" .= fields) : ols
 
 
@@ -3946,7 +3948,7 @@ flattenAs ::
   [FieldName]
   -> [FieldName]
   -- ^ The names of the output fields.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 flattenAs fields names ols = ("flattenAs" .= [fields, names]) : ols
 
 
@@ -3982,7 +3984,7 @@ enc =
 fold ::
   [FieldName]
   -- ^ The data fields to fold.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 fold fields ols = ("fold" .= fields) : ols
 
 
@@ -4001,7 +4003,7 @@ foldAs ::
   -- ^ The name for the @key@ field.
   -> FieldName
   -- ^ The name for the @value@ field.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 foldAs fields keyName valName ols =
   ("foldAs" .= [toJSON fields, fromT keyName, fromT valName]) : ols
 
@@ -4039,7 +4041,7 @@ pivot ::
   -> FieldName
   -- ^ The value field.
   -> [PivotProperty]
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 pivot field valField pProps ols =
   ("pivot" .= [ toJSON field
               , toJSON valField
@@ -4221,7 +4223,7 @@ lookup ::
   -- ^ The list of fields to store when the keys match.
   --
   --   This was changed from @[T.Text]@ in vesion 0.5.0.0.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 lookup key1 (_, spec) key2 lfields ols =
   let js = case lfields of
              LuFields fs -> [ toJSON fs, A.Null, A.Null ]
@@ -4266,7 +4268,7 @@ lookupSelection ::
   -> FieldName
   -- ^ The name of the field in the selection to link with the
   --   primary data field.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 lookupSelection key1 selName key2 ols =
   ("lookup" .= [key1, selName, key2]) : ols
 
@@ -4338,7 +4340,7 @@ lookupAs ::
   --   the primary key.
   -> FieldName
   -- ^ The field name for the new data.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 lookupAs key1 sData key2 asName =
   lookup key1 sData key2 (LuAs asName)
 
@@ -4378,7 +4380,7 @@ impute ::
   -- ^ The key field to uniquely identify data objects within a group.
   -> [ImputeProperty]
   -- ^ Define how the imputation works.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 impute fields keyField imProps ols =
   (imputeFields_ fields keyField imProps) : ols
 
@@ -4638,7 +4640,7 @@ timeUnitAs ::
   -- ^ The field to bin.
   -> FieldName
   -- ^ The name of the binned data created by this routine.
-  -> BuildLabelledSpecs
+  -> BuildTransformSpecs
 timeUnitAs tu field label ols =
   ("timeUnit" .= [timeUnitLabel tu, field, label]) : ols
 

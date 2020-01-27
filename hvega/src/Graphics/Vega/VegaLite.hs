@@ -106,6 +106,8 @@ module Graphics.Vega.VegaLite
        , VL.PropertySpec
        , VL.LabelledSpec
        , VL.BuildLabelledSpecs
+       , VL.TransformSpec
+       , VL.BuildTransformSpecs
        , VL.Angle
        , VL.Color
        , VL.DashStyle
