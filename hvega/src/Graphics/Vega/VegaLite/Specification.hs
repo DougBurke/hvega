@@ -26,8 +26,12 @@ module Graphics.Vega.VegaLite.Specification
        , LabelledSpec
        , BuildLabelledSpecs
        , EncodingSpec(..)
+       , toEncodingSpec
+       , fromEncodingSpec
        , BuildEncodingSpecs
        , TransformSpec(..)
+       , toTransformSpec
+       , fromTransformSpec
        , BuildTransformSpecs
        , combineSpecs
        , asSpec
@@ -290,11 +294,66 @@ type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
 
 Represent an encoding (input to 'Graphics.Vega.VegaLite.encoding').
 
+It is expected that routines like 'Graphics.Vega.VegaLite.position'
+and 'Graphics.Vega.VegaLite.color' are used to create values with this
+type, but they can also be constructed and deconstructed manually
+with 'toEncodingSpec' and 'fromEncodingSpec'.
+
 @since 0.5.0.0
 
 -}
 
 newtype EncodingSpec = ES { unES :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromEncodingSpec'.
+
+@since 0.5.0.0
+-}
+
+toEncodingSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"color\"@ or @\"position\"@).
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> EncodingSpec
+toEncodingSpec lbl spec = ES (lbl, spec)
+
+
+{-|
+
+Extract the contents of an encoding specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular encoding, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toEncodingSpec'.
+
+@since 0.5.0.0
+-}
+
+fromEncodingSpec ::
+  EncodingSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"detail\") and the value of the
+  --   key.
+fromEncodingSpec = unES
+
 
 {-|
 Represent the functions that can be chained together and sent to
@@ -309,11 +368,63 @@ type BuildEncodingSpecs = [EncodingSpec] -> [EncodingSpec]
 
 Represent a transformation (input to 'Graphics.Vega.VegaLite.transform').
 
+It is expected that routines like 'Graphics.Vega.VegaLite.calculateAs'
+and 'Graphics.Vega.VegaLite.filter' are used to create values with this
+type, but they can also be constructed and deconstructed manually
+with 'toTransformSpec' and 'fromTransformSpec'.
+
 @since 0.5.0.0
 
 -}
 
 newtype TransformSpec = TS { unTS :: VLSpec }
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromTransformSpec'.
+
+@since 0.5.0.0
+-}
+
+toTransformSpec ::
+  VLSpec
+  -- ^ The tranform value, which is expected to be an object, but there
+  --   is no check on this.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> TransformSpec
+toTransformSpec = TS
+
+
+{-|
+
+Extract the contents of a transformation specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular encoding, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toTransformSpec'.
+
+@since 0.5.0.0
+-}
+
+fromTransformSpec ::
+  TransformSpec
+  -> VLSpec
+  -- ^ The transformation data.
+fromTransformSpec = unTS
+
+
 
 {-|
 Represent the functions that can be chained together and sent to

@@ -105,10 +105,14 @@ module Graphics.Vega.VegaLite
        , VL.VegaLite
        , VL.PropertySpec
        , VL.LabelledSpec
-       , VL.BuildLabelledSpecs
        , VL.EncodingSpec
-       , VL.BuildEncodingSpecs
+       , VL.toEncodingSpec
+       , VL.fromEncodingSpec
        , VL.TransformSpec
+       , VL.toTransformSpec
+       , VL.fromTransformSpec
+       , VL.BuildLabelledSpecs
+       , VL.BuildEncodingSpecs
        , VL.BuildTransformSpecs
        , VL.Angle
        , VL.Color
