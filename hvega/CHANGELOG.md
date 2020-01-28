@@ -14,7 +14,7 @@ There is more-extensive use of type aliases, such as 'Color',
 and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
 These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
-particular value).
+particular value). See also the "Breaking changes" section below.
 
 Minor documentation improvements.
 
@@ -57,11 +57,12 @@ much success in getting them to work!
 
 ### Breaking changes
 
-The `transform` function now accepts a list of `TransformSpec` rather
-than `LabelledSpec` in an attempt to encode the schema structure in
-the types (i.e. make it harder to generate invalid Vega Lite
-JSON). This **should not** change valid visualizations, but please
-report an issue if you find this change breaks your code.
+In an attempt to provide some type safety, the `encoding`
+and `transform` functions now take specialised types
+(`EncodingSpec` and `TransformSpec` respectively)
+rather than the generic `LabelledSpec`. Simple visualizations
+should remain unchanged, but helper functions will need to
+have their types updated.
 
 The `lookup` transform has been changed so that the list of fields
 stored when the keys match is now specified by the `LookupFields`

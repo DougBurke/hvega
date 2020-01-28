@@ -48,11 +48,11 @@ cScale =
         ]
 
 
-month, crimes :: BuildLabelledSpecs
+month, crimes :: BuildEncodingSpecs
 month = position X [ PName "month", PmType Temporal, PNoTitle ]
 crimes = position Y [ PName "reportedCrimes", PmType Quantitative, PTitle "Reported crimes" ]
 
-enc, encHighlight :: [LabelledSpec] -> PropertySpec
+enc, encHighlight :: [EncodingSpec] -> PropertySpec
 enc =
     encoding
         . month

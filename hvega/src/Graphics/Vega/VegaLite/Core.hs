@@ -277,6 +277,8 @@ import Graphics.Vega.VegaLite.Specification
   , PropertySpec
   , LabelledSpec
   , BuildLabelledSpecs
+  , EncodingSpec(..)
+  , BuildEncodingSpecs
   , TransformSpec(..)
   , BuildTransformSpecs
   )
@@ -325,8 +327,8 @@ repeat_ arr = "repeat" .= arrangementLabel arr
 sort_ :: [SortProperty] -> LabelledSpec
 sort_ ops = "sort" .= sortPropertySpec ops
 
-mchan_ :: T.Text -> [MarkChannel] -> LabelledSpec
-mchan_ f ms = f .= object (concatMap markChannelProperty ms)
+mchan_ :: T.Text -> [MarkChannel] -> EncodingSpec
+mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
 
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
@@ -562,19 +564,24 @@ enc = 'encoding'
         . 'size' [ 'MName' \"Population\", 'MmType' 'Graphics.Vega.VegaLite.Quantitative' ]
 @
 
-The type of @enc@ in this example is @[LabelledSpec] -> PropertySpec@,
+The type of @enc@ in this example is @[EncodingSpec] -> PropertySpec@,
 so it can either be used to add further encoding specifications or as
 @enc []@ to create a specification.
 
-The supported encodings inclue:
-'color', 'detail', 'fill', 'fillOpacity', 'hyperlink',
+The supported encodings include:
+'color', 'column', 'detail', 'fill', 'fillOpacity', 'hyperlink',
 'opacity', 'order', 'position', 'row', 'shape', 'size',
 'stroke', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
-and 'tooltips'.
+'tooltips', and 'url'.
 
 -}
-encoding :: [LabelledSpec] -> PropertySpec
-encoding channels = (VLEncoding, object channels)
+encoding ::
+  [EncodingSpec]
+  -- ^ The channel encodings (the order does not matter).
+  --
+  --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
+  -> PropertySpec
+encoding channels = (VLEncoding, object (map unES channels))
 
 
 {-|
@@ -2679,14 +2686,9 @@ The supported transformations include: 'aggregate', 'binAs',
 
 transform ::
   [TransformSpec]
-  -- ^ The transformations to apply.
+  -- ^ The transformations to apply. The order does matter.
   --
-  --   Prior to @0.5.0.0@ this argument was @[LabelledSpec]@. There should be
-  --   no difference to valid programs with this change, but it should catch
-  --   cases where the wrong argument was used with earlier versions. Please
-  --   <https://github.com/DougBurke/hvega/issues report an issue>
-  --   if you've got a visualization that should
-  --   compile but doesn't because of this change!
+  --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
 transform transforms =
   let js = if null transforms then A.Null else toJSON (map unTS transforms)
@@ -3543,7 +3545,7 @@ appearing, just supply an empty list of legend properties to 'MLegend':
 color ::
   [MarkChannel]
   -- ^ The color-encoding options.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 color markProps ols = mchan_ "color" markProps : ols
 
 
@@ -3571,9 +3573,9 @@ column ::
   -- ^ The list of properties that define the faceting channel. At a minimum
   --   this should include the data field ('FName') and its measurement type
   --   ('FmType').
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 column fFields ols =
-  ("column" .= object (map facetChannelProperty fFields)) : ols
+  ES ("column", object (map facetChannelProperty fFields)) : ols
 
 
 {-|
@@ -3611,9 +3613,9 @@ for details.
 detail ::
   [DetailChannel]
   -- ^ The field to group.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 detail detailProps ols =
-    ("detail" .= object (map detailChannelProperty detailProps)) : ols
+    ES ("detail", object (map detailChannelProperty detailProps)) : ols
 
 
 {-
@@ -3658,7 +3660,7 @@ Note that if both @fill@ and 'color' encodings are specified, @fill@ takes prece
 fill ::
   [MarkChannel]
   -- ^ Configure the fill.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 fill markProps ols = mchan_ "fill" markProps : ols
 
 
@@ -3673,7 +3675,7 @@ See also 'fill'.
 @since 0.4.0.0
 -}
 
-fillOpacity :: [MarkChannel] -> BuildLabelledSpecs
+fillOpacity :: [MarkChannel] -> BuildEncodingSpecs
 fillOpacity markProps ols = mchan_ "fillOpacity" markProps : ols
 
 
@@ -3935,9 +3937,9 @@ or by referencing a data field containing the URL values:
 @since 0.5.0.0
 -}
 
-url :: [HyperlinkChannel] -> BuildLabelledSpecs
+url :: [HyperlinkChannel] -> BuildEncodingSpecs
 url hPs ols =
-  ("url" .= object (concatMap hyperlinkChannelProperty hPs)) : ols
+  ES ("url", object (concatMap hyperlinkChannelProperty hPs)) : ols
 
 
 {-|
@@ -3961,9 +3963,9 @@ For further details see the
 hyperlink ::
   [HyperlinkChannel]
   -- ^ The properties for the hyperlink channel.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 hyperlink hyperProps ols =
-  ("href" .= object (concatMap hyperlinkChannelProperty hyperProps)) : ols
+  ES ("href", object (concatMap hyperlinkChannelProperty hyperProps)) : ols
 
 
 {-|
@@ -4218,7 +4220,7 @@ See also 'fillOpacity'.
 
 -}
 
-opacity :: [MarkChannel] -> BuildLabelledSpecs
+opacity :: [MarkChannel] -> BuildEncodingSpecs
 opacity markProps ols = mchan_ "opacity" markProps : ols
 
 
@@ -4237,9 +4239,9 @@ enc =
 order ::
   [OrderChannel]
   -- ^ The order-encoding options.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 order oDefs ols =
-  ("order" .= object (map orderChannelProperty oDefs)) : ols
+  ES ("order", object (map orderChannelProperty oDefs)) : ols
 
 
 {-|
@@ -4268,10 +4270,10 @@ position ::
   -- ^ The options for the channel; this will usually include the name ('PName')
   --    and measurement type ('PmType'), but can be a reference to a row or
   --    column repeat field.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 position pos pDefs ols =
   let defs = object (map positionChannelProperty pDefs)
-  in (positionLabel pos, defs) : ols
+  in ES (positionLabel pos, defs) : ols
 
 
 {-|
@@ -4320,8 +4322,8 @@ row ::
   [FacetChannel]
   -- ^ The facet properties for the channel; this should include the name of
   --   the field ('FName') and its measurement type ('FmType').
-  -> BuildLabelledSpecs
-row fFields ols = ("row" .= object (map facetChannelProperty fFields)) : ols
+  -> BuildEncodingSpecs
+row fFields ols = ES ("row", object (map facetChannelProperty fFields)) : ols
 
 
 {-|
@@ -4335,7 +4337,7 @@ Encode a shape channel.
 shape ::
   [MarkChannel]
   -- ^ What data values are used to control the shape parameters of the mark.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 shape markProps ols = mchan_ "shape" markProps : ols
 
 
@@ -4350,7 +4352,7 @@ Encode a size channel.
 size ::
   [MarkChannel]
   -- ^ What data values are used to control the size parameters of the mark.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 size markProps ols = mchan_ "size" markProps : ols
 
 
@@ -4370,7 +4372,7 @@ precedence.
 stroke ::
   [MarkChannel]
   -- ^ What data values are used to control the stoke parameters of the mark.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 stroke markProps ols = mchan_ "stroke" markProps : ols
 
 
@@ -4387,7 +4389,7 @@ Encode a stroke opacity channel. This acts in a similar way to encoding by
 strokeOpacity ::
   [MarkChannel]
   -- ^ What data values are used to control the stoke opacity parameters of the mark.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 strokeOpacity markProps ols = mchan_ "strokeOpacity" markProps : ols
 
 
@@ -4402,7 +4404,7 @@ Encode a stroke width channel.
 strokeWidth ::
   [MarkChannel]
   -- ^ What data values are used to control the stoke width parameters of the mark.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 strokeWidth markProps ols = mchan_ "strokeWidth" markProps : ols
 
 
@@ -4424,9 +4426,9 @@ for formatting the appearance of the text.
 text ::
   [TextChannel]
   -- ^ What data values are used to control the text parameters.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 text tDefs ols =
-  ("text" .= object (concatMap textChannelProperty tDefs)) : ols
+  ES ("text", object (concatMap textChannelProperty tDefs)) : ols
 
 
 {-|
@@ -4487,9 +4489,9 @@ To encode multiple tooltip values with a mark, use 'tooltips'.
 tooltip ::
   [TextChannel]
   -- ^ The properties for the channel.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 tooltip tDefs ols =
-  ("tooltip" .= object (concatMap textChannelProperty tDefs)) : ols
+  ES ("tooltip", object (concatMap textChannelProperty tDefs)) : ols
 
 {-|
 
@@ -4508,6 +4510,6 @@ Encode a tooltip channel using multiple data fields.
 tooltips ::
   [[TextChannel]]
   -- ^ A separate list of properties for each channel.
-  -> BuildLabelledSpecs
+  -> BuildEncodingSpecs
 tooltips tDefs ols =
-  ("tooltip" .= toJSON (map (object . concatMap textChannelProperty) tDefs)) : ols
+  ES ("tooltip" .= map (object . concatMap textChannelProperty) tDefs) : ols

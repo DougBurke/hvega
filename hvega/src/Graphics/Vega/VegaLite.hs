@@ -106,6 +106,8 @@ module Graphics.Vega.VegaLite
        , VL.PropertySpec
        , VL.LabelledSpec
        , VL.BuildLabelledSpecs
+       , VL.EncodingSpec
+       , VL.BuildEncodingSpecs
        , VL.TransformSpec
        , VL.BuildTransformSpecs
        , VL.Angle
@@ -710,6 +712,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Functions and types for declaring the transformation rules that
 -- are applied to data fields or geospatial coordinates before they
 -- are encoded visually.
+--
+-- In version @0.5.0.0@ the 'VL.TransformSpec' type was introduced to
+-- make it clear what functions can be used with 'VL.transform'.
 
 -- $projections
 -- See the
@@ -807,6 +812,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- visualizations ('VL.facet'). All can be further customised via a series of
 -- properties that determine how the encoding is implemented (such as
 -- scaling, sorting, and spacing).
+--
+-- In version @0.5.0.0@ the 'VL.EncodingSpec' type was introduced to
+-- make it clear what functions can be used with 'VL.encoding'.
 
 -- $position
 -- Control where items appear in the visualization. See the
@@ -1037,7 +1045,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and the introduction of several more (e.g. 'VL.DashStyle' and
 -- 'VL.FieldName'). These do not add any type safety, but help the
 -- documentation (as they provide a single place to explain the meaning
--- and any constraints on a particular value).
+-- and any constraints on a particular value). See also the \"Breaking
+-- changes\" section below.
 --
 -- Documentation has been added to several data types.
 --
@@ -1098,13 +1107,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __Breaking changes__:
 --
--- * The 'VL.transform' function now takes a list of 'VL.TransformSpec'
---   rather than 'VL.LabelledSpec' in an attempt to encode
---   the schema structure in the types (i.e. make it harder to
---   generate invalid Vega Lite JSON). This __should not__ change
---   valid visualizations, but please
---   <https://github.com/DougBurke/hvega/issues report an issue> if you
---   find this change breaks your code.
+-- * In an attempt to provide some type safety, the 'VL.encoding'
+--   and 'VL.transform' functions now take specialised types
+--   ('VL.EncodingSpec' and 'VL.TransformSpec' respectively)
+--   rather than the generic 'VL.LabelledSpec'. Simple visualizations
+--   should remain unchanged, but helper functions will need to
+--   have their types updated.
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
 --   type rather than a list of field names. The 'VL.lookupAs' function

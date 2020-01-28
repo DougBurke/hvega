@@ -25,6 +25,8 @@ module Graphics.Vega.VegaLite.Specification
        , PropertySpec
        , LabelledSpec
        , BuildLabelledSpecs
+       , EncodingSpec(..)
+       , BuildEncodingSpecs
        , TransformSpec(..)
        , BuildTransformSpecs
        , combineSpecs
@@ -283,6 +285,25 @@ Represent those functions which can be chained together using function
 composition to append new specifications onto an existing list.
 -}
 type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
+
+{-|
+
+Represent an encoding (input to 'Graphics.Vega.VegaLite.encoding').
+
+@since 0.5.0.0
+
+-}
+
+newtype EncodingSpec = ES { unES :: (T.Text, VLSpec) }
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.encoding'.
+
+@since 0.5.0.0
+-}
+
+type BuildEncodingSpecs = [EncodingSpec] -> [EncodingSpec]
 
 {-|
 
