@@ -33,6 +33,10 @@ module Graphics.Vega.VegaLite.Specification
        , toTransformSpec
        , fromTransformSpec
        , BuildTransformSpecs
+       , ConfigureSpec(..)
+       , toConfigureSpec
+       , fromConfigureSpec
+       , BuildConfigureSpecs
        , combineSpecs
        , asSpec
        , specification
@@ -434,6 +438,79 @@ Represent the functions that can be chained together and sent to
 -}
 
 type BuildTransformSpecs = [TransformSpec] -> [TransformSpec]
+
+{-|
+
+Represent a set of configuration properties
+(input to 'Graphics.Vega.VegaLite.configuration').
+
+It is expected that 'Graphics.Vega.VegaLite.configuration' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toConfigureSpec' and 'fromConfigureSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype ConfigureSpec = CS { unCS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromConfigureSpec'.
+
+@since 0.5.0.0
+-}
+
+toConfigureSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"axis\"@ or @\"background\"@).
+  -> VLSpec
+  -- ^ The value of the key.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> ConfigureSpec
+toConfigureSpec lbl spec = CS (lbl, spec)
+
+
+{-|
+
+Extract the contents of a configuration specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular configure, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toConfigureSpec'.
+
+@since 0.5.0.0
+-}
+
+fromConfigureSpec ::
+  ConfigureSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"numberFormat\") and the value of the
+  --   key.
+fromConfigureSpec = unCS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.configure'.
+
+@since 0.5.0.0
+-}
+
+type BuildConfigureSpecs = [ConfigureSpec] -> [ConfigureSpec]
 
 {-|
 

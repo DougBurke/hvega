@@ -57,12 +57,12 @@ much success in getting them to work!
 
 ### Breaking changes
 
-In an attempt to provide some type safety, the `encoding`
-and `transform` functions now take specialised types
-(`EncodingSpec` and `TransformSpec` respectively)
+In an attempt to provide some type safety, the `encoding`,
+`transform`, and `configure` functions now take specialised types
+(`EncodingSpec`, `TransformSpec`, and `ConfigureSpec` respectively)
 rather than the generic `LabelledSpec`. Simple visualizations
 should remain unchanged, but helper functions will need to
-have their types updated.
+have their type signatures updated.
 
 The `lookup` transform has been changed so that the list of fields
 stored when the keys match is now specified by the `LookupFields`

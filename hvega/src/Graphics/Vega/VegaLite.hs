@@ -111,9 +111,13 @@ module Graphics.Vega.VegaLite
        , VL.TransformSpec
        , VL.toTransformSpec
        , VL.fromTransformSpec
+       , VL.ConfigureSpec
+       , VL.toConfigureSpec
+       , VL.fromConfigureSpec
        , VL.BuildLabelledSpecs
        , VL.BuildEncodingSpecs
        , VL.BuildTransformSpecs
+       , VL.BuildConfigureSpecs
        , VL.Angle
        , VL.Color
        , VL.DashStyle
@@ -550,7 +554,7 @@ module Graphics.Vega.VegaLite
 
        , VL.BooleanOp(..)
 
-         -- ** Top-level Settings
+         -- * Top-level Settings
          --
          -- $toplevel
 
@@ -583,6 +587,8 @@ module Graphics.Vega.VegaLite
        , VL.ViewBackground(..)
 
          -- ** Style Setting
+         --
+         -- $configure
 
        , VL.configure
        , VL.configuration
@@ -997,6 +1003,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- of other views. For more details see the
 -- [Vega-Lite view background documentation](https://vega.github.io/vega-lite/docs/spec.html#view-background).
 
+-- $configure
+-- In version @0.5.0.0@ the 'VL.ConfigureSpec' type was introduced to
+-- make it clear that only 'VL.configuration' should be used with
+-- 'VL.configure'.
+
 -- $axisconfig
 -- See the
 -- [Vega-Lite axis config documentation](https://vega.github.io/vega-lite/docs/axis.html#general-config).
@@ -1111,12 +1122,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __Breaking changes__:
 --
--- * In an attempt to provide some type safety, the 'VL.encoding'
---   and 'VL.transform' functions now take specialised types
---   ('VL.EncodingSpec' and 'VL.TransformSpec' respectively)
---   rather than the generic 'VL.LabelledSpec'. Simple visualizations
---   should remain unchanged, but helper functions will need to
---   have their types updated.
+-- * In an attempt to provide some type safety, the 'VL.encoding',
+--   'VL.transform', and 'VL.configure' functions now take specialised types
+--   ('VL.EncodingSpec', 'VL.TransformSpec', and 'VL.ConfigureSpec'
+--   respectively) rather than the generic 'VL.LabelledSpec'. Simple
+--   visualizations should remain unchanged, but helper functions will need to
+--   have their type signatures updated.
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
 --   type rather than a list of field names. The 'VL.lookupAs' function

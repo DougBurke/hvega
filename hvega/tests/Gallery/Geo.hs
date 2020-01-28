@@ -27,7 +27,7 @@ testSpecs = [ ("geo1", geo1)
 
 {-| No borders around maps
 -}
-cfg :: [LabelledSpec] -> ( VLProperty, VLSpec )
+cfg :: [ConfigureSpec] -> PropertySpec
 cfg =
     configure
         . configuration (View [ ViewStroke Nothing ])
