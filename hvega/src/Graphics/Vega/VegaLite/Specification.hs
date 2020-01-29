@@ -24,7 +24,6 @@ module Graphics.Vega.VegaLite.Specification
        , VegaLite
        , PropertySpec
        , LabelledSpec
-       , BuildLabelledSpecs
        , EncodingSpec(..)
        , toEncodingSpec
        , fromEncodingSpec
@@ -295,13 +294,6 @@ function in this module. You shouldn't need to create @LabelledSpec@
 tuples directly, but they can be useful for type annotations.
 -}
 type LabelledSpec = (T.Text, VLSpec)
-
-{-|
-
-Represent those functions which can be chained together using function
-composition to append new specifications onto an existing list.
--}
-type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
 
 {-|
 

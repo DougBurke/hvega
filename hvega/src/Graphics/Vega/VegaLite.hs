@@ -120,7 +120,6 @@ module Graphics.Vega.VegaLite
        , VL.ConfigureSpec
        , VL.toConfigureSpec
        , VL.fromConfigureSpec
-       , VL.BuildLabelledSpecs
        , VL.BuildEncodingSpecs
        , VL.BuildTransformSpecs
        , VL.BuildResolveSpecs
