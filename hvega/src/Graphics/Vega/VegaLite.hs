@@ -136,7 +136,6 @@ module Graphics.Vega.VegaLite
        , VL.SelectionLabel
        , VL.VegaExpr
        , VL.ZIndex
-       , VL.combineSpecs
        , VL.toHtml
        , VL.toHtmlFile
        , VL.toHtmlWith
@@ -1128,6 +1127,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   had much success in getting them to work!
 --
 -- __Breaking changes__:
+--
+-- * The @combineSpecs@ function has been removed.
 --
 -- * In an attempt to provide some type safety, the 'VL.encoding',
 --   'VL.transform', 'VL.resolve', 'VL.selection', and 'VL.configure'

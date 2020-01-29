@@ -2330,6 +2330,7 @@ bounds bnds = (VLBounds, boundsSpec bnds)
 
 The list of specifications to be juxtaposed horizontally in a flow
 layout of views.
+See also 'hConcat' and 'vConcat'.
 
 The number of columns in the flow layout can be set with 'columns'
 and, if not specified, will default to a single row of unlimited columns.
@@ -2482,6 +2483,7 @@ heightStep s = (VLHeight, object [ "step" .= s ])
 {-|
 
 Assigns a list of specifications to be juxtaposed horizontally in a visualization.
+See also 'vConcat' and 'vlConcat'.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'
@@ -2711,6 +2713,7 @@ transform transforms =
 {-|
 
 Assigns a list of specifications to be juxtaposed vertically in a visualization.
+See also 'hConcat' and 'vlConcat'.
 
 @
 'Graphics.Vega.VegaLite.toVegaLite'

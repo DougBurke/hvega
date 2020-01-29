@@ -57,6 +57,8 @@ much success in getting them to work!
 
 ### Breaking changes
 
+The `combineSpecs` function has been removed.
+
 In an attempt to provide some type safety, the `encoding`,
 `transform`, `resolve`, `selection`, and `configure` functions now
 take specialised types (`EncodingSpec`, `TransformSpec`,

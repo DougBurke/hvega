@@ -44,7 +44,6 @@ module Graphics.Vega.VegaLite.Specification
        , toConfigureSpec
        , fromConfigureSpec
        , BuildConfigureSpecs
-       , combineSpecs
        , asSpec
        , specification
        , SelectionLabel
@@ -73,19 +72,8 @@ import Numeric.Natural (Natural)
 -- | A Vega Lite visualization, created by
 --   'toVegaLite'. The contents can be extracted with 'fromVL'.
 --
-newtype VegaLite =
-  VL {
-  fromVL :: VLSpec
-  -- ^ Extract the specification for passing to a VegaLite visualizer.
-  --
-  --   > let vlSpec = fromVL vl
-  --   > Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
-  --
-  --   Note that there is __no__ validation done to ensure that the
-  --   output matches the Vega Lite schema. That is, it is possible to
-  --   create an invalid visualization with this module (e.g. missing a
-  --   data source or referring to an undefined field).
-  }
+newtype VegaLite = VL (T.Text, [LabelledSpec])
+
 
 -- | The Vega-Lite specification is represented as JSON.
 type VLSpec = Value
@@ -186,15 +174,6 @@ the schema.
 
 -}
 
--- TODO:
---    Should the input data, or converted to VLSpec, be stored
---    without the $schema key, so it can be easily combined with
---    other visualizations?
---
---    Could we make VegaLite a Semigroup so you can easily combine
---    specifications? However, what would that mean (concatenation,
---    if so what direction, anything else?)
-
 toVegaLite :: [PropertySpec] -> VegaLite
 toVegaLite = toVegaLiteSchema vlSchema4
 
@@ -223,29 +202,38 @@ toVegaLiteSchema ::
   -> [PropertySpec]
   -- ^ The visualization.
   -> VegaLite
-toVegaLiteSchema schema props =
-  let kvals = ("$schema" .= schema) : map toProp props
-      toProp = first vlPropertyLabel
+toVegaLiteSchema schema props = VL (schema, unProperty props)
 
-  in VL { fromVL = object kvals }
+
+unProperty :: [PropertySpec] -> [LabelledSpec]
+unProperty = map (first vlPropertyLabel)
 
 
 {-|
 
-Combines a list of labelled specifications into a single specification.
-This is useful when you wish to create
-a single page with multiple visulizualizations.
+Obtain the Vega-Lite JSON (i.e. specification) for passing to a
+Vega-Lite visualizer.
 
-@
-'combineSpecs'
-    [ ( "vis1", myFirstVis )
-    , ( "vis2", mySecondVis )
-    , ( "vis3", myOtherVis )
-    ]
-@
+> let vlSpec = fromVL vl
+> Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
+
+Note that there is __no__ validation done to ensure that the
+output matches the Vega Lite schema. That is, it is possible to
+create an invalid visualization with this module (e.g. missing a
+data source or referring to an undefined field).
+
 -}
-combineSpecs :: [LabelledSpec] -> VLSpec
-combineSpecs = object
+
+fromVL ::
+  VegaLite
+  -> Value
+  -- ^ Prior to version @0.5.0.0@ this was labelled as returning a 'VLSpec'
+  --   value. It has been changed to 'Value' to indicate that this is the
+  --   JSON representation of the visualization (noting that @VLSpec@ is
+  --   an alias for @Value@).
+fromVL (VL (schema, specs)) =
+  let kvals = ("$schema" .= schema) : specs
+  in object kvals
 
 
 {-|
@@ -261,7 +249,7 @@ spec1 = asSpec [ enc1 [], 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.
 @
 -}
 asSpec :: [PropertySpec] -> VLSpec
-asSpec = object . map (first vlPropertyLabel)
+asSpec = object . unProperty
 
 
 {-|
