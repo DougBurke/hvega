@@ -24,8 +24,8 @@
             "field": "gender",
             "scale": {
                 "range": [
-                    "#EA98D2",
-                    "#659CCA"
+                    "#CC9933",
+                    "#3399CC"
                 ]
             },
             "type": "nominal"
