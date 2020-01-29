@@ -33,6 +33,14 @@ module Graphics.Vega.VegaLite.Specification
        , toTransformSpec
        , fromTransformSpec
        , BuildTransformSpecs
+       , ResolveSpec(..)
+       , toResolveSpec
+       , fromResolveSpec
+       , BuildResolveSpecs
+       , SelectSpec(..)
+       , toSelectSpec
+       , fromSelectSpec
+       , BuildSelectSpecs
        , ConfigureSpec(..)
        , toConfigureSpec
        , fromConfigureSpec
@@ -40,6 +48,7 @@ module Graphics.Vega.VegaLite.Specification
        , combineSpecs
        , asSpec
        , specification
+       , SelectionLabel
        )
     where
 
@@ -428,8 +437,6 @@ fromTransformSpec ::
   -- ^ The transformation data.
 fromTransformSpec = unTS
 
-
-
 {-|
 Represent the functions that can be chained together and sent to
 'Graphics.Vega.VegaLite.transform'.
@@ -438,6 +445,156 @@ Represent the functions that can be chained together and sent to
 -}
 
 type BuildTransformSpecs = [TransformSpec] -> [TransformSpec]
+
+
+{-|
+
+Represent a set of resolution properties
+(input to 'Graphics.Vega.VegaLite.resolve').
+
+It is expected that 'Graphics.Vega.VegaLite.resolution' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toResolveSpec' and 'fromResolveSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype ResolveSpec = RS { unRS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromResolveSpec'.
+
+@since 0.5.0.0
+-}
+
+toResolveSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"axis\"@ or @\"scale\"@).
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> ResolveSpec
+toResolveSpec lbl spec = RS (lbl, spec)
+
+
+{-|
+
+Extract the contents of an resolve specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular resolve, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toResolveSpec'.
+
+@since 0.5.0.0
+-}
+
+fromResolveSpec ::
+  ResolveSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"legend\") and the value of the
+  --   key.
+fromResolveSpec = unRS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.resolve'.
+
+@since 0.5.0.0
+-}
+
+type BuildResolveSpecs = [ResolveSpec] -> [ResolveSpec]
+
+
+{-|
+
+Represent a set of resolution properties
+(input to 'Graphics.Vega.VegaLite.selection').
+
+It is expected that 'Graphics.Vega.VegaLite.select' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toSelectSpec' and 'fromSelectSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype SelectSpec = S { unS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromSelectSpec'.
+
+@since 0.5.0.0
+-}
+
+toSelectSpec ::
+  SelectionLabel
+  -- ^ The name given to the selection.
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> SelectSpec
+toSelectSpec lbl spec = S (lbl, spec)
+
+
+{-|
+
+Extract the contents of a select specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular select, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toSelectSpec'.
+
+@since 0.5.0.0
+-}
+
+fromSelectSpec ::
+  SelectSpec
+  -> (SelectionLabel, VLSpec)
+  -- ^ The name for the selection and its settings.
+fromSelectSpec = unS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.selection'.
+
+@since 0.5.0.0
+-}
+
+type BuildSelectSpecs = [SelectSpec] -> [SelectSpec]
+
 
 {-|
 
@@ -692,3 +849,15 @@ vlPropertyLabel VLUserMetadata = "usermeta"
 vlPropertyLabel VLVConcat = "vconcat"
 vlPropertyLabel VLViewBackground = "view"
 vlPropertyLabel VLWidth = "width"
+
+
+{-|
+
+Convenience type-annotation label to indicate the name, or label,
+of a selection. It is expected to be a non-empty string, but there
+is __no attempt__ to validate this.
+
+@since 0.5.0.0
+-}
+
+type SelectionLabel = T.Text

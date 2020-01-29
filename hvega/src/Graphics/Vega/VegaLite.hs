@@ -111,12 +111,20 @@ module Graphics.Vega.VegaLite
        , VL.TransformSpec
        , VL.toTransformSpec
        , VL.fromTransformSpec
+       , VL.ResolveSpec
+       , VL.toResolveSpec
+       , VL.fromResolveSpec
+       , VL.SelectSpec
+       , VL.toSelectSpec
+       , VL.fromSelectSpec
        , VL.ConfigureSpec
        , VL.toConfigureSpec
        , VL.fromConfigureSpec
        , VL.BuildLabelledSpecs
        , VL.BuildEncodingSpecs
        , VL.BuildTransformSpecs
+       , VL.BuildResolveSpecs
+       , VL.BuildSelectSpecs
        , VL.BuildConfigureSpecs
        , VL.Angle
        , VL.Color
@@ -1123,11 +1131,13 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- __Breaking changes__:
 --
 -- * In an attempt to provide some type safety, the 'VL.encoding',
---   'VL.transform', and 'VL.configure' functions now take specialised types
---   ('VL.EncodingSpec', 'VL.TransformSpec', and 'VL.ConfigureSpec'
---   respectively) rather than the generic 'VL.LabelledSpec'. Simple
---   visualizations should remain unchanged, but helper functions will need to
---   have their type signatures updated.
+--   'VL.transform', 'VL.resolve', 'VL.selection', and 'VL.configure'
+--   functions now take specialised types - 'VL.EncodingSpec',
+--   'VL.TransformSpec', 'VL.ResolveSpec', 'VL.SelectSpec', and
+--   'VL.ConfigureSpec' respectively - rather than the generic
+--   'VL.LabelledSpec' type. Simple visualizations should remain
+--   unchanged, but helper functions may need to have their type signatures
+--   updated.
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
 --   type rather than a list of field names. The 'VL.lookupAs' function

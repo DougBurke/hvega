@@ -76,7 +76,7 @@ encHighlight =
             ]
 
 
-iPlot :: ([LabelledSpec] -> PropertySpec) -> Mark -> VegaLite
+iPlot :: ([SelectSpec] -> PropertySpec) -> Mark -> VegaLite
 iPlot sel markType =
   toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark markType [] ]
 

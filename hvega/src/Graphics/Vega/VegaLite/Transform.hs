@@ -60,14 +60,18 @@ import Graphics.Vega.VegaLite.Data
   )
 import Graphics.Vega.VegaLite.Foundation
   ( FieldName
-  , SelectionLabel
   , SortField
   , sortFieldSpec
   , field_
   , fromT
   , allowNull
   )
-import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec, TransformSpec(..))
+import Graphics.Vega.VegaLite.Specification
+  ( VLSpec
+  , LabelledSpec
+  , TransformSpec(..)
+  , SelectionLabel
+  )
 
 
 {-|

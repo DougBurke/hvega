@@ -194,7 +194,6 @@ import Graphics.Vega.VegaLite.Foundation
   , DashOffset
   , FieldName
   , Opacity
-  , SelectionLabel
   , VegaExpr
   , ZIndex
   , FontWeight
@@ -276,12 +275,14 @@ import Graphics.Vega.VegaLite.Specification
   , VLSpec
   , PropertySpec
   , LabelledSpec
-  , BuildLabelledSpecs
   , EncodingSpec(..)
   , BuildEncodingSpecs
   , TransformSpec(..)
   , BuildTransformSpecs
   , ConfigureSpec(..)
+  , ResolveSpec(..)
+  , BuildResolveSpecs
+  , SelectionLabel
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
@@ -2665,8 +2666,13 @@ in 'Graphics.Vega.VegaLite.toVegaLite' [dvals [], res [], 'layer' [specBar, spec
 @
 
 -}
-resolve :: [LabelledSpec] -> PropertySpec
-resolve res = (VLResolve, object res)
+resolve ::
+  [ResolveSpec]
+  -- ^ The arguments created by 'Graphics.Vega.VegaLite.resolution'.
+  --
+  --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
+  -> PropertySpec
+resolve res = (VLResolve, object (map unRS res))
 
 
 {-|
@@ -4296,7 +4302,10 @@ pairing the channel to which it applies and the rule type.
     . resolution ('Graphics.Vega.VegaLite.RScale' [ ( 'Graphics.Vega.VegaLite.ChY', 'Graphics.Vega.VegaLite.Independent' ) ])
 @
 -}
-resolution :: Resolve -> BuildLabelledSpecs
+resolution ::
+  Resolve
+  -> BuildResolveSpecs
+  -- ^ Prior to @0.5.0.0@ this was @BuildLabelledSpecs@.
 resolution res ols = resolveProperty res : ols
 
 

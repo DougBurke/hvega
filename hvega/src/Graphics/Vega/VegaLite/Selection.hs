@@ -48,7 +48,6 @@ import Graphics.Vega.VegaLite.Foundation
   , DashOffset
   , FieldName
   , Opacity
-  , SelectionLabel
   , Channel
   , channelLabel
   , fromT
@@ -59,7 +58,9 @@ import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
   , LabelledSpec
-  , BuildLabelledSpecs
+  , SelectSpec(..)
+  , BuildSelectSpecs
+  , SelectionLabel
   )
 
 
@@ -297,19 +298,26 @@ selectionResolutionLabel Intersection = "intersect"
 
 {-|
 
-Properties for customising the appearance of an interval selection mark (dragged
-rectangle). For details see the
+Properties for customising the appearance of an interval selection
+mark (a dragged rectangle). For details see the
 <https://vega.github.io/vega-lite/docs/selection.html#interval-mark Vega-Lite documentation>.
 
 -}
 data SelectionMarkProperty
     = SMFill Color
+      -- ^ Fill color.
     | SMFillOpacity Opacity
+      -- ^ Fill opacity.
     | SMStroke Color
+      -- ^ The stroke color.
     | SMStrokeOpacity Opacity
+      -- ^ The stroke opacity.
     | SMStrokeWidth Double
+      -- ^ The line width of the stroke.
     | SMStrokeDash DashStyle
+      -- ^ The dash pattern for the stroke.
     | SMStrokeDashOffset DashOffset
+      -- ^ The offset at which to start the dash pattern.
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
@@ -469,13 +477,19 @@ sel =
 
 -}
 
-selection :: [LabelledSpec] -> PropertySpec
-selection sels = (VLSelection, object sels)
+selection ::
+  [SelectSpec]
+  -- ^ The arguments created by 'Graphics.Vega.VegaLite.select'.
+  --
+  --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
+  -> PropertySpec
+selection sels = (VLSelection, object (map unS sels))
 
 
 {-|
 
-Create a single named selection that may be applied to a data query or transformation.
+Create a single named selection that may be applied to a data query or
+transformation.
 
 @
 sel =
@@ -493,8 +507,9 @@ select ::
   -- ^ The type of the selection.
   -> [SelectionProperty]
   -- ^ What options are applied to the selection.
-  -> BuildLabelledSpecs
+  -> BuildSelectSpecs
+  -- ^ Prior to @0.5.0.0@ this was @BuildLabelledSpecs@.
 select nme sType options ols =
   -- TODO: elm filters out those properties that are set to A.Null
   let selProps = ("type" .= selectionLabel sType) : concatMap selectionProperties options
-  in (nme .= object selProps) : ols
+  in S (nme .= object selProps) : ols

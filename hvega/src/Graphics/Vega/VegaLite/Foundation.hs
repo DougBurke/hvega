@@ -22,7 +22,6 @@ module Graphics.Vega.VegaLite.Foundation
        , DashOffset
        , FieldName
        , Opacity
-       , SelectionLabel
        , VegaExpr
        , ZIndex
 
@@ -124,7 +123,11 @@ import Data.Aeson ((.=), object, toJSON)
 import Numeric.Natural (Natural)
 
 
-import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
+import Graphics.Vega.VegaLite.Specification
+  ( VLSpec
+  , LabelledSpec
+  , ResolveSpec(..)
+  )
 
 
 field_ :: FieldName -> LabelledSpec
@@ -243,18 +246,6 @@ fully opaque (does not show anything it is on top of).
 -}
 
 type Opacity = Double
-
-
-{-|
-
-Convenience type-annotation label to indicate the name, or label,
-of a selection. It is expected to be a non-empty string, but there
-is __no attempt__ to validate this.
-
-@since 0.5.0.0
--}
-
-type SelectionLabel = T.Text
 
 
 {-|
@@ -1122,7 +1113,7 @@ data Resolve
     | RScale [(Channel, Resolution)]
 
 
-resolveProperty :: Resolve -> LabelledSpec
+resolveProperty :: Resolve -> ResolveSpec
 resolveProperty res =
   let (nme, rls) = case res of
         RAxis chRules -> ("axis", chRules)
@@ -1130,7 +1121,7 @@ resolveProperty res =
         RScale chRules -> ("scale", chRules)
 
       ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
-  in (nme, object ans)
+  in RS (nme, object ans)
 
 
 -- | This is used with 'Graphics.Vega.VegaLite.bounds' to define the extent of a sub plot.
