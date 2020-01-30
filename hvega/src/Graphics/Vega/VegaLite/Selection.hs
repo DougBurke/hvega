@@ -441,6 +441,8 @@ bindingSpec bnd =
 
 {-|
 
+Control the interactivity of the legend. This is used with 'BindLegend'.
+
 @since 0.5.0.0
 
 -}

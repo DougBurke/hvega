@@ -570,11 +570,14 @@ The type of @enc@ in this example is @[EncodingSpec] -> PropertySpec@,
 so it can either be used to add further encoding specifications or as
 @enc []@ to create a specification.
 
-The supported encodings include:
+The supported encodings are:
 'color', 'column', 'detail', 'fill', 'fillOpacity', 'hyperlink',
 'opacity', 'order', 'position', 'row', 'shape', 'size',
 'stroke', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
 'tooltips', and 'url'.
+
+There is currently no support for encoding by
+<https://vega.github.io/vega-lite/docs/encoding.html#key key>.
 
 -}
 encoding ::
@@ -2693,9 +2696,11 @@ manner.
     . 'calculateAs' "datum.sex == 2 ? \'Female\' : \'Male\'" "gender"
 @
 
-The supported transformations include: 'aggregate', 'binAs',
-'calculateAs', 'impute', 'joinAggregate', 'lookup', 'lookupAs',
-'flattenAs', 'foldAs', 'stack', 'timeUnitAs', and 'window'.
+The supported transformations are:
+'aggregate', 'binAs', 'calculateAs', 'density', 'filter', 'flatten',
+'flattenAs', 'fold', 'foldAs', 'impute', 'joinAggregate', 'loess',
+'lookup', 'lookupAs', 'lookupSelection', 'pivot', 'quantile',
+'regression', 'sample', 'stack', 'timeUnitAs', and 'window'.
 
 -}
 

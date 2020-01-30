@@ -313,8 +313,8 @@ import Graphics.Vega.VegaLite
 -- valid Vega-Lite specification (i.e. it does not validate against
 -- the [Vega-Lite schema](https://github.com/vega/schema)).
 --
--- Version @0.5.0.0@ did add some type safety for the
--- 'encoding' and 'transform' functions as the types they accept
+-- Version @0.5.0.0@ did add some type safety for a number of functions -
+-- primarily 'encoding' and 'transform' - as the types they accept
 -- have been restricted (to @['EncodingSpec']@ and @['TransformSpec']@
 -- respectively), so that they can not be accidentally combined.
 
