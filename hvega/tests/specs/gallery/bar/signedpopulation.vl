@@ -1,0 +1,61 @@
+{
+    "transform": [
+        {
+            "filter": "datum.year == 2000"
+        },
+        {
+            "as": "gender",
+            "calculate": "datum.sex == 2 ? 'Female' : 'Male'"
+        },
+        {
+            "as": "signedPeople",
+            "calculate": "datum.sex == 2 ? datum.people : -datum.people"
+        }
+    ],
+    "height": 200,
+    "config": {
+        "view": {
+            "stroke": null
+        },
+        "axis": {
+            "grid": false
+        }
+    },
+    "mark": "bar",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/population.json"
+    },
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "gender",
+            "scale": {
+                "range": [
+                    "#675193",
+                    "#ca8861"
+                ]
+            },
+            "type": "nominal",
+            "legend": {
+                "orient": "top",
+                "title": ""
+            }
+        },
+        "x": {
+            "field": "signedPeople",
+            "aggregate": "sum",
+            "type": "quantitative",
+            "axis": {
+                "format": "s",
+                "title": "Population"
+            }
+        },
+        "y": {
+            "field": "age",
+            "sort": "descending",
+            "type": "ordinal",
+            "axis": null
+        }
+    }
+}

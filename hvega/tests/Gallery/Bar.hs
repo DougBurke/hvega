@@ -29,9 +29,28 @@ testSpecs = [ ("bar1", bar1)
             , ("bar12", bar12)
             , ("bar13", bar13)
             , ("bar14", bar14)
+            , ("agesorted", ageSorted)
+            , ("explicitbins", explicitBins)
+            , ("logscaled", logScaled)
+            , ("signedpopulation", signedPopulation)
+            , ("labeloverlay", labelOverlay)
+            , ("wilkinsondotplot", wilkinsonDotPlot)
             ]
 
 
+pName :: T.Text -> PositionChannel
+pName = PName
+
+mName :: T.Text -> MarkChannel
+mName = MName
+
+pNominal, pOrdinal, pQuant :: PositionChannel
+pNominal = PmType Nominal
+pOrdinal = PmType Ordinal
+pQuant = PmType Quantitative
+
+
+-- bar1 in GalleryBar.elm
 bar1 :: VegaLite
 bar1 =
     let
@@ -50,6 +69,7 @@ bar1 =
     in
     toVegaLite [ des, dvals [], mark Bar [], enc [] ]
 
+-- bar4 in GalleryBar.elm
 bar2 :: VegaLite
 bar2 =
     let
@@ -69,6 +89,7 @@ bar2 =
         ]
 
 
+-- bar2 in GalleryBar.elm (except I've added a sorting specifier to Y)
 bar3 :: VegaLite
 bar3 =
     let
@@ -80,8 +101,13 @@ bar3 =
 
         enc =
             encoding
-                . position X [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "population" ] ]
-                . position Y [ PName "age", PmType Ordinal, PSort [ Descending ] ]
+                . position X [ PName "people"
+                             , PmType Quantitative
+                             , PAggregate Sum
+                             , PAxis [ AxTitle "population" ] ]
+                . position Y [ PName "age"
+                             , PmType Ordinal
+                             , PSort [ Descending ] ]
     in
     toVegaLite
         [ des
@@ -93,6 +119,7 @@ bar3 =
         ]
 
 
+-- bar7 in GalleryBar.elm
 bar4 :: VegaLite
 bar4 =
     let
@@ -127,6 +154,7 @@ bar4 =
         ]
 
 
+-- bar8 in GalleryBar.elm
 bar5 :: VegaLite
 bar5 =
     let
@@ -144,7 +172,11 @@ bar5 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit Month, PAxis [ AxTitle "Month of the year" ] ]
+                . position X [ PName "date"
+                             , PmType Ordinal
+                             , PTimeUnit Month
+                             , PAxis [ AxTitle "Month of the year" ]
+                             ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
                 . color
                     [ MName "weather"
@@ -161,6 +193,7 @@ bar5 =
         ]
 
 
+-- bar9 in GalleryBar.elm
 bar6 :: VegaLite
 bar6 =
     let
@@ -181,6 +214,7 @@ bar6 =
         ]
 
 
+-- bar10 in GalleryBar.elm
 bar7 :: VegaLite
 bar7 =
     let
@@ -195,8 +229,16 @@ bar7 =
         enc =
             encoding
                 . position X [ PName "age", PmType Ordinal ]
-                . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ], PStack StNormalize ]
-                . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
+                . position Y [ PName "people"
+                             , PmType Quantitative
+                             , PAggregate Sum
+                             , PAxis [ AxTitle "Population" ]
+                             , PStack StNormalize
+                             ]
+                . color [ MName "gender"
+                        , MmType Nominal
+                        , MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ]
+                        ]
     in
     toVegaLite
         [ des
@@ -208,6 +250,7 @@ bar7 =
         ]
 
 
+-- bar11 in GalleryBar.elm
 bar8 :: VegaLite
 bar8 =
     let
@@ -229,6 +272,7 @@ bar8 =
     toVegaLite [ des, dvals [], mark Bar [], enc [] ]
 
 
+-- bar12 in GalleryBar.elm
 bar9 :: VegaLite
 bar9 =
     let
@@ -249,6 +293,7 @@ bar9 =
     toVegaLite [ des, dvals [], mark Bar [], enc [] ]
 
 
+-- bar13 in GalleryBar.elm
 bar10 :: VegaLite
 bar10 =
     let
@@ -263,8 +308,16 @@ bar10 =
         enc =
             encoding
                 . position X [ PName "age", PmType Ordinal ]
-                . position Y [ PName "people", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Population" ], PStack NoStack ]
-                . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#e377c2", "#1f77b4" ]) ] ]
+                . position Y [ PName "people"
+                             , PmType Quantitative
+                             , PAggregate Sum
+                             , PAxis [ AxTitle "Population" ]
+                             , PStack NoStack
+                             ]
+                . color [ MName "gender"
+                        , MmType Nominal
+                        , MScale [ SRange (RStrings [ "#e377c2", "#1f77b4" ]) ]
+                        ]
                 . opacity [ MNumber 0.7 ]
     in
     toVegaLite
@@ -277,6 +330,7 @@ bar10 =
         ]
 
 
+-- bar15 in GalleryBar.elm
 bar11 :: VegaLite
 bar11 =
     let
@@ -315,6 +369,7 @@ bar11 =
     toVegaLite [ des, dvals [], mark Bar [], enc [] ]
 
 
+-- bar16 in GalleryBar.elm
 bar12 :: VegaLite
 bar12 =
     let
@@ -335,7 +390,9 @@ bar12 =
             asSpec [mark Bar [] ]
 
         specText =
-            asSpec [ mark Text [ MStyle [ "label" ] ], encoding (text [ TName "b", TmType Quantitative ] []) ]
+            asSpec [ mark Text [ MStyle [ "label" ] ]
+                   , encoding (text [ TName "b", TmType Quantitative ] [])
+                   ]
 
         config =
             configure . configuration (NamedStyle "label" [ MAlign AlignLeft, MBaseline AlignMiddle, MdX 3 ])
@@ -361,6 +418,7 @@ toRows country animalFreqs oldRows =
     in oldRows ++ newRows
 
 
+-- bar19 in GalleryBar.elm
 bar13 :: VegaLite
 bar13 =
     let
@@ -422,6 +480,7 @@ bar13 =
     toVegaLite [ des, config [], width 800, height 200, dvals [], mark Point [ MFilled True ], enc [] ]
 
 
+-- bar20 in GalleryBar.elm
 bar14 :: VegaLite
 bar14 =
     let
@@ -451,3 +510,216 @@ bar14 =
                 . size [ MNumber 65 ]
     in
     toVegaLite [ des, config [], width 800, height 200, dvals [], trans [], mark Text [ MBaseline AlignMiddle ], enc [] ]
+
+
+-- bar3 in GalleryBar.elm, see bar3 above
+ageSorted :: VegaLite
+ageSorted =
+  let des = description "A bar chart showing the US population distribution of age groups in 2000, sorted by population"
+
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+
+      trans = transform . filter (FExpr "datum.year == 2000")
+
+      enc = encoding
+            . position X [ PName "people"
+                         , PmType Quantitative
+                         , PAggregate Sum
+                         , PAxis [ AxTitle "population" ]
+                         ]
+            . position Y [ PName "age"
+                         , PmType Ordinal
+                         , PSort [ ByChannel ChX
+                                 , Descending ]
+                         ]
+
+  in toVegaLite [ des
+                , heightStep 17
+                , dvals
+                , trans []
+                , enc []
+                , mark Bar []
+                ]
+
+
+-- bar5 in GalleryBar.elm
+explicitBins :: VegaLite
+explicitBins =
+  let dvals = dataFromColumns []
+              . dataColumn "binStart" (Numbers [ 8, 10, 12, 14, 16, 18, 20, 22 ])
+              . dataColumn "binEnd" (Numbers [ 10, 12, 14, 16, 18, 20, 22, 24 ])
+              . dataColumn "count" (Numbers [ 7, 29, 71, 127, 94, 54, 17, 5 ])
+
+      enc = encoding
+            . position X [ pName "binStart"
+                         , pQuant
+                         , PBin [ Step 2 ] ]
+            . position X2 [ pName "binEnd" ]
+            . position Y [ pName "count"
+                         , pQuant ]
+
+  in toVegaLite [ dvals [], enc [], mark Bar [] ]
+
+
+-- bar6 in GalleryBar.elm
+logScaled :: VegaLite
+logScaled =
+  let des = description "Log-scaled Histogram (may improve after https://github.com/vega/vega-lite/issues/4792)"
+
+      dvals = dataFromColumns []
+              . dataColumn "x" (Numbers [ 0.01, 0.1, 1, 1, 1, 1, 10, 10, 100, 500, 800 ])
+
+      trans = transform
+              . calculateAs "log(datum.x)/log(10)" "logX"
+              . binAs [] "logX" "binLogX"
+              . calculateAs "pow(10,datum.binLogX)" "x1"
+              . calculateAs "pow(10,datum.binLogX_end)" "x2"
+
+      enc = encoding
+            . position X [ pName "x1"
+                         , pQuant
+                         , PScale [ SType ScLog, SBase 10 ]
+                         , PAxis [ AxTickCount 5 ]
+                         ]
+            . position X2 [ pName "x2" ]
+            . position Y [ PAggregate Count, pQuant ]
+
+  in toVegaLite [ des, dvals [], trans [], enc [], mark Bar [] ]
+
+
+-- bar14 in GalleryBar.elm
+signedPopulation :: VegaLite
+signedPopulation =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+
+      trans = transform
+              . filter (FExpr "datum.year == 2000")
+              . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
+              . calculateAs "datum.sex == 2 ? datum.people : -datum.people" "signedPeople"
+
+      enc = encoding
+            . position Y [ pName "age"
+                         , pOrdinal
+                         , PAxis []
+                         , PSort [ Descending ]
+                         ]
+            . position X [ pName "signedPeople"
+                         , PAggregate Sum
+                         , pQuant
+                         , PAxis [ AxTitle "Population", AxFormat "s" ]
+                         ]
+            . color [ mName "gender"
+                    , MmType Nominal
+                    , MScale [ SRange (RStrings [ "#675193", "#ca8861" ]) ]
+                    , MLegend [ LOrient LOTop, LTitle "" ]
+                    ]
+
+      cfg = configure
+            . configuration (View [ ViewStroke Nothing ])
+            . configuration (Axis [ Grid False ])
+
+  in toVegaLite [ width 300
+                , height 200
+                , cfg []
+                , dvals
+                , trans []
+                , enc []
+                , mark Bar [] ]
+
+
+-- bar17 in GalleryBar.elm
+labelOverlay :: VegaLite
+labelOverlay =
+  let des = description "Bar chart with label overlay"
+
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      trans = transform
+              . calculateAs "isValid(datum.Major_Genre)? datum.Major_Genre : 'unclassified'" "genre"
+
+      enc = encoding
+            . position Y
+                    [ pName "genre"
+                    , pNominal
+                    , PSort
+                        [ CustomSort
+                            (Strings
+                                [ "Action"
+                                , "Adventure"
+                                , "Comedy"
+                                , "Black Comedy"
+                                , "Romantic Comedy"
+                                , "Concert/Performance"
+                                , "Documentary"
+                                , "Drama"
+                                , "Horror"
+                                , "Musical"
+                                , "Thriller/Suspense"
+                                , "Western"
+                                , "unclassified"
+                                ]
+                            )
+                        ]
+                    , PAxis []
+                    ]
+
+      encBar = encoding
+               . position X
+                    [ pName "IMDB_Rating"
+                    , PAggregate Mean
+                    , pQuant
+                    , PScale [ SDomain (DNumbers [ 0, 10 ]) ]
+                    , PTitle "Mean IMDB Ratings"
+                    ]
+
+      specBar =asSpec [ encBar [], mark Bar [ MColor "#ddd" ] ]
+
+      encText = encoding
+                . text [ TName "genre", TmType Nominal ]
+                . detail [ DAggregate Count, DmType Quantitative ]
+
+      specText = asSpec [ encText [], mark Text [ MAlign AlignCenter, MdX 5 ] ]
+
+  in toVegaLite
+        [ des
+        , width 200
+        , heightStep 16
+        , dvals
+        , trans []
+        , enc []
+        , layer [ specBar, specText ]
+        ]
+
+
+-- bar18 in GalleryBar.elm
+wilkinsonDotPlot :: VegaLite
+wilkinsonDotPlot =
+  let desc = description "A Wilkinson dot plot"
+
+      cfg = configure
+            . configuration (View [ ViewStroke Nothing ])
+
+      dvals = dataFromColumns []
+              . dataColumn "data" (Numbers [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4 ])
+
+      trans = transform
+              . window [ ( [ WOp Rank, WField "rank" ], "id" ) ] [ WGroupBy [ "data" ] ]
+
+      enc = encoding
+            . position X [ pName "data", pOrdinal ]
+            . position Y
+                    [ pName "id"
+                    , pOrdinal
+                    , PAxis []
+                    , PSort [ Descending ]
+                    ]
+
+  in toVegaLite
+        [ desc
+        , cfg []
+        , height 100
+        , dvals []
+        , trans []
+        , enc []
+        , mark Circle [ MOpacity 1 ]
+        ]

@@ -1,0 +1,78 @@
+{
+    "transform": [
+        {
+            "as": "genre",
+            "calculate": "isValid(datum.Major_Genre)? datum.Major_Genre : 'unclassified'"
+        }
+    ],
+    "height": {
+        "step": 16
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "width": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "layer": [
+        {
+            "mark": {
+                "color": "#ddd",
+                "type": "bar"
+            },
+            "encoding": {
+                "x": {
+                    "field": "IMDB_Rating",
+                    "scale": {
+                        "domain": [
+                            0,
+                            10
+                        ]
+                    },
+                    "aggregate": "mean",
+                    "title": "Mean IMDB Ratings",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "dx": 5,
+                "align": "center",
+                "type": "text"
+            },
+            "encoding": {
+                "text": {
+                    "field": "genre",
+                    "type": "nominal"
+                },
+                "detail": {
+                    "aggregate": "count",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "y": {
+            "field": "genre",
+            "sort": [
+                "Action",
+                "Adventure",
+                "Comedy",
+                "Black Comedy",
+                "Romantic Comedy",
+                "Concert/Performance",
+                "Documentary",
+                "Drama",
+                "Horror",
+                "Musical",
+                "Thriller/Suspense",
+                "Western",
+                "unclassified"
+            ],
+            "type": "nominal",
+            "axis": null
+        }
+    },
+    "description": "Bar chart with label overlay"
+}
