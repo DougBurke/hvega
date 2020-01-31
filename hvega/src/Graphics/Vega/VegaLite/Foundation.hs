@@ -218,7 +218,7 @@ type DashStyle = [Double]
 
 fromDS :: DashStyle -> VLSpec
 -- fromDS [] = A.Null  -- what is the correct handling of this?
-fromDS xs = toJSON xs
+fromDS = toJSON
 
 
 {-|

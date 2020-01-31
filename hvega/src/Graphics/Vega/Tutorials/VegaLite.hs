@@ -2272,13 +2272,13 @@ let trans = transform
                     ]
 
     raData = 'dataFromColumns' []
-                 . 'dataColumn' "x" (Numbers [ (-120), (-60), 60, 120 ])
+                 . 'dataColumn' "x" (Numbers [ -120, -60, 60, 120 ])
                  . dataColumn "y" (Numbers [ 0, 0, 0, 0 ])
                  . dataColumn "lbl" ('Strings' [ "16h", "20h", "4h", "8h" ])
 
     decData = dataFromColumns []
                  . dataColumn "x" (Numbers [ 0, 0 ])
-                 . dataColumn "y" (Numbers [ (-45), 45 ])
+                 . dataColumn "y" (Numbers [ -45, 45 ])
                  . dataColumn "lbl" (Strings [ "-45", "45" ])
 
     encLabels = encoding
@@ -2361,7 +2361,7 @@ skyPlotWithGraticules =
       -- this also affects ° / \u00b0 so not sure what's going on
       raData = dataFromColumns []
                    . dataColumn "x"
-                     (Numbers [ (-120), (-60), 60, 120 ])
+                     (Numbers [ -120, -60, 60, 120 ])
                    . dataColumn "y"
                      (Numbers [ 0, 0, 0, 0 ])
                    . dataColumn "lbl"
@@ -2371,7 +2371,7 @@ skyPlotWithGraticules =
                    . dataColumn "x"
                      (Numbers [ 0, 0 ])
                    . dataColumn "y"
-                     (Numbers [ (-45), 45 ])
+                     (Numbers [ -45, 45 ])
                    . dataColumn "lbl"
                      (Strings [ "-45", "45" ])
 
