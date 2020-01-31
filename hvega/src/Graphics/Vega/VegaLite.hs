@@ -1243,7 +1243,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   the newline character (@\\n@), which will over-ride the
 --   'VL.MLineBreak' setting.
 --
--- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
+-- * The 'VL.DTMonthNum' and 'VL.DTDayNum' constructors have been added
+--   to @DateTime@.
 --
 -- * The 'VL.BinProperty' type has gained the 'VL.SelectionExtent'
 --   constructor, which defines the bin range as an interval selection.

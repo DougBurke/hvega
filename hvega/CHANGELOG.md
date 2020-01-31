@@ -149,7 +149,7 @@ for controlling how multi-line labels are displayed. Note that `hvega` will
 always split on the newline character (`\n`), which will over-ride the
 `MLineBreak` setting.
 
-The `DTMonthNum` constructor has been added to `DateTime`.
+The `DTMonthNum` and `DTDayNum` constructors have been added to `DateTime`.
 
 The `BinProperty` type has gained the `SelectionExtent`
 constructor, for defining a bin range via an interval selection.
