@@ -3263,7 +3263,7 @@ transparent).
 @
 let sel = selection
           . select "pick" Single [ 'BindLegend'
-                                   [ 'BLField' \"Cluster\" ]
+                                   ('BLField' \"Cluster\")
                                  ]
 
 in toVegaLite (sel [] : selectionProperties "pick" "Select a legend item")
@@ -3275,7 +3275,7 @@ legendSelection :: VegaLite
 legendSelection =
   let sel = selection
             . select "legend" Single [ BindLegend
-                                       [ BLField "Cluster" ]
+                                       (BLField "Cluster")
                                      ]
 
   in toVegaLite (sel [] : selectionProperties "legend" "Select a legend item")
@@ -5218,7 +5218,7 @@ let plxScale = PScale [ SType ScLog
 
     selName = \"legend\"
     sel = selection
-          . select selName Single [ BindLegend [ BLField \"Cluster\" ] ]
+          . select selName Single [ BindLegend (BLField \"Cluster\") ]
 
 in toVegaLite
     [ gaiaData
@@ -5309,7 +5309,7 @@ parallaxView =
 
       selName = "legend"
       sel = selection
-            . select selName Single [ BindLegend [ BLField "Cluster" ] ]
+            . select selName Single [ BindLegend (BLField "Cluster") ]
 
       -- TODO: select the lines as well (and ticks?), not sure
       -- how as VL docs suggest both On and Clear need to be set

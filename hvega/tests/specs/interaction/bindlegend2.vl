@@ -8,7 +8,7 @@
     "selection": {
         "mySelection": {
             "bind": {
-                "legend": "dblckick"
+                "legend": "dblclick"
             },
             "encodings": [
                 "color"

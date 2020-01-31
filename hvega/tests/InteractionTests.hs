@@ -221,7 +221,7 @@ initIntervalX =
 bindLegend :: VegaLite
 bindLegend =
   let sel = selection
-             . select "mySelection" Single [ BindLegend [ BLField "crimeType" ] ]
+             . select "mySelection" Single [ BindLegend (BLField "crimeType") ]
 
   in iPlot sel Circle
 
@@ -230,7 +230,7 @@ bindLegendDouble :: VegaLite
 bindLegendDouble =
   let sel = selection
              . select "mySelection" Single
-               [ BindLegend [ BLChannel ChColor, BLEvent "dblckick" ] ]
+               [ BindLegend (BLChannelEvent ChColor "dblclick") ]
 
   in iPlot sel Circle
 
@@ -241,7 +241,7 @@ bindLegendBoth =
              . select "mySelection"
                Multi
                [ On "click"
-               , BindLegend [ BLField "crimeType", BLEvent "dblclick" ]
+               , BindLegend (BLFieldEvent "crimeType" "dblclick")
                ]
 
   in iPlot sel Circle
