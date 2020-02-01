@@ -4513,9 +4513,16 @@ To encode multiple tooltip values with a mark, use 'tooltips'.
 tooltip ::
   [TextChannel]
   -- ^ The properties for the channel.
+  --
+  --   If the list is empty then this turns off tooltip support for
+  --   this channel. This is new to @0.5.0.0@, but is also the
+  --   default behavior in Vega Lite 4.
   -> BuildEncodingSpecs
+tooltip [] ols =
+  ES ("tooltip", A.Null) : ols
 tooltip tDefs ols =
   ES ("tooltip", object (concatMap textChannelProperty tDefs)) : ols
+
 
 {-|
 

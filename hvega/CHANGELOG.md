@@ -14,7 +14,8 @@ There is more-extensive use of type aliases, such as 'Color',
 and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
 These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
-particular value). See also the "Breaking changes" section below.
+particular value). There are some changes that do improve type safety,
+discussed in the "Breaking changes" section below.
 
 Minor documentation improvements.
 
@@ -54,6 +55,9 @@ to help the documentation.
 The `heightOfContainer` and `widthOfContainer` functions
 have been added to support responsive sizing, although I have not had
 much success in getting them to work!
+
+The `tooltip` encoding will now turn off tooltips if given an empty
+list (although note that tooltips are now off by default in Vega-Lite 4).
 
 ### Breaking changes
 

@@ -1066,8 +1066,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and the introduction of several more (e.g. 'VL.DashStyle' and
 -- 'VL.FieldName'). These do not add any type safety, but help the
 -- documentation (as they provide a single place to explain the meaning
--- and any constraints on a particular value). See also the \"Breaking
--- changes\" section below.
+-- and any constraints on a particular value). There are some
+-- changes that do improve type safety, discussed in the
+-- \"Breaking changes\" section below.
 --
 -- Documentation has been added to several data types.
 --
@@ -1125,6 +1126,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- * The 'VL.heightOfContainer' and 'VL.widthOfContainer' functions
 --   have been added to support responsive sizing, although I have not
 --   had much success in getting them to work!
+--
+-- * The 'VL.tooltip' encoding will now turn off tooltips if given an
+--   empty list (although note that tooltips are now off by default in
+--   Vega-Lite 4).
 --
 -- __Breaking changes__:
 --
