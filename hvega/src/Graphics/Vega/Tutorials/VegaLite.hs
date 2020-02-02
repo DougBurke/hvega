@@ -5353,15 +5353,16 @@ choroplethLookupToGeo =
 
 -}
 
-usGeoData :: [Format] -> Data
-usGeoData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" 
+usGeoData :: T.Text -> Data
+usGeoData f = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature f]
 
 choroplethLookupToGeo :: VegaLite
 choroplethLookupToGeo =
   let unemploymentData =  dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []  
   in toVegaLite
-     [ usGeoData [TopojsonFeature "counties"]
-     , transform . lookup "id" unemploymentData "id" ["rate"] $ []
+     [ usGeoData "counties"
+     , transform
+       . lookup "id" unemploymentData "id" (LuFields ["rate"]) $ []
      , projection [PrType AlbersUsa]
      , encoding . color [MName "rate", MmType Quantitative] $ []
      , mark Geoshape []
@@ -5383,14 +5384,26 @@ specifiying a few things differently than in the previous example:
 choroplethLookupFromGeo :: VegaLite
 choroplethLookupFromGeo =
   let popEngHurrData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/population_engineers_hurricanes.csv" []
-  in toVegaLiteSchema vlSchema4
-     [ specification $ asSpec [popEngHurrData, width 300, height 500]
-     , transform . lookupAs "id" (usGeoData [TopojsonFeature "states"]) "id" "geo" $ []
-     , projection [PrType AlbersUsa]     
-     , repeat [RowFields["population", "engineers", "hurricanes"]]
-     , resolve . resolution (RScale [(ChColor, Independent)]) $ []
-     , encoding . shape [MName "geo", MmType GeoFeature] . color [MRepeat Row, MmType Quantitative] $ []
-     , mark Geoshape []
+
+      viz = [ popEngHurrData
+            , width 300
+            , transform
+              . lookup "id" (usGeoData "states") "id" (LuAs "geo")
+              $ []
+            , projection [PrType AlbersUsa]
+            , resolve
+              . resolution (RScale [(ChColor, Independent)])
+              $ []
+            , encoding
+              . shape [MName "geo", MmType GeoFeature]
+              . color [MRepeat Row, MmType Quantitative]
+              $ []
+            , mark Geoshape []
+            ]
+
+  in toVegaLite
+     [ specification $ asSpec viz
+     , repeat [RowFields ["population", "engineers", "hurricanes"]]
      ]
 
 
