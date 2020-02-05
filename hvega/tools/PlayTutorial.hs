@@ -116,6 +116,8 @@ vl = [ ("api-vl1", vl1)
      , ("concatenatedskyplot", VL.concatenatedSkyPlot)
      , ("repeatplot", VL.repeatPlot)
      , ("splomplot", VL.splomPlot)
+     , ("choroplethLookupToGeo", VL.choroplethLookupToGeo)
+     , ("choroplethLookupFromGeo", VL.choroplethLookupFromGeo)
      , ("singleselection", VL.singleSelection)
      , ("nearestselection", VL.nearestSelection)
      , ("multiselection", VL.multiSelection)
@@ -142,8 +144,6 @@ vl = [ ("api-vl1", vl1)
      , ("duplicateaxis", VL.duplicateAxis)
      , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
-     , ("choroplethLookupToGeo", VL.choroplethLookupToGeo)
-     , ("choroplethLookupFromGeo", VL.choroplethLookupFromGeo)
      ]
 
 
