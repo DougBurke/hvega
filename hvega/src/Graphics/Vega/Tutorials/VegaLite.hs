@@ -5391,9 +5391,6 @@ choroplethLookupFromGeo =
               . lookup "id" (usGeoData "states") "id" (LuAs "geo")
               $ []
             , projection [PrType AlbersUsa]
-            , resolve
-              . resolution (RScale [(ChColor, Independent)])
-              $ []
             , encoding
               . shape [MName "geo", MmType GeoFeature]
               . color [MRepeat Row, MmType Quantitative]
@@ -5403,6 +5400,9 @@ choroplethLookupFromGeo =
 
   in toVegaLite
      [ specification $ asSpec viz
+     , resolve
+       . resolution (RScale [(ChColor, Independent)])
+       $ []
      , repeat [RowFields ["population", "engineers", "hurricanes"]]
      ]
 
