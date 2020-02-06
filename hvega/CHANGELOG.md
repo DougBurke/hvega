@@ -16,7 +16,8 @@ These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
 particular value).
 
-Minor documentation improvements.
+Documentation improvements, including a new section in the
+tutorial on choropleths contributed by Adam Conner-Sax.
 
 ### New functionality
 
