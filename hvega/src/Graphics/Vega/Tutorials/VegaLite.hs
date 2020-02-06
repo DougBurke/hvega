@@ -2853,7 +2853,7 @@ splomPlot =
 -- display (via 'TopojsonFeature'). You can read more information on this
 -- in the <https://vega.github.io/vega-lite/docs/data.html#topojson Vega-Lite documentation>.
 --
--- This section was added by Adam Conner-Sax. Thanks!
+-- This section was contributed by Adam Conner-Sax. Thanks!
 
 usGeoData :: T.Text -> Data
 usGeoData f = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature f]
@@ -2943,8 +2943,18 @@ we need to do the lookup in the other order, using lookup to add the
 geographic data to the data table. Charting this way requires
 specifiying a few things differently than in the previous example:
 
-  * We're using @lookupAs@ instead of @lookup@.  This gets
-    all the columns from the source rather then the set
+  * We're using 'LuAs' in 'lookup', rather than 'LuFields', which lets
+    us use all the fields (columns) in the source rather than a specified
+    subset.
+  * We use a different set of geographic features (state rather than county
+    outlines).
+  * The plot is defined as a 'specification', but does not directly refer
+    to the value being displayed. This is set \"externally\" with the
+    call to 'repeat'.
+  * Since the different fields have vastly-different ranges (a maximum of
+    roughly 0.01 for \"engineers\" whereas the \"population\" field is
+    a billion times larger), the color scaling is set to vary per field
+    with 'resolve'.
 
 <<images/vl/choroplethlookupfromgeo.png>>
 
@@ -2953,15 +2963,17 @@ specifiying a few things differently than in the previous example:
 @
 let popEngHurrData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/population_engineers_hurricanes.csv\" []
 
+    plotWidth = 300
+
     viz = [ popEngHurrData
-          , width 300
+          , width plotWidth
           , transform
             . lookup \"id\" (usGeoData \"states\") \"id\" ('LuAs' \"geo\")
             $ []
           , projection [PrType AlbersUsa]
           , encoding
             . shape [MName \"geo\", MmType GeoFeature]
-            . color [MRepeat Row, MmType Quantitative, MLegend [LOrient 'LOTop', 'LGradientLength' 300]]
+            . color [MRepeat Row, MmType Quantitative, MLegend [LOrient 'LOTop', 'LGradientLength' plotWidth]]
             $ []
           , mark Geoshape [MStroke \"black\", MStrokeOpacity 0.2]
           ]
@@ -2975,21 +2987,27 @@ in toVegaLite
    ]
 @
 
+By moving the legend to the top of each visualization, I have taken
+advantage of the fixed with (here 300 pixels) to ensure the
+color bar uses the full width (with 'LGradientLength').
+
 -}
 
 choroplethLookupFromGeo :: VegaLite
 choroplethLookupFromGeo =
   let popEngHurrData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/population_engineers_hurricanes.csv" []
 
+      plotWidth = 300
+
       viz = [ popEngHurrData
-            , width 300
+            , width plotWidth
             , transform
               . lookup "id" (usGeoData "states") "id" (LuAs "geo")
               $ []
             , projection [PrType AlbersUsa]
             , encoding
               . shape [MName "geo", MmType GeoFeature]
-              . color [MRepeat Row, MmType Quantitative, MLegend [LOrient LOTop, LGradientLength 300]]
+              . color [MRepeat Row, MmType Quantitative, MLegend [LOrient LOTop, LGradientLength plotWidth]]
               $ []
             , mark Geoshape [MStroke "black", MStrokeOpacity 0.2]
             ]

@@ -1037,7 +1037,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- documentation (as they provide a single place to explain the meaning
 -- and any constraints on a particular value).
 --
--- Documentation has been added to several data types.
+-- Documentation improvements, including a new section in the
+-- tutorial on choropleths contributed by Adam Conner-Sax.
 --
 -- __Changes in Vega-Lite 4__:
 --
