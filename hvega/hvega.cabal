@@ -93,6 +93,8 @@ extra-doc-files:     images/example.png
                      images/vl/concatenatedskyplot.png
                      images/vl/repeatplot.png
                      images/vl/splomplot.png
+                     images/vl/choroplethlookuptogeo.png
+                     images/vl/choroplethlookupfromgeo.png
                      images/vl/singleselection.png
                      images/vl/nearestselection.png
                      images/vl/multiselection.png

@@ -167,7 +167,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   , repeatPlot
   , splomPlot
 
-  -- * Choropleth
+  -- * Choropleths
   --
   -- $intro-choropleth
 
@@ -2836,55 +2836,89 @@ splomPlot =
 -- So we bring our eyes back to earth, and demonstrate some basic
 -- "choropleths", maps--in the sense of pictures of bounded geographical
 -- regions--with data for each location indicated by color.
-
-{-|
-This is based on the
-<https://vega.github.io/vega-lite/examples/geo_choropleth.html Choropleth>
-example from the Vega-Lite
-<https://vega.github.io/vega-lite/examples/ Example Gallery>.
-The key elements are
-
-   * Specifying the correct format, in this case "Topojson" for the geographic data,
-     see the <https://vega.github.io/vega-lite/docs/data.html#topojson vega-lite docs>.
-   * Choosing the correct "feature" name in the geographic data, here "counties".
-   * Performing a vega-lite lookup to join the data to be plotted (the unemployment rate)
-     to the geographic data.  In this case, the column name in the unemployment data---"id"
-     given as the first argument to @lookup@---is the same as the column name in the
-     geographic data---the third argument to @lookup@. Those can be different.
-   * Specifying a projection, that is a mapping from (longitude, latitude) to (x,y)
-     coordinates. See the <https://vega.github.io/vega-lite/docs/projection.html vega-lite docs>.
-   * Using the <https://vega.github.io/vega-lite/docs/geoshape.html geoshape> mark.
-
-@
-choroplethLookupToGeo :: VegaLite
-choroplethLookupToGeo =
-  let unemploymentData =  dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
-      geoData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature "counties"]
-  in toVegaLite
-     [ geoData
-     , transform . lookup "id" unemploymentData "id" ["rate"] $ []
-     , projection [PrType AlbersUsa]
-     , encoding . color [MName "rate", MmType Quantitative] $ []
-     , mark Geoshape []
-     , width 500
-     , height 300
-     ]
-@
-
--}
+--
+-- Don't worry, we'll soon be back staring at the stars!
+--
+-- The choropleth examples use a map of the United States, which we
+-- abstract out into a helper function:
+--
+-- @
+-- usGeoData :: T.Text -> Data
+-- usGeoData f = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/us-10m.json\" ['TopojsonFeature' f]
+-- @
+--
+-- The argument gives the \"topological\" feature in the input file to
+-- display (via 'TopojsonFeature'). You can read more information on this
+-- in the <https://vega.github.io/vega-lite/docs/data.html#topojson Vega-Lite documentation>.
+--
+-- This section was added by Adam Conner-Sax. Thanks!
 
 usGeoData :: T.Text -> Data
 usGeoData f = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature f]
 
+
+{-|
+
+Our first choropleth is based on the
+<https://vega.github.io/vega-lite/examples/geo_choropleth.html Choropleth>
+example from the Vega-Lite
+<https://vega.github.io/vega-lite/examples/ Example Gallery>.
+
+The key elements are:
+
+   * Using the 'TopojsonFeature' feature for the data source (thanks to @usGeoData@).
+   * Choosing the correct "feature" name in the geographic data, here @\"counties\"@
+     in the argument to our @usGeoData@ helper function.
+   * Performing a Vega-Lite lookup to join the data to be plotted (the unemployment rate)
+     to the geographic data.  In this case, the column name in the unemployment data - @\"id\"@
+     given as the first argument to 'lookup' - is the same as the column name in the
+     geographic data, the third argument to 'lookup'. Those can be different.
+   * Specifying a projection, that is a mapping from (longitude, latitude) to (x,y)
+     coordinates. Since we are looking at data for the main-land United States of
+     America we use 'AlbersUsa' (rather than looking at the whole globe, as we did
+     in earlier visualizations), which lets us view the continental USA as well as Alaska and Hawaii.
+   * Using the 'Geoshape' mark.
+
+<<images/vl/choroplethlookuptogeo.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJVZ0d8zyKATeaePU4higV1gBt2kABbRoAB2S4A9FIQB3AHQBzAJbQh3AEbdkAU1gBjdImi6TCo1ikA3XUvg27DrPGSnYUxugPJPLB9yIulhifOgAnlhm0ArQyNaQnAwAvgA0SeSQANa64YIqjJDpXBCUKrp8jMjsBJAIppAAuhlgaS2QYehZ3GL5hUnJxI3FUEK6Kkoi7ADMAAyzI5AusFmCSrroyELwYrpFxJDMrOz0pbwC+MKiEtKy8Iqq6lo6+kYm0RY0jvbfzq7unm8viOAWQAFoAIyzLAKABWyGM+0yGGwLBOlF0LF4e0uRkC0HK1VSUGg4V2gmg6DE6HhiMGEDapTkBXU7AArPNFgASZAGMYuQQicSSGS2ezKNQaTQKFToKS8-kOMXwMF8NS6GwAFjhCMQSKgYmosN0BgJiLoMDJOKg8D4mn0yAAqsg2IyoGYjIwVIglOijGFYOjUOVKoJ6ntiZbyZcAI7cJAE1gE2yQZJuyBvYO+uiDZJAA Open this visualization in the Vega Editor>
+
+@
+let unemploymentData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/unemployment.tsv\" []
+
+in toVegaLite
+   [ usGeoData \"counties\"
+   , transform
+     . 'lookup' \"id\" unemploymentData \"id\" ('LuFields' [\"rate\"])
+     $ []
+   , projection [PrType 'AlbersUsa']
+   , encoding
+     . color [ MName \"rate\", MmType Quantitative ]
+     $ []
+   , mark Geoshape []
+   , width 500
+   , height 300
+   ]
+@
+
+So, we have seen how to join data between two datasets - thanks to
+'lookup' - and display it as a choropleth ('TopojsonFeature' and 'Geoshape').
+
+-}
+
 choroplethLookupToGeo :: VegaLite
 choroplethLookupToGeo =
-  let unemploymentData =  dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
+  let unemploymentData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
+
   in toVegaLite
      [ usGeoData "counties"
      , transform
-       . lookup "id" unemploymentData "id" (LuFields ["rate"]) $ []
+       . lookup "id" unemploymentData "id" (LuFields ["rate"])
+       $ []
      , projection [PrType AlbersUsa]
-     , encoding . color [MName "rate", MmType Quantitative] $ []
+     , encoding
+       . color [ MName "rate", MmType Quantitative ]
+       $ []
      , mark Geoshape []
      , width 500
      , height 300
@@ -2899,6 +2933,11 @@ specifiying a few things differently than in the previous example:
 
   * We're using @lookupAs@ instead of @lookup@.  This gets
     all the columns from the source rather then the set
+
+<<images/vl/choroplethlookupfromgeo.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmDOB7ANgN1pAXGYl4GMBDZDbXfFRaLKASwDsATWAB1ifYBdIBfHgGnBQ4bQtzIxEAdxoBtSC0QsArsjG1E9SPyjsA5g1ixo8bVAAWy6NFpF6CSAF0BQvG3w1QECJE7RC9PAAZlQAtnJC3jiRUVCEptiQerCI2jFRkEHQiOFk6bGQjGKEnvmxUFbINJDmnJws8JgA9E3+UgB0BpyWAEbK8MYU9Jxc7RShTeh6hJOw002h8SPQTYyI+PCrxU39ALQAjAAMoe0AVkhaguXlmWFinpmwYlakUPCcYg46vgCebNWcJSIc6aXhlbwua7eSAAa1gP2qtEYkHBkOukGQiEQMOULERyPyPBijiu0MW0Bh1WSiHg5kI-1JPiKH1KN0q1Vq9UaLTanVo3WUfQG0CGI2GYxys3mUxmi3exlW602zJmihUak4GnoAH19IZjPBtZZrLYAggxvBUCiomifFIkd0aABmQ6HRlQFjZU6wfCa0ESTh-V6QYg9A0AVXgJVtunoFEYDD0rIKFEx1AkQVosGQyIkIie4mE0l430D-0SAEdlAFNR9NegS-k8HTyzhMlmc1SUmZfq2kikQVoiTahGjIAASAjmWCLDl1BrNKWEPkCnrtDRNKczmYy3bIfmwSYAFjOFzSPiGmaTZCJPCAA Open this visualization in the Vega Editor>
+
 -}
 
 choroplethLookupFromGeo :: VegaLite
