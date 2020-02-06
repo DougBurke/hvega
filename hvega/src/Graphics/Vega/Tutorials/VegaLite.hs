@@ -494,7 +494,9 @@ stripPlot = toVegaLite
 -- Vega-Embed PNG and SVG output, is white (in Vega-Lite version 4;
 -- prior to this it was transparent). In many cases this is
 -- perfectly fine, but an explicit color can be specified using the
--- 'Background' configuration option.
+-- 'Background' configuration option, as shown here, or with the
+-- 'background' function, which is used in the choropleth examples
+-- below ('choroplethLookupToGeo').
 
 {-|
 
@@ -2834,8 +2836,8 @@ splomPlot =
 -- There are some things vega-lite can do, don't fit as well into the
 -- flow of looking at astronomy data!  But having examples is helpful.
 -- So we bring our eyes back to earth, and demonstrate some basic
--- "choropleths", maps--in the sense of pictures of bounded geographical
--- regions--with data for each location indicated by color.
+-- "choropleths", maps - in the sense of pictures of bounded geographical
+-- regions - with data for each location indicated by color.
 --
 -- Don't worry, we'll soon be back staring at the stars!
 --
@@ -2881,7 +2883,7 @@ The key elements are:
 
 <<images/vl/choroplethlookuptogeo.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJVZ0d8zyKATeaePU4higV1gBt2kABbRoAB2S4A9FIQB3AHQBzAJbQh3AEbdkAU1gBjdImi6TCo1ikA3XUvg27DrPGSnYUxugPJPLB9yIulhifOgAnlhm0ArQyNaQnAwAvgA0SeSQANa64YIqjJDpXBCUKrp8jMjsBJAIppAAuhlgaS2QYehZ3GL5hUnJxI3FUEK6Kkoi7ADMAAyzI5AusFmCSrroyELwYrpFxJDMrOz0pbwC+MKiEtKy8Iqq6lo6+kYm0RY0jvbfzq7unm8viOAWQAFoAIyzLAKABWyGM+0yGGwLBOlF0LF4e0uRkC0HK1VSUGg4V2gmg6DE6HhiMGEDapTkBXU7AArPNFgASZAGMYuQQicSSGS2ezKNQaTQKFToKS8-kOMXwMF8NS6GwAFjhCMQSKgYmosN0BgJiLoMDJOKg8D4mn0yAAqsg2IyoGYjIwVIglOijGFYOjUOVKoJ6ntiZbyZcAI7cJAE1gE2yQZJuyBvYO+uiDZJAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJVZ0d8zyKATeaePU4higV1gBt2kABbRoAB2S4A9FIQB3AHQBzAJbQh3AEbdkAU1gBjdImi6TCo1ikA3XUvg27DrPGSnYUxugPJPLB9yIulhifOgAnlhm0ArQyNaQnAwAvgA0SeSQANa64YIqjJDpXBCUKrp8jMjsBJAIppAAuhlgaS2QYehZ3GL5hUnJxI3FUEK6Kkoi7ADMAAyzI5AusFmCSrroyELwYrpFxJDMrOz0pbwC+MKiEtKy8Iqq6lo6+kYm0RY0jvbfzq7unm8viOAWQAFoAIyzLAKABWyGM+0yGGwLBOlF0LF4e0uRkC0HK1VSUGg4V2gmg6DE6HhiMGEDapTkBXU7AArPNFgASZAGMYuQQicSSGS2ezKNQaTQKFToKS8-kOMXwMF8NS6GwAFjhCMQSKgYmosN0BgJiLoMDJOKg8D4mn0yAAqsg2IyoGYjIwVIglCckpAjGFYH6uGUKoVLvU9iNMrzbdbgJAFcFrZAxLxQhsED69m7MqTyZcAI7cJAE1gE2yJcj01qLTTwAxZJTUQIRm0AL2x+oDxlQExOg2SQA Open this visualization in the Vega Editor>
 
 @
 let unemploymentData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/unemployment.tsv\" []
@@ -2893,16 +2895,25 @@ in toVegaLite
      $ []
    , projection [PrType 'AlbersUsa']
    , encoding
-     . color [ MName \"rate\", MmType Quantitative ]
+     . color [ MName \"rate\", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
      $ []
    , mark Geoshape []
    , width 500
    , height 300
+   , 'background' "azure"
    ]
 @
 
 So, we have seen how to join data between two datasets - thanks to
-'lookup' - and display it as a choropleth ('TopojsonFeature' and 'Geoshape').
+'lookup' - and display the unemployment rate (from one data source)
+on a map (defined from another data source).
+
+I have chosen a
+<https://vega.github.io/vega/docs/schemes/index.html#diverging diverging color scheme>
+for the rate, mainly just because I can, but also because I wanted to see how
+the areas with high rates were clustered. I've also shown how the 'background'
+function can be used (it is simpler than the 'configuration' approach
+used earlier in 'stripPlotWithBackground').
 
 -}
 
@@ -2917,11 +2928,12 @@ choroplethLookupToGeo =
        $ []
      , projection [PrType AlbersUsa]
      , encoding
-       . color [ MName "rate", MmType Quantitative ]
+       . color [ MName "rate", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
        $ []
      , mark Geoshape []
      , width 500
      , height 300
+     , background "azure"
      ]
 
 
@@ -2936,7 +2948,32 @@ specifiying a few things differently than in the previous example:
 
 <<images/vl/choroplethlookupfromgeo.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmDOB7ANgN1pAXGYl4GMBDZDbXfFRaLKASwDsATWAB1ifYBdIBfHgGnBQ4bQtzIxEAdxoBtSC0QsArsjG1E9SPyjsA5g1ixo8bVAAWy6NFpF6CSAF0BQvG3w1QECJE7RC9PAAZlQAtnJC3jiRUVCEptiQerCI2jFRkEHQiOFk6bGQjGKEnvmxUFbINJDmnJws8JgA9E3+UgB0BpyWAEbK8MYU9Jxc7RShTeh6hJOw002h8SPQTYyI+PCrxU39ALQAjAAMoe0AVkhaguXlmWFinpmwYlakUPCcYg46vgCebNWcJSIc6aXhlbwua7eSAAa1gP2qtEYkHBkOukGQiEQMOULERyPyPBijiu0MW0Bh1WSiHg5kI-1JPiKH1KN0q1Vq9UaLTanVo3WUfQG0CGI2GYxys3mUxmi3exlW602zJmihUak4GnoAH19IZjPBtZZrLYAggxvBUCiomifFIkd0aABmQ6HRlQFjZU6wfCa0ESTh-V6QYg9A0AVXgJVtunoFEYDD0rIKFEx1AkQVosGQyIkIie4mE0l430D-0SAEdlAFNR9NegS-k8HTyzhMlmc1SUmZfq2kikQVoiTahGjIAASAjmWCLDl1BrNKWEPkCnrtDRNKczmYy3bIfmwSYAFjOFzSPiGmaTZCJPCAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmDOB7ANgN1pAXGYl4GMBDZDbXfFRaLKASwDsATWAB1ifYBdIBfHgGnBQ4bQtzIxEAdxoBtSC0QsArsjG1E9SPyjsA5g1ixo8bVAAWy6NFpF6CSAF0BQvG3w1QECJE7RC9PAAZlQAtnJC3jiRUVCEptiQerCI2jFRkEHQiOFk6bGQjGKEnvmxUFbINJDmnJws8JgA9E3+UgB0BpyWAEbK8MYU9Jxc7RShTeh6hJOw002h8SPQTYyI+PCrxU39ALQAjAAMoe0AVkhaguXlmWFinpmwYlakUPCcYg46vgCebNWcJSIc6aXhlbwua7eSAAa1gP2qtEYkHBkOukGQiEQMOULERyPyPBijiu0MW0BhD3e2Th1R6anwlO+1OxsAA8ixCPhaJwEdhDu0AEzfXn-RLJRDwcyEf5onxFD6lG6Vaq1eqNFptTo83r9QaaEbDMY5WbzKYzRbvYyrdabBUzRQqNScDT0AD6+kMxngbss1lsAQQY3gqBRUTlUCkSO6NAAzIdDqSfCxsqdYPgXaCJKLXpBiD1vQBVeAlCOQdgURgMPRKgoUTHUPJQzK0WDIZESERPcTCaS8JMFHPVACOygCLo+LvQaWbJGSTAeVFbwwBSjMSX8Va4ABl9DHsPHDkTyhGfFKZa9cEFW+3qhL10PxSkQVpjxChGjIAASAjmWCLVU6gaZpTUIbVumUHp2g0Jpf3-GZzV2ZAeVgSYABYzguGcoCGa8azIIkeCAA Open this visualization in the Vega Editor>
+
+@
+let popEngHurrData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/population_engineers_hurricanes.csv\" []
+
+    viz = [ popEngHurrData
+          , width 300
+          , transform
+            . lookup \"id\" (usGeoData \"states\") \"id\" ('LuAs' \"geo\")
+            $ []
+          , projection [PrType AlbersUsa]
+          , encoding
+            . shape [MName \"geo\", MmType GeoFeature]
+            . color [MRepeat Row, MmType Quantitative, MLegend [LOrient 'LOTop', 'LGradientLength' 300]]
+            $ []
+          , mark Geoshape [MStroke \"black\", MStrokeOpacity 0.2]
+          ]
+
+in toVegaLite
+   [ specification $ asSpec viz
+   , resolve
+     . resolution (RScale [(ChColor, Independent)])
+     $ []
+   , repeat [RowFields [\"population\", \"engineers\", \"hurricanes\"]]
+   ]
+@
 
 -}
 
@@ -2952,9 +2989,9 @@ choroplethLookupFromGeo =
             , projection [PrType AlbersUsa]
             , encoding
               . shape [MName "geo", MmType GeoFeature]
-              . color [MRepeat Row, MmType Quantitative]
+              . color [MRepeat Row, MmType Quantitative, MLegend [LOrient LOTop, LGradientLength 300]]
               $ []
-            , mark Geoshape []
+            , mark Geoshape [MStroke "black", MStrokeOpacity 0.2]
             ]
 
   in toVegaLite
