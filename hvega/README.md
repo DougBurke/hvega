@@ -80,4 +80,6 @@ One of the more-obvious changes is that the output of `toVegaLite`
 is a separate type from the input values - that is `VegaLite`
 and `VLSpec` - since it makes it easier to display the output of
 `hvega` in `IHaskell`. The JSON specification is retrieved from
-this type with `fromVL`.
+this type with `fromVL`. The `0.5.0.0` release adds some more
+type safety (restricting the functions that can be applied
+to `encoding` and `transform` for instance).

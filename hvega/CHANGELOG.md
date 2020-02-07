@@ -10,8 +10,8 @@ to white rather than transparent), although this is also controlled by
 how the Vega-Lite visualization is rendered, which can make tracking
 down why something has changed a bit awkward.
 
-There is more-extensive use of type aliases, such as 'Color',
-and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
+There is more-extensive use of type aliases, such as `Color`,
+and the introduction of several more (e.g. `DashStyle` and `FieldName`).
 These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
 particular value). There are some changes that do improve type safety,
