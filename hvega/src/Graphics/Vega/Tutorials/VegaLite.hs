@@ -3632,7 +3632,9 @@ values (which have a domain of 0 to 360 degrees, and wrap around at
 the 0\/360 mark), into their cosine values (remembering to convert to
 radians first), and display that instead. This ensures the \"Blanco1\"
 cluster members are spatially co-located on this axis - with values
-close to 1 - rather than appearing near 0 and 360.
+close to 1 - rather than appearing near 0 and 360. This is more to
+show things you /can/ do with Vega-Lite, rather than necesarily
+things you __should__ do :-)
 
 <<images/vl/coordinatedviews.png>>
 
