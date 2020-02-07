@@ -18,7 +18,8 @@ particular value). There are some changes that do improve type safety,
 discussed in the "Breaking changes" section below.
 
 Documentation improvements, including a new section in the
-tutorial on choropleths contributed by Adam Conner-Sax.
+tutorial on choropleths contributed by Adam Conner-Sax, and
+plots using an Aitoff projection contributed by Jo Wood.
 
 ### New functionality
 

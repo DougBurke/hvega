@@ -1071,7 +1071,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- \"Breaking changes\" section below.
 --
 -- Documentation improvements, including a new section in the
--- tutorial on choropleths contributed by Adam Conner-Sax.
+-- tutorial on choropleths contributed by Adam Conner-Sax, and
+-- plots using an Aitoff projection contributed by Jo Wood.
 --
 -- __Changes in Vega-Lite 4__:
 --
