@@ -160,6 +160,7 @@ module Graphics.Vega.Tutorials.VegaLite (
 
   , layeredPlot
   , layeredDiversion
+  , layeredCount
   , skyPlotWithGraticules
 
   -- ** Concatenating views
@@ -1285,6 +1286,8 @@ give it an aggregation-style operation to apply to the data field,
 but in this case we have already done this with 'opAs' (so I pick
 'Max' as we just need something that copies the value over).
 
+We revisit this data in 'layeredCount'.
+
 -}
 
 
@@ -2360,6 +2363,122 @@ layeredDiversion =
         ]
 
 
+{-|
+
+In this example I display the same data as in 'starCount', but
+as two layers: the first is a histogram (using the 'Bar' mark),
+and the second displays the count value as a label with the
+'Text' mark.
+
+<<images/vl/layeredcount.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhIBzWdAVwAcAjATz0MgGEAba5aAU1kgBdADRR45Sr3Lw+LAmXS0WkAMY1E0SKMjxkytdQ2QAvoOPERxSAAteAS3LXN+AEwBWAAzCraxKgcsZABudrwA7oGQPFQA1rwsiNQcHMbG3hCQACYy8IHEGdSwHMpO0LTIuAD0lQhhAHTkdtDW1PTc-L58GnVqWJUAIjTkAEKFcZXWQVLwlVi6fLATU9KV2dAz0nbwALTwOwBsAIz7u4ce2+v0HLyH8HWI6Nu28Jn8ddDIQVr5UBjYMnkSCRILR4LBkPF8KAgUDIABxObkZSJLD0fjfGHAgBKAEEAPoASTYWIAysjqKj0elMVBaBwAB7kykCamYyD9ACihOJZPwkBRaJZP1hvDxdMZfIF6OFYHMQLlsupkDCdkyzRYAGYPF4rAASZAqWxzErQMoVarLO6NZqtOp2dCVA1GmaW7YcJq8SpBAAsdQAVsh0IgMVBoE1rpE+PTnFAAHIUwVgdCoMA8MHIMC0fhgFRcHhU35B6AkuwAL0hYEOAA40lYOPBGOj8EQgdCYZA5rAYsp6GCQyLEGpMnZEEioTKMmoOJhATSMv5eBxMspONwFv2aVFMDGyLxB+hh6PlMxtJhXgI+a8DXvD0ja3OMtBGFnkegsCP4MVWZvruQb5FQUyW8WDObRonQOI2HQacLygSgGxMCdFSQyAJVIJD51CJcVzzddvzZQNYB3SA9yHEcxygE8oDPJsoCvFQb3Ikx8PbJ8X0lN8Py-DCxHpOw9HwRJkiQ+9N2YKFIAXbC+QMIxtDYitIAAR2oJAw3WMMpi0Xj+ISJIUhlBUIFEiA21hTtuwkzJxLAbZ9nk59FKjTQTOBUiDyY8c5xgXho0iKTlxk9RNAc9ioBUtSmhkOwtNc2E0LMzcApwtcqR4rciMidzgL5KjIBo2Csl4a9EGAuLWMc1930QT8NzZeA+IEsAhI4ESWIyGyyGSoLDBC0NKr5CKNCizT4m0BrdME-SjJIGaFUEEBjCAA Open this visualization in the Vega Editor>
+
+
+@
+let trans = transform
+            . aggregate [ opAs Count \"\" \"count\" ]
+                        [ \"Cluster\" ]
+
+    chanSort = [ ByChannel ChY, Descending ]
+
+    baseEnc = encoding
+              . position X [ PName \"Cluster\"
+                           , PmType Nominal
+                           , PSort chanSort
+                           , PAxis []
+                           ]
+              . position Y [ PName \"count\"
+                           , PmType Quantitative
+                           , PAxis []
+                           ]
+
+    barEnc = baseEnc
+             . color [ MName \"Cluster\"
+                     , MmType Nominal
+                     , MLegend [ 'LStrokeColor' \"gray\"
+                               , 'LPadding' 10
+                               ]
+                     , MSort chanSort
+                     ]
+
+    labelEnc = baseEnc
+               . 'text' [ TName \"count\", TmType Quantitative ]
+
+    barSpec = asSpec [ barEnc [], mark Bar [] ]
+    labelSpec = asSpec [ labelEnc [], mark 'Text' [ 'MdY' (-6) ] ]
+
+    cfg = configure
+          . configuration ('View' ['ViewStroke' Nothing])
+
+in toVegaLite [ width 300
+              , height 250
+              , cfg []
+              , gaiaData
+              , title \"Number of stars per cluster\" [ TFontSize 18 ]
+              , trans []
+              , layer [ barSpec, labelSpec ]
+              ]
+@
+
+Both axes have been dropped from this visualization since
+the cluster name can be found from the legend and the
+count is included in the plot. The same sort order is
+used for the X axis and the color mapping, so that its
+easy to compare (the first item in the legend is the
+cluster with the most counts). Note that this changes the
+color mapping (cluster to color) compared to previous
+plots such as 'parallaxBreakdown'.
+
+-}
+
+layeredCount :: VegaLite
+layeredCount =
+  let trans = transform
+              . aggregate [ opAs Count "" "count" ]
+                          [ "Cluster" ]
+
+      chanSort = [ ByChannel ChY, Descending ]
+
+      baseEnc = encoding
+                . position X [ PName "Cluster"
+                             , PmType Nominal
+                             , PSort chanSort
+                             , PAxis []
+                             ]
+                . position Y [ PName "count"
+                             , PmType Quantitative
+                             , PAxis []
+                             ]
+
+      barEnc = baseEnc
+               . color [ MName "Cluster"
+                       , MmType Nominal
+                       , MLegend [ LStrokeColor "gray"
+                                 , LPadding 10
+                                 ]
+                       , MSort chanSort
+                       ]
+
+      labelEnc = baseEnc
+                 . text [ TName "count", TmType Quantitative ]
+
+      barSpec = asSpec [ barEnc [], mark Bar [] ]
+      labelSpec = asSpec [ labelEnc [], mark Text [ MdY (-6) ] ]
+
+      cfg = configure
+            . configuration (View [ViewStroke Nothing])
+
+  in toVegaLite [ width 300
+                , height 250
+                , cfg []
+                , gaiaData
+                , title "Number of stars per cluster" [ TFontSize 18 ]
+                , trans []
+                , layer [ barSpec, labelSpec ]
+                ]
+
+
 -- TODO: can I plot the mean / median of the parallax for each cluster
 
 {-|
@@ -2435,9 +2554,9 @@ let trans = transform
 
     raLabels = asSpec [ raData []
                       , encLabels []
-                      , mark 'Text' [ 'MAlign' 'AlignCenter'
+                      , mark Text [ 'MAlign' 'AlignCenter'
                                   , 'MBaseline' 'AlignTop'
-                                  , 'MdY' 5
+                                  , MdY 5
                                   ]
                       ]
     decLabels = asSpec [ decData []
@@ -2778,7 +2897,7 @@ let trans = transform
     s2 = rSpec 0 \"12\"
     s3 = rSpec 120 \"4\"
 
-    setup = configure . configuration ('View' [ 'ViewStroke' Nothing ])
+    setup = configure . configuration (View [ ViewStroke Nothing ])
 
 in toVegaLite [ setup []
               , gaiaData
