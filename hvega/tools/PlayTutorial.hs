@@ -144,6 +144,7 @@ vl = [ ("api-vl1", vl1)
      , ("duplicateaxis", VL.duplicateAxis)
      , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
+     , ("skyplotaitoff", VL.skyPlotAitoff)
      ]
 
 

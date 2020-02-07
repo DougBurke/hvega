@@ -124,6 +124,7 @@ extra-doc-files:     images/example.png
                      images/vl/comparecounts.png
                      images/vl/parallaxview.png
                      images/vl/parallaxview-selected.png
+                     images/vl/skyplotaitoff.png
 
 cabal-version:       1.18
 
