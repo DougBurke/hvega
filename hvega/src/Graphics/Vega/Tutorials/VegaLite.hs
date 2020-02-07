@@ -263,6 +263,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- $aitoff
 
   , skyPlotAitoff
+  , clusterCenters
 
   ) where
 
@@ -1616,8 +1617,8 @@ oranges, and how we are at the center of an orange looking out at its
 skin, and so have the direction reversed to if you were outside, looking
 in. This may be why I don't get invited to too many parties.
 You can see that we also have one cluster that straddles the
-0 and 360 degrees Right Ascension barrier, which will lead to some
-fun later.
+0 and 360 degrees Right Ascension meridian, which will lead to some
+fun later ('clusterCenters').
 
 <<images/vl/posplot.png>>
 
@@ -5645,12 +5646,12 @@ aitoffConfig =
 --  @
 --  aitoffTrans :: 'FieldName' -> 'FieldName' -> 'BuildTransformSpecs'
 --  aitoffTrans ra dec =
---    calculateAs (ra <> ">180?(" <> ra <> "-360)*PI/-180 : " <> ra <> "*PI/-180") "lambda"
---    . calculateAs (dec <> "*PI/180") "phi"
---    . calculateAs "acos(cos(datum.phi)*cos(datum.lambda/2))" "alpha"
---    . calculateAs "datum.alpha == 0 ? 1 : sin(datum.alpha) / datum.alpha" "sincAlpha"
---    . calculateAs "360*cos(datum.phi)*sin(datum.lambda/2)/(PI*datum.sincAlpha)" "x"
---    . calculateAs "180*sin(datum.phi)/(PI*datum.sincAlpha)" "y"
+--    calculateAs (ra <> \">180?(\" <> ra <> \"-360)*PI/-180 : \" <> ra <> \"*PI/-180\") \"lambda\"
+--    . calculateAs (dec <> \"*PI/180\") \"phi\"
+--    . calculateAs \"acos(cos(datum.phi)*cos(datum.lambda/2))\" \"alpha\"
+--    . calculateAs \"datum.alpha == 0 ? 1 : sin(datum.alpha) / datum.alpha\" \"sincAlpha\"
+--    . calculateAs \"360*cos(datum.phi)*sin(datum.lambda/2)/(PI*datum.sincAlpha)\" \"x\"
+--    . calculateAs \"180*sin(datum.phi)/(PI*datum.sincAlpha)\" \"y\"
 --  @
 --
 --  This is used to convert position values to diplay coordinates.
@@ -5674,8 +5675,8 @@ aitoffConfig =
 --        lat = concatMap (replicate nlng) latVals
 --
 --    in dataFromColumns []
---       . dataColumn "lng" (Numbers lng)
---       . dataColumn "lat" (Numbers lat)
+--       . dataColumn \"lng\" (Numbers lng)
+--       . dataColumn \"lat\" (Numbers lat)
 --  @
 --
 --  This routine just sets up a bunch of points which indicite the grid lines,
@@ -5685,23 +5686,23 @@ aitoffConfig =
 --  graticuleSpec :: ['VLSpec']
 --  graticuleSpec =
 --    let trans = transform
---                . aitoffTrans "datum.lng" "datum.lat"
+--                . aitoffTrans \"datum.lng\" \"datum.lat\"
 --
 --        enc = encoding
---              . position X [ PName "x", PmType Quantitative, PAxis [] ]
---              . position Y [ PName "y", PmType Quantitative, PAxis [] ]
+--              . position X [ PName \"x\", PmType Quantitative, PAxis [] ]
+--              . position Y [ PName \"y\", PmType Quantitative, PAxis [] ]
 --
 --        encParallel = enc
---                      . 'detail' [ 'DName' "lat", 'DmType' Nominal ]
+--                      . 'detail' [ 'DName' \"lat\", 'DmType' Nominal ]
 --        encMeridian = enc
---                      . detail [ DName "lng", DmType Nominal ]
---                      . 'order' [ 'OName' "lat", 'OmType' Quantitative ]
+--                      . detail [ DName \"lng\", DmType Nominal ]
+--                      . 'order' [ 'OName' \"lat\", 'OmType' Quantitative ]
 --
 --        spec lngStep latStep encs =
 --          asSpec [ graticuleData lngStep latStep []
 --                 , trans []
 --                 , encs []
---                 , mark Line [ MStrokeWidth 0.1, MStroke "black" ]
+--                 , mark Line [ MStrokeWidth 0.1, MStroke \"black\" ]
 --                 ]
 --
 --        specParallel = spec 30 10 encParallel
@@ -5747,12 +5748,12 @@ we are doing it all ourselves).
 
 @
 let trans = transform
-            . aitoffTrans "datum.RA_ICRS" "datum.DE_ICRS"
+            . aitoffTrans \"datum.RA_ICRS\" \"datum.DE_ICRS\"
 
     enc = encoding
-          . position X [ PName "x", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
-          . position Y [ PName "y", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
-          . color [ MName "Cluster", MmType Nominal ]
+          . position X [ PName \"x\", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+          . position Y [ PName \"y\", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+          . color [ MName \"Cluster\", MmType Nominal ]
 
     spec = asSpec [ trans [], enc [], mark Circle [ MSize 9 ] ]
 
@@ -5790,6 +5791,118 @@ skyPlotAitoff =
                 , layer (spec : graticuleSpec)
                 ]
 
+
+{-|
+
+If we want, we can treat each cluster as a point, and calculate an \"average\" location.
+The following visualization presents the average location of each cluster, where we
+calculate the <https://en.wikipedia.org/wiki/Mean_of_circular_quantities circular mean>
+of the Right Ascension values (to account for possible wrapping around 0/360 degrees).
+To see the effect of this correction, we
+overlay the simple average as unfilled circles: for all clusters except Blanco1, which
+spans 0 degree meridian, the two match.
+
+<<images/vl/clustercenters.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAmAHAVgBpwoBjAewDsAzJDMUCCGWAQwBNYAnO4SAGxYAjWHwCCFRH1h0ADAF8ijKADd4sAO49IAZxScyAa2mYKAVz58FxJlRYlYaTL20AHO-AmyrSyCwAe8No81oyQbGQAtiwedLZ82rCKSlACwvGxLPGJIUyInPBsGVlJPijwKFJ0ZhYloWUkBkGYcQkh3qFSiLAUhU6QZPndjlCCZCgokZAEUGUVxmDVlsTtYSwoLME+ppx8dDDjLtroAPTHnCzqAHSI5dCmgqYJnOQUKEOX5BHHACJkpogAIW2RmO0GUsEQLGOUV0XFB4MhxzYayhkPgLAAtCxMQA2ACMOKxeJkGPWgikeJYlwoZAxcHYXEuKG0yimIUgVAGUWGDGSkDcnASm2STAA4lFEHszBFhNxaj4AEqiAD6AEkAMIKgDKUtMMq4bJFTBcfD8uv1cpyoW+AFE1ZqdZhINLZYajZBYMqTWanS6DVa5G1lklIOoCihoHQ8AB2GQhgAk2hIcCie1QKEOJ2OCKpNwj90u8DIxyTKahOYxfHKsGzABZLgArbSUN38FgATwNmAA2iFeaVzhRtJzOBE6L2jfRfE1SGRtEqpqRMiRzGt5pByNoABTIlB6y5K+3asAAKjAAAVVWBjmA8TgZABKSDtEW8FgznQeBfTDfL1dvPZtA8Hc1n3Q8NWPM9L2vW97yfF9kn7d08j+FxBHbcdIHVPhHjebgAF15T5FhEDyCE13HK1X36Fw9giVgKEXac9k3JUZCYmgRF6Wd51EZ8iOoshaKdeiWEYn930Ar9RHYn9OL4bjPwoBcEMnXghLohimMkp11H0CRlXOWSoHkxTwIdfiqMQmjNLE7SPw4EhjI5NQFL2W0jx1QNJwgfCrNUxgkJFZinSMt1J1-PgVwEACnRRCgsBAvcIkuIDlJkghd33ViZIfU9YJkS4ZBgy9IH8gT6CspgdJSFgZWRcL3RIP8YvXLKUqMgA+O8ZAAfiS-cjIxABmHFHxPS9jgxHqwEwdrLiMibVSmnqysnAKIDfD8XGgeAmOaqL-za0CUscmQluOVaNsqnyoBq3w+B2jYKqYA7ooouLNy3L75p2+AHxPH6TsuAR6qhLAHyfcqrKC4iPzSkhREe6BnqqpdDtavZ5syJ6wAAXjxsBit629ZrANKBpSnGUbym9seRjZobUtGQqgM0XvR97YqgUbzqB5LLj+gGKfm0HBGRY4IeOLdLxPeaEaRp6ofWiqtr2DCfzeo69h6k8ReBoXpdl+WPERhn4KtQirUgKJOAMLQgIAL3mABOOMZnbFx1xIeBnkqAKPQocg2A8SUnCsjcyD4AYtFMvZsNwg0fxQT31xpCIPEyJjOm6bjFmuyAfSnOOnXZqAk0yeZeAoeB7CKBIFA9r29gAR1MMTZjWeBwUsiKML6EuoA18uDqr51a-mFpYEbyAU+bp02478ou577zkjXiAENh2fB2HLlKLU1nI94-aWo+njKYPFUIK1fLoJvHr4NVo+0u-TntadfWBfMyCLyvB+4K9yNLDHwKFTBoX7mAbsWEcKwgIhzXwpFODkW5hOW6U4NIiS0hJD8OVnKD2PipDmm0bJYLsjgqS6V8GuUUq-Pi10lDqWElAUS4k7ofj0pQRAhkWDUK4nsH+XliEYOYTbbB7CsawCchxGh7k7Q32fGjPyKsYYs3umFBBWtMZxXWAlS+dC4zzTwXlM8PUiolVVGtI010QGhHumLBqmiz7c1WALThBkuo9X6vNdx3Chq8wBpNaa94yY+P0n43hF1gnsSZsAo+f1T4Y3Pq4-cZ0LpXVVmoj81NUa3Uilzdcdg5zfWKb9XaAN+b7gceDSGViRQ2KyZQs2T1GrBS0ck+muMCZEzACTPEZMv77hybTMAnSUZ1PXpkvJ912Ys3aS43mgNSkG3KXrYCos6rixqUbVUctgYK3NhMpQNij7D3yR-KAutBkpUNjLXZJsg6KxpookUVtgq23tn0J28wsAyHdrPVOLFfYkEqHJeAFhYDcSngHbowdQ7CjaVHGOA9ZFOgTnApic806REzrsH8OcehVHMJYCqhdY6orZkxCulQ+g1zrs0TIDdk6AoXu3V4y8yir1JZA3gBCznUrHnSyejLp7MvnlARe7L1icukBvRgcqt7Wz0GJPeo4D5xPujlRJBSWLLO-tfB0d9-4FSfjDF+0ltUXKUpfQRRqYKPyAa+FmYCIGYXRXhSAbyfKILIpCVBaMSGYJYeIo+eCZH8KdFqhhgVSHBvIRIz+0k+FuUTelR1PkmG2TYUfXxPDk1mQNdqdNh8g1iPjUfM64aU1QA8gouVrzYlOumR+DRcznGFN0YlB5bFMrA2MflMxxUbylUbYhRpTpqmtL5PM46AtPH3m8cDfxY1AnLWiaEpdkSgmrVHYw+Ju1LXaKgPNNJk0MmqObXsHJU6fAzqvV9SpNzVmPpBpsiWENlbWKmd6+6ByWlOKSS4sZLB8aE2JqTTA1zLjDJgsBo58rv0RRmTe0Id6nSLJfULNZFBL7VMlg+HZeyBZ-uebumN90zlocufebDl9bnG32abJ5LALavKIjbFgdstBsCLjgCSVZECMQnbAKgaAxXrjeH4NAMKg5kBDp4cOEVyDR24CiiNUB3VJybtijOFAs74ohLnIlFgC6SZ5C5dTMDE5ym01KHFendgFyLryilZKfwCq0EK+uorbOsqXtK7usruXkss-y0enmJ7eZnli1ubLO4ypeevNotRt7KqHCOMcPYL0-o-JOgDOqnSiwkN1BduGJAjRXVEmac1gZ8AkFV+88HN7P3ugkzW7asa1bWOkxrDTL1xQZih16HXPrFMw8+vVVS301M-fUxD7pf1McG-lq1wHQM9L6QM9ZwMYN0x24Nsjm1x2UpW0eyAGHJtPv+rRjZYN8OEYec00jKjD4UcPckq522Bb0fuYxx5hz61gC9T4D5Ds9CGFgAAdXDJGTAhU8TufB0YPY5I7D23E3sKsFAgvW13BsRT7plCZFMLAGcaDD4xToBiN2+KFNgGidG3glPMDU-+XVsO9O8R4HkBzJnawqc05SHT6avzGdtmGKz2nHPWdi+Z-TwX-BhdjVl-zlnCv2dU+GjztGfOJfq7p9r26uuBds7p1rlXevTcc+V7z8XJupd0Ddhb+3QuOd4lF7buXkvXd0C54bjNdu1dW99-eZ3LP7wO5Zz1MP9OI8+6j9zmPGI4+K+l+7-3FPVex+D0HpPKeNcs5tzrwP2fI-0-N57rPyec9EzzzXivxevf57p0Xo3Jfq9l6d5XiXze3ce8b1X3vvvE-d6p0PzA0fR8s9jGXhnU-6cz-j5zkfA+JeL9T1T9PSf18F-lxnuJXud9K-39RQ-NeRon+smfsvl+93X6Xw3tv9+N+YFbwH5-u+u+r6p0fvvt+Y0f505+7b416T7f6F7n5gFP5V5jSz7AHz4YiwFL4i7-4kJe5IEv575J4YG76IGoFTjoHn6P7v4wE174HG4QFl7EGZ4S44Et7kHt50Ec5f7QG0GgH96sFU5MHD4MGEFl5QEkES7c5wGh4IHCHIHwHgH07iGYEoFJ4yG4EsGCFU4KHH7yFEG8FV6qEc6aFCH166EqE15v40GGGd4GEs7aG+4cHKEWGgEr6cG2H8GiFSEYi1iQHOEOH05uFwH2E2FeGQHWEmEs7eHIFKFBH+Gz7GEH5V4hGyHUHRES6xG77mEREP4pGuFGHpFJF05hEJFU7ZF-5J4FE8FFGgEeF+EX4iHpFa4+HVEBF1Gz65Gn5V41HIFRHNES6tFxENFL49GYHxEdGa6ZFJ5dGf59G75b4IGjFAG+HhGVFL4CFzG-JVFJ7LESGzF5Es5rGyGTEuHbGKHpH7FqEIFHHS4DFX5V6nFeAnH6GrHDE3FmF3H8GBGbH05XET4bGDFbFlHpHEgrEIF-HrG-H1FJ6AmyFNEXES5gm4HtGQmb4aGglkGIlUHAll6wl35V7Qk5GokLEvFfGc52E4mYGLGvHuEpGQGfFwlw5wF4lUlEyNHkmRGMnIHnEYnDBInz63GclonMmYEQlsmyDPG8kTGUkCnUkLHlHhFYlp6SmvHSmb6ikAFZ7ylR60lim3jn78lKnDAqn07onam+4Inz66kpG6mskGkT73FSG6laloHKnsGmmEkx66kkn4nvGc6ylukUkpHulyHz6+m2kEFZ6+n6l2nDC+nmlhl0Duk+lclSHumhlBnhk16BkUHYAOkx7umSGeFZmel0nTEykpEFkKlFkgnz7Fm57lnn6JlpkVnl6lk34x51mRlJl0B1k1kl51mpmdkZlVn8GKlRmYB1mul0nFFR55nqljnL4pFTl+lSGzndly6zkdlLlGnzkcnrkokx5TkrlZ5TmLl7m9mbkLEDmtmYBTkjnqmWHjkpHXnTkx53lzmeGPkHnDCPm7lvlrnPkbnflbnz53kflRgpm3lHm-knkgVOEpHcE3kx7QX3nz5wVPl+GIWvl0CIWAWv5fnIU-nYV-lSFwUYVgBwWoWYVCmwVOkIU-Ex6-6b4TkWlgA0UJ4pGMWc5qn0UsUy7z4cWEUcUtlpksXMVxmeEsU8XAXUWgV+EsXZmSVUXz7j4ekpHyXTSnlplKW7GeFKUkVgBKWEVKV8Ul7yWKVCV+HyW6ViVyUSXhHyXSVWWyVSH66Fkx4OUllOVln2WakpHOUQGuWz76Vy5eW17z4BV+VZ4BWEUBVaUBXqV+FRUqUl5RWh5WTKKTLWywpybwoE7BTOYWbVpua+YSpxYcqBbaQBAzj5ykocDrDgoha5WU4Y6+j2ZZwFw8o5WKRnIxZ+ZSorzSASSlXGZLD1LJZ9hKq7wZbqpNo5aY7TZDbvxnZFaIAlZ9RlaIAVbjTbohI1YCzs4NYxIvYarbQHrtaAazpTYoA9bsR9aTUDb-ptrHX3pjaXaCwTbbi3ZbL4azYpXMz9blxLY3V5JUYpJUwMzrbgb9KQZfZDLmywb7YtKHY3RXUna3UFY8xjRLIvUrLXZQZ4ZSx3JEb7gkYsZNZgAnJvZHXI2QCfY4ZlL-QPZ-ZPaE2A7A6hCg5fJI5Q4w6yCXAI7lxs0o4CANCYosopAeA47BR44Ip8hE44Sk7jWvHe47F0WDl75wGxhJ4BXTSEXy24E2Vy3q14huFq2QEhWW40npF63EiG1wF-KW2hFm3n6K1nnK3IGq0IHq2a3q1xVe7q0G2u1YVzHq1sVK1a3C4W2+2Nlh0LF21l6B2O3B0c7G0u6YE+0uEBWe1V5hVR1L4u0p014O1plx2O6Z3EnW0R3Emh051kWl0TEJ1B78HJ2eEF0fFF0THu2gHZ0N0JXpE4B8YSF53t7d0q1d0907Ga0D1Al57D3a310VFj07E12x6T0h0x352z3a3l0N2r0h0l0uGb3S5aXJ6L3S591N6H0-5D1MkT2z5p096n3BHn0sn32yHL39230EmX29Hv3F2f277P0n14Ub2v3T1zG71AXf30FgMc7t0z2v3H2D6v370gOWmP0THr3QOV072v14jz0H113IMzF4Nu6j2YNQPAOYOwM944j-E72UMSEkNy04A0Mj1d2MPa3X1j4sMh1AP0McNp7YMMOm1548Ob6oPANCNR7b0b1iNYEIH8PIHkPsOz50P4nJ5SN4GCNX3MOz5cPKOyPdHqPIG-2D6qMiPcPh3UP8GaNL6GMUP-0z1SPaN0kqNl5sPh5SOj1SNKOOO6O77yOuOPEyNSPEiWNl3BMTHWMKMLF8OBMOPqlOPgX6PEnuP8GeOxPeNAG+Ox61hUMb1ZO0Nd25NMN54FOsP5NwExP0XJ7FMh18NVNp7hPh61PCOlMSESMz2NOVk73tPZ5FOKPNOyGj1dMYguOZNaN9O4E1Oz71MjMtM9Mf0yNdMmM6NdNTOVO2PANdPlNB04BdPDOrNL4DNl4pMVPbNl4ZN7N8ljNAGtPrP8GLNeMLMrMnOROXNu6bOx1PPEm7MfMt0vO+5HNbMLNnM4BYDZMz0gt5N57guFMyNQslOQtlNd2wvVOIsCMwtwF3OpNItp7XP0NYsm7wtyMovO1Ev9Mku4FfN4t30Et6NosGNktb3UvJGMtXPMsc6POUtgB8MctvMr0csUs8mst0D-PvMctAscsIMctBOCsT4YvHOSvsv8Fcu4PSu3j8sLGj2SvCu8uQV16gvAOQFav92QGj3em6sSE8tGtwF8NuUb2QGytbOQE4s6MeVmuyFAvn6GtN7Vld3n5fPn4Wteu+U+uTPBszMyM4X6sWOus-2hv9Gxu74BuD415+sCvhuHPxt07uv+M72gFOteOgH2vvOWX0OgHWvKtpvxMVuJMZtu6etJs6sIHRiv1z4uFNuD3b7NsEjpFtvj2NuduJtr6dvYM9s7ErMjtr3dudt5uxPjvC772ztH2Tu9MdsX19saMrvIEDs-7NvDvNtjtTsbuYFLuR2Hsxuntm7HtJ2Xu767MLtoXXt051uDunMPvMGvuGnvsyufu3j7uKvfv63-u3uYOa13sT5PvbsNutvGNnPRjGPgfT7GMgfGO3vGNbsIdWvdvGNjvGOFv52wdW2YcMnb6qMweqPwcL6qNIfruNuqNocUdBvEchuMdhtQdmMN34cns0fR2EdpHMdXt8c3s8eYFUdZ1Cc+NifYkCdXMSdu64ft4cfEnYd-tSevMyclFcfqtqdgdacFTb6DOXkVPRj6fkcYhGdwEgf6e3v6d0emf6fDv6djv6dyeH76fTuGeDPzuDMweDMmdmdtHduDNWejN6cMeNuDOOdW0hdzOtsLMBfcdRdxsJcJtxdL5Bf7MpeYG+ddPefZvsexcZcoMFdAERfPNJdAE2d+efNFeEPVd-O1cT4wccstvsdNd4i+etcgete3utcVetfDutdjutfOdV7RitdudB2jdEeNtNeNfLvTeruttNfdfBfzcP3b5NeDeRerdHvrdRvbdnv7cXu7dL69fOPdscudfpvHeYGzdL7zuSvjex2TcLHDdr7yvnfKeHeqfXcikfeac-dAHteQfsdkkgHtuNvGvdumsQ8Itg8SHDs2sVEcV4ivdn0Edw-glQ+z4wcetY-+cY-kt4+yEVd+1y0cVjuOsE8G5U9u5E8HetvGVzEsUk9nc0-3ts+YC+e510+Scw+R08+ycC9WFC8T4I-lsM-9ki+3ggdt1S8GdB04idtnOK-g8uEq8SGa3q87G7Na9T3pG6-IvYGdsrMG9p6o+F5Tv6-Nv72m9j5W9zdq-Nua-Ns6-Ns2e28s7YMe9vH28scN3e++9f0IHe8m+v1e+AOB+CdG+puO9XfB8wOR+8+x-8-R8veJ+FHx+ffJ-Enu+YOu-8HO-JPp8h76-Qel+q-++Ifl+9tq+ofV9z31-a0m84eN9b2t973t92-YFked-eXB+qM6+0e9-1nd9Mf99be19scVE4iBPD-N9rNy0z9l7u9SOD8x+V9x+T9L7K9SM2+z-D8o8H-z+lfj8LEr+S+j--en-EkmdL8Sn6-6fK-GcP-mcv81-+-Wdv8N-YEOdf8Ts--o9g+HnP-sLif4O8P+C3CAcgR16DN3egzL3uFxAHYsAB0XKAUHzV7LMkBbZLAeeRwFgAYB6-afl01v7Zc8BNvfLigJCaUCwmeArBrQLgEX8gBBfWgSQOB7T9WuyvVrrfw6768uuvA2HsHz678CJCJvIbsIJ2KPd86OIJrjbxm7iDcC3AyAewOo5q8mu7vJrl7w27yCGWggqfnMWkF7dVB8XXQbxxMH8czBUfCweAysGQNtBHOTgbl2UEp8bBvuc3nqXe7YFJWmg8Xv70lY69JWmvTVnYJL7YFQewfA1vr0h6hDai0Q81pEIw6xDR28QiQm4LwKAC1eLrcIdj2SGyFb+3rRIYTwKHC53epPZRohRN6U8shqA6frmyKFsschu+L3jXhKGs8qhwnBoY+w6H2CuhhdOoR+z6FfsBhP7HoaLxGG3gWhlbDIcwKGFtcxh8vWOngCV7pFFhFfCoisI17LDO2uzdYTsRs47Dta2DfYUvU2HosThLTM4Zj3kLNszmRw6XCZ1uFcELhhQsQm7yeHC5Dhe7N4cgJeF6C5aDwy0lcOMEuF-hnLL4XQD2Gv1thr9TWiCPuEJ9ARd3MEUgwRFUCfhuJJEbeA+E+C1hefDEV2xRETE4RbAuYngDL7yE4OywqvuSJiFiE6+1I+HpSNRbAiW+9IiQYyNtqsjcCNwnvpyOOLMiVBDdUkSt35FrdaRY-EURIN5E6EpRhpGUZgBWZCjTBEo5LnKPwHsj2hqo+4VI25GOCSR+-VUYfwNEKjAmhw6JuqN+4GiYRgTLUcSL+GP9lhz-eQvpxhGWcHRAg4EXZzdEiCvROxVIXgFc4+iDiTo7IcGOJahjSW4Y54R6OFGCj4BgY4XAqNc6RjqeYhWLsmPqHpjsBmY3AdmLVG5iXRm-WMS+1zH71-RFjeMYL1zHRUSRCzQ4Qsz2ELNthCzAsQsXuGAtlhHAjsasJJE8D5CfAvse6MFFCCBx3okcb6K7HnCxxQYsQnIKnHC57hTXGEUtwnHE8Vx4zNcQmI3HfDgRHLLcbKJnFAihxC-ZRngG5Z7jMA2wi7ueIYrXibh4ra8VKwPFp85xGfHcVnyPFn8Hxl46YU+Jv4PibhYQ4EREPUKv8QJ7-NYZAT2FG1lhiPEkXaxgnpDBRmQoCSGLEK48wJEYtCQKIgkxicJoolCXSwwna0EJ1QuCYYKQmHi8JiXLCSdxImYFthVpCiaJyImZs6JYxFibTzYlAE-RxbE8aWy4nfcaJVXDib7hhGy8RJDXLIksKKKdsTOtYTtprXkk0iXCSkuITJISEIFVJSQ9SSkKkmISKiWk6cSpOuF6Swxmkp3qZNkK7NDJxQyyeuJ0lP07JOg4yb8OUY2TaeDk+ng3XclZjzJy-JyRzmsnQiApQrEKZgDOY+TMA+9SKRqTCm3hUhMU6sXLUSnYNEpNnRKUFJ-EuTWxcU+YfnVrBkjNJFIoolSKKnKTvJdIsqQyJKlMiKppwmqZOKqmXCmpXIrIjyJal8i6p0AtqbhLmIFTQuKk1Ris36l+8DJUjHqZx0GmUS+pUjVKfYwmn0SFpu+RSR4yWmsSGpFzDaRMUkHt4RpqIqaeiK2lAE5p2ImaYwIOnVsjptbNaW7gin2iiijozSc6KyKuiHpg4gyZ6Lemjinp9Un6Y1JUnACvpbrF6eAI+lKC+pgXEGZuyhk0sAZ4o7yUmL+k7ckZ20oGV5LBlKiEZ-ktGXTmsldNFJxAmGeJxxlvsSZ-QlGdxKJnFcqZbuVKfWJpnqc4ZV-JmX+LJmSSiinYjmd2OSm9jNJ-Yvme9L6nDiBZ30lSWIK5n-TvJMgrIrOJFm5CZZ4MnmdhKFm9SlZ+EqWfDIMljcJZyMsWeRK1nTS1Z1EvWbRJ1mWCTZGouWbvjkmisFZiIs2dJwdmVirZ1Mp2b7lSmSt0pfgu2ZdJdnXS3Z7MzSYBO8nASg5oEsOeBL6mQSsi0E0orVIMnwS45kshOVNxUn20Y5oMqOYrLcm+sM50MpObDJDmays5o0kubrKLmTSK5mBYaYz2SnNC85i0guctIbnWyW560iOZtI7nbS25zstOegyrnV0e5vudKRRT7nMyB5gPIeYHJcLDRpJUxWSdUQUmLzypFRWeYLLlprzqp88+OXMU3njiRilvA+anIbp7zWpR8syTPIsnnyrJy8-OdvPVmrzPh184ic-JTGXz9Zu81+is1PlHd755g9+al1vmWyAFmXIBcTL-nsSIFjsqBb3JPmYNv5mDbBj-MEkgKLRMC0SWAsnmvzbp1RQqTPOKlTFSp+ClebvMqnEKt55C7SYQt+mULiJuC4+avJI70KL5J8yjswpvkjEh+nCgaawuLkbzjG7CpltQsrmMLDZyjUaMeMcYSLTZwixubIubncLmJ8i9ubQqT68LnBqi2BaIsOnKLaZgi8rvordy7NpFvszRXV0UXEkzmw0e6VMUekzznpIxV6bYvXniLPpzi0WSfKc7VEAxjihhbvK87eLM5G8wZprWsXKzglqs1xTwtXmIDfFpciJaRISXoDPFYiqRV0yQUbNAlgCuJcApSVKL7FxY9xZ3IKUaK8l+0spTQJyWDyqlBimpUYqyWmKKlWCopRMSsWcypiXA6orzJnn8yelLiqRcLL6UeLV54sjpfpN3nSyRissoZfLKmXZyBl4S8RWoK6XRKJlfCpZRPxPm7i5lIitZVYxWWYyRl2MsZdkpOW5Kjl+SrZYUpmWQKbl0Cu5Vor2WKcDlxJJBZ7JeVoKHlGCnZazLOWtLxiIdKxaHJnlRCpi0PEFf0tiZ1lpoSC2CRvMTlgrxl8KvxcisJYjF0JiK-Hpio4XYrcCNnaFbCvWVSLKhEKxJeItqG4q6c382ueSuOWkq5F9KhRZStsHorrlJ88yoyvuXsrbmAK18dypP6cqUF-K4Scyu+WirtOrK+-qsTnl7EF50q8ObKpIVy1cAkKipiqooUN11VVCxVbpPlXJyli1vQ4iZL1WzKTiV8s1YsscZaq8VRq1ZcqqfkWr4lyja1W-M1WYNbV+yk1Y0I9X-y3VrQnVecoNWFiKiLq7oV6rUUhr3VPqwruGr5WRr3x8az8bGsZl+rx5ia35QGv+WrE8FmqghXsSIW5qlVzqshYWo1UhqsOhxFkScQEWVqUVxa1CfmqCX1qsVja7qdmsiVWrVG2DLAENNrVOrO1rkgdbsuVVSMVmPayRbE3HUyLW1DK0tYGpHXBqli2ovtcUrnXdz21z46tf3PLUJql1p0hdZMLXVAFNaU6jNUepwWrEbFexOxZqocUnEnF161VUHSwBuLH1wypYl4svVIrnVgM+9Q2tvVNqrVISw4pDK-V3y31hckNbEr-X9rJ1XTEDR-OVWYCwNxsgDdOrQ2zqoNhAj9YuqQ1sqsN9smDcXQQ2bqINlSojdUoo21KqN9SlDT8zo3NKyN6TQ4u0r2KdLVi3SzVb0q41PrY6WAQZTxvfXKrRlbG79VasmUnFplgm01aJpbXSaox8m2yRxrtXOqtBym2DWqu2WSbENqm1JZOo5bdqzx6mzDUsSvHGbW55mlRYptJnabSlIayVqkP43brTNu64Tfut02Hr7NWU6zeYts2WLDiwckNcCs1Wgq9i4KkLbxvzq+k6BTxITc6oRVhaxNk65CRFrRUPEWFQW+ZclstXZbwNqWyDUsXPxjqSV+WoRYluHXxa9NaqmlVavrmxaTNyqxiZlsuXNabuAW3UY1vLH1aY16W55d1uOntak1vWz5aVuPWDaz1rWrNQCRlUN07w3M5RnNo2Ggkthvxftqto0kuFFt2q2bZ21SFba6Fy2utY4322gD1tGWuYidulya1LthhQ7XloqI3bPeZ2xyXdslHTbB1sTR7RqVe3oyLtYfZ7SqPe2nLNtwUn7Z0LB1hqgdq6h7VGoh2uCAdrsqHZRpB3ubjtuIuHRPmu3EMEdF6gEjmoe15rZtBagnUWuO0lqSdZai7RWtBJVrNtNamnUds+1MKGd52uWgSCy0VN2dbavHR2qZ0qaydRKvnRpqDpc7y5FO5JeLt+1s7ZpvxeaSzoa0La3Gsu3DYrvw1U6OtquuzertI1E7nN0u1zZrpz7K7PN2uxpZLsY266pVAJK9bNpvUPa71m2h9bbsi3t59aG253XFuO2frrdSWznb+sd3-r7dgGz7cBtBKgafd92i7XGLD2C6-dmyoPWSq906ak9nqiPahoT2+qM95sj3fOoW2EyY92-X4l033pu6tdbOhZntoeZF6DdKeo3QXpFUB601UeovvXqm2bbWNs29jQCU40PbuNvel3V7ndzu7+9nuz7SJs72+6RdEm9vYHou1NcTOQ+uTSPpxUz7I9bOjQb8TU3d749c+j7Zzoe6gkOWKzRfent33obl92ei-dYNX2gLD9au9fRruO0PdN9PKu-Topv3I6J9Q2j-fgzf1m6z9E2gA23tm2BaLtwWh7aFpAOk7Pt0c5EpTrZ1wqFtCWqA-qoQOM7Od6cuAzJpQOYTNtucrAzaoIPvCiSuBY-SVogN76RdFKvA1VqoMTqMDdKnA5frAPYa0DLWlg4XqIM2aaDZepA6-oBK8Tjt-Erg8PJIO-6BD3migzlJEPTyN6erehvNq8YKq5DkchQ2pJkbD7gGO8tQ-vI0OoGdG6BrZrPp0MKCu6HOow9zp3q87jm-O1JrHosNvarDieuwxVqUOp6nDp+kw3Ths6QizD6XPPCrrcNtaAjhGjw+ur0PlKZ6eugwwKpUN16IjI2qI03q8P+yEjzG7AvIbKGKHYmxO-QdAYqbk68j8BrI6PoKM0L-ek+2Oqoxt7GGSj2B6fuYaqM5ayja+uo-ZOD72Gmjwuro2LqKMS6+jUuto7-LV6MGGjwOio-4Y6PsHF+9+oY9wYmPEaMjOusY31qmOvL9eqOnI+dIWP0a1jhIjY1bpUmZHHGduvqcoYMn5Gg6n-IopoeSnaG3J5Ri4-oZOOGHY6ASm46zoeNL6zjlh7ydYauO2GKm0Go490fymUG3jye2Jshs0n0GAT5+n4wrpeOTGQTt+mE5wbRPQ6ET4RlEz1pxOI68Teij4-EYJMpqnj-+u49IYxPAGQ1xxyddkbVXnGlilxvjQPsuK3HnV9xq1Y8aZPPG6THIk4rUa5OfGhTuBzVc0efX-GWTD8nky9oFOgn28WmvYpCYZPuGxThymU4DqVPjGaTyJtU6ia1PBG5TmJ5VV1qNO4m9T5Gg05-p1PEmLT4hq02NtWIt6zT6R7kr3WFIh1yOkBvwuFp9Osn2S7JukogaDPcnSSlRtMilr9NpapCGKmM40YjPinHa-rD02cRTNU4pm5B8IhGzDOuH1SNeDM7CaTOjGsz-qzwk1pLPTH8S3PGPByrLOmm4zyxis6sYbPrGazmx+iqPLrPJGqzzpls9SfCId6-CXe+MoydeJ96Bz-p6MoGfVIDcfSoZt0uGZLzT6cygpmc8HvoqLi5zvxoc5KbTIb7MynRvczvrHPgmjzuZjc7QcdoGatzmeic9qbvO566SHLcjrbIPOhGVzvBp8-wZHPv6PzrZ-0u2aVrey3z5Jhc5SZ-P+btytJ+iqcdeIO7PCTuvwtcfnyvqELnJycvOdHKLmlyrxtMu8ZQvrmlaoegi9ufCKwCZygJoi4eZLyIz5yp5mi8qaouqmkLhZvC8WbgulmWLupri-qbQvom6L75ni9ib4uRGyL0RrC7EaEvUaBLDekS7sZkv7GoLhxzwvjvCKE7kKo5-EshygqTnX805+itToQqYX1S9Ooy-yfwqrmDLhFx2mwtgqJm0yXCsywVteK9q7L8puXONLcv9GXLl5hy6xZLxy6nLzBny9xbUuBGTLsxukrvx0ufmIrjZkK82ZUs164rtpjSyboSvyWkr4FrK5BbkrQWlacqvK0tqKva9FKul7SvpYKvoX6Ku2sq7yZqu4WDKllqq8KfVLmqpCLvOq6uJjw7surpBvq85I0r0W5c7qnq75aavqnXiEfMa-eamusH8Sr9cjvCJKu3KhrsVhq-FYWviW2ryVja6lasrbGTKkhg69laOvKW-CupZrhdfANSlvTt15k2mUusAdnSsc40sGfVJPW3BT1naXLkutaVLrGTS6+R0uuEVLrwzS63R0uvz1LrUzb6y9eGv2lGLjtXUrDZq0fW6tb1zi-ddCtyka8wN6s5jcEvY3FjhN0S7je2v0UXS0N0ApDc7PXXjr5N068Tf7NylBzUpYc54RP3a1Qb451m+Va5uG9jSs550uPoutjdTSy5sW81eRvz6Jb8ZkvALelzg3llItyizLeou-XtZQthGzqQP3a3mL7N-y5rfYv4lFboDfW4+Y+vPm5b-Fzm-eNVvrWlaZtwYRbctN23drTt95Q7dktS3uzdJZ27eGBuStAbNui67BdNvwWw7D1hW8hetKoWo7pRp297rjvYXlS-uzm-hZTutXKbxFrOyvozu7mY7atx68CYLvuW07Ot4eUjZLvjXfr6S00pkudI7MG781-2-nuNKkCm7j+j6xQI7vfmy7iVhO-+bzsTFIbjYlu37Z7u9mB7LN026pblLqWpSuRhe9Hd+uFGV7xR-24ZetK07Obplne41bXvS3Hr7Ug+98Y3v52Lrjls+85bnsa3lSAi50p5eNKz8n7tdh+0bY-vwmL7wVu+zjb-u8Wr7kVj69FbfuO3kbgTL64E1hsmjTSZosBz7aXsM2AHill+7aNNszaLrhV60kvOdIra8H-NodqaWN7EPjLlNw+caUNUEPoznN5tsDfau0P7LCt14dQ9vv+2HVOD48xg8rsNdq7zD9+zqX+2sPNTjD2a9w--vsPwr5D4B9I6JtylYdlD-u1g4ptO3EFpD7-aI8QfyPkHkjpm9o-OsDnQDY5m68Y80tPnfThj8q9FvnrRapm0WtwdFp+vBlIzljmh0OdjM5l8h-pfA948Lty4IysZe+8mS4fmOeH6ZPh-4-zOBPJrXpE26E7EfxPLbG5vG9E8NPxlaz7j+s546UeuPB7uT60-k+kvZP0rsTye8k+nuZODHY5tm9U-pNAWe9A53m26R64+kBNQ54W-6VFuNPU74ZSW907cf9P6jgzmEq06Yf+OVbnT4u0ua33xktbszsJ05vPP1OBH0Za85mSM2TOEnM5szZs8AfDOrN7T7uxuef3rOcntT384c8kv7OhVlzrR8050fbOKn1zkIf6VDsDnw7T5yO+89XvBlY7OZeO988TtXnk7-znp9GXTtDnM7oL7O0BdzvQvL7gL7q686mf+PS7kLkJzOfg2Zk0xyLg22OfrvYu4nmLrG-i9bvEvKznzmR7C6OfUvwHe5ivT6Sr2EurnpLjR+i5KeUuyntLwA6y9yvxl57bpRe2OeXuCufn4Zde6K83sznt7OZXe0Of3uyvD7wZZnf6VPuKvz7krhF8K78fKuUXurwiaq4xcbnn7-LiJ-q+rk+kZdmZQK6a62fGuyX9ril9K6pdXnQHhrul0ucgeWuVHrrj2767ZcDnAmwzU9ZlfldPPtXVTt0pg4HPYOcyuD-0vg4TdWOiHmZEh6m7IdAWKH8ZKh0m4Gdjm6HPpBh0Oc6vpvWjT53q6W9lPZujXmbhZ6NdzcWvK33qpt94cLckuo3Dr2t0643PLXq3cjjtx6-8eYMHH8Cttyy4Hf7X83h1mNw857fhuJ3s9-MkY-xLQrZhTZO668VXfDNV3dHVd-PVXdTNV3bg1d04+GDQqtK0KjJtCvI7QrCK0K7d8mfXd6uz3RWhsuXZfdhPhyb7xt32RidLuiX9FOsg+87eO06yN7gm1IS7LfvhLfhYcse8EPqlhy+7mm9B-tOeFhyd78Sb+75foeanK7jm7B4aebumn+ZFp02TafhFhoHTyD10+I9guhyfTuj3m-w-WXaym58j2M6zxUedXZ7-c+WRme4ea3oHxU4J6WfCeVnDHz+7x4A9K1uPdr2Tzs5o9SOFPLrtjzS-E+DuuPDmosh4P49+u1PAbpj3c9I+zuVPejlj5G-zJvPN3HzxD185s9iu2yfz2DwC4c9AvayILlz-R85YQvKPULrzzC9A9wuAvWrld+RabLR7yyaLvz0J48+fucXkH6E4l6k9OeZPQX9t1Z5A9xfu3snzu1F-U-ZeSbyXza5l4ucxfx3pXyd2F+ndufQLlX1B8V5w+weBX+ZIVyu5FetfHPQ5CV516leAeZXzXjN6B4VeDfzL6HlV5B7VejfRT03hTbN6U3lku1RZVy4t9i+dkTX43s12e9HXLeUv3XtL7WVX67eJHiH1aU2WXXneCv63rJ-N8eWbvoHx34e5t8M-teavr3rl8N-ne9emvlH6N5u9jewf43kHxN8D-KvILN8+7tN+WVqtNks36HnN6D+Y-5kC3sP+W3LnB+2FUfZbxDxW+h9BO2yB7PH84cA-1vEfP7sn826J+3n-vGXnH1l87KLWiyvb+H1d-R8KOKflMrH3k5p8Ve6fL35H294F8ffay2Orn4u8nLLvRyJj-ErOXxEoWLHcF2A-L8quO1ZfUzWX24Nl+nvwRLjxX8fZoseOkLXj48qF6l88edfz7i3wa5N8vzlfxPoi9QYQtRPtyaNmCxjZt+4yZy5ZvXzl9V8QenfrPw8jd7IsFsvfPrvC8Ibt9VezfHLiX6Z799fe4-lnycnh9HIEeyLRHmXyR5T-lXawFHuC9R4Qu0es-3nvP0q+GBl+kfOfwL3hfY8oXlx25CZ-OT4-N-8f55OZ0X7CeV-vLJfvF7388P9+RHSFvljOUU+d-fftf1TzRftv1-g-Bfs54P-xPj+nvw-wC6r+Auz-hf0-xPzBeDszlrPMv2zzBfs+H+uvYAWsM57IuufT-7nmi556v+l-fPcF-zw-5r93+0fe5cPfOXC8oXIv3-tv+f60WCFli6-+W3uCJJewAXt6ABB3u-7yeqvvjL7+ynvAFT+S5MXqIBmnhX4Mu25Ey6gBvPsf5r+eFuPbYB8foQE7+RFu2LbkLXpORteo5B17UBZ-ntJ68lASr54WA3mRZyu7AaX7VGM5BN4IWU3pwEautAZx4V+19nwGW+55Ct7zkj9ihYbeSFq-YyBEnuf5WuCgd-Yy+R3swEneMFmd4qBaTmIH9uQgRgHgiXrhoHc+agfp40W8DjoGJGAgXV70B5ngYE-ecFn94y+APmRZA+CFiD4eBufim4oWUPvOQw+vgaX4I+XgVX4wWKPoEGCBk5CW4RBSLv4HiB5-hw4hBjhkkFlaKQSywxBgxqORCOGQa27bkvhnkH0+S5Iz4FBttkhbwMM5Oz5pBd3i4Hh+NFmo4lB0flEGC+TQVv5FBZAar5kMEFO6YPk0vnSSPkcvlIT9BwzP0F0c-QfPT9BUzP0FuC-Qdr4XiuvviSPkGTI+Tkc75F0Gm+V5I+7-kpQn0GvuPQWt5y4d5GsGoyWwYoF3k4we75gUiJhsGFBWeHeQrB-vn4R3kWlHeSPigwaH57BZXq8QvB5wQQEl4LwcMGgEhFC8H3B6Dn0Gp+V5On5fBmfmCFn+p4uVZwhfXkrQIh22o8HF+MIfVZIhjHgsFSaqIax5-BdfoMEN+-5E37PkLfqSEAByIbb6EhYTpSHpB1IX37ohA-oyFD+4RLSGBSt5GP64hE-viEoBtwTP70hRXuSEleEIbUEHBXghyG-BYoc0H0UbIWKoChDXkKGOBCwQf59BR-kiEn+qobCGX+Xwdf6aht-gcH3+Ood55liY3o8Ev+RoW-4GhH-m+Rf+z5D-6DBf-naEUhQAWaE0hCXk6EMhV5AS7-kjdj6G0+MoQgEPk7dg6G8hNoYH5hhhgReJYBfoZ8HKh5gVaH8+XodKHqhJAX8ELMKwRQH-kVATKE0BV5HQE5hsIT155hLAX8FsBXwRwHlhxodwEPkvAY8H8BlYZEEFhpFg2GxBz5Et41hFIdIGDBsgayHyB3YacHKB-YaoF9B6gVmE3Bb5NoFDhugXWHhhUYPqJjhwoU2GmBI4fGG3BlgVOHWBLYaG69h7QWmSKiSoX0HOBh4XU6O0IIhrS3kngY8FraD5D4GDBfgc+QBBd4caHBBV4fr4HB4QU+GNhSIdEGfhrYa+HSmXwYkH-hyQcBGpBoEXSEPhpwdkG-hLIYBH+h34eOFRgxQf+TM+4EfMZoR5MjBGc+KEaKG3B9QThGJhMoejoERtgURG7hfwZ0HkU+VjZa9BJlhu5aWCvgxHlWiFDFqUU1VkrQsRbgixGzBRFPMFRWmBmxGWhWeOhRQUPjvhSbB4kfEHlCokfsHCR2ZkxFieDls76CRTIXREwBHlsmwyRmgRxEpOVEaUFqWGTgZFz+CkWTYmRbtrhR4BOkZKFyRyYTRGphGkeREORyfgZbghLkSeEOW0ISZbZ+bkeob4U+flpaF+yFGiFeR3ngYKmhaljiERReIR5YEhKlkSF+R5vq-hkhQUQAFhRIEVFH2+NlnrYJRnoT5GqReUbBEBR8EVlGIRSUUgEeRoYWhT8hcUcZFRW2nrBS6eOUSv4ZRjQQVFoeKUa0HCRQQg1GghJliqF9R7kQFYahA0aoZaW2oWNElhHlr-ywUhoRNEYhNlk-5zRwMjNHRRwkcF5qWtochT2hKlo6FbRqUS6EbRYTjiDuhe0blEcR3ofhS+hl0cVEOWgYQhTBhO0ZVGv4aAStGRhRFNGHXRsYVFa1iUFPTKvRxniNGkR50Y5FrRvUQZbZhHEbmHgxZjiZbaWsFEWHQxiITZZlhWlhWGoxoUdWEIUtYWpb1h6MV+HIxwgWhSiByFO2FYxqUV2EqWPYS5Z9hlMYoF38+UZDHqRwkaOH4USuvDHlRAVhd5kx+gbDG1RvMYuGMxX0fzHNR1MdZHDA9MZuF4xQMQTH2BwseL4GWR4SZauBLlu4HIUl4WpbXhCFLeEqW94WrFDeDlnD56x4USrFvhwkR+E6x1oWhQ-hFsdj4KxUkUBEaxskeLGv0UFKT42x5Pu7GU++FNNZaxN0QFag6vsdyEeWqEY7E8xdsW9He8hooHHLhSsauHOxYsVbG2RBsfZFmxIMfHHORStMjwZMyPORzI8olGf7I8dHMjzz0yPFMzI8bgsjw8RHFFpQcU2cYb7hE3FIJSExnPBJHCU2weqTk8Tce+6hSYTlJRdxHsTJRQBzPP3G-2dJCJQjx4OlxQPBDcYZGvEfcRPHVBY8Qh7sUkflIRSURcXTYzxKccMBSUucXZTCUrkZnGQh+JM9zQsa8d5FHx5VqfEHCzFIFENxwUexTi21FFiFjxkUXPGy2z8ZbGc88UQfGJRDFMlH3xAAdfGDWklCJ6gJYAd-GKBwCfHS3xTMTvEj+n8dpGO00CaFKIJ04YAlhxl8W9EoJLtufG4R8CXHFCsXtlxQb+eCZ1EEJssY-Fgxmcf1HsUaocgnDRdCQXHjRY8bqEdx00VxSzRrCd56VcRksJTmhJ8T5zMU60XPGbRDcdtGSUu0eIlAJB0aIm9xJ0dIlnRDCUPFXR-CX7Fy4vCdfpqJQcVniaJkOmvEvRnCXzFMJAscolCxJiSLGCJCcZzxEBRieQlCs6YcInUJyCRDEuJg0Ron5hmcXDFcUCMV4mTRuiSjFjxaMUEk8JmMWvHYxc8bjEhJ+MfxQD8zFMTENxpMeElAJFMZJRUxJ8TTFpJUCYOHCUNrrknqJASaVEMUk4fkn6RkSbOGc884ckmmJsSfglCssDtRTrhpSQDHsUgTDxTWi8Sc4n8UisexTKxJ8arENx6sXPGaxa8drGSUusYMn6xJeKBwEkzFC+GTJoQZnHmx4yV-EMU1sSsm2xSyfEEzJGIGXGE+oyb3FuxGyQPELJDMcgk+xByXAHdJRSTMm5xIccMkVJaycYlbJNSdMmju1FPhGXJrUS8ktJPyduEPJlCX8mumHVpL5tWtETVb0RdJGpTDMalHRxqU89GpRTMalG4JqUPEZpRGUpscMBKUS1sb4aUYkXil-xelBinW+BKd3HhS8kVCmO+JlMpEgpUAfJRwpmkT1be+C1rpEWUT0dpSzxLKc8mO01lCinLxBVqvGkp3yTymbxU1oCHEpPLlykZxPKYfEyp7iVnjAsMMTVYXxcqb5EaU-kVCl3xU1g-EFWT8XJQvxbVm-ELWH8fqmrJiqc2HGphKQAnapAAeanpRNqZlGqU2UeqmKBdqV7Eupw4YakFJWKZyFWU1tj1avmpqZgmqpgoSZT1RQaTHHKphCeFLEJHVqQkep0sU6lpxdAG6nApGlLQkFW9CapSMJmaWf7fMnDIpRsJNVhwkdWXCW1Y+KclItFQpAidWmrRWKSIkLWYiVNYSJVlFInNptqbImNpYTvmkeSlaa6kXR6aXAkppzdj1Z3RpaRzEjWeXuOnBp2adymzpryZOl1J4Uj9Gjp1idpS2J06YmkGUjiaunSpqlK4n7p8qVimeJPKd4kdWviaen+Jx6exGXpuqnJQjeVlGEkaUESQtZRJbVrZb3pzcdpQJJU1kknPptqakmPp3aZklAZSiYel-u76UOnhSLMf+lIJ4GXs6-p7KWkzoRoGaGmoZ5piZQPePVg0mfphEQVZBuilG0mEZyadBldJBlD0kFWfSVCkDJU1kMkLWIyRpRjJVlBMm0ZUySNaGxzGeX4ppxqnJTLJnGTEnkZX6Ygz+EPVrj4dWDsaxlkp2lC7GiZECdJmup0EYxlQZ8mVcmCZcGWpkIZ9GUhnlBsmW9HCZUceJlLpKmZYnUZa6fpkwpwHIpSi+vGWRn+UoKfRR605HHrThUjEXSR60dHHrTz0etFMzm0nlI6x+ZXGVFICR7lHWmF0qyR7QBZmyY7Tq0XmbsFBUmZq8QBUkWT35uZNKZ4TBUyWYVGpZ3qWFnqZdmROmhU08Ylmcp2WW9FRUbglFQ+ZgqTFQoePlLH4OZ4qXVmSppWZBZJUAYOxhpU8mBzi2IZKGpi5UZcACjiokAJKjxYxVL1SBA-VAXADAHAKpjFwrmHVT5Uw2YVQBYXKBHCVU0QLsB9ZikBrj1UUAOnC4oxaKEAtUfKILRDZI2UVQ9w42WVTEogOAqjEAfkHIBAAA Open this visualization in the Vega Editor (although the link is long, and may not work with Internet Explorer)>
+
+@
+let aggTrans = transform
+               . calculateAs \"cos(datum.RA_ICRS * PI / 180)\" \"cosRA\"
+               . calculateAs \"sin(datum.RA_ICRS * PI / 180)\" \"sinRA\"
+               . aggregate
+                   [ opAs Mean \"cosRA\" \"cosRA0\"
+                   , opAs Mean \"sinRA\" \"sinRA0\"
+                   , opAs Mean \"RA_ICRS\" \"wrong_ra0\"
+                   , opAs Mean \"DE_ICRS\" \"dec0\"
+                   ]
+                   [ \"Cluster\" ]
+              . calculateAs \"atan2(datum.sinRA0,datum.cosRA0) * 180.0 / PI\" \"ra0\"
+
+    clusterTrans = aggTrans
+                   . aitoffTrans \"datum.ra0\" \"datum.dec0\"
+
+    pos ax field = position ax [ PName field
+                               , PmType Quantitative
+                               , PScale [SNice (IsNice False)]
+                               ]
+    enc = encoding
+          . pos X \"x\"
+          . pos Y \"y\"
+          . color [ MName \"Cluster\", MmType Nominal, MLegend [] ]
+    encText = enc
+              . text [ TName \"Cluster\", TmType Nominal ]
+
+    clusterSpec =
+        asSpec [ clusterTrans [], enc [], mark Circle [ MSize 90 ] ]
+
+    clusterLabelSpec =
+        asSpec [ clusterTrans [], encText [], mark Text [ MAlign 'AlignLeft'
+                                                        , MdX 8 ] ]
+
+    uncorrectedTrans = aggTrans
+                       . aitoffTrans \"datum.wrong_ra0\" \"datum.dec0\"
+
+    uncorrectedSpec =
+        asSpec [ uncorrectedTrans [], enc [], mark Circle [ MSize 200, MFilled False ] ]
+
+in toVegaLite  [ aitoffConfig []
+               , width 570
+               , height 285
+               , gaiaData
+               , layer (clusterSpec : uncorrectedSpec : clusterLabelSpec : graticuleSpec)
+               ]
+@
+
+-}
+
+clusterCenters :: VegaLite
+clusterCenters =
+  let aggTrans = transform
+                 . calculateAs "cos(datum.RA_ICRS * PI / 180)" "cosRA"
+                 . calculateAs "sin(datum.RA_ICRS * PI / 180)" "sinRA"
+                 . aggregate
+                     [ opAs Mean "cosRA" "cosRA0"
+                     , opAs Mean "sinRA" "sinRA0"
+                     , opAs Mean "RA_ICRS" "wrong_ra0"
+                     , opAs Mean "DE_ICRS" "dec0"
+                     ]
+                     [ "Cluster" ]
+                . calculateAs "atan2(datum.sinRA0,datum.cosRA0) * 180.0 / PI" "ra0"
+
+      clusterTrans = aggTrans
+                     . aitoffTrans "datum.ra0" "datum.dec0"
+
+      pos ax field = position ax [ PName field
+                                 , PmType Quantitative
+                                 , PScale [SNice (IsNice False)]
+                                 ]
+      enc = encoding
+            . pos X "x"
+            . pos Y "y"
+            . color [ MName "Cluster", MmType Nominal, MLegend [] ]
+      encText = enc
+                . text [ TName "Cluster", TmType Nominal ]
+
+      clusterSpec =
+          asSpec [ clusterTrans [], enc [], mark Circle [ MSize 90 ] ]
+
+      clusterLabelSpec =
+          asSpec [ clusterTrans [], encText [], mark Text [ MAlign AlignLeft
+                                                      , MdX 8 ] ]
+
+      uncorrectedTrans = aggTrans
+                         . aitoffTrans "datum.wrong_ra0" "datum.dec0"
+
+      uncorrectedSpec =
+          asSpec [ uncorrectedTrans [], enc [], mark Circle [ MSize 200, MFilled False ] ]
+
+  in toVegaLite  [ aitoffConfig []
+                 , width 570
+                 , height 285
+                 , gaiaData
+                 , layer (clusterSpec : uncorrectedSpec : clusterLabelSpec : graticuleSpec)
+                 ]
 
 {-
 

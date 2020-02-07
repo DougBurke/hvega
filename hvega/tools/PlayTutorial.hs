@@ -145,6 +145,7 @@ vl = [ ("api-vl1", vl1)
      , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
      , ("skyplotaitoff", VL.skyPlotAitoff)
+     , ("clustercenters", VL.clusterCenters)
      ]
 
 

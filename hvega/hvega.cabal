@@ -125,6 +125,7 @@ extra-doc-files:     images/example.png
                      images/vl/parallaxview.png
                      images/vl/parallaxview-selected.png
                      images/vl/skyplotaitoff.png
+                     images/vl/clustercenters.png
 
 cabal-version:       1.18
 
