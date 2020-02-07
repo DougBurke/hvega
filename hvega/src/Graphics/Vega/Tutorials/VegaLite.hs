@@ -131,7 +131,15 @@ module Graphics.Vega.Tutorials.VegaLite (
 
   , posPlot
 
+  -- ** Using a projection
+
   , skyPlot
+
+  -- ** Choropleth with joined data
+
+  -- $intro-choropleth
+
+  , choroplethLookupToGeo
 
   -- * Layered and Multi-View Compositions
   --
@@ -152,6 +160,7 @@ module Graphics.Vega.Tutorials.VegaLite (
 
   , layeredPlot
   , layeredDiversion
+  , layeredCount
   , skyPlotWithGraticules
 
   -- ** Concatenating views
@@ -164,15 +173,16 @@ module Graphics.Vega.Tutorials.VegaLite (
   --
   -- $intro-repeat
 
+  -- *** Varying fields field
+
   , repeatPlot
-  , splomPlot
 
-  -- * Choropleths
-  --
-  -- $intro-choropleth
+  -- *** Repeating Choropleths
 
-  , choroplethLookupToGeo
   , choroplethLookupFromGeo
+
+  -- *** Rows and Columns
+  , splomPlot
 
   -- * Interactivity
   --
@@ -248,6 +258,13 @@ module Graphics.Vega.Tutorials.VegaLite (
   , duplicateAxis
   , compareCounts
   , parallaxView
+
+  -- ** Aitoff projections
+  --
+  -- $aitoff
+
+  , skyPlotAitoff
+  , clusterCenters
 
   ) where
 
@@ -335,6 +352,11 @@ import Graphics.Vega.VegaLite
 -- combination of @'PName' n@ and @'PmType' 'Quantitative'@ in @hvega@.
 -- The top-level functions - such as 'dataFromUrl', 'encoding', and
 -- 'filter' - are generally the same.
+--
+-- Version @0.5.0.0@ does introduce more-significant changes, in that
+-- there are now separate types for a number of functions - such as
+-- 'encoding', 'transform', and 'select' - to help reduce the
+-- chance of creating invalid visualizations.
 
 -- $datasource
 -- Rather than use the Seattle weather dataset, used in the Elm walkthrough
@@ -1264,6 +1286,8 @@ give it an aggregation-style operation to apply to the data field,
 but in this case we have already done this with 'opAs' (so I pick
 'Max' as we just need something that copies the value over).
 
+We revisit this data in 'layeredCount'.
+
 -}
 
 
@@ -1596,8 +1620,8 @@ oranges, and how we are at the center of an orange looking out at its
 skin, and so have the direction reversed to if you were outside, looking
 in. This may be why I don't get invited to too many parties.
 You can see that we also have one cluster that straddles the
-0 and 360 degrees Right Ascension barrier, which will lead to some
-fun later.
+0 and 360 degrees Right Ascension meridian, which will lead to some
+fun later ('clusterCenters').
 
 <<images/vl/posplot.png>>
 
@@ -1761,6 +1785,12 @@ It is possible to add graticules - with the aptly-named
 which we haven't covered yet. If you are impatient you can jump
 right to 'skyPlotWithGraticules'!
 
+If you want to see how to "create your own projection", see
+'skyPlotAitoff', which uses the
+<https://en.wikipedia.org/wiki/Aitoff_projection Aitoff projection>
+(which is unfortunately not available to
+Vega-Lite directly).
+
 -}
 
 skyPlot :: VegaLite
@@ -1793,6 +1823,117 @@ skyPlot =
                 , enc []
                 , mark Circle []
                 ]
+
+
+-- $intro-choropleth
+-- There are some things vega-lite can do, don't fit as well into the
+-- flow of looking at astronomy data!  But having examples is helpful.
+-- So we bring our eyes back to earth, and demonstrate a basic
+-- "choropleth", a map - in the sense of pictures of bounded geographical
+-- regions - with data for each location indicated by color.
+--
+-- Don't worry, we'll soon be back staring at the stars!
+--
+-- The choropleth examples (there's another one later on)
+-- use a map of the United States as the data source, which we abstract
+-- out into a helper function:
+--
+-- @
+-- usGeoData :: T.Text -> Data
+-- usGeoData f = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/us-10m.json\" ['TopojsonFeature' f]
+-- @
+--
+-- The argument gives the \"topological\" feature in the input file to
+-- display (via 'TopojsonFeature'). You can read more information on this
+-- in the <https://vega.github.io/vega-lite/docs/data.html#topojson Vega-Lite documentation>.
+--
+-- This section was contributed by Adam Conner-Sax. Thanks!
+
+usGeoData :: T.Text -> Data
+usGeoData f = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature f]
+
+
+{-|
+
+Our first choropleth is based on the
+<https://vega.github.io/vega-lite/examples/geo_choropleth.html Choropleth>
+example from the Vega-Lite
+<https://vega.github.io/vega-lite/examples/ Example Gallery>.
+
+The key elements are:
+
+   * Using the 'TopojsonFeature' feature for the data source (thanks to @usGeoData@).
+   * Choosing the correct "feature" name in the geographic data, here @\"counties\"@
+     in the argument to our @usGeoData@ helper function.
+   * Performing a Vega-Lite lookup to join the data to be plotted (the unemployment rate)
+     to the geographic data.  In this case, the column name in the unemployment data - @\"id\"@
+     given as the first argument to 'lookup' - is the same as the column name in the
+     geographic data, the third argument to 'lookup'. Those can be different.
+   * Specifying a projection, that is a mapping from (longitude, latitude) to (x,y)
+     coordinates. Since we are looking at data for the main-land United States of
+     America we use 'AlbersUsa' (rather than looking at the whole globe, as we did
+     in earlier visualizations), which lets us view the continental USA as well as Alaska and Hawaii.
+   * Using the 'Geoshape' mark.
+
+<<images/vl/choroplethlookuptogeo.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJVZ0d8zyKATeaePU4higV1gBt2kABbRoAB2S4A9FIQB3AHQBzAJbQh3AEbdkAU1gBjdImi6TCo1ikA3XUvg27DrPGSnYUxugPJPLB9yIulhifOgAnlhm0ArQyNaQnAwAvgA0SeSQANa64YIqjJDpXBCUKrp8jMjsBJAIppAAuhlgaS2QYehZ3GL5hUnJxI3FUEK6Kkoi7ADMAAyzI5AusFmCSrroyELwYrpFxJDMrOz0pbwC+MKiEtKy8Iqq6lo6+kYm0RY0jvbfzq7unm8viOAWQAFoAIyzLAKABWyGM+0yGGwLBOlF0LF4e0uRkC0HK1VSUGg4V2gmg6DE6HhiMGEDapTkBXU7AArPNFgASZAGMYuQQicSSGS2ezKNQaTQKFToKS8-kOMXwMF8NS6GwAFjhCMQSKgYmosN0BgJiLoMDJOKg8D4mn0yAAqsg2IyoGYjIwVIglCckpAjGFYH6uGUKoVLvU9iNMrzbdbgJAFcFrZAxLxQhsED69m7MqTyZcAI7cJAE1gE2yJcj01qLTTwAxZJTUQIRm0AL2x+oDxlQExOg2SQA Open this visualization in the Vega Editor>
+
+@
+let unemploymentData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/unemployment.tsv\" []
+
+in toVegaLite
+   [ usGeoData \"counties\"
+   , transform
+     . 'lookup' \"id\" unemploymentData \"id\" ('LuFields' [\"rate\"])
+     $ []
+   , projection [PrType 'AlbersUsa']
+   , encoding
+     . color [ MName \"rate\", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
+     $ []
+   , mark Geoshape []
+   , width 500
+   , height 300
+   , 'background' "azure"
+   ]
+@
+
+So, we have seen how to join data between two datasets - thanks to
+'lookup' - and display the unemployment rate (from one data source)
+on a map (defined from another data source).
+
+I have chosen a
+<https://vega.github.io/vega/docs/schemes/index.html#diverging diverging color scheme>
+for the rate, mainly just because I can, but also because I wanted to see how
+the areas with high rates were clustered. I've also shown how the 'background'
+function can be used (it is simpler than the 'configuration' approach
+used earlier in 'stripPlotWithBackground').
+
+Our next choropleth - 'choroplethLookupFromGeo' - will show how we can join
+multiple fields across data sources, but this requires understanding how
+Vega-Lite handles multiple views, which is fortunately next in our
+tutorial.
+
+-}
+
+choroplethLookupToGeo :: VegaLite
+choroplethLookupToGeo =
+  let unemploymentData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
+
+  in toVegaLite
+     [ usGeoData "counties"
+     , transform
+       . lookup "id" unemploymentData "id" (LuFields ["rate"])
+       $ []
+     , projection [PrType AlbersUsa]
+     , encoding
+       . color [ MName "rate", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
+       $ []
+     , mark Geoshape []
+     , width 500
+     , height 300
+     , background "azure"
+     ]
 
 
 -- $intro-layered
@@ -2222,6 +2363,122 @@ layeredDiversion =
         ]
 
 
+{-|
+
+In this example I display the same data as in 'starCount', but
+as two layers: the first is a histogram (using the 'Bar' mark),
+and the second displays the count value as a label with the
+'Text' mark.
+
+<<images/vl/layeredcount.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhIBzWdAVwAcAjATz0MgGEAba5aAU1kgBdADRR45Sr3Lw+LAmXS0WkAMY1E0SKMjxkytdQ2QAvoOPERxSAAteAS3LXN+AEwBWAAzCraxKgcsZABudrwA7oGQPFQA1rwsiNQcHMbG3hCQACYy8IHEGdSwHMpO0LTIuAD0lQhhAHTkdtDW1PTc-L58GnVqWJUAIjTkAEKFcZXWQVLwlVi6fLATU9KV2dAz0nbwALTwOwBsAIz7u4ce2+v0HLyH8HWI6Nu28Jn8ddDIQVr5UBjYMnkSCRILR4LBkPF8KAgUDIABxObkZSJLD0fjfGHAgBKAEEAPoASTYWIAysjqKj0elMVBaBwAB7kykCamYyD9ACihOJZPwkBRaJZP1hvDxdMZfIF6OFYHMQLlsupkDCdkyzRYAGYPF4rAASZAqWxzErQMoVarLO6NZqtOp2dCVA1GmaW7YcJq8SpBAAsdQAVsh0IgMVBoE1rpE+PTnFAAHIUwVgdCoMA8MHIMC0fhgFRcHhU35B6AkuwAL0hYEOAA40lYOPBGOj8EQgdCYZA5rAYsp6GCQyLEGpMnZEEioTKMmoOJhATSMv5eBxMspONwFv2aVFMDGyLxB+hh6PlMxtJhXgI+a8DXvD0ja3OMtBGFnkegsCP4MVWZvruQb5FQUyW8WDObRonQOI2HQacLygSgGxMCdFSQyAJVIJD51CJcVzzddvzZQNYB3SA9yHEcxygE8oDPJsoCvFQb3Ikx8PbJ8X0lN8Py-DCxHpOw9HwRJkiQ+9N2YKFIAXbC+QMIxtDYitIAAR2oJAw3WMMpi0Xj+ISJIUhlBUIFEiA21hTtuwkzJxLAbZ9nk59FKjTQTOBUiDyY8c5xgXho0iKTlxk9RNAc9ioBUtSmhkOwtNc2E0LMzcApwtcqR4rciMidzgL5KjIBo2Csl4a9EGAuLWMc1930QT8NzZeA+IEsAhI4ESWIyGyyGSoLDBC0NKr5CKNCizT4m0BrdME-SjJIGaFUEEBjCAA Open this visualization in the Vega Editor>
+
+
+@
+let trans = transform
+            . aggregate [ opAs Count \"\" \"count\" ]
+                        [ \"Cluster\" ]
+
+    chanSort = [ ByChannel ChY, Descending ]
+
+    baseEnc = encoding
+              . position X [ PName \"Cluster\"
+                           , PmType Nominal
+                           , PSort chanSort
+                           , PAxis []
+                           ]
+              . position Y [ PName \"count\"
+                           , PmType Quantitative
+                           , PAxis []
+                           ]
+
+    barEnc = baseEnc
+             . color [ MName \"Cluster\"
+                     , MmType Nominal
+                     , MLegend [ 'LStrokeColor' \"gray\"
+                               , 'LPadding' 10
+                               ]
+                     , MSort chanSort
+                     ]
+
+    labelEnc = baseEnc
+               . 'text' [ TName \"count\", TmType Quantitative ]
+
+    barSpec = asSpec [ barEnc [], mark Bar [] ]
+    labelSpec = asSpec [ labelEnc [], mark 'Text' [ 'MdY' (-6) ] ]
+
+    cfg = configure
+          . configuration ('View' ['ViewStroke' Nothing])
+
+in toVegaLite [ width 300
+              , height 250
+              , cfg []
+              , gaiaData
+              , title \"Number of stars per cluster\" [ TFontSize 18 ]
+              , trans []
+              , layer [ barSpec, labelSpec ]
+              ]
+@
+
+Both axes have been dropped from this visualization since
+the cluster name can be found from the legend and the
+count is included in the plot. The same sort order is
+used for the X axis and the color mapping, so that its
+easy to compare (the first item in the legend is the
+cluster with the most counts). Note that this changes the
+color mapping (cluster to color) compared to previous
+plots such as 'parallaxBreakdown'.
+
+-}
+
+layeredCount :: VegaLite
+layeredCount =
+  let trans = transform
+              . aggregate [ opAs Count "" "count" ]
+                          [ "Cluster" ]
+
+      chanSort = [ ByChannel ChY, Descending ]
+
+      baseEnc = encoding
+                . position X [ PName "Cluster"
+                             , PmType Nominal
+                             , PSort chanSort
+                             , PAxis []
+                             ]
+                . position Y [ PName "count"
+                             , PmType Quantitative
+                             , PAxis []
+                             ]
+
+      barEnc = baseEnc
+               . color [ MName "Cluster"
+                       , MmType Nominal
+                       , MLegend [ LStrokeColor "gray"
+                                 , LPadding 10
+                                 ]
+                       , MSort chanSort
+                       ]
+
+      labelEnc = baseEnc
+                 . text [ TName "count", TmType Quantitative ]
+
+      barSpec = asSpec [ barEnc [], mark Bar [] ]
+      labelSpec = asSpec [ labelEnc [], mark Text [ MdY (-6) ] ]
+
+      cfg = configure
+            . configuration (View [ViewStroke Nothing])
+
+  in toVegaLite [ width 300
+                , height 250
+                , cfg []
+                , gaiaData
+                , title "Number of stars per cluster" [ TFontSize 18 ]
+                , trans []
+                , layer [ barSpec, labelSpec ]
+                ]
+
+
 -- TODO: can I plot the mean / median of the parallax for each cluster
 
 {-|
@@ -2297,9 +2554,9 @@ let trans = transform
 
     raLabels = asSpec [ raData []
                       , encLabels []
-                      , mark 'Text' [ 'MAlign' 'AlignCenter'
+                      , mark Text [ 'MAlign' 'AlignCenter'
                                   , 'MBaseline' 'AlignTop'
-                                  , 'MdY' 5
+                                  , MdY 5
                                   ]
                       ]
     decLabels = asSpec [ decData []
@@ -2640,7 +2897,7 @@ let trans = transform
     s2 = rSpec 0 \"12\"
     s3 = rSpec 120 \"4\"
 
-    setup = configure . configuration ('View' [ 'ViewStroke' Nothing ])
+    setup = configure . configuration (View [ ViewStroke Nothing ])
 
 in toVegaLite [ setup []
               , gaiaData
@@ -2794,6 +3051,94 @@ repeatPlot =
 
 {-|
 
+If we want to plot more than one map from the same table of data
+we need to do the lookup in the other order, using lookup to add the
+geographic data to the data table. Charting this way requires
+specifiying a few things differently than in the previous
+choropleth example ('choroplethLookupToGeo'):
+
+  * We're using 'LuAs' in 'lookup', rather than 'LuFields', which lets
+    us use all the fields (columns) in the source rather than a specified
+    subset.
+  * We use a different set of geographic features (state rather than county
+    outlines) from @usGeoData@.
+  * The plot is defined as a 'specification', but does not directly refer
+    to the value being displayed. This is set \"externally\" with the
+    call to 'repeat'. Since we have just had an example with
+    'RowFields', this time we use 'ColumnFields' to stack the maps
+    horizontally.
+  * Since the different fields have vastly-different ranges (a maximum of
+    roughly 0.01 for \"engineers\" whereas the \"population\" field is
+    a billion times larger), the color scaling is set to vary per field
+    with 'resolve'.
+
+<<images/vl/choroplethlookupfromgeo.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmDOB7ANgN1pAXGYl4GMBDZDbXfFRaLKASwDsATWAB1ifYBdIBfHgGnBQ4bQtzKQKyAK4BbejQDakFohbTkY2ogX8o7AOYNYsaPEh7IAC2nRotIvQSQAugKF42+GqAgRInNCE9PAAZlSySkJ+ONExUITm2JAGsIgWcTGQodCIkWSZ8ZCMYoQ+hfFQtsg01pycLPCYAPTNQQDuAHRGnDYARtLwphT0nFydFLLN6AaE07CzzbKJY9DNjIj48OulzYMAtACMAAyynQBWSLoVReHQy+I42bBitqRQ8JxizpacAJ5sWqcNSIS46Xg3CDuSpZADWsD+tVojEgN2hMMgyEQiFh0hYSJRhR4cRcgiyy2gsJ8eECOPekD6mnwVMsn1y8IA8ixCPhaP8aMdOgAmX4A+mpRDwKyEQHo-wlL7lSqQaq1Kz1RotNqELo9fqDYY6MajCZ5eaLGZzZafUzrTbbBVzVTqTScbT0AD6hmMpngHpsdgcwQQE3gqFRMTlUHayN6NAAzMdjmS-CpcudYPg3eCJP9AcliH1fQBVeBlKOQdgURgMAxKopSKj15WhWiwZAoiQiF6PSQoOQKKNZPP0gCO0mCbq+bvQGRhUBIqSY1KobdGQLUFigBiCNa4ABlDHHsInjsTKkOPtL809W+3O9u0luAmLahKwYO4uewOjIAASAgrFgZY1Q1JpWktbo+X6TptGaQDgLmS19mQPlYGmAAWC4rjnKARlbOsyGJHggA Open this visualization in the Vega Editor>
+
+@
+let popEngHurrData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/population_engineers_hurricanes.csv\" []
+
+    plotWidth = 300
+
+    viz = [ popEngHurrData
+          , width plotWidth
+          , transform
+            . lookup \"id\" (usGeoData \"states\") \"id\" ('LuAs' \"geo\")
+            $ []
+          , projection [PrType AlbersUsa]
+          , encoding
+            . shape [MName \"geo\", MmType GeoFeature]
+            . color [MRepeat 'Column', MmType Quantitative, MLegend [LOrient 'LOTop', 'LGradientLength' plotWidth]]
+            $ []
+          , mark Geoshape [MStroke \"black\", MStrokeOpacity 0.2]
+          ]
+
+in toVegaLite
+   [ specification $ asSpec viz
+   , resolve
+     . resolution (RScale [(ChColor, Independent)])
+     $ []
+   , repeat ['ColumnFields' [\"population\", \"engineers\", \"hurricanes\"]]
+   ]
+@
+
+By moving the legend to the top of each visualization, I have taken
+advantage of the fixed with (here 300 pixels) to ensure the
+color bar uses the full width (with 'LGradientLength').
+
+-}
+
+choroplethLookupFromGeo :: VegaLite
+choroplethLookupFromGeo =
+  let popEngHurrData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/population_engineers_hurricanes.csv" []
+
+      plotWidth = 300
+
+      viz = [ popEngHurrData
+            , width plotWidth
+            , transform
+              . lookup "id" (usGeoData "states") "id" (LuAs "geo")
+              $ []
+            , projection [PrType AlbersUsa]
+            , encoding
+              . shape [MName "geo", MmType GeoFeature]
+              . color [MRepeat Column, MmType Quantitative, MLegend [LOrient LOTop, LGradientLength plotWidth]]
+              $ []
+            , mark Geoshape [MStroke "black", MStrokeOpacity 0.2]
+            ]
+
+  in toVegaLite
+     [ specification $ asSpec viz
+     , resolve
+       . resolution (RScale [(ChColor, Independent)])
+       $ []
+     , repeat [ColumnFields ["population", "engineers", "hurricanes"]]
+     ]
+
+
+{-|
+
 We can combine repeated rows and columns to create a grid of
 views, such as a scatterplot matrix, adding in color
 encoding to separate out the clusters:
@@ -2804,7 +3149,7 @@ encoding to separate out the clusters:
 
 @
 let enc = encoding
-            . position X [ PRepeat 'Column', PmType Quantitative ]
+            . position X [ PRepeat Column, PmType Quantitative ]
             . position Y [ PRepeat Row, PmType Quantitative ]
             . color [ MName \"Cluster\", MmType Nominal ]
 
@@ -2815,7 +3160,7 @@ let enc = encoding
     fields = [ \"RA_ICRS\", \"DE_ICRS\", \"plx\", \"Gmag\" ]
 
 in toVegaLite
-      [ repeat [ RowFields fields, 'ColumnFields' fields ]
+      [ repeat [ RowFields fields, ColumnFields fields ]
       , specification spec
       ]
 @
@@ -2850,195 +3195,6 @@ splomPlot =
         [ repeat [ RowFields fields, ColumnFields fields ]
         , specification spec
         ]
-
-
--- $intro-choropleth
--- There are some things vega-lite can do, don't fit as well into the
--- flow of looking at astronomy data!  But having examples is helpful.
--- So we bring our eyes back to earth, and demonstrate some basic
--- "choropleths", maps - in the sense of pictures of bounded geographical
--- regions - with data for each location indicated by color.
---
--- Don't worry, we'll soon be back staring at the stars!
---
--- The choropleth examples use a map of the United States, which we
--- abstract out into a helper function:
---
--- @
--- usGeoData :: T.Text -> Data
--- usGeoData f = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/us-10m.json\" ['TopojsonFeature' f]
--- @
---
--- The argument gives the \"topological\" feature in the input file to
--- display (via 'TopojsonFeature'). You can read more information on this
--- in the <https://vega.github.io/vega-lite/docs/data.html#topojson Vega-Lite documentation>.
---
--- This section was contributed by Adam Conner-Sax. Thanks!
-
-usGeoData :: T.Text -> Data
-usGeoData f = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/us-10m.json" [TopojsonFeature f]
-
-
-{-|
-
-Our first choropleth is based on the
-<https://vega.github.io/vega-lite/examples/geo_choropleth.html Choropleth>
-example from the Vega-Lite
-<https://vega.github.io/vega-lite/examples/ Example Gallery>.
-
-The key elements are:
-
-   * Using the 'TopojsonFeature' feature for the data source (thanks to @usGeoData@).
-   * Choosing the correct "feature" name in the geographic data, here @\"counties\"@
-     in the argument to our @usGeoData@ helper function.
-   * Performing a Vega-Lite lookup to join the data to be plotted (the unemployment rate)
-     to the geographic data.  In this case, the column name in the unemployment data - @\"id\"@
-     given as the first argument to 'lookup' - is the same as the column name in the
-     geographic data, the third argument to 'lookup'. Those can be different.
-   * Specifying a projection, that is a mapping from (longitude, latitude) to (x,y)
-     coordinates. Since we are looking at data for the main-land United States of
-     America we use 'AlbersUsa' (rather than looking at the whole globe, as we did
-     in earlier visualizations), which lets us view the continental USA as well as Alaska and Hawaii.
-   * Using the 'Geoshape' mark.
-
-<<images/vl/choroplethlookuptogeo.png>>
-
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxQSTJVZ0d8zyKATeaePU4higV1gBt2kABbRoAB2S4A9FIQB3AHQBzAJbQh3AEbdkAU1gBjdImi6TCo1ikA3XUvg27DrPGSnYUxugPJPLB9yIulhifOgAnlhm0ArQyNaQnAwAvgA0SeSQANa64YIqjJDpXBCUKrp8jMjsBJAIppAAuhlgaS2QYehZ3GL5hUnJxI3FUEK6Kkoi7ADMAAyzI5AusFmCSrroyELwYrpFxJDMrOz0pbwC+MKiEtKy8Iqq6lo6+kYm0RY0jvbfzq7unm8viOAWQAFoAIyzLAKABWyGM+0yGGwLBOlF0LF4e0uRkC0HK1VSUGg4V2gmg6DE6HhiMGEDapTkBXU7AArPNFgASZAGMYuQQicSSGS2ezKNQaTQKFToKS8-kOMXwMF8NS6GwAFjhCMQSKgYmosN0BgJiLoMDJOKg8D4mn0yAAqsg2IyoGYjIwVIglCckpAjGFYH6uGUKoVLvU9iNMrzbdbgJAFcFrZAxLxQhsED69m7MqTyZcAI7cJAE1gE2yJcj01qLTTwAxZJTUQIRm0AL2x+oDxlQExOg2SQA Open this visualization in the Vega Editor>
-
-@
-let unemploymentData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/unemployment.tsv\" []
-
-in toVegaLite
-   [ usGeoData \"counties\"
-   , transform
-     . 'lookup' \"id\" unemploymentData \"id\" ('LuFields' [\"rate\"])
-     $ []
-   , projection [PrType 'AlbersUsa']
-   , encoding
-     . color [ MName \"rate\", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
-     $ []
-   , mark Geoshape []
-   , width 500
-   , height 300
-   , 'background' "azure"
-   ]
-@
-
-So, we have seen how to join data between two datasets - thanks to
-'lookup' - and display the unemployment rate (from one data source)
-on a map (defined from another data source).
-
-I have chosen a
-<https://vega.github.io/vega/docs/schemes/index.html#diverging diverging color scheme>
-for the rate, mainly just because I can, but also because I wanted to see how
-the areas with high rates were clustered. I've also shown how the 'background'
-function can be used (it is simpler than the 'configuration' approach
-used earlier in 'stripPlotWithBackground').
-
--}
-
-choroplethLookupToGeo :: VegaLite
-choroplethLookupToGeo =
-  let unemploymentData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/unemployment.tsv" []
-
-  in toVegaLite
-     [ usGeoData "counties"
-     , transform
-       . lookup "id" unemploymentData "id" (LuFields ["rate"])
-       $ []
-     , projection [PrType AlbersUsa]
-     , encoding
-       . color [ MName "rate", MmType Quantitative, MScale [ SScheme "purpleorange" [] ] ]
-       $ []
-     , mark Geoshape []
-     , width 500
-     , height 300
-     , background "azure"
-     ]
-
-
-{-|
-If we want to plot more than one map from the same table of data
-we need to do the lookup in the other order, using lookup to add the
-geographic data to the data table. Charting this way requires
-specifiying a few things differently than in the previous example:
-
-  * We're using 'LuAs' in 'lookup', rather than 'LuFields', which lets
-    us use all the fields (columns) in the source rather than a specified
-    subset.
-  * We use a different set of geographic features (state rather than county
-    outlines).
-  * The plot is defined as a 'specification', but does not directly refer
-    to the value being displayed. This is set \"externally\" with the
-    call to 'repeat'.
-  * Since the different fields have vastly-different ranges (a maximum of
-    roughly 0.01 for \"engineers\" whereas the \"population\" field is
-    a billion times larger), the color scaling is set to vary per field
-    with 'resolve'.
-
-<<images/vl/choroplethlookupfromgeo.png>>
-
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmDOB7ANgN1pAXGYl4GMBDZDbXfFRaLKASwDsATWAB1ifYBdIBfHgGnBQ4bQtzIxEAdxoBtSC0QsArsjG1E9SPyjsA5g1ixo8bVAAWy6NFpF6CSAF0BQvG3w1QECJE7RC9PAAZlQAtnJC3jiRUVCEptiQerCI2jFRkEHQiOFk6bGQjGKEnvmxUFbINJDmnJws8JgA9E3+UgB0BpyWAEbK8MYU9Jxc7RShTeh6hJOw002h8SPQTYyI+PCrxU39ALQAjAAMoe0AVkhaguXlmWFinpmwYlakUPCcYg46vgCebNWcJSIc6aXhlbwua7eSAAa1gP2qtEYkHBkOukGQiEQMOULERyPyPBijiu0MW0BhD3e2Th1R6anwlO+1OxsAA8ixCPhaJwEdhDu0AEzfXn-RLJRDwcyEf5onxFD6lG6Vaq1eqNFptTo83r9QaaEbDMY5WbzKYzRbvYyrdabBUzRQqNScDT0AD6+kMxngbss1lsAQQY3gqBRUTlUCkSO6NAAzIdDqSfCxsqdYPgXaCJKLXpBiD1vQBVeAlCOQdgURgMPRKgoUTHUPJQzK0WDIZESERPcTCaS8JMFHPVACOygCLo+LvQaWbJGSTAeVFbwwBSjMSX8Va4ABl9DHsPHDkTyhGfFKZa9cEFW+3qhL10PxSkQVpjxChGjIAASAjmWCLVU6gaZpTUIbVumUHp2g0Jpf3-GZzV2ZAeVgSYABYzguGcoCGa8azIIkeCAA Open this visualization in the Vega Editor>
-
-@
-let popEngHurrData = dataFromUrl \"https:\/\/raw.githubusercontent.com\/vega\/vega\/master\/docs\/data\/population_engineers_hurricanes.csv\" []
-
-    plotWidth = 300
-
-    viz = [ popEngHurrData
-          , width plotWidth
-          , transform
-            . lookup \"id\" (usGeoData \"states\") \"id\" ('LuAs' \"geo\")
-            $ []
-          , projection [PrType AlbersUsa]
-          , encoding
-            . shape [MName \"geo\", MmType GeoFeature]
-            . color [MRepeat Row, MmType Quantitative, MLegend [LOrient 'LOTop', 'LGradientLength' plotWidth]]
-            $ []
-          , mark Geoshape [MStroke \"black\", MStrokeOpacity 0.2]
-          ]
-
-in toVegaLite
-   [ specification $ asSpec viz
-   , resolve
-     . resolution (RScale [(ChColor, Independent)])
-     $ []
-   , repeat [RowFields [\"population\", \"engineers\", \"hurricanes\"]]
-   ]
-@
-
-By moving the legend to the top of each visualization, I have taken
-advantage of the fixed with (here 300 pixels) to ensure the
-color bar uses the full width (with 'LGradientLength').
-
--}
-
-choroplethLookupFromGeo :: VegaLite
-choroplethLookupFromGeo =
-  let popEngHurrData = dataFromUrl "https://raw.githubusercontent.com/vega/vega/master/docs/data/population_engineers_hurricanes.csv" []
-
-      plotWidth = 300
-
-      viz = [ popEngHurrData
-            , width plotWidth
-            , transform
-              . lookup "id" (usGeoData "states") "id" (LuAs "geo")
-              $ []
-            , projection [PrType AlbersUsa]
-            , encoding
-              . shape [MName "geo", MmType GeoFeature]
-              . color [MRepeat Row, MmType Quantitative, MLegend [LOrient LOTop, LGradientLength plotWidth]]
-              $ []
-            , mark Geoshape [MStroke "black", MStrokeOpacity 0.2]
-            ]
-
-  in toVegaLite
-     [ specification $ asSpec viz
-     , resolve
-       . resolution (RScale [(ChColor, Independent)])
-       $ []
-     , repeat [RowFields ["population", "engineers", "hurricanes"]]
-     ]
 
 
 -- $intro-interactivity
@@ -3608,7 +3764,9 @@ values (which have a domain of 0 to 360 degrees, and wrap around at
 the 0\/360 mark), into their cosine values (remembering to convert to
 radians first), and display that instead. This ensures the \"Blanco1\"
 cluster members are spatially co-located on this axis - with values
-close to 1 - rather than appearing near 0 and 360.
+close to 1 - rather than appearing near 0 and 360. This is more to
+show things you /can/ do with Vega-Lite, rather than necesarily
+things you __should__ do :-)
 
 <<images/vl/coordinatedviews.png>>
 
@@ -5519,6 +5677,351 @@ parallaxView =
       , bounds Flush
       , vConcat [ densLayer, tickLayer ]
       ]
+
+{-
+See https://github.com/DougBurke/hvega/issues/88
+-}
+
+aitoffTrans :: FieldName -> FieldName -> BuildTransformSpecs
+aitoffTrans lng lat =
+  calculateAs (lng <> ">180?(" <> lng <> "-360)*PI/-180 : " <> lng <> "*PI/-180") "lambda"
+  . calculateAs (lat <> "*PI/180") "phi"
+  . calculateAs "acos(cos(datum.phi)*cos(datum.lambda/2))" "alpha"
+  . calculateAs "datum.alpha == 0 ? 1 : sin(datum.alpha) / datum.alpha" "sincAlpha"
+  . calculateAs "360*cos(datum.phi)*sin(datum.lambda/2)/(PI*datum.sincAlpha)" "x"
+  . calculateAs "180*sin(datum.phi)/(PI*datum.sincAlpha)" "y"
+
+
+graticuleData :: Double -> Double -> [DataColumn] -> Data
+graticuleData lngStep latStep =
+  let lngVals = [-180, lngStep - 180 .. 180]
+      latVals = [-90, latStep - 90 .. 90]
+
+      nlng = length lngVals
+      nlat = length latVals
+
+      lng = concat (replicate nlat lngVals)
+      lat = concatMap (replicate nlng) latVals
+
+  in dataFromColumns []
+     . dataColumn "lng" (Numbers lng)
+     . dataColumn "lat" (Numbers lat)
+
+
+graticuleSpec :: [VLSpec]
+graticuleSpec =
+  let trans = transform
+              . aitoffTrans "datum.lng" "datum.lat"
+
+      enc = encoding
+            . position X [ PName "x", PmType Quantitative, PAxis [] ]
+            . position Y [ PName "y", PmType Quantitative, PAxis [] ]
+
+      encParallel = enc
+                    . detail [ DName "lat", DmType Nominal ]
+      encMeridian = enc
+                    . detail [ DName "lng", DmType Nominal ]
+                    . order [ OName "lat", OmType Quantitative ]
+
+      spec lngStep latStep encs =
+        asSpec [ graticuleData lngStep latStep []
+               , trans []
+               , encs []
+               , mark Line [ MStrokeWidth 0.1, MStroke "black" ]
+               ]
+
+      specParallel = spec 30 10 encParallel
+      specMeridian = spec 10 2 encMeridian
+
+  in [ specParallel, specMeridian ]
+
+
+aitoffConfig :: [ConfigureSpec] -> PropertySpec
+aitoffConfig =
+  configure
+  . configuration (View [ ViewStroke Nothing ])
+  . configuration (FacetStyle [ FSpacing 0 ])
+  . configuration (HeaderStyle [ HLabelAngle 0 ])
+  . configuration (Legend [ LeOrient LOBottom, LeNoTitle ])
+  . configuration (Axis [ Domain False
+                        , Grid False
+                        , Labels False
+                        , Ticks False
+                        , NoTitle
+                        ])
+
+
+
+-- $aitoff
+--
+-- Thanks to Jo Wood for
+-- <https://github.com/gicentre/litvis/blob/master/examples/gaia.md coming up with these examples>.
+-- They are similar to 'skyPlot', but instead of using one of the pre-defined
+-- projections, they creates their own: the
+-- <https://en.wikipedia.org/wiki/Aitoff_projection Aitoff projection>.
+--
+--  I follow Jo's example and break out four helper routines:
+--
+--  @
+--  aitoffTrans :: 'FieldName' -> 'FieldName' -> 'BuildTransformSpecs'
+--  aitoffTrans ra dec =
+--    calculateAs (ra <> \">180?(\" <> ra <> \"-360)*PI/-180 : \" <> ra <> \"*PI/-180\") \"lambda\"
+--    . calculateAs (dec <> \"*PI/180\") \"phi\"
+--    . calculateAs \"acos(cos(datum.phi)*cos(datum.lambda/2))\" \"alpha\"
+--    . calculateAs \"datum.alpha == 0 ? 1 : sin(datum.alpha) / datum.alpha\" \"sincAlpha\"
+--    . calculateAs \"360*cos(datum.phi)*sin(datum.lambda/2)/(PI*datum.sincAlpha)\" \"x\"
+--    . calculateAs \"180*sin(datum.phi)/(PI*datum.sincAlpha)\" \"y\"
+--  @
+--
+--  This is used to convert position values to diplay coordinates.
+--  The first two calculations convert the angles into radians, first ensuring right
+--  ascension is scaled between -180 and 180 degrees rather than 0 to 360 degrees
+--  and flipped so we are looking \'out\' from the centre the sphere not \'in\' from outside
+--  (we've seen this before, but not in such a condensed form).
+--  The next two calculate the intermediate alpha value and its cardinal sine.
+--  The final pair use lambda, phi and alpha to calculate the projected x and y coordinates.
+--
+--  @
+--  graticuleData :: Double -> Double -> ['DataColumn'] -> 'Data'
+--  graticuleData lngStep latStep =
+--    let lngVals = [-180, lngStep - 180 .. 180]
+--        latVals = [-90, latStep - 90 .. 90]
+--
+--        nlng = length lngVals
+--        nlat = length latVals
+--
+--        lng = concat (replicate nlat lngVals)
+--        lat = concatMap (replicate nlng) latVals
+--
+--    in dataFromColumns []
+--       . dataColumn \"lng\" (Numbers lng)
+--       . dataColumn \"lat\" (Numbers lat)
+--  @
+--
+--  This routine just sets up a bunch of points which indicite the grid lines,
+--  and is used in the following function.
+--
+--  @
+--  graticuleSpec :: ['VLSpec']
+--  graticuleSpec =
+--    let trans = transform
+--                . aitoffTrans \"datum.lng\" \"datum.lat\"
+--
+--        enc = encoding
+--              . position X [ PName \"x\", PmType Quantitative, PAxis [] ]
+--              . position Y [ PName \"y\", PmType Quantitative, PAxis [] ]
+--
+--        encParallel = enc
+--                      . 'detail' [ 'DName' \"lat\", 'DmType' Nominal ]
+--        encMeridian = enc
+--                      . detail [ DName \"lng\", DmType Nominal ]
+--                      . 'order' [ 'OName' \"lat\", 'OmType' Quantitative ]
+--
+--        spec lngStep latStep encs =
+--          asSpec [ graticuleData lngStep latStep []
+--                 , trans []
+--                 , encs []
+--                 , mark Line [ MStrokeWidth 0.1, MStroke \"black\" ]
+--                 ]
+--
+--        specParallel = spec 30 10 encParallel
+--        specMeridian = spec 10 2 encMeridian
+--
+--    in [ specParallel, specMeridian ]
+--  @
+--
+--  We then project the lines of longitude and latitude using our Aitoff transformation
+--  and combine them as two layers. Note the use of the 'detail' channel to separate the
+--  coordinates that make up each line of constant longitude (meridian) and
+--  latitude (parallel) and the 'order' channel to sequence the coordinates
+--  of each meridian line in latitude order.
+--
+--  @
+--  aitoffConfig :: ['ConfigureSpec'] -> 'PropertySpec'
+--  aitoffConfig =
+--    configure
+--    . configuration (View [ ViewStroke Nothing ])
+--    . configuration ('FacetStyle' [ 'FSpacing' 0 ])
+--    . configuration ('HeaderStyle' [ 'HLabelAngle' 0 ])
+--    . configuration ('Legend' [ 'LeOrient' LOBottom, 'LeNoTitle' ])
+--    . configuration ('Axis' [ 'Domain' False
+--                          , 'Grid' False
+--                          , 'Labels' False
+--                          , 'Ticks' False
+--                          , 'NoTitle'
+--                          ])
+--  @
+--
+--  The configuration hides the border line and tweaks a number of settings,
+--  some of which we have seen applied directly to the marks themselves.
+
+{-|
+
+With the helper routines, the actual plot is not very different to other
+plots (but note that unlike 'skyPlot' we __do not__ use 'projection' since
+we are doing it all ourselves).
+
+<<images/vl/skyplotaitoff.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAmAHAVgBpwoBjAewDsAzJDMUCCGWAQwBNYAnO4SAGxYAjWHwCCFRH1h0ADAF8ijKADd4sAO49IAZxScyAa2mYKAVz58FxJlRYlYaTL20AHO-AmyrSyCwAe8No81oyQbGQAtiwedLZ82rCKSlACwvGxLPGJIUyInPBsGVlJPijwKFJ0ZhYloWUkBkGYcQkh3qFSiLAUhU6QZPndjlCCZCgokZAEUGUVxmDVlsTtYSwoLME+ppx8dDDjLtroAPTHnCzqAHSI5dCmgqYJnOQUKEOX5BHHACJkpogAIW2RmO0GUsEQLGOUV0XFB4MhxzYayhkPgLAAtCxMQA2ACMOKxeJkGPWgikeJYlwoZAxcHYXEuKG0yimIUgVAGUWGDGSkDcnASm2STAA4lFEHszBFhNxaj4AEqiAD6AEkAMIKgDKUtMMq4bJFTBcfD8uv1cpyoW+AFE1ZqdZhINLZYajZBYMqTWanS6DVa5G1lklIOoCihoHQ8AB2GQhgAk2hIcCie1QKEOJ2OCKpNwj90u8DIxyTKahOYxfHKsGzABZLgArbSUN38FgATwNmAA2iFeaVzhRtJzOBE6L2jfQrT4WE0UiwZci3ZPICRMiRzGt5qsUHrLkr7dqAHx4nAyAD8AApkbuIvuVRrtRiAMw4mQASgAVAAFVXHDGnjIYCYDee4Ho+Wo-n+AFnpA05gO0Iq8LOewuNA8BTKQ66bm8eygXetqHpBv7HIBkCIck-buihTqZGhGzynya58BuAi4bR5DaJenHXmse5ofAX48fhlwCIuUJYO+75wZOFFKFRIq+HOOgeCQoh8PRy7usxrFbnhfF3nR0AsGAAC8plgEB55gHiwFgNoHi8belxGSw75gMcYAia5MlGnJjAKXyNFQGajE+DpOHbq+MifsJBmXAJX4ORQTl7mJgjIscknHJev6fiJyVqRpxnSfB-kQMhyntphq7YWx26AZ+yWpXeiU5XlBWqep9HSYGIoALqMZAUScAYWgOQAXvMACc0yQCg7YuNuJDwM8lT+R6FDkGwHiSk48GrmQfADFoNAiL0UDqnwjxvHKMyLduNIRB4mTkWFIWnWofAXZAoVQEmmTzLwFDwPYRQJAo91LXsACOpgsK85RrPA4JvQd1V9Gd317NVc0A5UfQg2DzSZBDc0LdDTpwwjszI6jfXJAzEAUYF82DsOXLjvBgUzsp6VLu9TARfV+nOXwEgnmeV4ieLiAvm+X4kTBQEgfFstQf+ZFle9lWoehNXC3pToy2sGtkeVU6TkwwW+MVDHwULdVG1AdhkFxcXOYlsVuy1okLhlElSb5IoWzzoQ24V3XGVpimG+xUDeXbZkWVZNl2c1ic9R5XnxT52vcw7LvKaFhe1SxkV7NF3tcSJXsZ2r-uZdluWqvl8WR3bpWyTrSk4wbTvx5AjX1576Hvu1redVtUdueRVqDVaw0sKN416IYsAAOrhpGmAyJceJ42vRh7OSdhjeTD17FWFDSBtN4bPtK7KJkpiwHOE5W7wbF0Bi01xiknhMDKwthVNswxf7-34IAsAAE8DyEFvQMBP8-5zVlj-PEWB4GFy-msZBkC0FAL-iAxB39CH4OgRiN8xCcHgJQQAvaMDnxYKtiQ3BZDUHQOYZ-JB7D6F0CYdQnhMC6FQIYVQhBNC8EcIYUQiRQiIHSLoBgrhk5JG8NEUouBgjSHCPIQwwC2i2EwLPIooBBi5E6IxCYvhZitEWKMVYvR6DMGGPAdYjRZDXE-3cQQmB4jsHyJ8RQgR9i3FON3l4oBQSGEhICZY6JdB-EsLUcY8JYBZFxIcQkzAyjImpNMTZOxmSwkFPMcUn+sYCnANCRUtJsCVFGhSRiSpNiYG5JqUAlpHjdF5OaXUpJ3DLFdN8S+BpSF5HDM4b0yZMSxmUQmWkgZqiFkFIycklZrT2nlM6WkvERT1lDN2WeXpb4qllIOQ405rT6knLqVsi54CrndIgbcqpSzGnyKeSM2JDyf5fKmR0vxaSfmDMuYsuZ8lPlpLWaCx5uyXGAsobs-ZsK-lHIhQFeRcCznHMRdi65eyMWgMsfi559zUVANJSMmFyySX9KJaw8BVLgkMqacyhhrKsXAs5XSgp7zxm8taTSj5grunktpQ49lmieWSvRb02sdzcXbJgQqs5KKJXgNVQShFyqMRauecKgVDj9UjP5fMyxJqWXyrSTKzV3LrV8ttT-S1MinVAJdUonVvz3XIrdSquViKmE4r9aMtVIag3avDXUw15qHERueWayFlj43fKjQUtNrSQUap-im6BibMXJuhRmsVXqKWMN9b03N+ilXepgZg4NvT60EvVSKhxTayWluzUA9t1KQ09oofm4lba6lZtbeA-tHLG32sRROxJfai1TtKZ2sdP9Z05JbUa8dAbdXEgbYi3dzaQ0Ho7Ue6Np63nnuuaOzd6CbW9OPb469sbwEPrzZe7pMak0ONffo5dN6zEVv3du2tiq-V3I3c+2QZy-2Qd3lUz9BajH0rySOsD6aUMFKfV+4Y4KMNCrQ5smD2GoObIg8RuDmya1lp-egqjXabLgb9TRsxRHEPDGYz0wFHGkV5O41htjSi71cencqjjg7GWCdWUx+F0nSlkYEzk4DZa11tLoyuzAKmbmAs0+K9T2Az15M0+JlJmn+NDuGCpv1KmzMSY07h7TC6HNLqs4B5VKnzllqrbRv1XnbE+buax8z-CDOAt80CvJYXRkRaE8qsLNmUlheM0IsLCGguYDC7p-9YAMvybS9lpT9GPVmLU1lorbTcu2bAGVgCgXKvVdS3V5DgLqvxaEWVv1ZXWs6LK0l7rjnlVlcy7Bqrrna2DZK8NqVxW-VTfKzNgL834OLeub1oxs2ouAtm8t7pXW1v2eVbNhrKTZtDfI2AE7FXjsFb0-8hh1TlW3fQZdoRj2WN+te5xh7TWvtVN28MD772RO1o+6t-7-XgcybyR9wlUPrtZZmd5vJCO-NI4W6jpb6OVt+uR+WzH3TsdA7LTj0HdAcdHaETj07CmwCU+ezoynE2zvZNU365nWnlVs6p3ltn5OdFs5J5gNnf26DM9Z4T+jzOBdgGZ7zoxzOueVfl3TuXcPhsiJGR5+j6uKEw8Bdru7CuUn67wXk43QCpdm9x3rmLtbLfC8wJbi34Oy2W8N0I13yvhiu+OfBfqAYhrdG2rtYUikfSIKxj9P681L5U3hojdYZRUZzX8IEKo5hLDvTCA4aIuxMZfR+t-C+lMoBPRersC2kAMbh-z33Iv25qbx7ptIZPAQ5yLCZowDvLNF56ARhzUcXNVGlxtvze2LCy66UHjLCWgFpZqwkPLD8GtlZ2Wn4gZfWtu7c17k6AS-dy4i2Ng3FAZtYKh2H8pHyCCJ8Vw4j7D2-Ex7V19qPrKQd85D-HxHLqdsY5MQHtuJnMZMnJZGANZLZJgCPHuK5O5J5EARsB-o0hfnsCXOPnHFFG+M-rXE-lAXeK-s3B1O3D-j1MHIzD3DbLjFhAfs7EPGeE1I5NgYJBPG3M5B3CQR3hAAvIpCNGNH0LoPoEYFvGwBGLIPvIfAIduKfA0DVBTNuNfLfENPfCHnyM-NdG-IPmWgogSoztTloWSrGL0pbgBFLnoRrp7lIgSgqoYXcvbrotBiGkYXiMSNYWcjIA4SFrqkYToXlqYRQgYYikYSYUYeYeoiMlYQEahi4dcrVk0o4e4ehhEaUvEa0jEfInbskd0uEZ4WkiEXYa0kEWkv4dkQUt4ZVr4a6lEWKm4ZUb4k4RkbUakZYq7rYeUUolkbWq0euvUdAgSN0fokUR0d7iGjgDgHurqiMWcgMZoRMQSiYTMWSrkVYqMZYcMcsWSi0fMRro0VkmsRrs4YipsTrtUQcbsRQrLm4qcXdqUU0ocXdlMfRksRer0rcT-IsS8T6s8ZcTmqsVUtsRca4Z8QkeMV8YpoCSkT8ZmhCZkVCb4m8SCWAHMfCfcXpo8a0tcYEvCecd4vCcSDCT0fscCc5mCWKhsTie0dMTiXCaUoiaUsiVlqiWKuifEjiGMR0TgCyQSnScNlYhyWSnMbyWYcMQKTruSQ8eyWchscKQbn8d4lKeggSWyXKQBkKRjgcUqaks8eqX0pqU8WqVUm8VqaKSieKVeiqdEWaWShab4laT0TaQwjKVEuqZKQUkafSSad0gaY6jqa0lyWdjySUXaXQFiY6UkYGTkgqdMeqW7syaUs6Zsq6dye6bUZ6ZsvybSWGTZEyVkrWKydMTmZycMfmXyYWWGs8UWRrgmX6TgOWTrhsTWdKSWQShGWKfWbeo2Qau2SMlmW4q2TsmWbqeMb2TAm8UOXqp2VagcaOQ6cYqOc2caUOeOfoouXQNOVYkOXWS6cuZgCOV6ZOQUr6bodWQGf2fhieVUVuTZHOW6UOdGdmbGReXiJWYeTeTuamQ+QeT4UeZRsMVgLmWKb+QWc8QBcWUBaWQccBRWT+RKVBZGqBU2TBZaQhb2nBc8t2d4hBX4UhQOlhXdm8RhXdk+Z+fhd8ShSMquTgMRQBqRQCuMZRQxtRfaThcFgxXQIRWURRQUnhbubRfuUxYLnxekgJbiSxeGUJeRXRXiBsRJWxTcRJVxW+SJTZB+exRJWhVEqBs8XcspTcXcnMYxppWcjJYEjYcMWjgcXcleYmXcsceMR4WyXUmpfktctpcZQOfZfqaZVUkZfEpEeZb8Z5QSgFfjgZZskFb4uReLsaWkt5VkjkWFW+iFd0i5T5ceX5aeWleeYlbUZZVWZDhlbURsbsjFSUqRvFfonpemVlT0Y5c0vCfdh0dGHVXiMlQ4o1WciYW1YetMk1cVRUk1S0Z1Set1WcjlboYNRrjZQ1XVcGTAuNRQjVXNXcSGotWisNdcosStR8YiptVbrqjtRiKuftaNT4TtctTiWdQUodfCQNfCb1Z0vCRtfCR1UiRdWia9R+u9bUZNZoTtXUWtSWp9T0TdaUndbNZSYDeVRDUoi1eAr9QtVqZriidGAjTDRUgjR1QjRtQjaDc0gjQNQjYdQjcdWUcja4ctVqTNbjVUvDVUqjZ0lqRjR5dMoaeTb9qzeaczQCdteqezVUZzeCfzTtrzb4jjaTa0ljdxQ1eqXTbNeqTTelXtVGd9Q8WLWKsTU0qrQ0cLUDdrfoqLVGRLQpdzZVcbd+dMrOQtbOTLc0rOR1bORtbOaLbOQNbOYdbOerRMrOcrUjaOZTdGKOZbbTctaOXbUzdtaOU7Wzebf5dHYFbHcFeHUkfHeFcHZhqna0pHeLend0qHT6dnb4oHQrQ1Ted7fSf7aUh7UMjeW7fecnT0ZnWKg7dSfnT0dbeXWbdtXRfVT9V3c1ctb3R1b3Rtb3aLb3QNb3Ydb3ZXa1b3aXdydGF3X7V3QtV3W3V3YPWHXtV3aPVHZ3THXvXHQfQnVvUnUfSndMnRePZuRfZxf3ZLT3bxTfW9U-R9S-V9XfZstPbDRJZPbXWffXR-Y3YA7URvZsmvaUgtRpdtVpctbpbA2BXtXcqLSZdMmZYgyNfA4FZgx2ag9TdgyMm3d9g1XUhtXUsg7vegxzdA1zZQ8fcQ6fbQ+fdQ5Cbgxnfg9AqQ-fSrYUewwwpA1Jqw5lcw2rbw56qIzkgNUVeI4UtI70YI7UYQxAyGjiE1TVSo5Mco01SYeo11Yijo2Sjjfoxri0UYzrquaYwbl-X8k1XPX6RYybno3VWo3VdbfY+bpo5vR0W4-6icnVSY3VeYzY740CV4+dcEwLY42neE9CdE7CR4-kfE0lYkwXck9ApTd48JZE5-ak7+jk0ov4yDXk10bEz0dozia4ziWowjVUxoycujco5jQ04ZU0wSiYwTS02SlY+bgjbY7oTiBTR012YM5hXU25Zof054+MyzaM6aTM88uYz03M9aUs7aSs4xWs8xXo+qYY+qYsRMwkxs5gK43LcMxUVs6GYc5eac2I5c5Jdczkjs3JvczZNo1Gcc0oychbco1bd8+1b87o7qjiI7f8+sSC1sWCzrl034l7RC3dukwHbC7Up82Mw8UC5M6ixHYi0AiY1OVi20ni3i1C5QkOeY+uXi4Y0OXs0Odo0Oa40OWo0OfCxc3ozeUS2i4RoSzi4U8i6VTy2KjSybYCzeWo73SK7U3owPco0PVK80ycmPTK7BRKxg3K2TSq9cuk8vQq88q4+vVqyMns9vXqxOYC13eY7PWq3Q+MxJUa+s0qyw3azEw63Exa74to3RTq6lSawI067aTa0omyz-X6xI0GzZIY3JSG3Iz6-0RG2o1A4CzA68rMco-pXo0g8m9BYm0Nam8q9m1g5m8hbm6hem85cWwmqW-q+WxQoY75fG-vbW4ffW5a6i7spW7a424+q26xZ29ud2wib2642krG96+276-m-ib27eXCn-SO3rRO3s7sto7sgOx83iqoyGngE1dbRu3870tuwCx0XuwY+u-1ce-Ybu01US4exNae+qze0W+e0HQ+1jk+88osVe1W3e6mi+2RZ+0cd+zRQe2E6u5db+7Mv+wwjje+wwm+09aB6TnB-xeB0GQhwxih39cBxy0h8G1h6G2hzB83Th33YRzVXgNU+uyjeRzu3io07u9jZR60-R1m7qqRzm8xz04xwW2x3g7R4+9RyiyiSx+tRxx+zx7M3x1Q1xw2wezzaJ3zeJ90quYJ0LbJyLcJ9B2p3Oip9Aluyc1p2c5J0IwZ9lRpzkop1GS0Up7UZBwbSZy87Z0R-J7USR187uz8651R8x-beu8C+5wx750xwe+7d56q3ir7cF9cs57x55-x-SXgKOW+5i-51+6F3W4FzQ2l60uF3J9FxEzl8pyl2w0lxw1l66yV9p2V3wxV8h0V0uVV6JTVzcwVySXV7hw18U01yAy1w53l05+u6K31+K8x5K7u9KyN7K3ivK2N4q0N6xwe7PQN7e1N-exN1F3NzF9yXgF3W+4a0t8lzNxJ2t1J5oZtyE8d9a7t9Aop5fQt46-tx6Td6Vxdwwlu3RSR3RZTSd6FQ9+O09413dwVd97O79+1-96U4D9DeDzkiR3Gwewm3inA7uym8x2m4jxm-D2e+j-Baj3m5jzg7j0M9j9q+u0Q8dyQ8T15eT2J8j6l6T+l7T5l4T19Yz5d5T-l9T4V-j8V8z2Iqz74lu4O7z2k4L7V9z-68L397D9O5L-GeLyD9L-y7L0pYr4jfSbWGu-KpuyGmrx5x0dr-u5oXr0exr2j7qob+C8b1j4imb0cVr9Nbb9x1by4-b8+47+iyidbwRc788i0R76ul7xNRb02+70B6b-Caub7+lv79AjjRH+dlHzz4H3z-HyLsnw7qn6h4nz9675h9n815n0D7n8men5G6H4K7r5U1r2R-KhR9XzrwbzR1b3R7X3543xj6b0TZXyF+36qd3xF53yW832W4PxW8PyJ631T7r1qeH4s+P0H6r0raP225P1E7P6p4v1GP3znZv0n+v4h6v0L7vxn-v-okS7WFGdP1L-X9y8f9KofyX8v2A9v9VVry51b252-3Xw8bWF5-Kj5x-y36b1dov9ZuBvGFr-x7668EW4Agfv-yH6wCR+8AsfoAIoaQCaeX-L2tALn7clv+DDVAblzwFs8CBa-RAep0wGPcSB8HMgdAhqo4Ci6oA5lsgOyZUDcmzA-JsAJl6sC5e9Ao2owLFTW1aBjJLXv13lS91+Bw3K3qNwkHjdTek3KQdN115T0hBXfBQRAIN6asRBq3NQetz9K1gtuSg65DHy7o+9TW+gy0hoIZ5yDsuKg-AVoPtYyDr6lg51o4ISrODnupglJuYNfquDBM7grPvYJz7+C8+3gh5r4P0SLFdBBHYIUr08G9cHU2hLXnD1N4I8reSPXXijxSEm80hbfLIZbySHKCDedlAoQ7zyEwCShcAsoQgIqFICch3vBIWgPd7WU4hWAnQS2yaFMMqhYHDIRzw6Eb82hLgnoUczqHP0uhXggYUfzGHocJh4fXZD7ykZ9CwhQwhXvMIh7LCoe4adXoGk16VotG6whBh0WfA9VdhAA-YU1VXIHCQBDxc4Tj11RXC8eNwpxkcKJ7bDtBuhW4ZUJOEU9nhE-TQm8IoRnCgmmw07pcJD4fCbBwIlfvcIcGQis6XwrfrCJ36Ajhh0I0YaCMM6ojjO8Inov8Mv7giOBiIoBpiMhqEiVh+I2IYGir7kjBu+w+ppWgb43Cm+lI44T8Paa0iLhKJV8PkMuEDNWRffHkU8MZHlDqRbvekhyIMHhotSLRUUfM3FF08uRQI9kQvwFHtChRdglUbdzVFOD6RXDBUY-SVHUCZRdAuUV9z5EYi9RLAs0WwJNEAMrRCwm0UohMJSiFGBowQZWlf43D3+7oz-uyJ-6Bo-+nopkZcKAGui2RIosAb6NUGBjih+w0ctbWfAh1w08XBMZ8PDHfDIxB3H4RgJTHNDXhJdYMWCO9EQjoxUIosTCKzHkD-RSTPMd0hqpxjh2JYtERmIrpJiAh9YgHlWKs7NiCRZYsHu2NbqdiyRNw4QYGlEHhpxBg4vYT8JHqjjMhk47IbONyH7D5ulaRetON5HDjNBlw3VsuOFHclnwO3dcamPZEmDtxR3TcfKJFHncDxCnVcYQPnHqi7xmoxcdqIvG6jxxSIp8YaKPEMCPxIjE8QDT-FtirxHYgCT0UWJ7jIhb4vgTeIHH7CYePwxIbBK9EijUh8E6QYhIDHsi0G6EzpsWmvaVpChlwhyrhJGaBoSehEncX6Uiw41IskoupGcMaGkTzxu41oYxPzHITCxqE7odhMfGcS4RrEysfxI8GCSD+wkkXqJLF74SiS4k7DtJNa6yTdcNwhdsROjaSSO6uqXAH+RRIaTAKM6HYY2iaqLFtJRvXSTOIeJGTzeJkhcZoXMk299JEYrSQ8LsmlCOiNku7CYVcmvE+0dVHGh5OxZeT6h9JXyfiycnZifCQUolkFNXJBSWiQUnyQ9X8kHNLJAk9SfCRqpBTKa4U3pmFJxIRScSUUnEjFLJIJSuxKUiCS5PKbFSYJ1kikepJr4zoaR9UicWZIZG1TTJWklkY1KsnNTOR7U+yYFK1JpStS1tLAAzT7RalDJ0zTqbUMbRT8xpso3qRYNamhUZpIHFaaqOqnFiNppYpaXxJ2kIi9p+otaSiK2kNjupTAqaVrSOmASDpBfG6bfwuk9iHpKkp6UojSluiXJHoj6UhO5JYAfR6kv0V9IwmBSgxM6ILo2jDH-S+pP0qAaDI3FaT4x4MiiboV+nJjIZh44GQFOhnzSMZi0wGVYOskks+0ZLRGVxIJm30SZu0vGftKpmHTYZn4nGadPhlNiKZl0umUELRliofJL5ImWVLJmP8WZz-RtEOPUkjihZ30v0lgEkEiy0J1k2QdLPkGyyQxP0pcTOhXFiy1x8s-kZrNNR9o9B6s55D5KMG6zMZEs81qrKYmmzcBisticrI4lmS6Khs8mebMSnazyu+soSa7P04uTrWxs86Z7Il7Wz2Z3s6-v7K4H2zeZ4c-mc7JdEzo4JZkhCdZOSHqSUJ8cmWanKBk-SsJicpWRLOsrzooZucqMdnOcnFzBRpc94eXOqGVy7sMUuifnNPFaSbc1cwTIuhtmFz1p6c+8Z3J4ndz+hLknhq3OrH1zjpvcsScnOZmxypJ48zZLXJDn9ynmg8zrovL7HLzq0R6DYTui2H7o9J28pqSiVPBpz95J7e9KcPXk5zdCB864R0Uvl3Dr5jk3eSXIeI3ydZJ8pGT4WflVyn5fjM+emK-nYzuSH8ydA-Pxl-y25F866j-K7lHynZm858QApeqvz3xmhQBdV2AXv1EFv4tBViMgXXS75c85BeDQwVLysFz02BWpOvk1SKFVI5BQ1J3R0iqFKxe9HjSPQdS6F589+exyYUFyL5A0lhXDPpIEgXhHCt+WUUEViiuF6MgBbNIkVmD90MnORVbKfnqlVyYi28Uos2nqLtpDCymTQtfHaKPZ+ikSWwuNEKK-Zhi80cYqDm6K8RliovjIuIW2KV5pimOTunenILPp7i8WRfL+nXyAZnijOX6UfJzin5YM-dBDN8XcL35MM1xfwoAUIywlIippEEvEUJLJFgS3FvekzExLcZ-ikBfvMJmZK7Z+SjRcUq0W5LyxESvOoUqQUhK6x5S0dqkswXZL-xjS3BfUtumVKSpnShxd0qcXNKqpT84WdfNFn7oxxwyveQIqnH3o5Z4yhWYMvYWiKVZO6NWaMqLnzLH5+8rcasqE7TLUZsy6adsulG7KG5kyi2RfMvHLLVphyjtscqgWnKyl6ynRY8upnILXuR6d7u8u-GvKJ5lylsd8pnmfKbF+yuxdcsem-KoJtygZfvLjnQrqFT8pOdfJTmwrGFQGNqQIqznwqFlSSvOfegInIrluO6OpNbW4wmFuMixbjDjT4zvof2uK-+YEqbmYrlpqKsBe-MiroqSl7Kh5fioqXIKB5zKoebSvpkAKW21KvwYiqnniqAVgqzmaKttH8qelvKsvoqvIXTFNJbpOFcaS8WfkJliZQ+eqoCWHlglmqrqcasQrPFIl7FNZaaoIbDEhFlqnZQcT2Wqq0lhq3+dar-aOqclYpRRe6qX7Oq1Fvqrtuaq5X6qnlgawYcGoFWeqR54a8YWyR+Xxq-l3qqVdGuAmprQJtqngYmohXpq15JyNVdyTqmAstVZReheMz1WFq0VlauZSiQ775qr55axbnoytX0khpyjO1U0nGntqUlxal1T4WkXNqTl1a0KaWp9WtqrlvagNeOtJmosYFXjOBXYz0WNqo1k63xOky+WzqzFy61maup1r1qZV+6kFbuqJGDqc1x616VrwLU6CNVqvEtU0h8UG8K116g1T4RBmm8sV8icJY+qbXvqNZuvWJc+rLlf9Eln6p1cBr7VlEMlVvOlboQXLyox12Aidf+o7nu8OViGkNehrDW3qql0GmpahqFWAb0FuGppchpaW-qrF4Gg9cRqPWkaFVlGp0fBpVVmSr1yMm9T9LvXyIpZLkp9axpfVlEJ6faD9ZYiWXcaf1omgleJptWNoO1nGkDcJrA1aSUB1kk2bxtkXqSzlYUhDRLKQ3KaUNgUtDdpow2GasN7GnDeprw36aCNqmojeZpI26ayNkmvdTOnwXMbeWzmrNfZoY3uaXFIGFjXlgTn0YEVZaJFVlnSHKoUGgKDFXpgsoEYzVkWi1SkiIl4YtZvml3uFrk1IYFNoWpTYFpU3+aYN+Wr1dFq03U40k05NlcNmiqxae5xWl2aluSn1aDFwWupblpMXpat1rWhzc1pTXtaqNvWmjd1qWHxao5-WwWdpj82VYRlbmDjToi43KYeNeWGZfNprVZZFBhmHqatoS1CJ1B42jZZtrS21o9Zu2g2VZhy16Zjxx2gPpdoA7La8l+268etr03DYHZp2ozdTjopS53Wr2ldYdpa3naN1-2jrYDq630YJKthaSt9oG2g6I5wOrzdNqY16Y3FhWNjWdltodYdVqOhbXVirWY6Vtw2UJQNg2346tt3WFtcTr23k6gNiOjLcMES7NYztpWPLdjqHW46R1KSXMfTpZXM6p1lO4gYTre15ZqW6OszWNk9ai6rNgugHYzqB3S6Qd1OnreLr62K6od8uobfzrPXK6xtD2CbSkiLXA4ZtRiMtfRhan66+Nuuo1VljrWApOF1uknYbrJ1nY21UOGTToi7XO6e1pug5drrdWW6CtlWeRd7ru3DZlF72Ipb7pnU3Y51ZadUlLmlqh6LNwev7eHsZnJ7TRgendZ7raXG6XNketzenrBWZ6+lhevNYCg3m1ot5HOA3cMAMms4sdKSY+aXot3DYL2tehtRLjt3V6Hd1OJ3nkjqpS46quRbya3q93l6md9ev3ePqK1ZYQRZaMPsPpuWN6I90+qPe3rq2z6l1q+n7evol2K4pdzehNdvrl3L6Fdh+tNZXrz2j6PNm+uHZfp83UYYVWWbjN11rRP6pcT+3Ik-tBpP7bCT+6ck-qhZP6splWbjDNW4yOVuMMtElbJgdWiYyG0BkfffrH1CJADvGBlXpg4wAGyt8BhfbAYM3U4OMH+-bC-r5W4GE9Z2DjKAZFWoGD99GDA3-pmHYHrRwmBecwav3oGl2jBkvaJiGXUYptL+sZbwYx34GplXGJbbQYE28Y1tohoneQZWXcGu9eWDBABuEMu6jEShmA-way3DZ1DCB8Q0gZ0Q6Grt8hqfdoYuWaGudKSQw9Ah-0vbJDK+9Ax9qYxfa7DZBlQzvssM+yXDdmvQ0mocM4i-DQKwQxfqCNq7zDGukI1Csf1I70DHi2g2jt4wPq4jde5A87SYxvqX9BOjIzIfwNhcEjCh4AzGLSOqH2MiYvIx7uoyjkf9UG0TFkqyMmHyDHOmozpqSNPaGjeBxQ5SyKNr6WjDWio2Lr6PuGUje+tozLu0PV0ujFGmIznqiMsGmjbBmYyNrqN37aDlC6jHrrWNV77RQhxQybo2Nm7kDrCl-VbtEw26TjHerY3+r2MparjL8rjG7ruNaHyDEopjAOrOMs78DAeo4yVp2PNH0DTpF4+0eAO7MAT3Rv4xvrBOuGfjgxgw0rRBPeGITR+7Q+ZzhNn6vjwRlYzDsf1vMUTWul-WXuowV68TmxqHtseAOHDeMDe0TKfIpNCa1DNjJjHbxpOXHaDPerjH3oZM07Xpjx-A9-KZNHK2TE+5A-CQ5NMqqTvxx-RAr5N86iTAuskwup5PgmJT-Rlk0nu0PnURT8JpU74a1OTGdTqJgk7MZlOhGDTixk08sfO0P7ntAWi08Sf0ykmTMYWw7RFrcxRbVtMWwzDiqcxiblMSWr09cdB1kSbTGhn09ycW01snT+hoxDphcwabJtLEl0+KatNh6kzS+lM-dw9PymwziptM01oDOqmzs7mIAw6ZoNBnETBZhgxmcCN5n0TpZujbWaL0hmEdq2ng6Dr4PKYBDrZ+09tpENuYxD52iQ9pikO9nsji2uQ4dp23DmKdBZrZZOdfZWZ9xs5vbuOcjMWYzZi5m7Z2dFPLmLD3Z5M9OcBMmY6KuRSWZmcm3OHBzyp-s-mfe2eGLzox-c9qee1g75z0xp84afbOYm3zppzc+adW3RG-zKO97fEe0yJHztfi0HakcMzpHlMmRmCyOcm25GQL+RkzIUagvFGVypRpC+UYgsM7nt1Rw7bUbgv1GgL3xhC4mYLPEysLdyvC-YYAugm6LvRnC5CbIvQmozJdKzKyw4sSqiLupmi1WbAvvmmLxpoSzfp4uRHntqx0Hesaku2mRpXZ2bbsZkv7GFLTegs8ccO2nGNL5xjTLwsMxO7tMo0vS5yZ0uhnJtzxoyz7okuCmVLxFxbYqLcwh6LLPOtSwee23AmnLPKpS4xfO26cDL15uy8Mfe1RkoWclx8y5ZP1eX9TkVjNR5YL3KZsTsVrg4dvxOg7CTymHeW5hr2GZyT2mSk8ldUvvaW92V+CyZkZO5XkL221k5lfQsaYB9VmIfcVYg2lWVzK5AEdVdsuTaZ9qV8i4Vb3O9XUzBZ+KY1ZM2DXszo15i81dYsWZ1Tw1tPflbCv9XeL41pXelcEvnacSn2iqbNdxOeZLTZ2SLM-t2u2mDruRA66DQOu2EDr05A61CwOtFnkseKrLJFkcqRYZakWKXJFlOtwHosuF-a3XJ+vvG8sYWfzKRYSxYGAbzl6nGFnOtxUIbnlvTGFjesC84bRi2tBlnus6IMst1vKrFgrOhY5h+Nta09aUko3SFaN1XPtZbMI22z9GcCUmwixzbabPZtG32aesDnYsQ5lmyVeSxjnPME5rm1OahszmBbc5hm6ZYSxGyxbllym9ZaMR022dPN0G4rZ3OY3ruUt6izLdlMS3Tz2tkXXzcvNs3-LlWeWzZpFtzX9bC1oG8+fVtRXqbRN4bCbbitM2lVztpsw7f-Pu3ALQN4C7FlAtPXwLCNyC6Fmgu03YLod7m5jcQu+2Krkd5Q97ZqvZZML0d7C4Hd+tQ38LnmQi+HY6sJZGjaNgpcHb6vx2Br6d2i57fovl3vL-tg25XbXU+Z2LEWTi43e4vZ2lrpd-i9XZrOd3hLqd7873d-MO3JLCN6S8PeOtG7R7KK2LMwoiyHHPM6luexHblvcjQsulle3HeNuGW17wZ2m5NKntp2gbrxtGzPz3s53ks9lo+z1YPtF2N7rlzG+5a3sjWobcemezXf2vqkZqjohpSfc1OD2W7E9tu1fY7u-2u7wDnu09YSsP3xL+1lKwjbSu02MraNrK6FhyuxY8rnmak8g9pPDBfhBuDG3LbKuoOY7+D9ewlnZMRY6r5D8W8ll5OYPpbUNtq4g9jOkOlbmNufZQ9aP0Pb7xDrW9Q51u8O9b8D1+5w6mv8IZrtDn+9A7-tPWCpPmIqew66XoPPzkjvu9I5XYDY9r1OarIdcKxBadH8loxFo9BpaPbCWj6clo6hZaO8HtOx6-jt9PqOSHbWQM6VjJ55JqsRj8M2WmqxmOGJ9j0+31hYcGPwbzWCrajqq2uPYbwTvh-44EeI7kbkTkR5gEGxWOu2JZ5x1I9sf+G0nQD0J-bZyfzGMnKjgpwPdR1U3SsNNxHR2Yqf6PadzNzx6zfx3s2xsnNup4vZqfaWqs-Nlp4LcF3C2unot5rAuaaf726sF2gbGuaGd+ODHZhvp8qJmfWGOsthgZ2XZKdROpnY1zR28tccfKtngVnp6k4afpOVnEVqp9k42e5Ozn+To5+EcKyqUOsHt1HbEcR0+2xsft-HQHdKxB2BsIdp51g9YpfrCsUdl50Q9p2oXms8Sr58Zaqx06IXTVtrBnYBey2QXTDuFwE6Rcq2DHlFmFxrc0edHXHQuvF+s8F30s7nRt9nQ3bBf7OHnhznF5k7eevmqXIDhl2A7peFOmXUDzR0PdKwj2uXtps-tU9YqKXEd095rLPcKzz2xXrTgV+075fMmhXDj7rJvYGz3GlXVDhV8M-Z2H3PHx9sbJ8a1eoupX6L2nf8dcfbMOs99lVxXdR3P2RXQjwXe-bNe7O6swVh15bade0urX9Ljl+c7tdKOvXrLv18U80cwPSscDxHQg88dIOBsKDsbGg8KwYOo3vzxJ-SdccEOY3wL1ilVbTcHaI3kL2PmORTfqu2sATDrAw5zeTPadXVsN5fbqySnmst1Et8s6DerOK3hLmt7a7bcJOqsYjhN-eabeuv2dMjgt6c8F2EK63vrkdy7ardu2zs62FXpNmtNZZZ3UuWd7kVneg1Z3thWd9OVndQtZ3yTntu0-WyOV1sMtdbMu5cebZvrl7wtzonWzbufHtaLbHkhOzbZZn9GWbJu7CfXueHt7og2Wlmynu4nB2Z3O+6oPfuJH1OE7Pe-deQeCbwH715VhOznvJ3i7im5B9KeTZyni7yp9h-5fblan77+pzO8af-vmnhHyV-h8PedPyP3TxD705o-9ODsgz0jze7WyjPH34zlj+W6jDTOGPb7vTJ90ht5ZBP0prj+mc2yOHn355pj+2+OzbOJPjruT5S-Q-UvhP1thT8O7o8IelPlzlT-67U9qPH39zyD488XfPP-3rzmd+88myfOjPBV4T2HYE--OnPh76JXZ9o-HZwX7nxj957CIzZKj-nlq9uSzsufuPwX-V+F8NdRhMXvn6PoF5-drZ8Xm2WlvF633vvGWqX02xZ+U8OfVPiHm8pu5vLrvuZz7m8su5vKnvhWM2Tl5Nm5e1fbTlnHXKu8FeLvhXB2UVwJ-FedeKP52Ze+1-Tfbl9L-X7N+++VePvd7431j8MEa93Zt32r-97q9G8Rfev1b47Ma82ymvn35ryb5a8g-WvhvaX7r525m8+CtvOXxD+f2q8wfhPUZddzZzO+6ebvKH+r9O8g-BvJsobxd+G-feRvH30b-97G4E-xu-vib87Mm82ypuAfA3sH-K7WxkOIfkLqDs6hmw0ODsxb596W5+-Ivb3lbr76t6ERI-I+GPrh9N6GsI-dvwnhBeT8O94-jv3bkH728p95fjsg76n7bdp8KOsfj3xD1tbZ87XjdGjvLB9gAgy1hf9-aPSFuD2OmJfOO6nGL+nJi+oWYv-d323afC-HKwv0X046l+QvhfoNYX7YWF8K+H3MvsL6r63Om+Ht1ukJ3L6-c-YEvYOZt3Olbe66gPEOUly9jA-2+IPQvnG+7+OeW64P-vznzdhJvW-nvjutD0L4w+O6sPwenD-H7w8IkCPN2Ij3L5I-G6yPqfnrziF5uZ-ofuf2H-9no-Z-t7pfk7VDklvW72P0ezj-n7N+F+Lf9fq3w9jVvV+SfiSI8+9kk-t+YnluzZ735jX9-FPL2CSkr8DaV-rv-uiHZP8Zfp-x30-iP-P9e9C-jPq-r2-7vM-G7LPcv6z47ts-R7vnluxz8f5z+AvD-Bf0Fw9i88X+y-p-lO-f90M3Z4Xz-xF4kjg3W687t-lv8Dhi-f-RP2-o27r+FPpv4u+L2MS5Q4GXpAEj+ruk3af+zPuAFT+uukV7vYJXvAHc+yAUv7ABgbkL41ejunV74BtpvswLE72C17B6bXsDgdelul17UBOfn16UBBfkN4MBI3jdhje0ehN7sBU3okiauxuvN68B2Pobrn2nAVF6YAxATgbMB2LrgFAB-ujHqkBYAa7q+WD2Pa5Q4sJioHneuupd5qBAfuQGeuUgXP56BzLoQH6eMgYZ7R673o7qfewet943Yv3mYHJGruoD6W6wPnYEmqTgTn6Q+xuvfIPYmbi4FU6bgXf5WBqrobqo+wOOj7W6mPjYECB-2Lj6BBIgQiS1u3gR36iBZPokEgBuulT6pBNPrEFD+2QVl6eB6gS9h5S72Kz6ZB7PrkExW4QQv7pBWAf7oV8eOBriOUOOCL4E4tpk0EKStaG0Gg0bQbYRtB05G0FQsbQSr5NBM1E0GNBRKi0EsB8OBe7KoTQV0EeO9GE0F9BJvgsFoGUwct444SwdfYpIOOHMHSB2wX+4rB8gUYg44YwR7704Xvh0G7IAwX75E4eNjMFB+twdp4U4YfvcE1B+waYELBMftTgL0G-tsEJ+Z2D8H68nwfYHHBafnliAhAXEThZ+8OCJpQh7ThCEE8gKAiEkSMwSX4whkLsiGe8SOFX6ohQXjTh1+emJiFeASIbx6EhdFH0Ft+uISXbghXftiFO+RzNJ4dBA-lSE5BAIbeYsh5tsCH9uFOOp4chTBnyFyqAofaLY4ElDLREhawkjhr+lWO3T6E2OFv6EhO-uCF7+3wQf4LBR-sNgyhexHKE9emoWcTahsrvDhX+HQTf5qhGIdC7GhXAUcwv+hoW-5WhUQaThf+poXEG6hnQjMFDkXQbi5IhSXm6FHBwwC6Ep8koWcHHB5Lj6GM+0oeMaBh2gQCEoBkYSH42hGARTgVe+oTgHSheAd8EEB6Ya0Hj28OGQEAhFAUThUBGoTQFFhOofQEFh0PprQohHQYq7VhGIRwELB5lkiE8BhIXwEth9oUcxCBDYfj70463jMGbeTYXsEU4sgUjj7etYRNZDhQYX6GqBA4WGHbBmgTOEAOqYboFLh+gSuGGBmYcYFzhHwYSHmB3wZYEAh1gfDi2BCwf94nhsvuCHOBZ4a4Eah4PjMEeBO4RWE+BV4X4E3hGIQ1ZIhIQUThhBd4baE04wpkjgxBB4d2HHBCQR0H1uAEYOH04sHBBF9+r4eOFQRk4aTj0+X4QUEIR3IWhGLh2wXI4fhTwRhF1mR4W8EU4dQaXqC+iuAu7N6ujnpic4g+tL4S4zpuXqumFEaD6c4Kvjzhi40Pmzgy0-OOxEBBTOFe4c48wVRH-WJEb+Gi4vevGYMRwEdXo2+3OHb6SRDvinz0h0uCQbyRWQXxGIR-FDAEq4qEdpHoRukZhFCI8uKDRK4PEeuGyRhEXzhR+iuF8Hc4cfkzj-B3eozZURKftPpgh1kfZ7uR14fZE9eHFN6YS41Hs5FF+IuGiHN6R2hzjMe-kZaHS4NfpFGA2nkQrZ84pIa5FSRwUVsGGRizuFGQRcuD36ZRsEd5HwR2URpHRRWkdXpj+rOBP6l6vIeXoz+lUbhGFRCYYlEWR9USmH16Uoa1G-BhkfKHT6ioYrjKh3OKqFUR6oUzgn+zes57dR7Tl+QSas+kaHTRCdpNEVyEuOaGzRsLnzjWho0aJEf+HOI6GDRKUYLh-+i0UkHS4noVtFKR80W7Kl6EARdFFRZ0WPLl6cASdF6R1egV6s4MYVdGrh7UQ1Fy4SYb3pVevemmHc4GYQDG2mSZE16s4uYd3r5hEuIWFM4xYTDE+RZYVDEcRTAbPo1hKMZC4gxWIaXqNhHOM2HT6rYXjHth0uJ2FURjlljFpRfOP2E4xWUdXrDhZMXlEQxsnoZHKBdMSnrN6zrn9EIBFMUgFMxy4fXr3eLMfhFsxTUTTHbh0+ruHc4+4d3qHhzeseFURp4XLHnhiuJeEKxXkVLE+R94WLEcRT4SrEvhTOBQ6l674RzifhEuN+Hl6EQZrFm+7xPRQGxu0dLigRs+uBE2xCkYLjQRTsVXYyxjMXziYkrOMhEmxOkdXpFBveiUFmxvMYZGjuRsVUFhxwsSLjERyqI4SOUjhDLSOETuEn6OEoNI4S2EjhNOSOEULHER+oRhDNReE+ceMGm42vmdjBExcUEFe4gkVlhGE2ccsF6YluJXFN+jcUE5xxMkZViW46cRE7txSkZbhJxbvi7ggercSVHIc-sWPGPRE8QZE6IruN3F1R1cZHEzxHBqXEfMvuP7iLwgeGQA7Q0CGHC-Qn0OdAoEMhDHhQADeLTCJ4zeC7Ct4aeBYAV4AwBwDcAeeAfFOgheFDD14ceGfEowChAdAcA6wPAC541eE-F8IdeFKCRAZeGjArgVeLwAR4teK-Gww78UjDnxNUCnht46eBwQIQQYJwQgAcgEAA Open this visualization in the Vega Editor (although the link is long, and may not work with Internet Explorer)>
+
+@
+let trans = transform
+            . aitoffTrans \"datum.RA_ICRS\" \"datum.DE_ICRS\"
+
+    enc = encoding
+          . position X [ PName \"x\", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+          . position Y [ PName \"y\", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+          . color [ MName \"Cluster\", MmType Nominal ]
+
+    spec = asSpec [ trans [], enc [], mark Circle [ MSize 9 ] ]
+
+in toVegaLite [ aitoffConfig []
+              , width 570
+              , height 285
+              , gaiaData
+              , layer (spec : graticuleSpec)
+              ]
+@
+
+Since we <https://sciencefictional.net/2018/04/23/we-will-control-the-horizontal-we-will-control-the-vertical/ control the hotizontal and the vertical>,
+it is possible to \"rotate\" the data to move a different location to the
+center of the plot (this version has Right Ascension of 0 at the middle).
+I leave that addition for your entertainment!
+
+-}
+
+skyPlotAitoff :: VegaLite
+skyPlotAitoff =
+  let trans = transform
+              . aitoffTrans "datum.RA_ICRS" "datum.DE_ICRS"
+
+      enc = encoding
+            . position X [ PName "x", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+            . position Y [ PName "y", PmType Quantitative, PScale [ SNice (IsNice False) ] ]
+            . color [ MName "Cluster", MmType Nominal ]
+
+      spec = asSpec [ trans [], enc [], mark Circle [ MSize 9 ] ]
+
+  in toVegaLite [ aitoffConfig []
+                , width 570
+                , height 285
+                , gaiaData
+                , layer (spec : graticuleSpec)
+                ]
+
+
+{-|
+
+If we want, we can treat each cluster as a point, and calculate an \"average\" location.
+The following visualization presents the average location of each cluster, where we
+calculate the <https://en.wikipedia.org/wiki/Mean_of_circular_quantities circular mean>
+of the Right Ascension values (to account for possible wrapping around 0/360 degrees).
+To see the effect of this correction, we
+overlay the simple average as unfilled circles: for all clusters except Blanco1, which
+spans 0 degree meridian, the two match.
+
+<<images/vl/clustercenters.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAWCmCWBzaAXSAuMAmAHAVgBpwoBjAewDsAzJDMUCCGWAQwBNYAnO4SAGxYAjWHwCCFRH1h0ADAF8ijKADd4sAO49IAZxScyAa2mYKAVz58FxJlRYlYaTL20AHO-AmyrSyCwAe8No81oyQbGQAtiwedLZ82rCKSlACwvGxLPGJIUyInPBsGVlJPijwKFJ0ZhYloWUkBkGYcQkh3qFSiLAUhU6QZPndjlCCZCgokZAEUGUVxmDVlsTtYSwoLME+ppx8dDDjLtroAPTHnCzqAHSI5dCmgqYJnOQUKEOX5BHHACJkpogAIW2RmO0GUsEQLGOUV0XFB4MhxzYayhkPgLAAtCxMQA2ACMOKxeJkGPWgikeJYlwoZAxcHYXEuKG0yimIUgVAGUWGDGSkDcnASm2STAA4lFEHszBFhNxaj4AEqiAD6AEkAMIKgDKUtMMq4bJFTBcfD8uv1cpyoW+AFE1ZqdZhINLZYajZBYMqTWanS6DVa5G1lklIOoCihoHQ8AB2GQhgAk2hIcCie1QKEOJ2OCKpNwj90u8DIxyTKahOYxfHKsGzABZLgArbSUN38FgATwNmAA2iFeaVzhRtJzOBE6L2jfRfE1SGRtEqpqRMiRzGt5pByNoABTIlB6y5K+3asAAKjAAAVVWBjmA8TgZABKSDtEW8FgznQeBfTDfL1dvPZtA8Hc1n3Q8NWPM9L2vW97yfF9kn7d08j+FxBHbcdIHVPhHjebgAF15T5FhEDyCE13HK1X36Fw9giVgKEXac9k3JUZCYmgRF6Wd51EZ8iOoshaKdeiWEYn930Ar9RHYn9OL4bjPwoBcEMnXghLohimMkp11H0CRlXOWSoHkxTwIdfiqMQmjNLE7SPw4EhjI5NQFL2W0jx1QNJwgfCrNUxgkJFZinSMt1J1-PgVwEACnRRCgsBAvcIkuIDlJkghd33ViZIfU9YJkS4ZBgy9IH8gT6CspgdJSFgZWRcL3RIP8YvXLKUqMgA+O8ZAAfiS-cjIxABmHFHxPS9jgxHqwEwdrLiMibVSmnqysnAKIDfD8XGgeAmOaqL-za0CUscmQluOVaNsqnyoBq3w+B2jYKqYA7ooouLNy3L75p2+AHxPH6TsuAR6qhLAHyfcqrKC4iPzSkhREe6BnqqpdDtavZ5syJ6wAAXjxsBit629ZrANKBpSnGUbym9seRjZobUtGQqgM0XvR97YqgUbzqB5LLj+gGKfm0HBGRY4IeOLdLxPeaEaRp6ofWiqtr2DCfzeo69h6k8ReBoXpdl+WPERhn4KtQirUgKJOAMLQgIAL3mABOOMZnbFx1xIeBnkqAKPQocg2A8SUnCsjcyD4AYtFMvZsNwg0fxQT31xpCIPEyJjOm6bjFmuyAfSnOOnXZqAk0yeZeAoeB7CKBIFA9r29gAR1MMTZjWeBwUsiKML6EuoA18uDqr51a-mFpYEbyAU+bp02478ou577zkjXiAENh2fB2HLlKLU1nI94-aWo+njKYPFUIK1fLoJvHr4NVo+0u-TntadfWBfMyCLyvB+4K9yNLDHwKFTBoX7mAbsWEcKwgIhzXwpFODkW5hOW6U4NIiS0hJD8OVnKD2PipDmm0bJYLsjgqS6V8GuUUq-Pi10lDqWElAUS4k7ofj0pQRAhkWDUK4nsH+XliEYOYTbbB7CsawCchxGh7k7Q32fGjPyKsYYs3umFBBWtMZxXWAlS+dC4zzTwXlM8PUiolVVGtI010QGhHumLBqmiz7c1WALThBkuo9X6vNdx3Chq8wBpNaa94yY+P0n43hF1gnsSZsAo+f1T4Y3Pq4-cZ0LpXVVmoj81NUa3Uilzdcdg5zfWKb9XaAN+b7gceDSGViRQ2KyZQs2T1GrBS0ck+muMCZEzACTPEZMv77hybTMAnSUZ1PXpkvJ912Ys3aS43mgNSkG3KXrYCos6rixqUbVUctgYK3NhMpQNij7D3yR-KAutBkpUNjLXZJsg6KxpookUVtgq23tn0J28wsAyHdrPVOLFfYkEqHJeAFhYDcSngHbowdQ7CjaVHGOA9ZFOgTnApic806REzrsH8OcehVHMJYCqhdY6orZkxCulQ+g1zrs0TIDdk6AoXu3V4y8yir1JZA3gBCznUrHnSyejLp7MvnlARe7L1icukBvRgcqt7Wz0GJPeo4D5xPujlRJBSWLLO-tfB0d9-4FSfjDF+0ltUXKUpfQRRqYKPyAa+FmYCIGYXRXhSAbyfKILIpCVBaMSGYJYeIo+eCZH8KdFqhhgVSHBvIRIz+0k+FuUTelR1PkmG2TYUfXxPDk1mQNdqdNh8g1iPjUfM64aU1QA8gouVrzYlOumR+DRcznGFN0YlB5bFMrA2MflMxxUbylUbYhRpTpqmtL5PM46AtPH3m8cDfxY1AnLWiaEpdkSgmrVHYw+Ju1LXaKgPNNJk0MmqObXsHJU6fAzqvV9SpNzVmPpBpsiWENlbWKmd6+6ByWlOKSS4sZLB8aE2JqTTA1zLjDJgsBo58rv0RRmTe0Id6nSLJfULNZFBL7VMlg+HZeyBZ-uebumN90zlocufebDl9bnG32abJ5LALavKIjbFgdstBsCLjgCSVZECMQnbAKgaAxXrjeH4NAMKg5kBDp4cOEVyDR24CiiNUB3VJybtijOFAs74ohLnIlFgC6SZ5C5dTMDE5ym01KHFendgFyLryilZKfwCq0EK+uorbOsqXtK7usruXkss-y0enmJ7eZnli1ubLO4ypeevNotRt7KqHCOMcPYL0-o-JOgDOqnSiwkN1BduGJAjRXVEmac1gZ8AkFV+88HN7P3ugkzW7asa1bWOkxrDTL1xQZih16HXPrFMw8+vVVS301M-fUxD7pf1McG-lq1wHQM9L6QM9ZwMYN0x24Nsjm1x2UpW0eyAGHJtPv+rRjZYN8OEYec00jKjD4UcPckq522Bb0fuYxx5hz61gC9T4D5Ds9CGFgAAdXDJGTAhU8TufB0YPY5I7D23E3sKsFAgvW13BsRT7plCZFMLAGcaDD4xToBiN2+KFNgGidG3glPMDU-+XVsO9O8R4HkBzJnawqc05SHT6avzGdtmGKz2nHPWdi+Z-TwX-BhdjVl-zlnCv2dU+GjztGfOJfq7p9r26uuBds7p1rlXevTcc+V7z8XJupd0Ddhb+3QuOd4lF7buXkvXd0C54bjNdu1dW99-eZ3LP7wO5Zz1MP9OI8+6j9zmPGI4+K+l+7-3FPVex+D0HpPKeNcs5tzrwP2fI-0-N57rPyec9EzzzXivxevf57p0Xo3Jfq9l6d5XiXze3ce8b1X3vvvE-d6p0PzA0fR8s9jGXhnU-6cz-j5zkfA+JeL9T1T9PSf18F-lxnuJXud9K-39RQ-NeRon+smfsvl+93X6Xw3tv9+N+YFbwH5-u+u+r6p0fvvt+Y0f505+7b416T7f6F7n5gFP5V5jSz7AHz4YiwFL4i7-4kJe5IEv575J4YG76IGoFTjoHn6P7v4wE174HG4QFl7EGZ4S44Et7kHt50Ec5f7QG0GgH96sFU5MHD4MGEFl5QEkES7c5wGh4IHCHIHwHgH07iGYEoFJ4yG4EsGCFU4KHH7yFEG8FV6qEc6aFCH166EqE15v40GGGd4GEs7aG+4cHKEWGgEr6cG2H8GiFSEYi1iQHOEOH05uFwH2E2FeGQHWEmEs7eHIFKFBH+Gz7GEH5V4hGyHUHRES6xG77mEREP4pGuFGHpFJF05hEJFU7ZF-5J4FE8FFGgEeF+EX4iHpFa4+HVEBF1Gz65Gn5V41HIFRHNES6tFxENFL49GYHxEdGa6ZFJ5dGf59G75b4IGjFAG+HhGVFL4CFzG-JVFJ7LESGzF5Es5rGyGTEuHbGKHpH7FqEIFHHS4DFX5V6nFeAnH6GrHDE3FmF3H8GBGbH05XET4bGDFbFlHpHEgrEIF-HrG-H1FJ6AmyFNEXES5gm4HtGQmb4aGglkGIlUHAll6wl35V7Qk5GokLEvFfGc52E4mYGLGvHuEpGQGfFwlw5wF4lUlEyNHkmRGMnIHnEYnDBInz63GclonMmYEQlsmyDPG8kTGUkCnUkLHlHhFYlp6SmvHSmb6ikAFZ7ylR60lim3jn78lKnDAqn07onam+4Inz66kpG6mskGkT73FSG6laloHKnsGmmEkx66kkn4nvGc6ylukUkpHulyHz6+m2kEFZ6+n6l2nDC+nmlhl0Duk+lclSHumhlBnhk16BkUHYAOkx7umSGeFZmel0nTEykpEFkKlFkgnz7Fm57lnn6JlpkVnl6lk34x51mRlJl0B1k1kl51mpmdkZlVn8GKlRmYB1mul0nFFR55nqljnL4pFTl+lSGzndly6zkdlLlGnzkcnrkokx5TkrlZ5TmLl7m9mbkLEDmtmYBTkjnqmWHjkpHXnTkx53lzmeGPkHnDCPm7lvlrnPkbnflbnz53kflRgpm3lHm-knkgVOEpHcE3kx7QX3nz5wVPl+GIWvl0CIWAWv5fnIU-nYV-lSFwUYVgBwWoWYVCmwVOkIU-Ex6-6b4TkWlgA0UJ4pGMWc5qn0UsUy7z4cWEUcUtlpksXMVxmeEsU8XAXUWgV+EsXZmSVUXz7j4ekpHyXTSnlplKW7GeFKUkVgBKWEVKV8Ul7yWKVCV+HyW6ViVyUSXhHyXSVWWyVSH66Fkx4OUllOVln2WakpHOUQGuWz76Vy5eW17z4BV+VZ4BWEUBVaUBXqV+FRUqUl5RWh5WTKKTLWywpybwoE7BTOYWbVpua+YSpxYcqBbaQBAzj5ykocDrDgoha5WU4Y6+j2ZZwFw8o5WKRnIxZ+ZSorzSASSlXGZLD1LJZ9hKq7wZbqpNo5aY7TZDbvxnZFaIAlZ9RlaIAVbjTbohI1YCzs4NYxIvYarbQHrtaAazpTYoA9bsR9aTUDb-ptrHX3pjaXaCwTbbi3ZbL4azYpXMz9blxLY3V5JUYpJUwMzrbgb9KQZfZDLmywb7YtKHY3RXUna3UFY8xjRLIvUrLXZQZ4ZSx3JEb7gkYsZNZgAnJvZHXI2QCfY4ZlL-QPZ-ZPaE2A7A6hCg5fJI5Q4w6yCXAI7lxs0o4CANCYosopAeA47BR44Ip8hE44Sk7jWvHe47F0WDl75wGxhJ4BXTSEXy24E2Vy3q14huFq2QEhWW40npF63EiG1wF-KW2hFm3n6K1nnK3IGq0IHq2a3q1xVe7q0G2u1YVzHq1sVK1a3C4W2+2Nlh0LF21l6B2O3B0c7G0u6YE+0uEBWe1V5hVR1L4u0p014O1plx2O6Z3EnW0R3Emh051kWl0TEJ1B78HJ2eEF0fFF0THu2gHZ0N0JXpE4B8YSF53t7d0q1d0907Ga0D1Al57D3a310VFj07E12x6T0h0x352z3a3l0N2r0h0l0uGb3S5aXJ6L3S591N6H0-5D1MkT2z5p096n3BHn0sn32yHL39230EmX29Hv3F2f277P0n14Ub2v3T1zG71AXf30FgMc7t0z2v3H2D6v370gOWmP0THr3QOV072v14jz0H113IMzF4Nu6j2YNQPAOYOwM944j-E72UMSEkNy04A0Mj1d2MPa3X1j4sMh1AP0McNp7YMMOm1548Ob6oPANCNR7b0b1iNYEIH8PIHkPsOz50P4nJ5SN4GCNX3MOz5cPKOyPdHqPIG-2D6qMiPcPh3UP8GaNL6GMUP-0z1SPaN0kqNl5sPh5SOj1SNKOOO6O77yOuOPEyNSPEiWNl3BMTHWMKMLF8OBMOPqlOPgX6PEnuP8GeOxPeNAG+Ox61hUMb1ZO0Nd25NMN54FOsP5NwExP0XJ7FMh18NVNp7hPh61PCOlMSESMz2NOVk73tPZ5FOKPNOyGj1dMYguOZNaN9O4E1Oz71MjMtM9Mf0yNdMmM6NdNTOVO2PANdPlNB04BdPDOrNL4DNl4pMVPbNl4ZN7N8ljNAGtPrP8GLNeMLMrMnOROXNu6bOx1PPEm7MfMt0vO+5HNbMLNnM4BYDZMz0gt5N57guFMyNQslOQtlNd2wvVOIsCMwtwF3OpNItp7XP0NYsm7wtyMovO1Ev9Mku4FfN4t30Et6NosGNktb3UvJGMtXPMsc6POUtgB8MctvMr0csUs8mst0D-PvMctAscsIMctBOCsT4YvHOSvsv8Fcu4PSu3j8sLGj2SvCu8uQV16gvAOQFav92QGj3em6sSE8tGtwF8NuUb2QGytbOQE4s6MeVmuyFAvn6GtN7Vld3n5fPn4Wteu+U+uTPBszMyM4X6sWOus-2hv9Gxu74BuD415+sCvhuHPxt07uv+M72gFOteOgH2vvOWX0OgHWvKtpvxMVuJMZtu6etJs6sIHRiv1z4uFNuD3b7NsEjpFtvj2NuduJtr6dvYM9s7ErMjtr3dudt5uxPjvC772ztH2Tu9MdsX19saMrvIEDs-7NvDvNtjtTsbuYFLuR2Hsxuntm7HtJ2Xu767MLtoXXt051uDunMPvMGvuGnvsyufu3j7uKvfv63-u3uYOa13sT5PvbsNutvGNnPRjGPgfT7GMgfGO3vGNbsIdWvdvGNjvGOFv52wdW2YcMnb6qMweqPwcL6qNIfruNuqNocUdBvEchuMdhtQdmMN34cns0fR2EdpHMdXt8c3s8eYFUdZ1Cc+NifYkCdXMSdu64ft4cfEnYd-tSevMyclFcfqtqdgdacFTb6DOXkVPRj6fkcYhGdwEgf6e3v6d0emf6fDv6djv6dyeH76fTuGeDPzuDMweDMmdmdtHduDNWejN6cMeNuDOOdW0hdzOtsLMBfcdRdxsJcJtxdL5Bf7MpeYG+ddPefZvsexcZcoMFdAERfPNJdAE2d+efNFeEPVd-O1cT4wccstvsdNd4i+etcgete3utcVetfDutdjutfOdV7RitdudB2jdEeNtNeNfLvTeruttNfdfBfzcP3b5NeDeRerdHvrdRvbdnv7cXu7dL69fOPdscudfpvHeYGzdL7zuSvjex2TcLHDdr7yvnfKeHeqfXcikfeac-dAHteQfsdkkgHtuNvGvdumsQ8Itg8SHDs2sVEcV4ivdn0Edw-glQ+z4wcetY-+cY-kt4+yEVd+1y0cVjuOsE8G5U9u5E8HetvGVzEsUk9nc0-3ts+YC+e510+Scw+R08+ycC9WFC8T4I-lsM-9ki+3ggdt1S8GdB04idtnOK-g8uEq8SGa3q87G7Na9T3pG6-IvYGdsrMG9p6o+F5Tv6-Nv72m9j5W9zdq-Nua-Ns6-Ns2e28s7YMe9vH28scN3e++9f0IHe8m+v1e+AOB+CdG+puO9XfB8wOR+8+x-8-R8veJ+FHx+ffJ-Enu+YOu-8HO-JPp8h76-Qel+q-++Ifl+9tq+ofV9z31-a0m84eN9b2t973t92-YFked-eXB+qM6+0e9-1nd9Mf99be19scVE4iBPD-N9rNy0z9l7u9SOD8x+V9x+T9L7K9SM2+z-D8o8H-z+lfj8LEr+S+j--en-EkmdL8Sn6-6fK-GcP-mcv81-+-Wdv8N-YEOdf8Ts--o9g+HnP-sLif4O8P+C3CAcgR16DN3egzL3uFxAHYsAB0XKAUHzV7LMkBbZLAeeRwFgAYB6-afl01v7Zc8BNvfLigJCaUCwmeArBrQLgEX8gBBfWgSQOB7T9WuyvVrrfw6768uuvA2HsHz678CJCJvIbsIJ2KPd86OIJrjbxm7iDcC3AyAewOo5q8mu7vJrl7w27yCGWggqfnMWkF7dVB8XXQbxxMH8czBUfCweAysGQNtBHOTgbl2UEp8bBvuc3nqXe7YFJWmg8Xv70lY69JWmvTVnYJL7YFQewfA1vr0h6hDai0Q81pEIw6xDR28QiQm4LwKAC1eLrcIdj2SGyFb+3rRIYTwKHC53epPZRohRN6U8shqA6frmyKFsschu+L3jXhKGs8qhwnBoY+w6H2CuhhdOoR+z6FfsBhP7HoaLxGG3gWhlbDIcwKGFtcxh8vWOngCV7pFFhFfCoisI17LDO2uzdYTsRs47Dta2DfYUvU2HosThLTM4Zj3kLNszmRw6XCZ1uFcELhhQsQm7yeHC5Dhe7N4cgJeF6C5aDwy0lcOMEuF-hnLL4XQD2Gv1thr9TWiCPuEJ9ARd3MEUgwRFUCfhuJJEbeA+E+C1hefDEV2xRETE4RbAuYngDL7yE4OywqvuSJiFiE6+1I+HpSNRbAiW+9IiQYyNtqsjcCNwnvpyOOLMiVBDdUkSt35FrdaRY-EURIN5E6EpRhpGUZgBWZCjTBEo5LnKPwHsj2hqo+4VI25GOCSR+-VUYfwNEKjAmhw6JuqN+4GiYRgTLUcSL+GP9lhz-eQvpxhGWcHRAg4EXZzdEiCvROxVIXgFc4+iDiTo7IcGOJahjSW4Y54R6OFGCj4BgY4XAqNc6RjqeYhWLsmPqHpjsBmY3AdmLVG5iXRm-WMS+1zH71-RFjeMYL1zHRUSRCzQ4Qsz2ELNthCzAsQsXuGAtlhHAjsasJJE8D5CfAvse6MFFCCBx3okcb6K7HnCxxQYsQnIKnHC57hTXGEUtwnHE8Vx4zNcQmI3HfDgRHLLcbKJnFAihxC-ZRngG5Z7jMA2wi7ueIYrXibh4ra8VKwPFp85xGfHcVnyPFn8Hxl46YU+Jv4PibhYQ4EREPUKv8QJ7-NYZAT2FG1lhiPEkXaxgnpDBRmQoCSGLEK48wJEYtCQKIgkxicJoolCXSwwna0EJ1QuCYYKQmHi8JiXLCSdxImYFthVpCiaJyImZs6JYxFibTzYlAE-RxbE8aWy4nfcaJVXDib7hhGy8RJDXLIksKKKdsTOtYTtprXkk0iXCSkuITJISEIFVJSQ9SSkKkmISKiWk6cSpOuF6Swxmkp3qZNkK7NDJxQyyeuJ0lP07JOg4yb8OUY2TaeDk+ng3XclZjzJy-JyRzmsnQiApQrEKZgDOY+TMA+9SKRqTCm3hUhMU6sXLUSnYNEpNnRKUFJ-EuTWxcU+YfnVrBkjNJFIoolSKKnKTvJdIsqQyJKlMiKppwmqZOKqmXCmpXIrIjyJal8i6p0AtqbhLmIFTQuKk1Ris36l+8DJUjHqZx0GmUS+pUjVKfYwmn0SFpu+RSR4yWmsSGpFzDaRMUkHt4RpqIqaeiK2lAE5p2ImaYwIOnVsjptbNaW7gin2iiijozSc6KyKuiHpg4gyZ6Lemjinp9Un6Y1JUnACvpbrF6eAI+lKC+pgXEGZuyhk0sAZ4o7yUmL+k7ckZ20oGV5LBlKiEZ-ktGXTmsldNFJxAmGeJxxlvsSZ-QlGdxKJnFcqZbuVKfWJpnqc4ZV-JmX+LJmSSiinYjmd2OSm9jNJ-Yvme9L6nDiBZ30lSWIK5n-TvJMgrIrOJFm5CZZ4MnmdhKFm9SlZ+EqWfDIMljcJZyMsWeRK1nTS1Z1EvWbRJ1mWCTZGouWbvjkmisFZiIs2dJwdmVirZ1Mp2b7lSmSt0pfgu2ZdJdnXS3Z7MzSYBO8nASg5oEsOeBL6mQSsi0E0orVIMnwS45kshOVNxUn20Y5oMqOYrLcm+sM50MpObDJDmays5o0kubrKLmTSK5mBYaYz2SnNC85i0guctIbnWyW560iOZtI7nbS25zstOegyrnV0e5vudKRRT7nMyB5gPIeYHJcLDRpJUxWSdUQUmLzypFRWeYLLlprzqp88+OXMU3njiRilvA+anIbp7zWpR8syTPIsnnyrJy8-OdvPVmrzPh184ic-JTGXz9Zu81+is1PlHd755g9+al1vmWyAFmXIBcTL-nsSIFjsqBb3JPmYNv5mDbBj-MEkgKLRMC0SWAsnmvzbp1RQqTPOKlTFSp+ClebvMqnEKt55C7SYQt+mULiJuC4+avJI70KL5J8yjswpvkjEh+nCgaawuLkbzjG7CpltQsrmMLDZyjUaMeMcYSLTZwixubIubncLmJ8i9ubQqT68LnBqi2BaIsOnKLaZgi8rvordy7NpFvszRXV0UXEkzmw0e6VMUekzznpIxV6bYvXniLPpzi0WSfKc7VEAxjihhbvK87eLM5G8wZprWsXKzglqs1xTwtXmIDfFpciJaRISXoDPFYiqRV0yQUbNAlgCuJcApSVKL7FxY9xZ3IKUaK8l+0spTQJyWDyqlBimpUYqyWmKKlWCopRMSsWcypiXA6orzJnn8yelLiqRcLL6UeLV54sjpfpN3nSyRissoZfLKmXZyBl4S8RWoK6XRKJlfCpZRPxPm7i5lIitZVYxWWYyRl2MsZdkpOW5Kjl+SrZYUpmWQKbl0Cu5Vor2WKcDlxJJBZ7JeVoKHlGCnZazLOWtLxiIdKxaHJnlRCpi0PEFf0tiZ1lpoSC2CRvMTlgrxl8KvxcisJYjF0JiK-Hpio4XYrcCNnaFbCvWVSLKhEKxJeItqG4q6c382ueSuOWkq5F9KhRZStsHorrlJ88yoyvuXsrbmAK18dypP6cqUF-K4Scyu+WirtOrK+-qsTnl7EF50q8ObKpIVy1cAkKipiqooUN11VVCxVbpPlXJyli1vQ4iZL1WzKTiV8s1YsscZaq8VRq1ZcqqfkWr4lyja1W-M1WYNbV+yk1Y0I9X-y3VrQnVecoNWFiKiLq7oV6rUUhr3VPqwruGr5WRr3x8az8bGsZl+rx5ia35QGv+WrE8FmqghXsSIW5qlVzqshYWo1UhqsOhxFkScQEWVqUVxa1CfmqCX1qsVja7qdmsiVWrVG2DLAENNrVOrO1rkgdbsuVVSMVmPayRbE3HUyLW1DK0tYGpHXBqli2ovtcUrnXdz21z46tf3PLUJql1p0hdZMLXVAFNaU6jNUepwWrEbFexOxZqocUnEnF161VUHSwBuLH1wypYl4svVIrnVgM+9Q2tvVNqrVISw4pDK-V3y31hckNbEr-X9rJ1XTEDR-OVWYCwNxsgDdOrQ2zqoNhAj9YuqQ1sqsN9smDcXQQ2bqINlSojdUoo21KqN9SlDT8zo3NKyN6TQ4u0r2KdLVi3SzVb0q41PrY6WAQZTxvfXKrRlbG79VasmUnFplgm01aJpbXSaox8m2yRxrtXOqtBym2DWqu2WSbENqm1JZOo5bdqzx6mzDUsSvHGbW55mlRYptJnabSlIayVqkP43brTNu64Tfut02Hr7NWU6zeYts2WLDiwckNcCs1Wgq9i4KkLbxvzq+k6BTxITc6oRVhaxNk65CRFrRUPEWFQW+ZclstXZbwNqWyDUsXPxjqSV+WoRYluHXxa9NaqmlVavrmxaTNyqxiZlsuXNabuAW3UY1vLH1aY16W55d1uOntak1vWz5aVuPWDaz1rWrNQCRlUN07w3M5RnNo2Ggkthvxftqto0kuFFt2q2bZ21SFba6Fy2utY4322gD1tGWuYidulya1LthhQ7XloqI3bPeZ2xyXdslHTbB1sTR7RqVe3oyLtYfZ7SqPe2nLNtwUn7Z0LB1hqgdq6h7VGoh2uCAdrsqHZRpB3ubjtuIuHRPmu3EMEdF6gEjmoe15rZtBagnUWuO0lqSdZai7RWtBJVrNtNamnUds+1MKGd52uWgSCy0VN2dbavHR2qZ0qaydRKvnRpqDpc7y5FO5JeLt+1s7ZpvxeaSzoa0La3Gsu3DYrvw1U6OtquuzertI1E7nN0u1zZrpz7K7PN2uxpZLsY266pVAJK9bNpvUPa71m2h9bbsi3t59aG253XFuO2frrdSWznb+sd3-r7dgGz7cBtBKgafd92i7XGLD2C6-dmyoPWSq906ak9nqiPahoT2+qM95sj3fOoW2EyY92-X4l033pu6tdbOhZntoeZF6DdKeo3QXpFUB601UeovvXqm2bbWNs29jQCU40PbuNvel3V7ndzu7+9nuz7SJs72+6RdEm9vYHou1NcTOQ+uTSPpxUz7I9bOjQb8TU3d749c+j7Zzoe6gkOWKzRfent33obl92ei-dYNX2gLD9au9fRruO0PdN9PKu-Topv3I6J9Q2j-fgzf1m6z9E2gA23tm2BaLtwWh7aFpAOk7Pt0c5EpTrZ1wqFtCWqA-qoQOM7Od6cuAzJpQOYTNtucrAzaoIPvCiSuBY-SVogN76RdFKvA1VqoMTqMDdKnA5frAPYa0DLWlg4XqIM2aaDZepA6-oBK8Tjt-Erg8PJIO-6BD3migzlJEPTyN6erehvNq8YKq5DkchQ2pJkbD7gGO8tQ-vI0OoGdG6BrZrPp0MKCu6HOow9zp3q87jm-O1JrHosNvarDieuwxVqUOp6nDp+kw3Ths6QizD6XPPCrrcNtaAjhGjw+ur0PlKZ6eugwwKpUN16IjI2qI03q8P+yEjzG7AvIbKGKHYmxO-QdAYqbk68j8BrI6PoKM0L-ek+2Oqoxt7GGSj2B6fuYaqM5ayja+uo-ZOD72Gmjwuro2LqKMS6+jUuto7-LV6MGGjwOio-4Y6PsHF+9+oY9wYmPEaMjOusY31qmOvL9eqOnI+dIWP0a1jhIjY1bpUmZHHGduvqcoYMn5Gg6n-IopoeSnaG3J5Ri4-oZOOGHY6ASm46zoeNL6zjlh7ydYauO2GKm0Go490fymUG3jye2Jshs0n0GAT5+n4wrpeOTGQTt+mE5wbRPQ6ET4RlEz1pxOI68Teij4-EYJMpqnj-+u49IYxPAGQ1xxyddkbVXnGlilxvjQPsuK3HnV9xq1Y8aZPPG6THIk4rUa5OfGhTuBzVc0efX-GWTD8nky9oFOgn28WmvYpCYZPuGxThymU4DqVPjGaTyJtU6ia1PBG5TmJ5VV1qNO4m9T5Gg05-p1PEmLT4hq02NtWIt6zT6R7kr3WFIh1yOkBvwuFp9Osn2S7JukogaDPcnSSlRtMilr9NpapCGKmM40YjPinHa-rD02cRTNU4pm5B8IhGzDOuH1SNeDM7CaTOjGsz-qzwk1pLPTH8S3PGPByrLOmm4zyxis6sYbPrGazmx+iqPLrPJGqzzpls9SfCId6-CXe+MoydeJ96Bz-p6MoGfVIDcfSoZt0uGZLzT6cygpmc8HvoqLi5zvxoc5KbTIb7MynRvczvrHPgmjzuZjc7QcdoGatzmeic9qbvO566SHLcjrbIPOhGVzvBp8-wZHPv6PzrZ-0u2aVrey3z5Jhc5SZ-P+btytJ+iqcdeIO7PCTuvwtcfnyvqELnJycvOdHKLmlyrxtMu8ZQvrmlaoegi9ufCKwCZygJoi4eZLyIz5yp5mi8qaouqmkLhZvC8WbgulmWLupri-qbQvom6L75ni9ib4uRGyL0RrC7EaEvUaBLDekS7sZkv7GoLhxzwvjvCKE7kKo5-EshygqTnX805+itToQqYX1S9Ooy-yfwqrmDLhFx2mwtgqJm0yXCsywVteK9q7L8puXONLcv9GXLl5hy6xZLxy6nLzBny9xbUuBGTLsxukrvx0ufmIrjZkK82ZUs164rtpjSyboSvyWkr4FrK5BbkrQWlacqvK0tqKva9FKul7SvpYKvoX6Ku2sq7yZqu4WDKllqq8KfVLmqpCLvOq6uJjw7surpBvq85I0r0W5c7qnq75aavqnXiEfMa-eamusH8Sr9cjvCJKu3KhrsVhq-FYWviW2ryVja6lasrbGTKkhg69laOvKW-CupZrhdfANSlvTt15k2mUusAdnSsc40sGfVJPW3BT1naXLkutaVLrGTS6+R0uuEVLrwzS63R0uvz1LrUzb6y9eGv2lGLjtXUrDZq0fW6tb1zi-ddCtyka8wN6s5jcEvY3FjhN0S7je2v0UXS0N0ApDc7PXXjr5N068Tf7NylBzUpYc54RP3a1Qb451m+Va5uG9jSs550uPoutjdTSy5sW81eRvz6Jb8ZkvALelzg3llItyizLeou-XtZQthGzqQP3a3mL7N-y5rfYv4lFboDfW4+Y+vPm5b-Fzm-eNVvrWlaZtwYRbctN23drTt95Q7dktS3uzdJZ27eGBuStAbNui67BdNvwWw7D1hW8hetKoWo7pRp297rjvYXlS-uzm-hZTutXKbxFrOyvozu7mY7atx68CYLvuW07Ot4eUjZLvjXfr6S00pkudI7MG781-2-nuNKkCm7j+j6xQI7vfmy7iVhO-+bzsTFIbjYlu37Z7u9mB7LN026pblLqWpSuRhe9Hd+uFGV7xR-24ZetK07Obplne41bXvS3Hr7Ug+98Y3v52Lrjls+85bnsa3lSAi50p5eNKz8n7tdh+0bY-vwmL7wVu+zjb-u8Wr7kVj69FbfuO3kbgTL64E1hsmjTSZosBz7aXsM2AHill+7aNNszaLrhV60kvOdIra8H-NodqaWN7EPjLlNw+caUNUEPoznN5tsDfau0P7LCt14dQ9vv+2HVOD48xg8rsNdq7zD9+zqX+2sPNTjD2a9w--vsPwr5D4B9I6JtylYdlD-u1g4ptO3EFpD7-aI8QfyPkHkjpm9o-OsDnQDY5m68Y80tPnfThj8q9FvnrRapm0WtwdFp+vBlIzljmh0OdjM5l8h-pfA948Lty4IysZe+8mS4fmOeH6ZPh-4-zOBPJrXpE26E7EfxPLbG5vG9E8NPxlaz7j+s546UeuPB7uT60-k+kvZP0rsTye8k+nuZODHY5tm9U-pNAWe9A53m26R64+kBNQ54W-6VFuNPU74ZSW907cf9P6jgzmEq06Yf+OVbnT4u0ua33xktbszsJ05vPP1OBH0Za85mSM2TOEnM5szZs8AfDOrN7T7uxuef3rOcntT384c8kv7OhVlzrR8050fbOKn1zkIf6VDsDnw7T5yO+89XvBlY7OZeO988TtXnk7-znp9GXTtDnM7oL7O0BdzvQvL7gL7q686mf+PS7kLkJzOfg2Zk0xyLg22OfrvYu4nmLrG-i9bvEvKznzmR7C6OfUvwHe5ivT6Sr2EurnpLjR+i5KeUuyntLwA6y9yvxl57bpRe2OeXuCufn4Zde6K83sznt7OZXe0Of3uyvD7wZZnf6VPuKvz7krhF8K78fKuUXurwiaq4xcbnn7-LiJ-q+rk+kZdmZQK6a62fGuyX9ril9K6pdXnQHhrul0ucgeWuVHrrj2767ZcDnAmwzU9ZlfldPPtXVTt0pg4HPYOcyuD-0vg4TdWOiHmZEh6m7IdAWKH8ZKh0m4Gdjm6HPpBh0Oc6vpvWjT53q6W9lPZujXmbhZ6NdzcWvK33qpt94cLckuo3Dr2t0643PLXq3cjjtx6-8eYMHH8Cttyy4Hf7X83h1mNw857fhuJ3s9-MkY-xLQrZhTZO668VXfDNV3dHVd-PVXdTNV3bg1d04+GDQqtK0KjJtCvI7QrCK0K7d8mfXd6uz3RWhsuXZfdhPhyb7xt32RidLuiX9FOsg+87eO06yN7gm1IS7LfvhLfhYcse8EPqlhy+7mm9B-tOeFhyd78Sb+75foeanK7jm7B4aebumn+ZFp02TafhFhoHTyD10+I9guhyfTuj3m-w-WXaym58j2M6zxUedXZ7-c+WRme4ea3oHxU4J6WfCeVnDHz+7x4A9K1uPdr2Tzs5o9SOFPLrtjzS-E+DuuPDmosh4P49+u1PAbpj3c9I+zuVPejlj5G-zJvPN3HzxD185s9iu2yfz2DwC4c9AvayILlz-R85YQvKPULrzzC9A9wuAvWrld+RabLR7yyaLvz0J48+fucXkH6E4l6k9OeZPQX9t1Z5A9xfu3snzu1F-U-ZeSbyXza5l4ucxfx3pXyd2F+ndufQLlX1B8V5w+weBX+ZIVyu5FetfHPQ5CV516leAeZXzXjN6B4VeDfzL6HlV5B7VejfRT03hTbN6U3lku1RZVy4t9i+dkTX43s12e9HXLeUv3XtL7WVX67eJHiH1aU2WXXneCv63rJ-N8eWbvoHx34e5t8M-teavr3rl8N-ne9emvlH6N5u9jewf43kHxN8D-KvILN8+7tN+WVqtNks36HnN6D+Y-5kC3sP+W3LnB+2FUfZbxDxW+h9BO2yB7PH84cA-1vEfP7sn826J+3n-vGXnH1l87KLWiyvb+H1d-R8KOKflMrH3k5p8Ve6fL35H294F8ffay2Orn4u8nLLvRyJj-ErOXxEoWLHcF2A-L8quO1ZfUzWX24Nl+nvwRLjxX8fZoseOkLXj48qF6l88edfz7i3wa5N8vzlfxPoi9QYQtRPtyaNmCxjZt+4yZy5ZvXzl9V8QenfrPw8jd7IsFsvfPrvC8Ibt9VezfHLiX6Z799fe4-lnycnh9HIEeyLRHmXyR5T-lXawFHuC9R4Qu0es-3nvP0q+GBl+kfOfwL3hfY8oXlx25CZ-OT4-N-8f55OZ0X7CeV-vLJfvF7388P9+RHSFvljOUU+d-fftf1TzRftv1-g-Bfs54P-xPj+nvw-wC6r+Auz-hf0-xPzBeDszlrPMv2zzBfs+H+uvYAWsM57IuufT-7nmi556v+l-fPcF-zw-5r93+0fe5cPfOXC8oXIv3-tv+f60WCFli6-+W3uCJJewAXt6ABB3u-7yeqvvjL7+ynvAFT+S5MXqIBmnhX4Mu25Ey6gBvPsf5r+eFuPbYB8foQE7+RFu2LbkLXpORteo5B17UBZ-ntJ68lASr54WA3mRZyu7AaX7VGM5BN4IWU3pwEautAZx4V+19nwGW+55Ct7zkj9ihYbeSFq-YyBEnuf5WuCgd-Yy+R3swEneMFmd4qBaTmIH9uQgRgHgiXrhoHc+agfp40W8DjoGJGAgXV70B5ngYE-ecFn94y+APmRZA+CFiD4eBufim4oWUPvOQw+vgaX4I+XgVX4wWKPoEGCBk5CW4RBSLv4HiB5-hw4hBjhkkFlaKQSywxBgxqORCOGQa27bkvhnkH0+S5Iz4FBttkhbwMM5Oz5pBd3i4Hh+NFmo4lB0flEGC+TQVv5FBZAar5kMEFO6YPk0vnSSPkcvlIT9BwzP0F0c-QfPT9BUzP0FuC-Qdr4XiuvviSPkGTI+Tkc75F0Gm+V5I+7-kpQn0GvuPQWt5y4d5GsGoyWwYoF3k4we75gUiJhsGFBWeHeQrB-vn4R3kWlHeSPigwaH57BZXq8QvB5wQQEl4LwcMGgEhFC8H3B6Dn0Gp+V5On5fBmfmCFn+p4uVZwhfXkrQIh22o8HF+MIfVZIhjHgsFSaqIax5-BdfoMEN+-5E37PkLfqSEAByIbb6EhYTpSHpB1IX37ohA-oyFD+4RLSGBSt5GP64hE-viEoBtwTP70hRXuSEleEIbUEHBXghyG-BYoc0H0UbIWKoChDXkKGOBCwQf59BR-kiEn+qobCGX+Xwdf6aht-gcH3+Ood55liY3o8Ev+RoW-4GhH-m+Rf+z5D-6DBf-naEUhQAWaE0hCXk6EMhV5AS7-kjdj6G0+MoQgEPk7dg6G8hNoYH5hhhgReJYBfoZ8HKh5gVaH8+XodKHqhJAX8ELMKwRQH-kVATKE0BV5HQE5hsIT155hLAX8FsBXwRwHlhxodwEPkvAY8H8BlYZEEFhpFg2GxBz5Et41hFIdIGDBsgayHyB3YacHKB-YaoF9B6gVmE3Bb5NoFDhugXWHhhUYPqJjhwoU2GmBI4fGG3BlgVOHWBLYaG69h7QWmSKiSoX0HOBh4XU6O0IIhrS3kngY8FraD5D4GDBfgc+QBBd4caHBBV4fr4HB4QU+GNhSIdEGfhrYa+HSmXwYkH-hyQcBGpBoEXSEPhpwdkG-hLIYBH+h34eOFRgxQf+TM+4EfMZoR5MjBGc+KEaKG3B9QThGJhMoejoERtgURG7hfwZ0HkU+VjZa9BJlhu5aWCvgxHlWiFDFqUU1VkrQsRbgixGzBRFPMFRWmBmxGWhWeOhRQUPjvhSbB4kfEHlCokfsHCR2ZkxFieDls76CRTIXREwBHlsmwyRmgRxEpOVEaUFqWGTgZFz+CkWTYmRbtrhR4BOkZKFyRyYTRGphGkeREORyfgZbghLkSeEOW0ISZbZ+bkeob4U+flpaF+yFGiFeR3ngYKmhaljiERReIR5YEhKlkSF+R5vq-hkhQUQAFhRIEVFH2+NlnrYJRnoT5GqReUbBEBR8EVlGIRSUUgEeRoYWhT8hcUcZFRW2nrBS6eOUSv4ZRjQQVFoeKUa0HCRQQg1GghJliqF9R7kQFYahA0aoZaW2oWNElhHlr-ywUhoRNEYhNlk-5zRwMjNHRRwkcF5qWtochT2hKlo6FbRqUS6EbRYTjiDuhe0blEcR3ofhS+hl0cVEOWgYQhTBhO0ZVGv4aAStGRhRFNGHXRsYVFa1iUFPTKvRxniNGkR50Y5FrRvUQZbZhHEbmHgxZjiZbaWsFEWHQxiITZZlhWlhWGoxoUdWEIUtYWpb1h6MV+HIxwgWhSiByFO2FYxqUV2EqWPYS5Z9hlMYoF38+UZDHqRwkaOH4USuvDHlRAVhd5kx+gbDG1RvMYuGMxX0fzHNR1MdZHDA9MZuF4xQMQTH2BwseL4GWR4SZauBLlu4HIUl4WpbXhCFLeEqW94WrFDeDlnD56x4USrFvhwkR+E6x1oWhQ-hFsdj4KxUkUBEaxskeLGv0UFKT42x5Pu7GU++FNNZaxN0QFag6vsdyEeWqEY7E8xdsW9He8hooHHLhSsauHOxYsVbG2RBsfZFmxIMfHHORStMjwZMyPORzI8olGf7I8dHMjzz0yPFMzI8bgsjw8RHFFpQcU2cYb7hE3FIJSExnPBJHCU2weqTk8Tce+6hSYTlJRdxHsTJRQBzPP3G-2dJCJQjx4OlxQPBDcYZGvEfcRPHVBY8Qh7sUkflIRSURcXTYzxKccMBSUucXZTCUrkZnGQh+JM9zQsa8d5FHx5VqfEHCzFIFENxwUexTi21FFiFjxkUXPGy2z8ZbGc88UQfGJRDFMlH3xAAdfGDWklCJ6gJYAd-GKBwCfHS3xTMTvEj+n8dpGO00CaFKIJ04YAlhxl8W9EoJLtufG4R8CXHFCsXtlxQb+eCZ1EEJssY-Fgxmcf1HsUaocgnDRdCQXHjRY8bqEdx00VxSzRrCd56VcRksJTmhJ8T5zMU60XPGbRDcdtGSUu0eIlAJB0aIm9xJ0dIlnRDCUPFXR-CX7Fy4vCdfpqJQcVniaJkOmvEvRnCXzFMJAscolCxJiSLGCJCcZzxEBRieQlCs6YcInUJyCRDEuJg0Ron5hmcXDFcUCMV4mTRuiSjFjxaMUEk8JmMWvHYxc8bjEhJ+MfxQD8zFMTENxpMeElAJFMZJRUxJ8TTFpJUCYOHCUNrrknqJASaVEMUk4fkn6RkSbOGc884ckmmJsSfglCssDtRTrhpSQDHsUgTDxTWi8Sc4n8UisexTKxJ8arENx6sXPGaxa8drGSUusYMn6xJeKBwEkzFC+GTJoQZnHmx4yV-EMU1sSsm2xSyfEEzJGIGXGE+oyb3FuxGyQPELJDMcgk+xByXAHdJRSTMm5xIccMkVJaycYlbJNSdMmju1FPhGXJrUS8ktJPyduEPJlCX8mumHVpL5tWtETVb0RdJGpTDMalHRxqU89GpRTMalG4JqUPEZpRGUpscMBKUS1sb4aUYkXil-xelBinW+BKd3HhS8kVCmO+JlMpEgpUAfJRwpmkT1be+C1rpEWUT0dpSzxLKc8mO01lCinLxBVqvGkp3yTymbxU1oCHEpPLlykZxPKYfEyp7iVnjAsMMTVYXxcqb5EaU-kVCl3xU1g-EFWT8XJQvxbVm-ELWH8fqmrJiqc2HGphKQAnapAAeanpRNqZlGqU2UeqmKBdqV7Eupw4YakFJWKZyFWU1tj1avmpqZgmqpgoSZT1RQaTHHKphCeFLEJHVqQkep0sU6lpxdAG6nApGlLQkFW9CapSMJmaWf7fMnDIpRsJNVhwkdWXCW1Y+KclItFQpAidWmrRWKSIkLWYiVNYSJVlFInNptqbImNpYTvmkeSlaa6kXR6aXAkppzdj1Z3RpaRzEjWeXuOnBp2adymzpryZOl1J4Uj9Gjp1idpS2J06YmkGUjiaunSpqlK4n7p8qVimeJPKd4kdWviaen+Jx6exGXpuqnJQjeVlGEkaUESQtZRJbVrZb3pzcdpQJJU1kknPptqakmPp3aZklAZSiYel-u76UOnhSLMf+lIJ4GXs6-p7KWkzoRoGaGmoZ5piZQPePVg0mfphEQVZBuilG0mEZyadBldJBlD0kFWfSVCkDJU1kMkLWIyRpRjJVlBMm0ZUySNaGxzGeX4ppxqnJTLJnGTEnkZX6Ygz+EPVrj4dWDsaxlkp2lC7GiZECdJmup0EYxlQZ8mVcmCZcGWpkIZ9GUhnlBsmW9HCZUceJlLpKmZYnUZa6fpkwpwHIpSi+vGWRn+UoKfRR605HHrThUjEXSR60dHHrTz0etFMzm0nlI6x+ZXGVFICR7lHWmF0qyR7QBZmyY7Tq0XmbsFBUmZq8QBUkWT35uZNKZ4TBUyWYVGpZ3qWFnqZdmROmhU08Ylmcp2WW9FRUbglFQ+ZgqTFQoePlLH4OZ4qXVmSppWZBZJUAYOxhpU8mBzi2IZKGpi5UZcACjiokAJKjxYxVL1SBA-VAXADAHAKpjFwrmHVT5Uw2YVQBYXKBHCVU0QLsB9ZikBrj1UUAOnC4oxaKEAtUfKILRDZI2UVQ9w42WVTEogOAqjEAfkHIBAAA Open this visualization in the Vega Editor (although the link is long, and may not work with Internet Explorer)>
+
+@
+let aggTrans = transform
+               . calculateAs \"cos(datum.RA_ICRS * PI / 180)\" \"cosRA\"
+               . calculateAs \"sin(datum.RA_ICRS * PI / 180)\" \"sinRA\"
+               . aggregate
+                   [ opAs Mean \"cosRA\" \"cosRA0\"
+                   , opAs Mean \"sinRA\" \"sinRA0\"
+                   , opAs Mean \"RA_ICRS\" \"wrong_ra0\"
+                   , opAs Mean \"DE_ICRS\" \"dec0\"
+                   ]
+                   [ \"Cluster\" ]
+              . calculateAs \"atan2(datum.sinRA0,datum.cosRA0) * 180.0 / PI\" \"ra0\"
+
+    clusterTrans = aggTrans
+                   . aitoffTrans \"datum.ra0\" \"datum.dec0\"
+
+    pos ax field = position ax [ PName field
+                               , PmType Quantitative
+                               , PScale [SNice (IsNice False)]
+                               ]
+    enc = encoding
+          . pos X \"x\"
+          . pos Y \"y\"
+          . color [ MName \"Cluster\", MmType Nominal, MLegend [] ]
+    encText = enc
+              . text [ TName \"Cluster\", TmType Nominal ]
+
+    clusterSpec =
+        asSpec [ clusterTrans [], enc [], mark Circle [ MSize 90 ] ]
+
+    clusterLabelSpec =
+        asSpec [ clusterTrans [], encText [], mark Text [ MAlign 'AlignLeft'
+                                                        , MdX 8 ] ]
+
+    uncorrectedTrans = aggTrans
+                       . aitoffTrans \"datum.wrong_ra0\" \"datum.dec0\"
+
+    uncorrectedSpec =
+        asSpec [ uncorrectedTrans [], enc [], mark Circle [ MSize 200, MFilled False ] ]
+
+in toVegaLite  [ aitoffConfig []
+               , width 570
+               , height 285
+               , gaiaData
+               , layer (clusterSpec : uncorrectedSpec : clusterLabelSpec : graticuleSpec)
+               ]
+@
+
+-}
+
+clusterCenters :: VegaLite
+clusterCenters =
+  let aggTrans = transform
+                 . calculateAs "cos(datum.RA_ICRS * PI / 180)" "cosRA"
+                 . calculateAs "sin(datum.RA_ICRS * PI / 180)" "sinRA"
+                 . aggregate
+                     [ opAs Mean "cosRA" "cosRA0"
+                     , opAs Mean "sinRA" "sinRA0"
+                     , opAs Mean "RA_ICRS" "wrong_ra0"
+                     , opAs Mean "DE_ICRS" "dec0"
+                     ]
+                     [ "Cluster" ]
+                . calculateAs "atan2(datum.sinRA0,datum.cosRA0) * 180.0 / PI" "ra0"
+
+      clusterTrans = aggTrans
+                     . aitoffTrans "datum.ra0" "datum.dec0"
+
+      pos ax field = position ax [ PName field
+                                 , PmType Quantitative
+                                 , PScale [SNice (IsNice False)]
+                                 ]
+      enc = encoding
+            . pos X "x"
+            . pos Y "y"
+            . color [ MName "Cluster", MmType Nominal, MLegend [] ]
+      encText = enc
+                . text [ TName "Cluster", TmType Nominal ]
+
+      clusterSpec =
+          asSpec [ clusterTrans [], enc [], mark Circle [ MSize 90 ] ]
+
+      clusterLabelSpec =
+          asSpec [ clusterTrans [], encText [], mark Text [ MAlign AlignLeft
+                                                      , MdX 8 ] ]
+
+      uncorrectedTrans = aggTrans
+                         . aitoffTrans "datum.wrong_ra0" "datum.dec0"
+
+      uncorrectedSpec =
+          asSpec [ uncorrectedTrans [], enc [], mark Circle [ MSize 200, MFilled False ] ]
+
+  in toVegaLite  [ aitoffConfig []
+                 , width 570
+                 , height 285
+                 , gaiaData
+                 , layer (clusterSpec : uncorrectedSpec : clusterLabelSpec : graticuleSpec)
+                 ]
 
 {-
 

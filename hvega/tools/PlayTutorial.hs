@@ -110,6 +110,7 @@ vl = [ ("api-vl1", vl1)
      , ("baseplot", VL.basePlot)
      , ("layeredplot", VL.layeredPlot)
      , ("layereddiversion", VL.layeredDiversion)
+     , ("layeredcount", VL.layeredCount)
      , ("skyplotwithgraticules", VL.skyPlotWithGraticules)
      , ("concatenatedplot", VL.concatenatedPlot)
      , ("concatenatedplot2", VL.concatenatedPlot2)
@@ -144,6 +145,8 @@ vl = [ ("api-vl1", vl1)
      , ("duplicateaxis", VL.duplicateAxis)
      , ("comparecounts", VL.compareCounts)
      , ("parallaxview", VL.parallaxView)
+     , ("skyplotaitoff", VL.skyPlotAitoff)
+     , ("clustercenters", VL.clusterCenters)
      ]
 
 

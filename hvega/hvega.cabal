@@ -87,6 +87,7 @@ extra-doc-files:     images/example.png
                      images/vl/baseplot.png
                      images/vl/layeredplot.png
                      images/vl/layereddiversion.png
+                     images/vl/layeredcount.png
                      images/vl/skyplotwithgraticules.png
                      images/vl/concatenatedplot.png
                      images/vl/concatenatedplot2.png
@@ -124,6 +125,8 @@ extra-doc-files:     images/example.png
                      images/vl/comparecounts.png
                      images/vl/parallaxview.png
                      images/vl/parallaxview-selected.png
+                     images/vl/skyplotaitoff.png
+                     images/vl/clustercenters.png
 
 cabal-version:       1.18
 
