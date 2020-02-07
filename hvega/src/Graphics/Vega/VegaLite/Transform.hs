@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -7,7 +8,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 Types related to data transformation.
 
@@ -27,17 +28,17 @@ module Graphics.Vega.VegaLite.Transform
        , ImputeProperty(..)
        , ImMethod(..)
 
-         -- not for extgernal export
+         -- not for external export
        , aggregate_
        , op_
        , binned_
        , impute_
-       , imputeFields_
        , bin
        , binProperty
        , operationSpec
-       , windowFieldProperty
-       , windowPropertySpec
+       , windowTS
+       , joinAggregateTS
+       , imputeTS
 
        ) where
 
@@ -47,6 +48,9 @@ import qualified Data.Text as T
 import Data.Aeson ((.=), object, toJSON)
 import Data.Maybe (mapMaybe)
 
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite.Data
   ( DataValue
@@ -56,14 +60,18 @@ import Graphics.Vega.VegaLite.Data
   )
 import Graphics.Vega.VegaLite.Foundation
   ( FieldName
-  , SelectionLabel
   , SortField
   , sortFieldSpec
   , field_
   , fromT
   , allowNull
   )
-import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
+import Graphics.Vega.VegaLite.Specification
+  ( VLSpec
+  , LabelledSpec
+  , TransformSpec(..)
+  , SelectionLabel
+  )
 
 
 {-|
@@ -384,17 +392,39 @@ wpGroupBy _ = Nothing
 wpSort (WSort sfs) = Just (toJSON (map sortFieldSpec sfs))
 wpSort _ = Nothing
 
-windowPropertySpec :: [WindowProperty] -> [VLSpec]
-windowPropertySpec wps =
-  let frms = mapMaybe wpFrame wps
-      ips = mapMaybe wpIgnorePeers wps
-      gps = mapMaybe wpGroupBy wps
-      sts = mapMaybe wpSort wps
+windowTS ::
+  [([Window], FieldName)]
+  -> [WindowProperty]
+  -> TransformSpec
+windowTS wss wps =
+  let addField n a = case mapMaybe a wps of
+                       [x] -> [n .= x]
+                       _ -> []
 
-      fromSpecs [spec] = spec
-      fromSpecs _ = A.Null
+      winFieldDef (ws, out) = object ("as" .= out : map windowFieldProperty ws)
 
-  in map fromSpecs [frms, ips, gps, sts]
+      fields = [ "window" .= map winFieldDef wss ]
+               <> addField "frame" wpFrame
+               <> addField "ignorePeers" wpIgnorePeers
+               <> addField "groupby" wpGroupBy
+               <> addField "sort" wpSort
+
+  in TS (object fields)
+
+
+joinAggregateTS :: [VLSpec] -> [WindowProperty] -> TransformSpec
+joinAggregateTS ops wps =
+  let addField n a = case mapMaybe a wps of
+                       [x] -> [n .= x]
+                       _ -> []
+
+      fields = [ "joinaggregate" .= ops ]
+               <> addField "frame" wpFrame
+               <> addField "ignorePeers" wpIgnorePeers
+               <> addField "groupby" wpGroupBy
+               <> addField "sort" wpSort
+
+  in TS (object fields)
 
 
 -- | This is used with 'Graphics.Vega.VegaLite.impute' and 'Graphics.Vega.VegaLite.PImpute'.
@@ -464,28 +494,30 @@ impute_ :: [ImputeProperty] -> LabelledSpec
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
 
-imputeFields_ ::
+imputeTS ::
   FieldName
   -- ^ The data field to process.
   -> FieldName
   -- ^ The key field to uniquely identify data objects within a group.
   -> [ImputeProperty]
   -- ^ Define how the imputation works.
-  -> LabelledSpec
-imputeFields_ field key imProps =
-  let ags = [ fromT field
-            , fromT key
-            , toSpec (mapMaybe imputePropertySpecFrame imProps)
-            , toSpec (mapMaybe imputePropertySpecKeyVals imProps)
-            , toSpec (mapMaybe imputePropertySpecKeyValSequence imProps)
-            , toSpec (mapMaybe imputePropertySpecMethod imProps)
-            , toSpec (mapMaybe imputePropertySpecGroupBy imProps)
-            , toSpec (mapMaybe imputePropertySpecValue imProps) ]
+  -> TransformSpec
+imputeTS field key imProps =
+  let addField n a = case mapMaybe a imProps of
+                       [x] -> [n .= x]
+                       _ -> []
 
-      toSpec [x] = x
-      toSpec _ = A.Null
+      fields = [ "impute" .= field
+               , "key" .= key ]
+               <> addField "frame" imputePropertySpecFrame
+               -- TODO: can we combine the keyvals options?
+               <> addField "keyvals" imputePropertySpecKeyVals
+               <> addField "keyvals" imputePropertySpecKeyValSequence
+               <> addField "method" imputePropertySpecMethod
+               <> addField "groupby" imputePropertySpecGroupBy
+               <> addField "value" imputePropertySpecValue
 
-  in "impute" .= toJSON ags
+  in TS (object fields)
 
 
 -- | Imputation method to use when replacing values.

@@ -46,7 +46,7 @@ imgUrls :: DataValues
 imgUrls = Strings (map (base <>) [ "ffox.png", "gimp.png", "7zip.png" ])
 
                       
-imageEnc :: ([DataColumn] -> [DataColumn]) -> (BuildLabelledSpecs) -> VegaLite
+imageEnc :: ([DataColumn] -> [DataColumn]) -> (BuildEncodingSpecs) -> VegaLite
 imageEnc dataSupp encSupp =
   let axVals = Numbers [ 0.5, 1.5, 2.5 ]
       dvals = dataFromColumns []

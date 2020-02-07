@@ -48,11 +48,11 @@ cScale =
         ]
 
 
-month, crimes :: BuildLabelledSpecs
+month, crimes :: BuildEncodingSpecs
 month = position X [ PName "month", PmType Temporal, PNoTitle ]
 crimes = position Y [ PName "reportedCrimes", PmType Quantitative, PTitle "Reported crimes" ]
 
-enc, encHighlight :: [LabelledSpec] -> PropertySpec
+enc, encHighlight :: [EncodingSpec] -> PropertySpec
 enc =
     encoding
         . month
@@ -76,7 +76,7 @@ encHighlight =
             ]
 
 
-iPlot :: ([LabelledSpec] -> PropertySpec) -> Mark -> VegaLite
+iPlot :: ([SelectSpec] -> PropertySpec) -> Mark -> VegaLite
 iPlot sel markType =
   toVegaLite [ width 540, crimeData, sel [], encHighlight [], mark markType [] ]
 
@@ -221,7 +221,7 @@ initIntervalX =
 bindLegend :: VegaLite
 bindLegend =
   let sel = selection
-             . select "mySelection" Single [ BindLegend [ BLField "crimeType" ] ]
+             . select "mySelection" Single [ BindLegend (BLField "crimeType") ]
 
   in iPlot sel Circle
 
@@ -230,7 +230,7 @@ bindLegendDouble :: VegaLite
 bindLegendDouble =
   let sel = selection
              . select "mySelection" Single
-               [ BindLegend [ BLChannel ChColor, BLEvent "dblckick" ] ]
+               [ BindLegend (BLChannelEvent ChColor "dblclick") ]
 
   in iPlot sel Circle
 
@@ -241,7 +241,7 @@ bindLegendBoth =
              . select "mySelection"
                Multi
                [ On "click"
-               , BindLegend [ BLField "crimeType", BLEvent "dblclick" ]
+               , BindLegend (BLFieldEvent "crimeType" "dblclick")
                ]
 
   in iPlot sel Circle

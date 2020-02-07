@@ -112,8 +112,9 @@ import Graphics.Vega.VegaLite.Selection
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
   , VLProperty(VLTitle)
+  , ConfigureSpec(..)
+  , BuildConfigureSpecs
   , LabelledSpec
-  , BuildLabelledSpecs
   , PropertySpec
   )
   
@@ -254,6 +255,7 @@ data ConfigurationProperty
     | View [ViewConfig]
       -- ^ The default single view style.
 
+-- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .= bg
@@ -393,7 +395,8 @@ fieldTitleLabel Plain = "plain"
 
 {-|
 
-Legend configuration options. For more detail see the
+Legend configuration options, set with the 'Legend' constructor.
+For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
 This data type has seen significant changes in the @0.4.0.0@ release:
@@ -1393,12 +1396,17 @@ Defines a single configuration option to be applied globally across the visualiz
 The first parameter identifies the type of configuration, the second a list of previous
 configurations to which this one may be added.
 
+The result should be used with 'Graphics.Vega.VegaLite.configure'.
+
 @
 'configuration' ('Axis' [ 'DomainWidth' 4 ]) []
 @
 -}
-configuration :: ConfigurationProperty -> BuildLabelledSpecs
-configuration cfg ols = configProperty cfg : ols
+configuration ::
+  ConfigurationProperty
+  -> BuildConfigureSpecs
+  -- ^ Prior to version @0.5.0.0@ this was @BuildLabelledSpecs@.
+configuration cfg ols = CS (configProperty cfg) : ols
 
 
 {-|

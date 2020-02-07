@@ -49,7 +49,7 @@ testSpecs = [ ("defNominal", scatter1)
             ]
 
 
-chart :: T.Text -> ([a] -> [LabelledSpec]) -> VegaLite
+chart :: T.Text -> ([a] -> [EncodingSpec]) -> VegaLite
 chart des enc =
     toVegaLite
         [ description des

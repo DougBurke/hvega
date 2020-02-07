@@ -48,7 +48,6 @@ import Graphics.Vega.VegaLite.Foundation
   , DashOffset
   , FieldName
   , Opacity
-  , SelectionLabel
   , Channel
   , channelLabel
   , fromT
@@ -59,7 +58,9 @@ import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
   , LabelledSpec
-  , BuildLabelledSpecs
+  , SelectSpec(..)
+  , BuildSelectSpecs
+  , SelectionLabel
   )
 
 
@@ -99,15 +100,15 @@ data SelectionProperty
       --   by binding selection to position scaling:
       --
       --   @sel = 'selection' . 'select' \"mySelection\" 'Interval' ['BindScales']@
-    | BindLegend [BindLegendProperty]
-      -- ^ Enable binding between a legend selection and the item it references. This is
-      --   only applicable to categorical (symbol) legends. The list of properties
-      --   must contain either 'BLField' or 'BLChannel'.
+    | BindLegend BindLegendProperty
+      -- ^ Enable binding between a legend selection and the item it
+      --   references. This is __only applicable__ to categorical (symbol)
+      --   legends.
       --
       --   The following will allow the \"crimeType\" legend to be selected:
       --
       --   @
-      --   'select' \"mySelection\" 'Single' [ 'BindLegend' [ 'BLField' \"crimeType\" ] ]
+      --   'select' \"mySelection\" 'Single' [ 'BindLegend' ('BLField' \"crimeType\") ]
       --   @
       --
       --   Use 'On' to make a two-way binding (that is, selecting the legend or the symbol
@@ -115,9 +116,7 @@ data SelectionProperty
       --
       --   @
       --   'select' \"sel\" 'Multi' [ 'On' \"click\"
-      --                      , 'BindLegend' [ 'BLField' \"crimeType\"
-      --                                   , 'BLEvent' \"dblclick\"
-      --                                   ]
+      --                      , 'BindLegend' ('BLFieldEvent' \"crimeType\" \"dblclick\")
       --                      ]
       --   @
       --
@@ -257,11 +256,7 @@ selectionProperties Empty = ["empty" .= fromT "none"]
 selectionProperties (ResolveSelections res) = ["resolve" .= selectionResolutionLabel res]
 selectionProperties (SelectionMark markProps) = ["mark" .= object (map selectionMarkProperty markProps)]
 selectionProperties BindScales = ["bind" .= fromT "scales"]
-selectionProperties (BindLegend blps) =
-  let lspecs = map bindLegendProperty blps
-  in if "bind" `elem` map fst lspecs
-     then lspecs
-     else ("bind" .= fromT "legend") : lspecs
+selectionProperties (BindLegend blp) = bindLegendProperty blp
 selectionProperties (Bind binds) = ["bind" .= object (map bindingSpec binds)]
 selectionProperties (Nearest b) = ["nearest" .= b]
 selectionProperties (Toggle expr) = ["toggle" .= expr]
@@ -297,19 +292,26 @@ selectionResolutionLabel Intersection = "intersect"
 
 {-|
 
-Properties for customising the appearance of an interval selection mark (dragged
-rectangle). For details see the
+Properties for customising the appearance of an interval selection
+mark (a dragged rectangle). For details see the
 <https://vega.github.io/vega-lite/docs/selection.html#interval-mark Vega-Lite documentation>.
 
 -}
 data SelectionMarkProperty
     = SMFill Color
+      -- ^ Fill color.
     | SMFillOpacity Opacity
+      -- ^ Fill opacity.
     | SMStroke Color
+      -- ^ The stroke color.
     | SMStrokeOpacity Opacity
+      -- ^ The stroke opacity.
     | SMStrokeWidth Double
+      -- ^ The line width of the stroke.
     | SMStrokeDash DashStyle
+      -- ^ The dash pattern for the stroke.
     | SMStrokeDashOffset DashOffset
+      -- ^ The offset at which to start the dash pattern.
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
@@ -433,24 +435,45 @@ bindingSpec bnd =
 
 {-|
 
+Control the interactivity of the legend. This is used with 'BindLegend'.
+
 @since 0.5.0.0
 
 -}
 data BindLegendProperty
   = BLField FieldName
-    -- ^ The data field which should be made interactive in the legend.
+    -- ^ The data field which should be made interactive in the legend
+    --   on a single click.
   | BLChannel Channel
-    -- ^ Which channel should be made interactive in a legend.
-  | BLEvent T.Text
-    -- ^ The <https://vega.github.io/vega/docs/event-streams Vega event stream>
-    --   that should trigger an interactive legend selection. If not specified,
-    --   the default is to use a single click.
+    -- ^ Which channel should be made interactive in a legend
+    --   on a single click.
+  | BLFieldEvent FieldName T.Text
+    -- ^ The data field which should be made interactive in the legend and the
+    --   <https://vega.github.io/vega/docs/event-streams Vega event stream>
+    --   that should trigger the selection.
+  | BLChannelEvent Channel T.Text
+    -- ^ Which channel should be made interactive in a legend and the
+    --   <https://vega.github.io/vega/docs/event-streams Vega event stream>
+    --   that should trigger the selection.
 
 
-bindLegendProperty :: BindLegendProperty -> LabelledSpec
-bindLegendProperty (BLField f) = "fields" .= [f]
-bindLegendProperty (BLChannel ch) = "encodings" .= [channelLabel ch]
-bindLegendProperty (BLEvent es) = "bind" .= object ["legend" .= es]
+bindLegendProperty :: BindLegendProperty -> [LabelledSpec]
+bindLegendProperty (BLField f) = [ toLBind Nothing
+                                 , "fields" .= [f]
+                                 ]
+bindLegendProperty (BLChannel ch) = [ toLBind Nothing
+                                    , "encodings" .= [channelLabel ch]
+                                    ]
+bindLegendProperty (BLFieldEvent f es) = [ toLBind (Just es)
+                                         , "fields" .= [f]
+                                         ]
+bindLegendProperty (BLChannelEvent ch es) = [ toLBind (Just es)
+                                            , "encodings" .= [channelLabel ch]
+                                            ]
+
+toLBind :: Maybe T.Text -> LabelledSpec
+toLBind Nothing = "bind" .= fromT "legend"
+toLBind (Just es) = "bind" .= object ["legend" .= es]
 
 
 {-|
@@ -469,13 +492,19 @@ sel =
 
 -}
 
-selection :: [LabelledSpec] -> PropertySpec
-selection sels = (VLSelection, object sels)
+selection ::
+  [SelectSpec]
+  -- ^ The arguments created by 'Graphics.Vega.VegaLite.select'.
+  --
+  --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
+  -> PropertySpec
+selection sels = (VLSelection, object (map unS sels))
 
 
 {-|
 
-Create a single named selection that may be applied to a data query or transformation.
+Create a single named selection that may be applied to a data query or
+transformation.
 
 @
 sel =
@@ -493,8 +522,9 @@ select ::
   -- ^ The type of the selection.
   -> [SelectionProperty]
   -- ^ What options are applied to the selection.
-  -> BuildLabelledSpecs
+  -> BuildSelectSpecs
+  -- ^ Prior to @0.5.0.0@ this was @BuildLabelledSpecs@.
 select nme sType options ols =
   -- TODO: elm filters out those properties that are set to A.Null
   let selProps = ("type" .= selectionLabel sType) : concatMap selectionProperties options
-  in (nme .= object selProps) : ols
+  in S (nme .= object selProps) : ols

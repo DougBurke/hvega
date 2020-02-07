@@ -51,7 +51,7 @@ testSpecs = [ ("defContinuous", defContinuous)
             ]
 
 
-chart :: T.Text -> ([a] -> [LabelledSpec]) -> VegaLite
+chart :: T.Text -> ([a] -> [EncodingSpec]) -> VegaLite
 chart desText enc =
     let des = description desText
 

@@ -24,10 +24,29 @@ module Graphics.Vega.VegaLite.Specification
        , VegaLite
        , PropertySpec
        , LabelledSpec
-       , BuildLabelledSpecs
-       , combineSpecs
+       , EncodingSpec(..)
+       , toEncodingSpec
+       , fromEncodingSpec
+       , BuildEncodingSpecs
+       , TransformSpec(..)
+       , toTransformSpec
+       , fromTransformSpec
+       , BuildTransformSpecs
+       , ResolveSpec(..)
+       , toResolveSpec
+       , fromResolveSpec
+       , BuildResolveSpecs
+       , SelectSpec(..)
+       , toSelectSpec
+       , fromSelectSpec
+       , BuildSelectSpecs
+       , ConfigureSpec(..)
+       , toConfigureSpec
+       , fromConfigureSpec
+       , BuildConfigureSpecs
        , asSpec
        , specification
+       , SelectionLabel
        )
     where
 
@@ -53,19 +72,8 @@ import Numeric.Natural (Natural)
 -- | A Vega Lite visualization, created by
 --   'toVegaLite'. The contents can be extracted with 'fromVL'.
 --
-newtype VegaLite =
-  VL {
-  fromVL :: VLSpec
-  -- ^ Extract the specification for passing to a VegaLite visualizer.
-  --
-  --   > let vlSpec = fromVL vl
-  --   > Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
-  --
-  --   Note that there is __no__ validation done to ensure that the
-  --   output matches the Vega Lite schema. That is, it is possible to
-  --   create an invalid visualization with this module (e.g. missing a
-  --   data source or referring to an undefined field).
-  }
+newtype VegaLite = VL (T.Text, [LabelledSpec])
+
 
 -- | The Vega-Lite specification is represented as JSON.
 type VLSpec = Value
@@ -166,15 +174,6 @@ the schema.
 
 -}
 
--- TODO:
---    Should the input data, or converted to VLSpec, be stored
---    without the $schema key, so it can be easily combined with
---    other visualizations?
---
---    Could we make VegaLite a Semigroup so you can easily combine
---    specifications? However, what would that mean (concatenation,
---    if so what direction, anything else?)
-
 toVegaLite :: [PropertySpec] -> VegaLite
 toVegaLite = toVegaLiteSchema vlSchema4
 
@@ -203,29 +202,38 @@ toVegaLiteSchema ::
   -> [PropertySpec]
   -- ^ The visualization.
   -> VegaLite
-toVegaLiteSchema schema props =
-  let kvals = ("$schema" .= schema) : map toProp props
-      toProp = first vlPropertyLabel
+toVegaLiteSchema schema props = VL (schema, unProperty props)
 
-  in VL { fromVL = object kvals }
+
+unProperty :: [PropertySpec] -> [LabelledSpec]
+unProperty = map (first vlPropertyLabel)
 
 
 {-|
 
-Combines a list of labelled specifications into a single specification.
-This is useful when you wish to create
-a single page with multiple visulizualizations.
+Obtain the Vega-Lite JSON (i.e. specification) for passing to a
+Vega-Lite visualizer.
 
-@
-'combineSpecs'
-    [ ( "vis1", myFirstVis )
-    , ( "vis2", mySecondVis )
-    , ( "vis3", myOtherVis )
-    ]
-@
+> let vlSpec = fromVL vl
+> Data.ByteString.Lazy.Char8.putStrLn (Data.Aeson.Encode.Pretty.encodePretty vlSpec)
+
+Note that there is __no__ validation done to ensure that the
+output matches the Vega Lite schema. That is, it is possible to
+create an invalid visualization with this module (e.g. missing a
+data source or referring to an undefined field).
+
 -}
-combineSpecs :: [LabelledSpec] -> VLSpec
-combineSpecs = object
+
+fromVL ::
+  VegaLite
+  -> Value
+  -- ^ Prior to version @0.5.0.0@ this was labelled as returning a 'VLSpec'
+  --   value. It has been changed to 'Value' to indicate that this is the
+  --   JSON representation of the visualization (noting that @VLSpec@ is
+  --   an alias for @Value@).
+fromVL (VL (schema, specs)) =
+  let kvals = ("$schema" .= schema) : specs
+  in object kvals
 
 
 {-|
@@ -241,7 +249,7 @@ spec1 = asSpec [ enc1 [], 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.
 @
 -}
 asSpec :: [PropertySpec] -> VLSpec
-asSpec = object . map (first vlPropertyLabel)
+asSpec = object . unProperty
 
 
 {-|
@@ -277,11 +285,369 @@ type LabelledSpec = (T.Text, VLSpec)
 
 {-|
 
-Represent those functions which can be chained together using function
-composition to append new specifications onto an existing list.
--}
-type BuildLabelledSpecs = [LabelledSpec] -> [LabelledSpec]
+Represent an encoding (input to 'Graphics.Vega.VegaLite.encoding').
 
+It is expected that routines like 'Graphics.Vega.VegaLite.position'
+and 'Graphics.Vega.VegaLite.color' are used to create values with this
+type, but they can also be constructed and deconstructed manually
+with 'toEncodingSpec' and 'fromEncodingSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype EncodingSpec = ES { unES :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromEncodingSpec'.
+
+@since 0.5.0.0
+-}
+
+toEncodingSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"color\"@ or @\"position\"@).
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> EncodingSpec
+toEncodingSpec lbl spec = ES (lbl, spec)
+
+
+{-|
+
+Extract the contents of an encoding specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular encoding, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toEncodingSpec'.
+
+@since 0.5.0.0
+-}
+
+fromEncodingSpec ::
+  EncodingSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"detail\") and the value of the
+  --   key.
+fromEncodingSpec = unES
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.encoding'.
+
+@since 0.5.0.0
+-}
+
+type BuildEncodingSpecs = [EncodingSpec] -> [EncodingSpec]
+
+{-|
+
+Represent a transformation (input to 'Graphics.Vega.VegaLite.transform').
+
+It is expected that routines like 'Graphics.Vega.VegaLite.calculateAs'
+and 'Graphics.Vega.VegaLite.filter' are used to create values with this
+type, but they can also be constructed and deconstructed manually
+with 'toTransformSpec' and 'fromTransformSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype TransformSpec = TS { unTS :: VLSpec }
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromTransformSpec'.
+
+@since 0.5.0.0
+-}
+
+toTransformSpec ::
+  VLSpec
+  -- ^ The tranform value, which is expected to be an object, but there
+  --   is no check on this.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> TransformSpec
+toTransformSpec = TS
+
+
+{-|
+
+Extract the contents of a transformation specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular encoding, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toTransformSpec'.
+
+@since 0.5.0.0
+-}
+
+fromTransformSpec ::
+  TransformSpec
+  -> VLSpec
+  -- ^ The transformation data.
+fromTransformSpec = unTS
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.transform'.
+
+@since 0.5.0.0
+-}
+
+type BuildTransformSpecs = [TransformSpec] -> [TransformSpec]
+
+
+{-|
+
+Represent a set of resolution properties
+(input to 'Graphics.Vega.VegaLite.resolve').
+
+It is expected that 'Graphics.Vega.VegaLite.resolution' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toResolveSpec' and 'fromResolveSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype ResolveSpec = RS { unRS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromResolveSpec'.
+
+@since 0.5.0.0
+-}
+
+toResolveSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"axis\"@ or @\"scale\"@).
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> ResolveSpec
+toResolveSpec lbl spec = RS (lbl, spec)
+
+
+{-|
+
+Extract the contents of an resolve specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular resolve, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toResolveSpec'.
+
+@since 0.5.0.0
+-}
+
+fromResolveSpec ::
+  ResolveSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"legend\") and the value of the
+  --   key.
+fromResolveSpec = unRS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.resolve'.
+
+@since 0.5.0.0
+-}
+
+type BuildResolveSpecs = [ResolveSpec] -> [ResolveSpec]
+
+
+{-|
+
+Represent a set of resolution properties
+(input to 'Graphics.Vega.VegaLite.selection').
+
+It is expected that 'Graphics.Vega.VegaLite.select' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toSelectSpec' and 'fromSelectSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype SelectSpec = S { unS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromSelectSpec'.
+
+@since 0.5.0.0
+-}
+
+toSelectSpec ::
+  SelectionLabel
+  -- ^ The name given to the selection.
+  -> VLSpec
+  -- ^ The value of the key. This is expected to be an object, but there
+  --   is no check on the value.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> SelectSpec
+toSelectSpec lbl spec = S (lbl, spec)
+
+
+{-|
+
+Extract the contents of a select specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular select, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toSelectSpec'.
+
+@since 0.5.0.0
+-}
+
+fromSelectSpec ::
+  SelectSpec
+  -> (SelectionLabel, VLSpec)
+  -- ^ The name for the selection and its settings.
+fromSelectSpec = unS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.selection'.
+
+@since 0.5.0.0
+-}
+
+type BuildSelectSpecs = [SelectSpec] -> [SelectSpec]
+
+
+{-|
+
+Represent a set of configuration properties
+(input to 'Graphics.Vega.VegaLite.configuration').
+
+It is expected that 'Graphics.Vega.VegaLite.configuration' is used
+to create values with this type, but they can also be constructed and
+deconstructed manually with 'toConfigureSpec' and 'fromConfigureSpec'.
+
+@since 0.5.0.0
+
+-}
+
+newtype ConfigureSpec = CS { unCS :: (T.Text, VLSpec) }
+
+
+{-|
+
+This function is provided in case there is any need to inject
+JSON into the Vega-Lite document that @hvega@ does not support
+(due to changes in the Vega-Lite specification or missing
+functionality in this module). If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'fromConfigureSpec'.
+
+@since 0.5.0.0
+-}
+
+toConfigureSpec ::
+  T.Text
+  -- ^ The key to use for these settings (e.g. @\"axis\"@ or @\"background\"@).
+  -> VLSpec
+  -- ^ The value of the key.
+  --
+  --   See the <https://github.com/vega/schema/tree/master/vega-lite Vega-Lite schema>
+  --   for information on the supported values.
+  -> ConfigureSpec
+toConfigureSpec lbl spec = CS (lbl, spec)
+
+
+{-|
+
+Extract the contents of a configuration specification. This may be
+needed when the Vega-Lite specification adds or modifies settings
+for a particular configure, and @hvega@ has not been updated
+to reflect this change. If you find yourself needing
+to use this then please
+<https://github.com/DougBurke/hvega/issues report an issue>.
+
+See also 'toConfigureSpec'.
+
+@since 0.5.0.0
+-}
+
+fromConfigureSpec ::
+  ConfigureSpec
+  -> (T.Text, VLSpec)
+  -- ^ The key for the settings (e.g. \"numberFormat\") and the value of the
+  --   key.
+fromConfigureSpec = unCS
+
+
+{-|
+Represent the functions that can be chained together and sent to
+'Graphics.Vega.VegaLite.configure'.
+
+@since 0.5.0.0
+-}
+
+type BuildConfigureSpecs = [ConfigureSpec] -> [ConfigureSpec]
 
 {-|
 
@@ -463,3 +829,15 @@ vlPropertyLabel VLUserMetadata = "usermeta"
 vlPropertyLabel VLVConcat = "vconcat"
 vlPropertyLabel VLViewBackground = "view"
 vlPropertyLabel VLWidth = "width"
+
+
+{-|
+
+Convenience type-annotation label to indicate the name, or label,
+of a selection. It is expected to be a non-empty string, but there
+is __no attempt__ to validate this.
+
+@since 0.5.0.0
+-}
+
+type SelectionLabel = T.Text

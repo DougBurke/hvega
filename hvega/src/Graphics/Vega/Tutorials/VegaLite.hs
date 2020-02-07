@@ -319,6 +319,11 @@ import Graphics.Vega.VegaLite
 -- you can say @'toVegaLite' []@ even though the output is not a
 -- valid Vega-Lite specification (i.e. it does not validate against
 -- the [Vega-Lite schema](https://github.com/vega/schema)).
+--
+-- Version @0.5.0.0@ did add some type safety for a number of functions -
+-- primarily 'encoding' and 'transform' - as the types they accept
+-- have been restricted (to @['EncodingSpec']@ and @['TransformSpec']@
+-- respectively), so that they can not be accidentally combined.
 
 -- $compare-to-elm
 -- @hvega@ started out as a direct copy of
@@ -600,11 +605,13 @@ to the @Data Viewer@ tab in the
 (after a
 <https://twitter.com/pkgw/status/1167127390880968707 suggestion from a colleague>).
 
-Although not used in this tutorial, data
-can also be defined algorithmically - using 'dataSequence' and
+Data can also be defined algorithmically - using 'dataSequence' and
 'dataSequenceAs' - or inline - with 'dataFromColumns' or
 'dataFromRows' - or directly from JSON (as a 'Data.Aeson.Value') using
 'dataFromJson'.
+
+An example showing 'dataFromColumns' is the 'skyPlotWithGraticules' plot,
+but let's not peak ahead!
 
 -}
 
@@ -620,7 +627,7 @@ gaiaData =
 {-|
 
 One question would be how the parallaxes vary by cluster: as parallax is measuring distance,
-then are the clusters similar distances away from us, or are there a range of values? A
+then are the clusters similar distances away from us, or is there a range of values? A
 first look is to use another \"channel\" to represent (i.e. encode) the cluster:
 
 <<images/vl/stripplotwithcolor.png>>
@@ -721,7 +728,8 @@ stripPlotWithColorOrdinal =
 {-|
 
 The 'stripPlotWithColor' visualization can be changed to show two
-variables just by adding a second 'position' declaration:
+variables just by adding a second 'position' declaration, which
+shows that the 7 milli-arcsecond range is rather crowded:
 
 <<images/vl/parallaxbreakdown.png>>
 
@@ -790,6 +798,7 @@ list of 'BinProperty' values with 'PBin', if the defaults are not
 sufficient.
 
 @
+simpleHistogram :: T.Text -> VegaLite
 simpleHistogram field =
   let enc = encoding
               . position X [ PName field, PmType Quantitative, 'PBin' [] ]
@@ -1038,7 +1047,10 @@ gmagLineWithColor =
 -- the sample standard deviation ('Stdev').
 --
 -- You can also syntehsize new data based on existing data, with the
--- 'transform' operation.
+-- 'transform' operation. Unlike the 'encoding' function, the order
+-- of the arguments to 'transform' do matter, as they control the
+-- data flow (e.g. you can not filter a data set if you have not
+-- created the field to be filtered).
 
 {-|
 The aim for this visualization is to show the spread in the @Gmag@ field
@@ -1141,10 +1153,16 @@ Notes:
 <https://upload.wikimedia.org/wikipedia/commons/a/a5/Star_with_eyes.svg Wikipedia design>,
 after some hacking and downsizing (such as losing the cute eyes);
 
-- and when using 'Count' with 'opAs', the first 'FieldName' argument is ignored,
+- when using 'Count' with 'opAs', the first 'FieldName' argument is ignored,
 so I set it to the empty string @\"\"@ (it's be great if the API were such
 we didn't have to write dummy arguments, but at present @hvega@
-doesn't provide this level of safety).
+doesn't provide this level of safety);
+
+- although the order of operations of 'transform' is important, here
+  I only have one (the 'aggregate' call);
+
+- and the order of the arguments to 'toVegaLite' does not matter (so you
+  can have the 'transform' appear before 'encoding' or after it).
 
 -}
 
@@ -1420,7 +1438,7 @@ busy around 7 milli arcseconds.
 
 The counts here (the Y axis) are __significantly larger__ than
 seen than the actual count of stars, shown in 'starCount'. It
-appears that @'DnCounts' True@ option is interpreted as
+appears that the @'DnCounts' True@ option is interpreted as
 <https://vega.github.io/vega-lite/docs/density.html#example-stacked-density-estimates multiplying the density values by the number of values in a group>,
 which means that there is a bin-width effect. This is explored
 further in the 'compareCounts' plot below.
@@ -1490,7 +1508,7 @@ let enc = encoding
 
     scaleOpts = [ SType ScLog, 'SDomain' ('DNumbers' [3.5, 32]), 'SNice' ('IsNice' False) ]
     cluster = [ MName \"Cluster\", MmType Nominal ]
-
+, 
 in toVegaLite [ gaiaData
               , mark Point []
               , enc []
@@ -1500,7 +1518,8 @@ in toVegaLite [ gaiaData
 @
 
 We can see that each cluster appears to have a separate parallax
-value, and that it doesn't really vary with Gmag. What this is telling
+value (something we have seen in earlier plots, such as 'parallaxBreakdown'),
+and that it doesn't really vary with Gmag. What this is telling
 us is that for these star clusters, the distance to each member star
 is similar, and that they are generally at different distances
 from us. However, it's a bit hard to tell exactly what is going
@@ -1575,7 +1594,8 @@ that is displaying the x axis (namely Right Ascension) in reverse (using
 is measured from right to left. I like to explain it by talking about
 oranges, and how we are at the center of an orange looking out at its
 skin, and so have the direction reversed to if you were outside, looking
-in. You can see that we also have one cluster that straddles the
+in. This may be why I don't get invited to too many parties.
+You can see that we also have one cluster that straddles the
 0 and 360 degrees Right Ascension barrier, which will lead to some
 fun later.
 
@@ -2261,13 +2281,13 @@ let trans = transform
                     ]
 
     raData = 'dataFromColumns' []
-                 . 'dataColumn' "x" (Numbers [ (-120), (-60), 60, 120 ])
+                 . 'dataColumn' "x" (Numbers [ -120, -60, 60, 120 ])
                  . dataColumn "y" (Numbers [ 0, 0, 0, 0 ])
                  . dataColumn "lbl" ('Strings' [ "16h", "20h", "4h", "8h" ])
 
     decData = dataFromColumns []
                  . dataColumn "x" (Numbers [ 0, 0 ])
-                 . dataColumn "y" (Numbers [ (-45), 45 ])
+                 . dataColumn "y" (Numbers [ -45, 45 ])
                  . dataColumn "lbl" (Strings [ "-45", "45" ])
 
     encLabels = encoding
@@ -2350,7 +2370,7 @@ skyPlotWithGraticules =
       -- this also affects ° / \u00b0 so not sure what's going on
       raData = dataFromColumns []
                    . dataColumn "x"
-                     (Numbers [ (-120), (-60), 60, 120 ])
+                     (Numbers [ -120, -60, 60, 120 ])
                    . dataColumn "y"
                      (Numbers [ 0, 0, 0, 0 ])
                    . dataColumn "lbl"
@@ -2360,7 +2380,7 @@ skyPlotWithGraticules =
                    . dataColumn "x"
                      (Numbers [ 0, 0 ])
                    . dataColumn "y"
-                     (Numbers [ (-45), 45 ])
+                     (Numbers [ -45, 45 ])
                    . dataColumn "lbl"
                      (Strings [ "-45", "45" ])
 
@@ -3441,7 +3461,7 @@ transparent).
 @
 let sel = selection
           . select "pick" Single [ 'BindLegend'
-                                   [ 'BLField' \"Cluster\" ]
+                                   ('BLField' \"Cluster\")
                                  ]
 
 in toVegaLite (sel [] : selectionProperties "pick" "Select a legend item")
@@ -3453,7 +3473,7 @@ legendSelection :: VegaLite
 legendSelection =
   let sel = selection
             . select "legend" Single [ BindLegend
-                                       [ BLField "Cluster" ]
+                                       (BLField "Cluster")
                                      ]
 
   in toVegaLite (sel [] : selectionProperties "legend" "Select a legend item")
@@ -3673,8 +3693,7 @@ encoding of the 'color' channel has also been removed.
 
 <<images/vl/coordinatedviews2.png>>
 
-<
-https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmAOsCGAXSAuMwYHsDuGYA2pAMY4DOASgIKQA0UAIgKID6AkgMJUDKkAXUZkcAGwCuAWwB2hEvFEAPBlADikpAHNBAX3rgoFRKUKgIESCmhJpFAGY5okuQfNZISCoRHU6w0kiipOKiqLDe5BQAFAAmqFIAdLScPLxgAFRgAAocYAD0YACMABwADACUkDquYEI1kBrQANYRAJbQpKLh+m6QcShIpjUW4tCi3gAWKCjwFOh5edZ4CZqtKBPiAEbiFLAdONIosIcJ5JJ5TDjimgBCo02weRMAbrCaSHkaFEfQT6-veX6H3erSQAFokOCAGyFKEQwqlMEDTZdQpIBLSHBgibIGJ7BIoCjPBjDKAOJyoIZuXrwJDQXamSDqLTeaRSTZ7FSQBTKTCQNmSDnQLmwNg81nsznValgaXmPT1XZdUgoVoHRnwVqkB4xRkoACeiG8rUOe2egSqCt6x3IMRN2kwZmpIlEjipMqg5ok4T5mjg+pJHqg5GkdtV6sdpN6dlasFEur5XAk305PSDhjjsBVatkfM12tgurTQcshp9UExkhNFqjstJVudvPcMbjCfccEQlL55AkMiqwgNRr5AEdxDZVQNVa9+6TIAHHZAW-HGR3kGg+dB8P2oIPy5BR+O1qhWtO5RA5Q3IAASCikHEaSbTWbzPL-dGrdZbBJqvK3+8fN8wVENZHmeABmBIACsKHVNMRGkGMHSwaodCAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEBOCmAOsCGAXSAuMwYHsDuGYA2pAMY4DOASgIKQA0UAIgKID6AkgMJUDKkAXUZkcAGwCuAWwB2hEvFEAPBlADikpAHNBAX3rgoFRKUKgIESCmhJpFAGY5okuQfNZISCoRHU6w0kiipOKiqLDe5BQAFAAmqFIAdLScPLxgAFRgAAocYAD0YACMABwADACUkDquYEI1kBrQANYRAJbQpKLh+m6QcShIpjUW4tCi3gAWKCjwFOh5edZ4CZqtKBPiAEbiFLAdONIosIcJ5JJ5TDjimgBCo02weRMAbrCaSHkaFEfQT6-veX6H3erSQAFokOCAGyFKEQwqlMEDTZdQpIBLSHBgibIGJ7BIoCjPBjDKAOJyoIZuXrwJDQXamSDqLTeaRSTZ7FSQBTKTCQNmSDnQLmwNg81nsznValgaXmPT1XZdUgoVoHRnwVqkB4xRkoACeiG8rUOe2egSqCt6x3IMRN2kwZmpIlEjipMqg5ok4T5mjg+pJHqg5GkdtV6sdpN6dlasFEur5XAk305PSDhjjsBVatkfM12tgurTQcshp9UExkhNFqjstJVudvPcMbjCfccEQlL55AkMiqwgNRr5AEdxDZVQNVa9+6TIAHHZAW-HGR3kGg+dB8P2oIPy5BR+O1qhWtO5RA5Q3IAASCikHEaSbTWbzPL-dGrdZbBJqvK3+8fN8wVENZHmeABmBIACsKHVNMRGkGMHSwaodCAA Open this visualization in the Vega Editor>
 
 The image was captured after panning and zooming in the
 \"parallax-RA_ICRS\" plot.
@@ -5397,7 +5416,7 @@ let plxScale = PScale [ SType ScLog
 
     selName = \"legend\"
     sel = selection
-          . select selName Single [ BindLegend [ BLField \"Cluster\" ] ]
+          . select selName Single [ BindLegend (BLField \"Cluster\") ]
 
 in toVegaLite
     [ gaiaData
@@ -5488,7 +5507,7 @@ parallaxView =
 
       selName = "legend"
       sel = selection
-            . select selName Single [ BindLegend [ BLField "Cluster" ] ]
+            . select selName Single [ BindLegend (BLField "Cluster") ]
 
       -- TODO: select the lines as well (and ticks?), not sure
       -- how as VL docs suggest both On and Clear need to be set

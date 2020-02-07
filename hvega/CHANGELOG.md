@@ -14,7 +14,8 @@ There is more-extensive use of type aliases, such as 'Color',
 and the introduction of several more (e.g. 'DashStyle' and `FieldName`).
 These do not add any type safety, but help the documentation (as they provide
 a single place to explain the meaning and any constraints on a
-particular value).
+particular value). There are some changes that do improve type safety,
+discussed in the "Breaking changes" section below.
 
 Documentation improvements, including a new section in the
 tutorial on choropleths contributed by Adam Conner-Sax.
@@ -56,7 +57,20 @@ The `heightOfContainer` and `widthOfContainer` functions
 have been added to support responsive sizing, although I have not had
 much success in getting them to work!
 
+The `tooltip` encoding will now turn off tooltips if given an empty
+list (although note that tooltips are now off by default in Vega-Lite 4).
+
 ### Breaking changes
+
+The `combineSpecs` function has been removed.
+
+In an attempt to provide some type safety, the `encoding`,
+`transform`, `resolve`, `selection`, and `configure` functions now
+take specialised types (`EncodingSpec`, `TransformSpec`,
+`ResolveSpec`, `SelectSpec`, and `ConfigureSpec` respectively) rather
+than the generic `LabelledSpec` type. Simple visualizations should
+remain unchanged, but helper functions may need to have their type
+signatures updated.
 
 The `lookup` transform has been changed so that the list of fields
 stored when the keys match is now specified by the `LookupFields`
@@ -140,7 +154,7 @@ for controlling how multi-line labels are displayed. Note that `hvega` will
 always split on the newline character (`\n`), which will over-ride the
 `MLineBreak` setting.
 
-The `DTMonthNum` constructor has been added to `DateTime`.
+The `DTMonthNum` and `DTDayNum` constructors have been added to `DateTime`.
 
 The `BinProperty` type has gained the `SelectionExtent`
 constructor, for defining a bin range via an interval selection.

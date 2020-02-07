@@ -34,7 +34,7 @@ testSpecs = [ ("default", defChart)
             , ("gradientr3", gradientr3)
             ]
 
-encChart :: ([a] -> [LabelledSpec]) -> VegaLite
+encChart :: ([a] -> [EncodingSpec]) -> VegaLite
 encChart extraEnc =
     let
         dataVals =

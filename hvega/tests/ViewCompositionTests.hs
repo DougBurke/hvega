@@ -11,6 +11,7 @@ import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, repeat)
 
+
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("columns1", columns1)
             , ("columns2", columns2)
@@ -26,42 +27,40 @@ testSpecs = [ ("columns1", columns1)
 
 genderChart :: [HeaderProperty] -> [HeaderProperty] -> VegaLite
 genderChart hdProps cProps =
-    let
-        conf =
-            configure . configuration (HeaderStyle cProps)
+  let conf = configure . configuration (HeaderStyle cProps)
 
-        pop =
-            dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+      pop =
+          dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
 
-        trans =
-            transform
-                . filter (FExpr "datum.year == 2000")
-                . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
+      trans =
+          transform
+              . filter (FExpr "datum.year == 2000")
+              . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
 
-        enc =
-            encoding
-                . column
-                    [ FName "gender"
-                    , FmType Nominal
-                    , FHeader hdProps
-                    ]
-                . position X
-                    [ PName "age"
-                    , PmType Ordinal
-                    ]
-                . position Y
-                    [ PName "people"
-                    , PmType Quantitative
-                    , PAggregate Sum
-                    , PAxis [ AxTitle "Population" ]
-                    ]
-                . color
-                    [ MName "gender"
-                    , MmType Nominal
-                    , MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ]
-                    ]
-    in
-    toVegaLite [ conf [], pop, trans [], enc [], mark Bar [], widthStep 17 ]
+      enc =
+          encoding
+              . column
+                  [ FName "gender"
+                  , FmType Nominal
+                  , FHeader hdProps
+                  ]
+              . position X
+                  [ PName "age"
+                  , PmType Ordinal
+                  ]
+              . position Y
+                  [ PName "people"
+                  , PmType Quantitative
+                  , PAggregate Sum
+                  , PAxis [ AxTitle "Population" ]
+                  ]
+              . color
+                  [ MName "gender"
+                  , MmType Nominal
+                  , MScale [ SRange (RStrings [ "#CC9933", "#3399CC" ]) ]
+                  ]
+
+  in toVegaLite [ conf [], pop, trans [], enc [], mark Bar [], widthStep 17 ]
 
 
 columns1, columns2, columns3, columns4 :: VegaLite
@@ -103,22 +102,30 @@ dataVals =
         . dataColumn "val" vals
 
 
+encByCatVal :: [EncodingSpec] -> PropertySpec
+encByCatVal = encoding
+              . position X [ PName "cat", PmType Ordinal, PAxis [] ]
+              . position Y [ PName "val", PmType Quantitative, PAxis [] ]
+              . color [ MName "cat", MmType Nominal, MLegend [] ]
+
+specByCatVal :: VLSpec
+specByCatVal = asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
+
+gridTransform :: PropertySpec
+gridTransform = transform
+                (calculateAs "datum.row * 1000 + datum.col" "index" [])
+
+gridConfig :: [FacetConfig] -> [ConfigureSpec] -> PropertySpec
+gridConfig fopts =
+  configure
+  . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
+  . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
+  . configuration (FacetStyle fopts)
+
+
 grid1 :: VegaLite
 grid1 =
-    let
-        encByCatVal =
-            encoding
-                . position X [ PName "cat", PmType Ordinal, PAxis [] ]
-                . position Y [ PName "val", PmType Quantitative, PAxis [] ]
-                . color [ MName "cat", MmType Nominal, MLegend [] ]
-
-        specByCatVal =
-            asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
-
-        cfg = configure
-                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
-                . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
+    let cfg = gridConfig [ FSpacing 80, FColumns 5 ]
 
     in
     toVegaLite
@@ -135,29 +142,13 @@ grid1 =
 
 grid2 :: VegaLite
 grid2 =
-    let
-        encByCatVal =
-            encoding
-                . position X [ PName "cat", PmType Ordinal, PAxis [] ]
-                . position Y [ PName "val", PmType Quantitative, PAxis [] ]
-                . color [ MName "cat", MmType Nominal, MLegend [] ]
+    let cfg = gridConfig [ FSpacing 80, FColumns 5 ]
 
-        specByCatVal =
-            asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
-
-        cfg = configure
-                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
-                . configuration (FacetStyle [ FSpacing 80, FColumns 5 ])
-
-        trans =
-            transform
-                . calculateAs "datum.row * 1000 + datum.col" "index"
     in
     toVegaLite
         [ cfg []
         , dataVals []
-        , trans []
+        , gridTransform
         , columns 5
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
@@ -170,77 +161,49 @@ grid2 =
 --
 grid3 :: VegaLite
 grid3 =
-    let
-        encByCatVal =
-            encoding
-                . position X [ PName "cat", PmType Ordinal, PAxis [] ]
-                . position Y [ PName "val", PmType Quantitative, PAxis [] ]
-                . color [ MName "cat", MmType Nominal, MLegend [] ]
+    let cfg = gridConfig [ FSpacing 80 ]
 
-        specByCatVal =
-            asSpec [ width 120, height 120, mark Bar [], encByCatVal [] ]
-
-        cfg = configure
-                . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-                . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
-                . configuration (FacetStyle [ FSpacing 80 ])
-
-        trans =
-            transform
-                . calculateAs "datum.row * 1000 + datum.col" "index"
     in
     toVegaLite
         [ cfg []
         , dataVals []
-        , trans []
+        , gridTransform
         , columns 5
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
 
 
+carGrid :: Arrangement -> [PropertySpec] -> VegaLite
+carGrid rpt opts =
+  let carData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
+
+      enc = encoding
+            . position X [ PRepeat rpt, PmType Quantitative, PBin [] ]
+            . position Y [ PmType Quantitative, PAggregate Count ]
+            . color [ MName "Origin", MmType Nominal ]
+
+      spec = asSpec [ carData [], mark Bar [], enc [] ]
+
+  in toVegaLite (specification spec : opts)
+
+
 grid4 :: VegaLite
 grid4 =
-    let
-        carData =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
+  let opts = [ columns 3
+             , repeatFlow [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
+             ]
 
-        enc =
-            encoding
-                . position X [ PRepeat Flow, PmType Quantitative, PBin [] ]
-                . position Y [ PmType Quantitative, PAggregate Count ]
-                . color [ MName "Origin", MmType Nominal ]
-
-        spec =
-            asSpec [ carData [], mark Bar [], enc [] ]
-    in
-    toVegaLite
-        [ columns 3
-        , repeatFlow [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
-        , specification spec
-        ]
+  in carGrid Flow opts
 
 
 grid5 :: VegaLite
 grid5 =
-    let
-        carData =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
+  let opts = [ repeat
+               [ RowFields [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
+               ]
+             ]
 
-        enc =
-            encoding
-                . position X [ PRepeat Row, PmType Quantitative, PBin [] ]
-                . position Y [ PmType Quantitative, PAggregate Count ]
-                . color [ MName "Origin", MmType Nominal ]
-
-        spec =
-            asSpec [ carData [], mark Bar [], enc [] ]
-    in
-    toVegaLite
-        [ repeat
-            [ RowFields [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
-            ]
-        , specification spec
-        ]
+  in carGrid Row opts
 
 

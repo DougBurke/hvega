@@ -105,7 +105,26 @@ module Graphics.Vega.VegaLite
        , VL.VegaLite
        , VL.PropertySpec
        , VL.LabelledSpec
-       , VL.BuildLabelledSpecs
+       , VL.EncodingSpec
+       , VL.toEncodingSpec
+       , VL.fromEncodingSpec
+       , VL.TransformSpec
+       , VL.toTransformSpec
+       , VL.fromTransformSpec
+       , VL.ResolveSpec
+       , VL.toResolveSpec
+       , VL.fromResolveSpec
+       , VL.SelectSpec
+       , VL.toSelectSpec
+       , VL.fromSelectSpec
+       , VL.ConfigureSpec
+       , VL.toConfigureSpec
+       , VL.fromConfigureSpec
+       , VL.BuildEncodingSpecs
+       , VL.BuildTransformSpecs
+       , VL.BuildResolveSpecs
+       , VL.BuildSelectSpecs
+       , VL.BuildConfigureSpecs
        , VL.Angle
        , VL.Color
        , VL.DashStyle
@@ -117,7 +136,6 @@ module Graphics.Vega.VegaLite
        , VL.SelectionLabel
        , VL.VegaExpr
        , VL.ZIndex
-       , VL.combineSpecs
        , VL.toHtml
        , VL.toHtmlFile
        , VL.toHtmlWith
@@ -542,7 +560,7 @@ module Graphics.Vega.VegaLite
 
        , VL.BooleanOp(..)
 
-         -- ** Top-level Settings
+         -- * Top-level Settings
          --
          -- $toplevel
 
@@ -575,6 +593,8 @@ module Graphics.Vega.VegaLite
        , VL.ViewBackground(..)
 
          -- ** Style Setting
+         --
+         -- $configure
 
        , VL.configure
        , VL.configuration
@@ -708,6 +728,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Functions and types for declaring the transformation rules that
 -- are applied to data fields or geospatial coordinates before they
 -- are encoded visually.
+--
+-- In version @0.5.0.0@ the 'VL.TransformSpec' type was introduced to
+-- make it clear what functions can be used with 'VL.transform'.
 
 -- $projections
 -- See the
@@ -805,6 +828,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- visualizations ('VL.facet'). All can be further customised via a series of
 -- properties that determine how the encoding is implemented (such as
 -- scaling, sorting, and spacing).
+--
+-- In version @0.5.0.0@ the 'VL.EncodingSpec' type was introduced to
+-- make it clear what functions can be used with 'VL.encoding'.
 
 -- $position
 -- Control where items appear in the visualization. See the
@@ -983,6 +1009,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- of other views. For more details see the
 -- [Vega-Lite view background documentation](https://vega.github.io/vega-lite/docs/spec.html#view-background).
 
+-- $configure
+-- In version @0.5.0.0@ the 'VL.ConfigureSpec' type was introduced to
+-- make it clear that only 'VL.configuration' should be used with
+-- 'VL.configure'.
+
 -- $axisconfig
 -- See the
 -- [Vega-Lite axis config documentation](https://vega.github.io/vega-lite/docs/axis.html#general-config).
@@ -1035,7 +1066,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and the introduction of several more (e.g. 'VL.DashStyle' and
 -- 'VL.FieldName'). These do not add any type safety, but help the
 -- documentation (as they provide a single place to explain the meaning
--- and any constraints on a particular value).
+-- and any constraints on a particular value). There are some
+-- changes that do improve type safety, discussed in the
+-- \"Breaking changes\" section below.
 --
 -- Documentation improvements, including a new section in the
 -- tutorial on choropleths contributed by Adam Conner-Sax.
@@ -1095,7 +1128,22 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   have been added to support responsive sizing, although I have not
 --   had much success in getting them to work!
 --
+-- * The 'VL.tooltip' encoding will now turn off tooltips if given an
+--   empty list (although note that tooltips are now off by default in
+--   Vega-Lite 4).
+--
 -- __Breaking changes__:
+--
+-- * The @combineSpecs@ function has been removed.
+--
+-- * In an attempt to provide some type safety, the 'VL.encoding',
+--   'VL.transform', 'VL.resolve', 'VL.selection', and 'VL.configure'
+--   functions now take specialised types - 'VL.EncodingSpec',
+--   'VL.TransformSpec', 'VL.ResolveSpec', 'VL.SelectSpec', and
+--   'VL.ConfigureSpec' respectively - rather than the generic
+--   'VL.LabelledSpec' type. Simple visualizations should remain
+--   unchanged, but helper functions may need to have their type signatures
+--   updated.
 --
 -- * The 'VL.lookup' function now takes the new 'VL.LookupFields'
 --   type rather than a list of field names. The 'VL.lookupAs' function
@@ -1201,7 +1249,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   the newline character (@\\n@), which will over-ride the
 --   'VL.MLineBreak' setting.
 --
--- * The 'VL.DTMonthNum' constructor has been added to @DateTime@.
+-- * The 'VL.DTMonthNum' and 'VL.DTDayNum' constructors have been added
+--   to @DateTime@.
 --
 -- * The 'VL.BinProperty' type has gained the 'VL.SelectionExtent'
 --   constructor, which defines the bin range as an interval selection.
