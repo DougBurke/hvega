@@ -176,12 +176,17 @@ multi4 =
                 . position X [ PName "IMDB_Rating", PmType Quantitative, PBin [ MaxBins 10 ] ]
                 . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative, PBin [ MaxBins 10 ] ]
 
+        colLegend = [ LTitle "All Movies"
+                    , LDirection Horizontal
+                    , LGradientLength 120
+                    ]
         enc1 =
             encoding
-                . color [ MAggregate Count, MmType Quantitative, MLegend [ LNoTitle ] ]
+                . color [ MAggregate Count, MmType Quantitative, MLegend colLegend ]
 
+        -- removed width as not valid in Vega-Lite 4.1.1
         spec1 =
-            asSpec [ width 300, mark Rect [], enc1 [] ]
+            asSpec [ {- width 300, -} mark Rect [], enc1 [] ]
 
         enc2 =
             encoding
@@ -198,7 +203,7 @@ multi4 =
             selection . select "myPts" Single [ Encodings [ ChX ] ]
 
         barSpec =
-            asSpec [ width 420, height 120, mark Bar [], sel [], encBar [] ]
+            asSpec [ width 330, height 120, mark Bar [], sel [], encBar [] ]
 
         encBar =
             encoding

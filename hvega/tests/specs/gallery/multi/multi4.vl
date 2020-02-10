@@ -20,13 +20,14 @@
             "layer": [
                 {
                     "mark": "rect",
-                    "width": 300,
                     "encoding": {
                         "color": {
                             "aggregate": "count",
                             "type": "quantitative",
                             "legend": {
-                                "title": null
+                                "direction": "horizontal",
+                                "gradientLength": 120,
+                                "title": "All Movies"
                             }
                         }
                     }
@@ -74,7 +75,7 @@
         {
             "height": 120,
             "mark": "bar",
-            "width": 420,
+            "width": 330,
             "selection": {
                 "myPts": {
                     "encodings": [
