@@ -1,9 +1,10 @@
 {
     "hconcat": [
         {
+            "height": 300,
+            "width": 300,
             "layer": [
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.1,
                         "stroke": "#411",
@@ -17,7 +18,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [
@@ -28,7 +28,6 @@
                     }
                 },
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.5,
                         "stroke": "white",
@@ -42,7 +41,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [
@@ -55,9 +53,10 @@
             ]
         },
         {
+            "height": 300,
+            "width": 300,
             "layer": [
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.1,
                         "stroke": "#411",
@@ -71,7 +70,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [
@@ -82,7 +80,6 @@
                     }
                 },
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.5,
                         "stroke": "white",
@@ -96,7 +93,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [
@@ -109,9 +105,10 @@
             ]
         },
         {
+            "height": 300,
+            "width": 300,
             "layer": [
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.1,
                         "stroke": "#411",
@@ -125,7 +122,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [
@@ -136,7 +132,6 @@
                     }
                 },
                 {
-                    "height": 300,
                     "mark": {
                         "strokeWidth": 0.5,
                         "stroke": "white",
@@ -150,7 +145,6 @@
                             "type": "topojson"
                         }
                     },
-                    "width": 300,
                     "projection": {
                         "type": "orthographic",
                         "rotate": [

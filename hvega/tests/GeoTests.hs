@@ -458,23 +458,19 @@ mapComp3 =
             let
                 graticuleSpec =
                     asSpec
-                        [ width 300
-                        , height 300
-                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
+                        [ projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
                         , mark Geoshape [ MFilled False, MStroke "#411", MStrokeWidth 0.1 ]
                         ]
 
                 countrySpec =
                     asSpec
-                        [ width 300
-                        , height 300
-                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
+                        [ projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/world-110m.json" [ TopojsonFeature "countries" ]
                         , mark Geoshape [ MStroke "white", MFill "black", MStrokeWidth 0.5 ]
                         ]
             in
-            asSpec [ layer [ graticuleSpec, countrySpec ] ]
+            asSpec [ width 300, height 300, layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
         [ configure $ configuration (View [ ViewStroke Nothing ]) []
@@ -489,32 +485,26 @@ mapComp4 =
             let
                 seaSpec =
                     asSpec
-                        [ width 300
-                        , height 300
-                        , projection [ PrType Orthographic, PrRotate 0 0 0 ]
+                        [ projection [ PrType Orthographic, PrRotate 0 0 0 ]
                         , dataFromUrl "data/globe.json" [ TopojsonFeature "globe" ]
                         , mark Geoshape [ MFill "#c1e7f5", MStrokeOpacity 0 ]
                         ]
 
                 graticuleSpec =
                     asSpec
-                        [ width 300
-                        , height 300
-                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
+                        [ projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/graticule.json" [ TopojsonFeature "graticule" ]
                         , mark Geoshape [ MFilled False, MStroke "#411", MStrokeWidth 0.1 ]
                         ]
 
                 countrySpec =
                     asSpec
-                        [ width 300
-                        , height 300
-                        , projection [ PrType Orthographic, PrRotate rot 0 0 ]
+                        [ projection [ PrType Orthographic, PrRotate rot 0 0 ]
                         , dataFromUrl "https://vega.github.io/vega-lite/data/world-110m.json" [ TopojsonFeature "countries" ]
                         , mark Geoshape [ MStroke "white", MFill "#242", MStrokeWidth 0.1 ]
                         ]
             in
-            asSpec [ layer [ seaSpec, graticuleSpec, countrySpec ] ]
+            asSpec [ width 300, height 300, layer [ seaSpec, graticuleSpec, countrySpec ] ]
     in
     toVegaLite
         [ configure $ configuration (View [ ViewStroke Nothing ]) []
