@@ -60,6 +60,7 @@ import qualified TextFormatTests as TfT
 import qualified TimeTests as TmT
 import qualified TooltipTests as TT
 import qualified TrailTests as TrT
+import qualified TransformTests
 import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
@@ -131,6 +132,7 @@ baseTests = testGroup "base"
   , toTests "Time" "time" TmT.testSpecs
   , toTests "Tooltip" "tooltip" TT.testSpecs
   , toTests "Trail" "trail" TrT.testSpecs
+  , toTests "Transform" "transform" TransformTests.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
   ]

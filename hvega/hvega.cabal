@@ -190,6 +190,7 @@ test-suite test
                        TimeTests
                        TooltipTests
                        TrailTests
+                       TransformTests
                        ViewCompositionTests
                        WindowTransformTests
                        Gallery.Advanced

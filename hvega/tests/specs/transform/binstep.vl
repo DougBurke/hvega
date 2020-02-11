@@ -1,0 +1,35 @@
+{
+    "transform": [
+        {
+            "as": "rating",
+            "calculate": "datum.IMDB_Rating"
+        },
+        {
+            "filter": "datum.rating != null"
+        },
+        {
+            "as": "ratingGroup",
+            "field": "rating",
+            "bin": {
+                "step": 0.25
+            }
+        }
+    ],
+    "mark": "bar",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "ratingGroup",
+            "type": "ordinal"
+        },
+        "y": {
+            "aggregate": "count",
+            "title": "Number of movies",
+            "type": "quantitative"
+        }
+    }
+}
