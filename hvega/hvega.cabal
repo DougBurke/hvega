@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.5.0.0
+version:             0.6.0.0
 synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)

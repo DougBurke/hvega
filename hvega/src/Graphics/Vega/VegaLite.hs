@@ -672,6 +672,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.6
+         --
+         -- $update0600
+
          -- ** Version 0.5
          --
          -- $update0500
@@ -1055,6 +1059,13 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0600
+-- The @0.6.0.0@ release updates @hvega@ to support version 4.1 of
+-- the Vega-Lite schema.
+--
+-- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
+-- constructor.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

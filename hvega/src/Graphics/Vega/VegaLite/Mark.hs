@@ -276,6 +276,15 @@ data MarkProperty
       --   or 'MCornerRadiusBR'.
       --
       --   @since 0.5.0.0
+    | MCornerRadiusEnd Double
+      -- ^ The radius used for bars, in pixels. For vertical bars it
+      --   defines the top-left and top-right radius, and for
+      --   horizontal bars it is the top-right and bottom-right.
+      --
+      --   For an example, see the
+      --   <https://vega.github.io/vega-lite/docs/bar.html#bar-chart-with-rounded-corners Vega-Lite documentation>.
+      --
+      --   @since 0.6.0.0
     | MCornerRadiusTL Double
       -- ^ Top-left corner radius of a rectangular mark, in pixels.
       --
@@ -599,6 +608,7 @@ markProperty (MBox mps) = mprops_ "box" mps
 markProperty (MClip b) = "clip" .= b
 markProperty (MColor col) = "color" .= fromColor col
 markProperty (MCornerRadius x) = "cornerRadius" .= x
+markProperty (MCornerRadiusEnd x) = "cornerRadiusEnd" .= x
 markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .= x
 markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
 markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
