@@ -700,6 +700,10 @@ data ScaleProperty
       --   @since 0.4.0.0
     | SDomain ScaleDomain
       -- ^ Custom scaling domain.
+    | SDomainMid Double
+      -- ^ Set the mid-point of a continuous diverging domain.
+      --
+      --   @since 0.6.0.0
     | SExponent Double
       -- ^ The exponent to use for power scaling ('Graphics.Vega.VegaLite.ScPow').
       --
@@ -745,6 +749,7 @@ scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
+scaleProperty (SDomainMid x) = "domainMid" .= x
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
 scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni

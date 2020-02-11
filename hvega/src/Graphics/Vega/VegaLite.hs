@@ -1066,6 +1066,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
 -- constructor.
+--
+-- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid'.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

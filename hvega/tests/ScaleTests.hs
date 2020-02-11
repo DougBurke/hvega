@@ -17,6 +17,8 @@ testSpecs = [ ("scale1", scale1)
             , ("scale7", scale7)
             , ("scale8", scale8)
             , ("scale9", scale9)
+            , ("diverging1", diverging1)
+            , ("diverging2", diverging2)
             ]
 
 scale1 :: VegaLite
@@ -226,3 +228,37 @@ scale9 =
                     ]
     in
     toVegaLite [ dataVals [], mark Point [], enc [] ]
+
+
+divergingData :: Data
+divergingData =
+  dataFromColumns []
+  . dataColumn "category" (Strings ["A", "B", "C", "D", "E", "F", "G", "H", "I"])
+  . dataColumn "value" (Numbers [-28.6, -1.6, -13.6, 34.4, 24.4, -3.6, -57.6, 30.4, -4.6])
+  $ []
+
+divergingEnc :: [ScaleProperty] -> PropertySpec
+divergingEnc sopts =
+  encoding
+  . position X [ PName "category"
+               , PmType Ordinal
+               , PAxis [ AxLabelAngle 0, AxDomain False, AxOrient STop ]
+               ]
+  . position Y [ PName "value", PmType Quantitative ]
+  . color [ MName "value"
+          , MmType Quantitative
+          , MScale ([ SScheme "redblue" [] ] ++ sopts)
+          ]
+  $ []
+
+diverging1 :: VegaLite
+diverging1 = toVegaLite [ divergingData
+                        , divergingEnc []
+                        , mark Bar []
+                        ]
+
+diverging2 :: VegaLite
+diverging2 = toVegaLite [ divergingData
+                        , divergingEnc [ SDomainMid 0 ]
+                        , mark Bar []
+                        ]

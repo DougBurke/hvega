@@ -8,6 +8,8 @@ version 4.1.1).
 
 The `MarkProperty` type has gained the `MCornerRadiusEnd` constructor.
 
+The `ScaleProperty` type has gained `SDomainMid`.
+
 ## 0.5.0.0
 
 Update to version 4.0 of the Vega-Lite specification (tested against

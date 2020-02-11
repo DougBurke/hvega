@@ -1,0 +1,67 @@
+{
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "category": "A",
+                "value": -28.6
+            },
+            {
+                "category": "B",
+                "value": -1.6
+            },
+            {
+                "category": "C",
+                "value": -13.6
+            },
+            {
+                "category": "D",
+                "value": 34.4
+            },
+            {
+                "category": "E",
+                "value": 24.4
+            },
+            {
+                "category": "F",
+                "value": -3.6
+            },
+            {
+                "category": "G",
+                "value": -57.6
+            },
+            {
+                "category": "H",
+                "value": 30.4
+            },
+            {
+                "category": "I",
+                "value": -4.6
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "value",
+            "scale": {
+                "scheme": "redblue",
+                "domainMid": 0
+            },
+            "type": "quantitative"
+        },
+        "x": {
+            "field": "category",
+            "type": "ordinal",
+            "axis": {
+                "labelAngle": 0,
+                "domain": false,
+                "orient": "top"
+            }
+        },
+        "y": {
+            "field": "value",
+            "type": "quantitative"
+        }
+    }
+}
