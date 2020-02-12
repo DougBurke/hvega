@@ -6,9 +6,14 @@ For the latest version of this document, please see
 Update to version 4.1 of the Vega-Lite specification (tested against
 version 4.1.1).
 
-The `MarkProperty` type has gained the `MCornerRadiusEnd` constructor.
+The `TUStep` and `TUMaxBins` constructors have been added to `TimeUnit`
+for controlling how time values are binned.
 
-The `ScaleProperty` type has gained `SDomainMid`.
+The `MarkProperty` type has gained the `MCornerRadiusEnd` constructor,
+which is used to draw rounded histogram bars.
+
+The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
+diverging color scales.
 
 ## 0.5.0.0
 

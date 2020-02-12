@@ -9,7 +9,9 @@
             "encoding": {
                 "x": {
                     "field": "date",
-                    "timeUnit": "month",
+                    "timeUnit": {
+                        "unit": "month"
+                    },
                     "type": "ordinal"
                 },
                 "y": {

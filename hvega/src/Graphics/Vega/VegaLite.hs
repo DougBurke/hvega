@@ -1064,10 +1064,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.1 of
 -- the Vega-Lite schema.
 --
--- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
--- constructor.
+-- The 'VL.TUStep' and 'VL.TUMaxBins' constructors have been added to
+-- 'VL.TimeUnit' for controlling how time values are binned.
 --
--- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid'.
+-- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
+-- constructor, which is used to draw rounded histogram bars.
+--
+-- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
+-- for asymmetric diverging color scales.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

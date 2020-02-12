@@ -48,7 +48,9 @@
             "scale": {
                 "type": "time"
             },
-            "timeUnit": "yearmonthdatehours",
+            "timeUnit": {
+                "unit": "yearmonthdatehours"
+            },
             "type": "temporal",
             "axis": {
                 "format": "%d %b %H:%M"

@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
@@ -7,6 +8,10 @@ import qualified Data.Text as T
 
 import Data.Aeson (Value)
 import Data.Aeson.QQ.Simple (aesonQQ)
+
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 import Prelude hiding (filter, lookup)
 
@@ -28,6 +33,9 @@ testSpecs = [ ("checkordering", checkOrdering)
             , ("foldasplot", foldAsPlot)
             , ("stackplot", stackPlot)
             , ("weatherbymonth", weatherByMonth)
+            , ("weatherbytwomonths", weatherByTwoMonths)
+            , ("distances", distances)
+            , ("weathermaxbins", weatherMaxBins)
             , ("windowplot", windowPlot)
             , ("joinaggregateplot", joinAggregatePlot)
             ]
@@ -323,26 +331,55 @@ stackPlot =
   in toVegaLite [ cars, trans [], enc [], mark Rect [] ]
 
 
-weatherByMonth :: VegaLite
-weatherByMonth =
-  let weather = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv"
-                [ Parse [ ( "date", FoDate "%Y/%m/%d" ) ] ]
+weather :: TimeUnit -> FieldName -> VegaLite
+weather tunit field =
+  let weatherData = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+                    [ Parse [ ( "date", FoDate "%Y/%m/%d" ) ] ]
 
       trans = transform
               . calculateAs "datum.date" "sampleDate"
               . calculateAs "datum.temp_max" "maxTemp"
-              . timeUnitAs Month "sampleDate" "month"
+              . timeUnitAs tunit "sampleDate" field
 
       enc = encoding
-            . position X [ PName "month", PmType Temporal, PAxis [ AxFormat "%b" ] ]
+            . position X [ PName field, PmType Temporal, PAxis [ AxFormat "%b" ] ]
             . position Y [ PName "maxTemp", PmType Quantitative, PAggregate Max ]
 
   in toVegaLite [ width 400
-                , weather
+                , weatherData
                 , trans []
                 , enc []
                 , mark Line [ MPoint (PMMarker [ MFill "black" ]) ]
                 ]
+
+weatherByMonth :: VegaLite
+weatherByMonth = weather Month "month"
+
+weatherByTwoMonths :: VegaLite
+weatherByTwoMonths = weather (TUStep 2 Month) "bimonth"
+
+weatherMaxBins :: VegaLite
+weatherMaxBins = weather (TUMaxBins 3) "tbin"
+
+
+distances :: VegaLite
+distances =
+  let dateTime mnt = "Sun, 01 Jan 2012 00:0" <> T.pack (show mnt) <> ":00"
+      dates = map dateTime [1 :: Int .. 15]
+
+      dvals = dataFromColumns []
+              . dataColumn "date" (Strings dates)
+              . dataColumn "distance" (Numbers [ 1, 1, 2, 1, 4, 2, 5, 2, 6, 4, 1, 1, 3, 0, 2, 3 ])
+
+      enc = encoding
+            . position X [ PName "date"
+                         , PmType Temporal
+                         , PTimeUnit (TUMaxBins 15) ]
+            . position Y [ PName "distance"
+                         , PmType Quantitative
+                         , PAggregate Sum ]
+
+  in toVegaLite [ dvals [], enc [], mark Bar [] ]
 
 
 activityData :: Data

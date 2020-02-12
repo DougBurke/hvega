@@ -11,7 +11,9 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": "date",
+            "timeUnit": {
+                "unit": "date"
+            },
             "type": "temporal"
         },
         "y": {

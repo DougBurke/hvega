@@ -12,12 +12,16 @@
         },
         "x": {
             "field": "time",
-            "timeUnit": "hours",
+            "timeUnit": {
+                "unit": "hours"
+            },
             "type": "ordinal"
         },
         "y": {
             "field": "time",
-            "timeUnit": "day",
+            "timeUnit": {
+                "unit": "day"
+            },
             "type": "ordinal"
         }
     },

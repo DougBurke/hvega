@@ -9,9 +9,10 @@
             "calculate": "datum.temp_max"
         },
         {
-            "as": "month",
+            "as": "bimonth",
             "field": "sampleDate",
             "timeUnit": {
+                "step": 2,
                 "unit": "month"
             }
         }
@@ -34,7 +35,7 @@
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "month",
+            "field": "bimonth",
             "type": "temporal",
             "axis": {
                 "format": "%b"

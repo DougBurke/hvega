@@ -9,10 +9,10 @@
             "calculate": "datum.temp_max"
         },
         {
-            "as": "month",
+            "as": "tbin",
             "field": "sampleDate",
             "timeUnit": {
-                "unit": "month"
+                "maxbins": 3
             }
         }
     ],
@@ -34,7 +34,7 @@
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "month",
+            "field": "tbin",
             "type": "temporal",
             "axis": {
                 "format": "%b"

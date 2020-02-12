@@ -287,9 +287,8 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
-  , timeUnit_
   , dateTimeProperty
-  , timeUnitLabel
+  , timeUnitSpec
   )
 import Graphics.Vega.VegaLite.Transform
   ( Operation(Count)
@@ -334,6 +333,9 @@ mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
 
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
+
+timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ tu = "timeUnit" .= timeUnitSpec tu
 
 -- The assumption at the moment is that it's always correct to
 -- replace the empty list by null.
@@ -4491,7 +4493,7 @@ timeUnitAs ::
   -- ^ The name of the binned data created by this routine.
   -> BuildTransformSpecs
 timeUnitAs tu field label ols =
-  let fields = [ "timeUnit" .= timeUnitLabel tu
+  let fields = [ "timeUnit" .= timeUnitSpec tu
                , "field" .= field
                , "as" .= label ]
   in TS (object fields) : ols

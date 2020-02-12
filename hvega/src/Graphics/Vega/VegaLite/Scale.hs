@@ -38,7 +38,7 @@ import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
   , dateTimeProperty
-  , timeUnitLabel
+  , timeUnitSpec
   )
 
 
@@ -108,7 +108,7 @@ scaleNiceSpec NWeek = fromT "week"
 scaleNiceSpec NMonth = fromT "month"
 scaleNiceSpec NYear = fromT "year"
 scaleNiceSpec (NInterval tu step) =
-  object ["interval" .= timeUnitLabel tu, "step" .= step]
+  object ["interval" .= timeUnitSpec tu, "step" .= step]
 scaleNiceSpec (IsNice b) = toJSON b
 scaleNiceSpec (NTickCount n) = toJSON n
 
