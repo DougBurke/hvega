@@ -400,15 +400,16 @@ module Graphics.Vega.VegaLite
          --
          -- $markprops
 
-       , VL.size
        , VL.color
        , VL.fill
-       , VL.stroke
-       , VL.strokeWidth
-       , VL.opacity
        , VL.fillOpacity
-       , VL.strokeOpacity
+       , VL.opacity
        , VL.shape
+       , VL.size
+       , VL.stroke
+       , VL.strokeDash
+       , VL.strokeOpacity
+       , VL.strokeWidth
 
          -- *** Mark Channel properties
 
@@ -1063,6 +1064,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.2 of
 -- the Vega-Lite schema.
+--
+-- New function for use with 'VL.encoding': 'VL.strokeDash'.
 --
 -- The 'VL.TUStep' and 'VL.TUMaxBins' constructors have been added to
 -- 'VL.TimeUnit' for controlling how time values are binned.

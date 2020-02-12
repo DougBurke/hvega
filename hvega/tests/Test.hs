@@ -44,6 +44,7 @@ import qualified CompositeTests as CompT
 import qualified ConditionalTests as CondT
 import qualified ConfigTests as ConfT
 import qualified DataTests as DT
+import qualified EncodingTests
 import qualified FillStrokeTests as FST
 import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
@@ -116,6 +117,7 @@ baseTests = testGroup "base"
   , toTests "Conditional" "conditional" CondT.testSpecs
   , toTests "Config" "config" ConfT.testSpecs
   , toTests "Data" "data" DT.testSpecs
+  , toTests "Encoding" "encoding" EncodingTests.testSpecs
   , toTests "FillStroke" "fillstroke" FST.testSpecs
   , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs

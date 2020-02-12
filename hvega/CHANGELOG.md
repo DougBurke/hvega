@@ -6,6 +6,8 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.2.0 of the
 Vega-Lite schema.
 
+New function for use with `encoding`: `strokeDash`.
+
 The `TUStep` and `TUMaxBins` constructors have been added to `TimeUnit`
 for controlling how time values are binned.
 

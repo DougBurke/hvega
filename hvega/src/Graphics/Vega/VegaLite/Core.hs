@@ -80,15 +80,16 @@ module Graphics.Vega.VegaLite.Core
        , AxisProperty(..)
        , ConditionalAxisProperty(..)
 
-       , size
        , color
        , fill
-       , stroke
-       , strokeWidth
-       , opacity
        , fillOpacity
-       , strokeOpacity
+       , opacity
        , shape
+       , size
+       , stroke
+       , strokeDash
+       , strokeOpacity
+       , strokeWidth
 
        , MarkChannel(..)
 
@@ -575,7 +576,7 @@ so it can either be used to add further encoding specifications or as
 The supported encodings are:
 'color', 'column', 'detail', 'fill', 'fillOpacity', 'hyperlink',
 'opacity', 'order', 'position', 'row', 'shape', 'size',
-'stroke', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
+'stroke', 'strokeDash', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
 'tooltips', and 'url'.
 
 There is currently no support for encoding by
@@ -4405,6 +4406,54 @@ stroke ::
   -- ^ What data values are used to control the stoke parameters of the mark.
   -> BuildEncodingSpecs
 stroke markProps ols = mchan_ "stroke" markProps : ols
+
+
+{-|
+
+Encode a stroke-dash channel.
+
+The following will use a different dash style for each value in the
+\"symbol" field (a multi-series line chart):
+
+@
+'Graphics.Vega.VegaLite.toVegaLite' [ 'Graphics.Vega.VegaLite.dataFromUrl' \"data/stocks.csv\" []
+           , 'mark' 'Graphics.Vega.VegaLite.Line' []
+           , 'encoding'
+             . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal' ]
+             . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"price\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+             . strokeDash [ 'MName' \"symbol\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
+             $ []
+           ]
+@
+
+It can also be used to change the line style for connected
+points (e.g. to indicate where the data changes its \"predicted\"
+value, noting that there are two points at @\"a\"@ equal to @\"E\"@):
+
+@
+'Graphics.Vega.VegaLite.toVegaLite' [ 'Graphics.Vega.VegaLite.dataFromColumns' []
+             . 'Graphics.Vega.VegaLite.dataColumn' \"a\" ('Strings' [ \"A\", \"B\", \"D\", \"E\", \"E\", \"G\", \"H\"])
+             . 'Graphics.Vega.VegaLite.dataColumn' \"b\" ('Numbers' [ 28, 55, 91, 81, 81, 19, 87 ])
+             . 'Graphics.Vega.VegaLite.dataColumn' \"predicted\" ('Booleans' [False, False, False, False, True, True, True])
+             $ []
+           , 'mark' 'Graphics.Vega.VegaLite.Line' []
+           , 'encoding'
+             . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
+             . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+             . strokeDash [ 'MName' \"predicted\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
+             $ []
+           ]
+@
+
+@since 0.6.0.0
+
+-}
+
+strokeDash ::
+  [MarkChannel]
+  -- ^ What data values are used to control the stoke opacity parameters of the mark.
+  -> BuildEncodingSpecs
+strokeDash markProps ols = mchan_ "strokeDash" markProps : ols
 
 
 {-|
