@@ -8,6 +8,9 @@ Vega-Lite schema.
 
 New function for use with `encoding`: `strokeDash`.
 
+`MSymbol` has been added to `MarkChannel` which can be used to make the
+`shape` encoding conditional on a data or selection condition.
+
 The `TUStep` and `TUMaxBins` constructors have been added to `TimeUnit`
 for controlling how time values are binned.
 

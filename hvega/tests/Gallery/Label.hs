@@ -512,10 +512,8 @@ label9 =
         encoding
         . position X [ PName "to", PmType Quantitative, PAxis [] ]
         . shape [ MDataCondition
-                  -- [ ( Expr "datum.to > 0", [ MSymbol SymTriangleRight ] ) ]
-                  -- [ MSymbol SymTriangleLeft ]
-                  [ ( Expr "datum.to > 0", [ MString "triangle-right" ] ) ]
-                  [ MString "triangle-left" ]
+                  [ ( Expr "datum.to > 0", [ MSymbol SymTriangleRight ] ) ]
+                  [ MSymbol SymTriangleLeft ]
                 ]
 
       specLabel2 = asSpec [ encLabel2 [], mark Point [ MFilled True, MSize 60, MFill "black" ] ]

@@ -1067,6 +1067,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- New function for use with 'VL.encoding': 'VL.strokeDash'.
 --
+-- 'VL.MSymbol' has been added to 'VL.MarkChannel' which can be
+-- used to make the 'VL.shape' encoding conditional on a data
+-- or selection condition.
+--
 -- The 'VL.TUStep' and 'VL.TUMaxBins' constructors have been added to
 -- 'VL.TimeUnit' for controlling how time values are binned.
 --

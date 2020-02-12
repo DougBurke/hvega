@@ -220,6 +220,7 @@ import Graphics.Vega.VegaLite.Foundation
   , CInterpolate
   , ViewBackground
   , HeaderProperty
+  , Symbol
   , fromT
   , fromColor
   , fromDS
@@ -250,6 +251,7 @@ import Graphics.Vega.VegaLite.Foundation
   , repeatFieldsProperty
   , cInterpolateSpec
   , viewBackgroundSpec
+  , symbolLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -533,6 +535,21 @@ data MarkChannel
       -- ^ Literal string value when encoding with a mark property channel.
     | MBoolean Bool
       -- ^ Boolean value when encoding with a mark property channel.
+    | MSymbol Symbol
+      -- ^ A symbol literal. This can be useful when making a symbol dependent on some data or
+      --   selection condition (e.g. 'MDataCondition' or 'MSelectionCondition').
+      --
+      --   For example:
+      --
+      --   @
+      --   'encoding'
+      --     . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' "to", 'PmType' 'Graphics.Vega.VegaLite.Quantitative', 'PAxis' [] ]
+      --     . 'shape' ['MDataCondition'
+      --               [('Expr' "datum.to > 100", [MSymbol 'Graphics.Vega.VegaLite.SymTriangleRight'])]
+      --               [MSymbol 'Graphics.Vega.VegaLite.SymTriangleLeft']
+      --   @
+      --
+      --   @since 0.6.0.0
 
 markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
@@ -553,6 +570,7 @@ markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
+markChannelProperty (MSymbol s) = ["value" .= symbolLabel s]
 markChannelProperty (MTitle s) = ["title" .= splitOnNewline s]
 markChannelProperty MNoTitle = ["title" .= A.Null]
 
