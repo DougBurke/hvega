@@ -558,21 +558,28 @@ data HAlign
 
 data VAlign
     = AlignTop
+      -- ^ The position refers to the top of the text.
     | AlignMiddle
+      -- ^ The middle of the text.
     | AlignBottom
-
+      -- ^ The position refers to the bottom of the text, including
+      --   descenders, like g.
+    | AlignAlphabetic
+      -- ^ The position refers to the baseline of the text (so it does
+      --   not include descenders).
+      --
+      --   @since 0.6.0.0
 
 hAlignLabel :: HAlign -> T.Text
 hAlignLabel AlignLeft = "left"
 hAlignLabel AlignCenter = "center"
 hAlignLabel AlignRight = "right"
 
-
 vAlignLabel :: VAlign -> T.Text
 vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
-
+vAlignLabel AlignAlphabetic = "alphabetic"
 
 {-|
 

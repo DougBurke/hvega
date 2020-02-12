@@ -20,6 +20,9 @@ which is used to draw rounded histogram bars.
 The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
 diverging color scales.
 
+Labels can now be vertically aligned to their baseline with the
+`AlignAlphabetic` constructor of the `VAlign` type.
+
 ## 0.5.0.0
 
 Update to version 4.0 of the Vega-Lite specification (tested against
