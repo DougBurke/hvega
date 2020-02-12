@@ -3,8 +3,8 @@ For the latest version of this document, please see
 
 ## 0.6.0.0
 
-Update to version 4.1 of the Vega-Lite specification (tested against
-version 4.1.1).
+The Vega-Lite tests are now validated against version 4.2.0 of the
+Vega-Lite schema.
 
 The `TUStep` and `TUMaxBins` constructors have been added to `TimeUnit`
 for controlling how time values are binned.
