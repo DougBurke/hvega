@@ -1081,7 +1081,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- for asymmetric diverging color scales.
 --
 -- Labels can now be vertically aligned to their baseline with the
--- 'VL.AlignAlphabetic' constructor of the 'VL.VAlign' type.
+-- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

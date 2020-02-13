@@ -564,9 +564,10 @@ data VAlign
     | AlignBottom
       -- ^ The position refers to the bottom of the text, including
       --   descenders, like g.
-    | AlignAlphabetic
+    | AlignBaseline
       -- ^ The position refers to the baseline of the text (so it does
-      --   not include descenders).
+      --   not include descenders). This maps to the Vega-Lite
+      --   @\"alphabetic\"@ value.
       --
       --   @since 0.6.0.0
 
@@ -579,7 +580,7 @@ vAlignLabel :: VAlign -> T.Text
 vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
-vAlignLabel AlignAlphabetic = "alphabetic"
+vAlignLabel AlignBaseline = "alphabetic"
 
 {-|
 

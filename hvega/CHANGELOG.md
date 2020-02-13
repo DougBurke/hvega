@@ -21,7 +21,7 @@ The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
 diverging color scales.
 
 Labels can now be vertically aligned to their baseline with the
-`AlignAlphabetic` constructor of the `VAlign` type.
+`AlignBaseline` constructor of the `VAlign` type.
 
 ## 0.5.0.0
 

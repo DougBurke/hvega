@@ -606,7 +606,7 @@ baselines =
 
       plots = vlConcat [ plot "top" AlignTop
                        , plot "middle" AlignMiddle
-                       , plot "baseline" AlignAlphabetic
+                       , plot "baseline" AlignBaseline
                        , plot "bottom" AlignBottom
                        ]
 
