@@ -18,6 +18,7 @@ testSpecs = [ ("columns1", columns1)
             , ("columns2", columns2)
             , ("columns3", columns3)
             , ("columns4", columns4)
+            , ("groupyage", groupByAge)
             , ("grid1", grid1)
             , ("grid2", grid2)
             , ("grid3", grid3)
@@ -77,6 +78,53 @@ columns4 =
         , HLabelPadding 40
         ]
         []
+
+
+groupByAge :: VegaLite
+groupByAge =
+  let conf = configure
+             . configuration (View [ ViewStroke Nothing ])
+             . configuration (Axis [ DomainWidth 1 ] )
+
+      pop = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+
+      trans =
+          transform
+              . filter (FExpr "datum.year == 2000")
+              . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
+
+      enc =
+          encoding
+              . column
+                  [ FName "age"
+                  , FmType Ordinal
+                  , FSpacing 10
+                  ]
+              . position Y
+                  [ PName "people"
+                  , PmType Quantitative
+                  , PAggregate Sum
+                  , PAxis [ AxTitle "Population", AxGrid False ]
+                  ]
+              . position X
+                  [ PName "gender"
+                  , PmType Nominal
+                  , PAxis [ AxNoTitle ]
+                  ]
+              . color
+                  [ MName "gender"
+                  , MmType Nominal
+                  , MScale [ SRange (RStrings [ "#675193", "#ca8861" ]) ]
+                  ]
+
+  in toVegaLite [ conf []
+                , pop
+                , trans []
+                , widthStep 12
+                , mark Bar []
+                , enc []
+                ]
+
 
 dataVals :: [DataColumn] -> Data
 dataVals =
