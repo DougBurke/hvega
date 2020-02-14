@@ -1202,15 +1202,20 @@ See the
 
 -}
 data FacetConfig
-    = FColumns Int
+    = FacetColumns Int
     -- ^ The maximum number of columns to use in a faceted-flow layout.
-    | FSpacing Double
+    --
+    --   Renamed from @FColumns@ in @0.6.0.0@
+    | FacetSpacing Double
     -- ^ The spacing in pixels between sub-views in a faceted composition.
+    --
+    --   Renamed from 'Graphics.Vega.VegaLite.FSpacing' in @0.6.0.0@ as
+    --   this is now used with @FacetChannel@.
 
 
 facetConfigProperty :: FacetConfig -> LabelledSpec
-facetConfigProperty (FColumns n) = "columns" .= n
-facetConfigProperty (FSpacing x) = "spacing" .= x
+facetConfigProperty (FacetColumns n) = "columns" .= n
+facetConfigProperty (FacetSpacing x) = "spacing" .= x
 
 
 -- | Specifies how the title anchor is positioned relative to the frame.

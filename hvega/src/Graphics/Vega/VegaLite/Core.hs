@@ -2026,6 +2026,8 @@ multiples.
 -}
 
 -- based on schema 3.3.0 #/definitions/FacetFieldDef
+-- although it's a bit different now (maybe RowColumnEncodingFieldDef in 4.2.0)
+
 
 data FacetChannel
     = FName FieldName
@@ -2034,15 +2036,31 @@ data FacetChannel
       -- ^ The encoded field's type of measurement.
     | FAggregate Operation
       -- ^ Aggregation function for the field.
+    | FAlign CompositionAlignment
+      -- ^ The alignment to apply to the row- or column- facet's subplot.
+      --
+      --   @since 0.6.0.0
     | FBin [BinProperty]
       -- ^ Describe how to bin quantitative fields, or whether the
       --   channels are already binned.
+    | FCenter Bool
+      -- ^ Should sub-views be centered relative to their respective rows or
+      --   columns.
+      --
+      --   @since 0.6.0.0
     | FHeader [HeaderProperty]
       -- ^ The properties of a facet's header.
     | FSort [SortProperty]
       -- ^ Sort order for the encoded field.
       --
       --   @since 0.4.0.0
+    | FSpacing Double
+      -- ^ The pixel spacing between sub-views.
+      --
+      --   Prior to @0.6.0.0@ @FSpacing@ was used with the 'Graphics.Vega.VegaLite.FacetConfig'
+      --   type.
+      --
+      --   @since 0.6.0.0
     | FTimeUnit TimeUnit
       -- ^ The time-unit for a temporal field.
     | FTitle T.Text
@@ -2057,10 +2075,13 @@ data FacetChannel
 facetChannelProperty :: FacetChannel -> LabelledSpec
 facetChannelProperty (FName s) = field_ s
 facetChannelProperty (FmType measure) = mtype_ measure
+facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FCenter b) = "center" .= b
 facetChannelProperty (FHeader hps) = header_ hps
 facetChannelProperty (FSort sps) = sort_ sps
+facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s
 facetChannelProperty FNoTitle = "title" .= A.Null
 facetChannelProperty (FTimeUnit tu) = timeUnit_ tu

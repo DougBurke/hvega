@@ -10,8 +10,11 @@
             "labelFontSize": 0.1
         },
         "view": {
+            "strokeWidth": 2,
             "continuousHeight": 120,
-            "stroke": null
+            "stroke": "black",
+            "fill": "gray",
+            "fillOpacity": 0.2
         },
         "facet": {
             "columns": 5,

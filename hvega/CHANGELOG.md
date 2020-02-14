@@ -6,7 +6,21 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.2.0 of the
 Vega-Lite schema.
 
+### New functionality
+
 New function for use with `encoding`: `strokeDash`.
+
+### Breaking changes
+
+The constructors for `FacetConfig` have been renamed from `FColumns`
+and `FSpacing` to `FacetColumns` and `FacetSpacing`. This is to
+support the new `FSpacing` constructor for `FacetChannel`.
+
+### New constructors
+
+`FacetChannel` has gained the following constructors: `FAlign`,
+`FCenter`, and `FSpacing`. The last one has caused the renaming of the
+constructors for the `FacetConfig` type.
 
 `MSymbol` has been added to `MarkChannel` which can be used to make the
 `shape` encoding conditional on a data or selection condition.

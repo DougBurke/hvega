@@ -5740,7 +5740,7 @@ aitoffConfig :: [ConfigureSpec] -> PropertySpec
 aitoffConfig =
   configure
   . configuration (View [ ViewStroke Nothing ])
-  . configuration (FacetStyle [ FSpacing 0 ])
+  . configuration (FacetStyle [ FacetSpacing 0 ])
   . configuration (HeaderStyle [ HLabelAngle 0 ])
   . configuration (Legend [ LeOrient LOBottom, LeNoTitle ])
   . configuration (Axis [ Domain False
@@ -5841,7 +5841,7 @@ aitoffConfig =
 --  aitoffConfig =
 --    configure
 --    . configuration (View [ ViewStroke Nothing ])
---    . configuration ('FacetStyle' [ 'FSpacing' 0 ])
+--    . configuration ('FacetStyle' [ 'FacetSpacing' 0 ])
 --    . configuration ('HeaderStyle' [ 'HLabelAngle' 0 ])
 --    . configuration ('Legend' [ 'LeOrient' LOBottom, 'LeNoTitle' ])
 --    . configuration ('Axis' [ 'Domain' False

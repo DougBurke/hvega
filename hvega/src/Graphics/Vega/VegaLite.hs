@@ -1065,7 +1065,22 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.2 of
 -- the Vega-Lite schema.
 --
+-- __New functionality__
+--
 -- New function for use with 'VL.encoding': 'VL.strokeDash'.
+--
+-- __Breaking Change__
+--
+-- The constructors for 'VL.FacetConfig' have been renamed from @FColumns@
+-- and @FSpacing@ to 'VL.FacetColumns' and 'VL.FacetSpacing'. This is to
+-- support the new 'VL.FSpacing' constructor for 'VL.FacetChannel'.
+--
+-- __New constructors__:
+--
+-- 'VL.FacetChannel' has gained the following constructors:
+-- 'VL.FAlign', 'VL.FCenter', and 'VL.FSpacing'. The last one
+-- has caused the renaming of the constructors for the 'VL.FacetConfig'
+-- type.
 --
 -- 'VL.MSymbol' has been added to 'VL.MarkChannel' which can be
 -- used to make the 'VL.shape' encoding conditional on a data

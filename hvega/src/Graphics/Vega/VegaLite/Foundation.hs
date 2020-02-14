@@ -1157,7 +1157,9 @@ boundsSpec Flush = "flush"
 
 
 -- | Specifies the alignment of compositions. It is used with:
---   'Graphics.Vega.VegaLite.align', 'Graphics.Vega.VegaLite.alignRC', 'Graphics.Vega.VegaLite.LeGridAlign', and 'Graphics.Vega.VegaLite.LGridAlign'.
+--   'Graphics.Vega.VegaLite.align', 'Graphics.Vega.VegaLite.alignRC',
+--   'Graphics.Vega.VegaLite.LeGridAlign', 'Graphics.Vega.VegaLite.LGridAlign',
+--   and 'Graphics.Vega.VegaLite.FAlign'.
 --
 --   @since 0.4.0.0
 
