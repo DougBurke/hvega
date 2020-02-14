@@ -6,7 +6,9 @@
         {
             "as": "year",
             "field": "Year",
-            "timeUnit": "year"
+            "timeUnit": {
+                "unit": "year"
+            }
         },
         {
             "window": [
@@ -41,7 +43,9 @@
             "encoding": {
                 "x": {
                     "field": "Year",
-                    "timeUnit": "year",
+                    "timeUnit": {
+                        "unit": "year"
+                    },
                     "type": "temporal"
                 },
                 "y": {
@@ -58,7 +62,9 @@
             "encoding": {
                 "x": {
                     "field": "Year",
-                    "timeUnit": "year",
+                    "timeUnit": {
+                        "unit": "year"
+                    },
                     "type": "temporal"
                 },
                 "y": {

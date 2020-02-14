@@ -44,6 +44,7 @@ import qualified CompositeTests as CompT
 import qualified ConditionalTests as CondT
 import qualified ConfigTests as ConfT
 import qualified DataTests as DT
+import qualified EncodingTests
 import qualified FillStrokeTests as FST
 import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
@@ -60,6 +61,7 @@ import qualified TextFormatTests as TfT
 import qualified TimeTests as TmT
 import qualified TooltipTests as TT
 import qualified TrailTests as TrT
+import qualified TransformTests
 import qualified ViewCompositionTests as VT
 import qualified WindowTransformTests as WT
 
@@ -115,6 +117,7 @@ baseTests = testGroup "base"
   , toTests "Conditional" "conditional" CondT.testSpecs
   , toTests "Config" "config" ConfT.testSpecs
   , toTests "Data" "data" DT.testSpecs
+  , toTests "Encoding" "encoding" EncodingTests.testSpecs
   , toTests "FillStroke" "fillstroke" FST.testSpecs
   , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs
@@ -131,6 +134,7 @@ baseTests = testGroup "base"
   , toTests "Time" "time" TmT.testSpecs
   , toTests "Tooltip" "tooltip" TT.testSpecs
   , toTests "Trail" "trail" TrT.testSpecs
+  , toTests "Transform" "transform" TransformTests.testSpecs
   , toTests "ViewComposition" "viewcomposition" VT.testSpecs
   , toTests "WindowTransform" "windowtransform" WT.testSpecs
   ]

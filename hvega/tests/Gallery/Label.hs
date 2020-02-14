@@ -18,6 +18,9 @@ testSpecs = [ ("label1", label1)
             , ("label5", label5)
             , ("label6", label6)
             , ("label7", label7)
+            , ("label8", label8)
+            , ("label9", label9)
+            , ("baselines", baselines)
             ]
 
 label1 :: VegaLite
@@ -88,6 +91,7 @@ label2 =
         ]
 
 
+-- TODO: this has been re-worked in elm
 label3 :: VegaLite
 label3 =
     let
@@ -115,7 +119,7 @@ label3 =
                     [ PName "CO2"
                     , PmType Quantitative
                     , PScale [ SZero False ]
-                    , PAxis [ AxTitle "CO2 concentration in ppm" ]
+                    , PAxis [ AxTitle "CO₂ concentration in ppm" ]
                     ]
 
         encLine =
@@ -328,3 +332,288 @@ label7 =
             asSpec [ mark Point [], encPopulation [] ]
     in
     toVegaLite [ des, width 500, dvals [], layer [ specRects, specLine, specPoints ] ]
+
+
+label8 :: VegaLite
+label8 =
+  let strColumn n vs = dataColumn n (Strings vs)
+
+      medians =
+        dataFromColumns []
+        . strColumn "name" [ "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:" ]
+        . dataColumn "median" (Numbers [ 1.999976, 2, 1.999969, 2.500045, 1.500022, 2.99998, 4.500007 ])
+        . strColumn "lo" [ "Easy", "Easy", "Toolbar", "Toolbar", "Toolbar", "Toolbar", "Phone" ]
+        . strColumn "hi" [ "Hard", "Hard", "Gesture", "Gesture", "Gesture", "Gesture", "Tablet" ]
+
+      values =
+        dataFromColumns []
+        . strColumn "value" [ "P1", "2", "2", "3", "4", "2", "5", "5", "1", "1", "P2", "2", "3", "4", "5", "5", "5", "5", "1", "1", "P3", "2", "2", "2", "1", "2", "1", "5", "1", "0", "P4", "3", "3", "2", "2", "4", "1", "5", "1", "0", "P5", "2", "2", "4", "4", "4", "5", "5", "0", "1", "P6", "1", "3", "3", "4", "4", "4", "4", "0", "1", "P7", "2", "3", "4", "5", "3", "2", "4", "0", "0", "P8", "3", "1", "2", "4", "2", "5", "5", "0", "0", "P9", "2", "3", "2", "4", "1", "4", "4", "1", "1", "P10", "2", "2", "1", "1", "1", "1", "5", "1", "1", "P11", "2", "2", "1", "1", "1", "1", "4", "1", "0", "P12", "1", "3", "2", "3", "1", "3", "3", "0", "1", "P13", "2", "2", "1", "1", "1", "1", "5", "0", "0", "P14", "3", "3", "2", "2", "1", "1", "1", "1", "1", "P15", "4", "5", "1", "1", "1", "1", "5", "1", "0", "P16", "1", "3", "2", "2", "1", "4", "5", "0", "1", "P17", "3", "2", "2", "2", "1", "3", "2", "0", "0" ]
+        . strColumn "name" [ "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First", "Participant ID", "Identify Errors:", "Fix Errors:", "Easier to Fix:", "Faster to Fix:", "Easier on Phone:", "Easier on Tablet:", "Device Preference:", "Tablet_First", "Toolbar_First" ]
+        . strColumn "id" [ "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P1", "P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2", "P2", "P3", "P3", "P3", "P3", "P3", "P3", "P3", "P3", "P3", "P3", "P4", "P4", "P4", "P4", "P4", "P4", "P4", "P4", "P4", "P4", "P5", "P5", "P5", "P5", "P5", "P5", "P5", "P5", "P5", "P5", "P6", "P6", "P6", "P6", "P6", "P6", "P6", "P6", "P6", "P6", "P7", "P7", "P7", "P7", "P7", "P7", "P7", "P7", "P7", "P7", "P8", "P8", "P8", "P8", "P8", "P8", "P8", "P8", "P8", "P8", "P9", "P9", "P9", "P9", "P9", "P9", "P9", "P9", "P9", "P9", "P10", "P10", "P10", "P10", "P10", "P10", "P10", "P10", "P10", "P10", "P11", "P11", "P11", "P11", "P11", "P11", "P11", "P11", "P11", "P11", "P12", "P12", "P12", "P12", "P12", "P12", "P12", "P12", "P12", "P12", "P13", "P13", "P13", "P13", "P13", "P13", "P13", "P13", "P13", "P13", "P14", "P14", "P14", "P14", "P14", "P14", "P14", "P14", "P14", "P14", "P15", "P15", "P15", "P15", "P15", "P15", "P15", "P15", "P15", "P15", "P16", "P16", "P16", "P16", "P16", "P16", "P16", "P16", "P16", "P16", "P17", "P17", "P17", "P17", "P17", "P17", "P17", "P17", "P17", "P17" ]
+
+      enc = encoding
+            . position Y [ PName "name"
+                         , PmType Nominal
+                         , PSort []
+                         , PAxis
+                           [ AxDomain False
+                           , AxOffset 50
+                           , AxLabelFontWeight Bold
+                           , AxTicks False
+                           , AxGrid True
+                           , AxNoTitle
+                           ]
+                         ]
+
+      trans = transform
+              . filter (FExpr "datum.name != 'Toolbar_First'")
+              . filter (FExpr "datum.name != 'Tablet_First'")
+              . filter (FExpr "datum.name != 'Participant ID'")
+
+      encCircle =
+        encoding
+        . position X [ PName "value"
+                     , PmType Quantitative
+                     , PScale [ SDomain (DNumbers [ 0, 6 ]) ]
+                     , PAxis [ AxGrid False, AxValues (Numbers [ 1, 2, 3, 4, 5 ]) ]
+                     ]
+        . size [ MAggregate Count
+               , MmType Quantitative
+               , MLegend [ LTitle "Number of Ratings", LOffset 75 ]
+               ]
+
+      specCircle =
+        asSpec [ dataFromSource "values" []
+               , trans []
+               , encCircle []
+               , mark Circle [ MColor "#6eb4fd" ]
+               ]
+
+      encTick1 =
+        encoding
+        . position X [ PName "median"
+                     , PmType Quantitative
+                     , PScale [ SDomain (DNumbers [ 0, 6 ]) ]
+                     , PAxis [ AxNoTitle ]
+                     ]
+
+      specTick1 =
+        asSpec [ encTick1 [], mark Tick [ MColor "black" ] ]
+
+      encTextLo =
+        encoding
+        . text [ TName "lo", TmType Nominal ]
+
+      specTextLo =
+        asSpec [ encTextLo [], mark Text [ MX (-5), MAlign AlignRight ] ]
+
+      encTextHi =
+        encoding
+        . text [ TName "hi", TmType Nominal ]
+
+      specTextHi =
+        asSpec [ encTextHi [], mark Text [ MX 255, MAlign AlignLeft ] ]
+
+      cfg = configure . configuration (View [ ViewStroke Nothing ])
+
+  in toVegaLite
+        [ cfg []
+        , datasets [ ( "medians", medians [] ), ( "values", values [] ) ]
+        , dataFromSource "medians" []
+        , title "Questionnaire Ratings" []
+        , width 250
+        , height 175
+        , enc []
+        , layer [ specCircle, specTick1, specTextLo, specTextHi ]
+        ]
+
+
+label9 :: VegaLite
+label9 =
+  let des = description "Comparing Likert scale ratings between two conditions."
+
+      cfg = configure
+            . configuration (View [ ViewStroke Nothing ])
+            . configuration
+                    (NamedStyles
+                        [ ( "arrow-label", [ MdY 12, MFontSize 9.5 ] )
+                        , ( "arrow-label2", [ MdY 24, MFontSize 9.5 ] )
+                        ]
+                    )
+            . configuration (TitleStyle [ TFontSize 12 ])
+
+      lickertData =
+        dataFromColumns []
+        . dataColumn "measure" (Strings [ "Open Exploration", "Focused Question Answering", "Open Exploration", "Focused Question Answering" ])
+        . dataColumn "mean" (Numbers [ 1.81, -1.69, 2.19, -0.06 ])
+        . dataColumn "lo" (Numbers [ 1.26, -2.33, 1.67, -0.47 ])
+        . dataColumn "hi" (Numbers [ 2.37, -1.05, 2.71, 0.35 ])
+        . dataColumn "study" (Strings [ "PoleStar vs Voyager", "PoleStar vs Voyager", "PoleStar vs Voyager 2", "PoleStar vs Voyager 2" ])
+
+      labelData =
+        dataFromColumns []
+        . dataColumn "from" (Numbers [ -0.25, 0.25 ])
+        . dataColumn "to" (Numbers [ -2.9, 2.9 ])
+        . dataColumn "label" (Strings [ "PoleStar", "Voyager / Voyager 2" ])
+
+      encLickert =
+        encoding
+        . position Y [ PName "study"
+                     , PmType Nominal
+                     , PAxis [ AxNoTitle
+                             , AxLabelPadding 5
+                             , AxDomain False
+                             , AxTicks False
+                             , AxGrid False
+                             ]
+                     ]
+
+      encLickertWhiskers =
+        encoding
+        . position X [ PName "lo"
+                     , PmType Quantitative
+                     , PScale [ SDomain (DNumbers [ -3, 3 ]) ]
+                     , PAxis
+                       [ AxNoTitle
+                       , AxGridDash [ 3, 3 ]
+                       , AxDataCondition (Expr "datum.value === 0") (CAxGridColor "#666" "#ccc")
+                       ]
+                     ]
+        . position X2 [ PName "hi" ]
+
+      specLickertWhiskers = asSpec [ encLickertWhiskers [], mark Rule [] ]
+
+      encLickertMeans =
+        encoding
+        . position X [ PName "mean", PmType Quantitative ]
+        . color [ MName "measure"
+                , MmType Nominal
+                , MScale [ SRange (RStrings [ "black", "white" ]) ]
+                , MLegend []
+                ]
+
+      specLickertMeans =
+        asSpec [ encLickertMeans [], mark Circle [ MStroke "black", MOpacity 1 ] ]
+
+      specLickert =
+        asSpec
+        [ title "Mean of Subject Ratings (95% CIs)" [ TFrame FrBounds ]
+        , encLickert []
+        , layer [ specLickertWhiskers, specLickertMeans ]
+        ]
+
+      encLabel1 =
+        encoding
+        . position X [ PName "from", PmType Quantitative, PScale [ SZero False ], PAxis [] ]
+        . position X2 [ PName "to" ]
+
+      specLabel1 = asSpec [ encLabel1 [], mark Rule [] ]
+
+      encLabel2 =
+        encoding
+        . position X [ PName "to", PmType Quantitative, PAxis [] ]
+        . shape [ MDataCondition
+                  [ ( Expr "datum.to > 0", [ MSymbol SymTriangleRight ] ) ]
+                  [ MSymbol SymTriangleLeft ]
+                ]
+
+      specLabel2 = asSpec [ encLabel2 [], mark Point [ MFilled True, MSize 60, MFill "black" ] ]
+
+      transLabel3 =
+        transform
+        . filter (FExpr "datum.label === 'PoleStar'")
+
+      from = position X [ PName "from", PmType Quantitative, PAxis [] ]
+
+      encLabel3 =
+        encoding
+        . from
+        . text [ TName "label", TmType Nominal ]
+
+      specLabel3 =
+        asSpec [ transLabel3 []
+               , encLabel3 []
+               , mark Text [ MAlign AlignRight, MStyle [ "arrow-label" ] ]
+               ]
+
+      transLabel4 =
+        transform
+        . filter (FExpr "datum.label !== 'PoleStar'")
+
+      encLabel4 = encLabel3
+
+      specLabel4 =
+        asSpec [ transLabel4 []
+               , encLabel4 []
+               , mark Text [ MAlign AlignLeft, MStyle [ "arrow-label" ] ]
+               ]
+
+      transLabel5 = transLabel3
+
+      encLabel5 =
+        encoding
+        . from
+        . text [ TString "more valuable" ]
+
+      specLabel5 =
+        asSpec [ transLabel5 []
+               , encLabel5 []
+               , mark Text [ MAlign AlignRight, MStyle [ "arrow-label2" ] ]
+               ]
+
+      transLabel6 = transLabel4
+
+      encLabel6 = encLabel5
+
+      specLabel6 =
+        asSpec [ transLabel6 []
+               , encLabel6 []
+               , mark Text [ MAlign AlignLeft, MStyle [ "arrow-label2" ] ]
+               ]
+
+      specLabels =
+        asSpec [ labelData []
+               , layer [ specLabel1, specLabel2, specLabel3, specLabel4, specLabel5, specLabel6 ]
+               ]
+
+  in toVegaLite [ des
+                , cfg []
+                , lickertData []
+                , spacing 10
+                , vConcat [ specLickert, specLabels ]
+                ]
+
+baselines :: VegaLite
+baselines =
+  let dvals = dataFromColumns []
+              . dataColumn "x" (Numbers [ 10, 20 ])
+              . dataColumn "y" (Numbers [ 10, 20 ])
+
+      ax t n = position t [ PName n
+                          , PmType Quantitative
+                          , PScale [ SNice (IsNice False)
+                                   , SDomain (DNumbers [5, 25])
+                                   ]
+                          , PAxis [ AxNoTitle ]
+                          ]
+
+      enc = encoding
+            . ax X "x"
+            . ax Y "y"
+            . text [ TString "Xxgq" ]
+
+      plot l a = asSpec [ enc [], title l [], mark Text [ MBaseline a ] ]
+
+      plots = vlConcat [ plot "top" AlignTop
+                       , plot "middle" AlignMiddle
+                       , plot "baseline" AlignBaseline
+                       , plot "bottom" AlignBottom
+                       ]
+
+  in toVegaLite [ dvals []
+                , configure
+                  . configuration (MarkStyle [ MFontSize 20 ])
+                  $ []
+                , columns 2
+                , plots
+                ]

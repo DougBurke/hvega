@@ -73,13 +73,13 @@ window2 =
     toVegaLite [ dataVals [], trans [], layer [ barSpec, ruleSpec ] ]
 
 
+movieData :: Data
+movieData = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json"
+                [ Parse [ ( "Release_Date", FoDate "%b %d %Y" ) ] ]
+
 window3 :: VegaLite
 window3 =
-    let dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/movies.json"
-                [ Parse [ ( "Release_Date", FoDate "%d-%b-%y" ) ] ]
-
-        trans =
+    let trans =
             transform
                 . filter (FExpr "datum.IMDB_Rating != null")
                 . timeUnitAs Year "Release_Date" "year"
@@ -103,16 +103,12 @@ window3 =
 
         tickSpec = asSpec [ mark Tick [], tickEnc [] ]
             
-    in toVegaLite [ dataVals, trans [], layer [ barSpec, tickSpec ] ]
+    in toVegaLite [ movieData, trans [], layer [ barSpec, tickSpec ] ]
 
 
 window4 :: VegaLite
 window4 =
-    let dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/movies.json"
-                [ Parse [ ( "Release_Date", FoDate "%d-%b-%y" ) ] ]
-
-        trans =
+    let trans =
             transform
                 . filter (FExpr "datum.IMDB_Rating != null")
                 . filter (FRange "Release_Date" (DateRange [] [ DTYear 2019 ]))
@@ -125,7 +121,7 @@ window4 =
                 . position X [ PName "Release_Date", PmType Temporal ]
                 . position Y [ PName "RatingDelta", PmType Quantitative, PAxis [ AxTitle "Residual" ] ]
                 
-    in toVegaLite [ dataVals, trans [], enc [], mark Point [ MStrokeWidth 0.3, MOpacity 0.3 ] ]
+    in toVegaLite [ movieData, trans [], enc [], mark Point [ MStrokeWidth 0.3, MOpacity 0.3 ] ]
 
 
 window5 :: VegaLite

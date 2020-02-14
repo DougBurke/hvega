@@ -11,7 +11,9 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": "yearmonthdatehoursminutesseconds",
+            "timeUnit": {
+                "unit": "yearmonthdatehoursminutesseconds"
+            },
             "type": "temporal"
         },
         "y": {

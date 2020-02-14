@@ -558,21 +558,29 @@ data HAlign
 
 data VAlign
     = AlignTop
+      -- ^ The position refers to the top of the text.
     | AlignMiddle
+      -- ^ The middle of the text.
     | AlignBottom
-
+      -- ^ The position refers to the bottom of the text, including
+      --   descenders, like g.
+    | AlignBaseline
+      -- ^ The position refers to the baseline of the text (so it does
+      --   not include descenders). This maps to the Vega-Lite
+      --   @\"alphabetic\"@ value.
+      --
+      --   @since 0.6.0.0
 
 hAlignLabel :: HAlign -> T.Text
 hAlignLabel AlignLeft = "left"
 hAlignLabel AlignCenter = "center"
 hAlignLabel AlignRight = "right"
 
-
 vAlignLabel :: VAlign -> T.Text
 vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
-
+vAlignLabel AlignBaseline = "alphabetic"
 
 {-|
 
@@ -1149,7 +1157,9 @@ boundsSpec Flush = "flush"
 
 
 -- | Specifies the alignment of compositions. It is used with:
---   'Graphics.Vega.VegaLite.align', 'Graphics.Vega.VegaLite.alignRC', 'Graphics.Vega.VegaLite.LeGridAlign', and 'Graphics.Vega.VegaLite.LGridAlign'.
+--   'Graphics.Vega.VegaLite.align', 'Graphics.Vega.VegaLite.alignRC',
+--   'Graphics.Vega.VegaLite.LeGridAlign', 'Graphics.Vega.VegaLite.LGridAlign',
+--   and 'Graphics.Vega.VegaLite.FAlign'.
 --
 --   @since 0.4.0.0
 

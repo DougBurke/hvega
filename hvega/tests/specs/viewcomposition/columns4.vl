@@ -42,7 +42,8 @@
                 "labelFontSize": 15,
                 "titleFontSize": 20
             },
-            "type": "nominal"
+            "type": "nominal",
+            "spacing": 0
         },
         "y": {
             "field": "people",

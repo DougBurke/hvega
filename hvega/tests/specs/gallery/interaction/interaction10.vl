@@ -58,7 +58,9 @@
         "tooltip": [
             {
                 "field": "date",
-                "timeUnit": "yearmonthdate",
+                "timeUnit": {
+                    "unit": "yearmonthdate"
+                },
                 "type": "temporal"
             },
             {
@@ -72,7 +74,9 @@
         ],
         "x": {
             "field": "date",
-            "timeUnit": "yearmonthdate",
+            "timeUnit": {
+                "unit": "yearmonthdate"
+            },
             "type": "temporal"
         }
     },

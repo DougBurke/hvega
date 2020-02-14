@@ -21,28 +21,23 @@ module Graphics.Vega.VegaLite.Time
        , TimeUnit(..)
 
        -- not for external export
-       , timeUnit_
-
        , dateTimeProperty
-       -- , dayLabel
-       -- , monthNameLabel
-       , timeUnitLabel
+       , timeUnitSpec
        
        ) where
 
 import qualified Data.Text as T
 
-import Data.Aeson ((.=))
+import Data.Aeson ((.=), object)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
 #endif
 
-import Graphics.Vega.VegaLite.Specification (LabelledSpec)
+-- added in base 4.8.0.0 / ghc 7.10.1
+import Numeric.Natural (Natural)
 
-
-timeUnit_ :: TimeUnit -> LabelledSpec
-timeUnit_ tu = "timeUnit" .= timeUnitLabel tu
+import Graphics.Vega.VegaLite.Specification (LabelledSpec, VLSpec)
 
 
 {-|
@@ -175,6 +170,21 @@ data TimeUnit
     | Utc TimeUnit
       -- ^ Encode a time as UTC (coordinated universal time, independent of local time
       --   zones or daylight saving).
+    | TUMaxBins Natural
+      -- ^ The maximum number of bins to use when discretising time values.
+      --   This can be useful as an algternative to explicitly providing the
+      --   time unit to bin by, as it will be inferred from the temporal
+      --   extent and the number of bins. As an example, @TUMaxBins 366@
+      --   will bin by day when applied to a dataset of hourly readings
+      --   for a full year.
+      --
+      --   @since 0.6.0.0
+    | TUStep Double TimeUnit
+      -- ^ The number of steps between time-unit bins, in terms of the
+      --   least-significant unit provided. So @TUStep 14 YearMonthDate@
+      --   wull bin temporal data into bi-weekly groups.
+      --
+      --   @since 0.6.0.0
 
 
 dateTimeProperty :: DateTime -> LabelledSpec
@@ -216,27 +226,43 @@ monthNameLabel Nov = "Nov"
 monthNameLabel Dec = "Dec"
 
 
-timeUnitLabel :: TimeUnit -> T.Text
-timeUnitLabel Year = "year"
-timeUnitLabel YearQuarter = "yearquarter"
-timeUnitLabel YearQuarterMonth = "yearquartermonth"
-timeUnitLabel YearMonth = "yearmonth"
-timeUnitLabel YearMonthDate = "yearmonthdate"
-timeUnitLabel YearMonthDateHours = "yearmonthdatehours"
-timeUnitLabel YearMonthDateHoursMinutes = "yearmonthdatehoursminutes"
-timeUnitLabel YearMonthDateHoursMinutesSeconds = "yearmonthdatehoursminutesseconds"
-timeUnitLabel Quarter = "quarter"
-timeUnitLabel QuarterMonth = "quartermonth"
-timeUnitLabel Month = "month"
-timeUnitLabel MonthDate = "monthdate"
-timeUnitLabel Date = "date"
-timeUnitLabel Day = "day"
-timeUnitLabel Hours = "hours"
-timeUnitLabel HoursMinutes = "hoursminutes"
-timeUnitLabel HoursMinutesSeconds = "hoursminutesseconds"
-timeUnitLabel Minutes = "minutes"
-timeUnitLabel MinutesSeconds = "minutesseconds"
-timeUnitLabel Seconds = "seconds"
-timeUnitLabel SecondsMilliseconds = "secondsmilliseconds"
-timeUnitLabel Milliseconds = "milliseconds"
-timeUnitLabel (Utc tu) = "utc" <> timeUnitLabel tu
+-- Assume there's no "embedded" values the time unit used by
+-- the "grouping" cases, such as Utc, are "singular" and not
+-- themselves compound.
+--
+-- Ideally this would know when it could just return the label
+-- and not a labelled spec, but for now leave it as is.
+--
+timeHelper :: T.Text -> [LabelledSpec]
+timeHelper unit = ["unit" .= unit]
+
+timeUnitProperties :: TimeUnit -> [LabelledSpec]
+timeUnitProperties Year = timeHelper "year"
+timeUnitProperties YearQuarter = timeHelper "yearquarter"
+timeUnitProperties YearQuarterMonth = timeHelper "yearquartermonth"
+timeUnitProperties YearMonth = timeHelper "yearmonth"
+timeUnitProperties YearMonthDate = timeHelper "yearmonthdate"
+timeUnitProperties YearMonthDateHours = timeHelper "yearmonthdatehours"
+timeUnitProperties YearMonthDateHoursMinutes = timeHelper "yearmonthdatehoursminutes"
+timeUnitProperties YearMonthDateHoursMinutesSeconds = timeHelper "yearmonthdatehoursminutesseconds"
+timeUnitProperties Quarter = timeHelper "quarter"
+timeUnitProperties QuarterMonth = timeHelper "quartermonth"
+timeUnitProperties Month = timeHelper "month"
+timeUnitProperties MonthDate = timeHelper "monthdate"
+timeUnitProperties Date = timeHelper "date"
+timeUnitProperties Day = timeHelper "day"
+timeUnitProperties Hours = timeHelper "hours"
+timeUnitProperties HoursMinutes = timeHelper "hoursminutes"
+timeUnitProperties HoursMinutesSeconds = timeHelper "hoursminutesseconds"
+timeUnitProperties Minutes = timeHelper "minutes"
+timeUnitProperties MinutesSeconds = timeHelper "minutesseconds"
+timeUnitProperties Seconds = timeHelper "seconds"
+timeUnitProperties SecondsMilliseconds = timeHelper "secondsmilliseconds"
+timeUnitProperties Milliseconds = timeHelper "milliseconds"
+timeUnitProperties (Utc tu) = "utc" .= True : timeUnitProperties tu
+timeUnitProperties (TUStep x tu) = "step" .= x : timeUnitProperties tu
+timeUnitProperties (TUMaxBins n) = [ "maxbins" .= n ]
+
+
+timeUnitSpec :: TimeUnit -> VLSpec
+timeUnitSpec = object . timeUnitProperties

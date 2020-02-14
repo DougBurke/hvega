@@ -1,0 +1,49 @@
+{
+    "transform": [
+        {
+            "as": "sampleDate",
+            "calculate": "datum.date"
+        },
+        {
+            "as": "maxTemp",
+            "calculate": "datum.temp_max"
+        },
+        {
+            "as": "tbin",
+            "field": "sampleDate",
+            "timeUnit": {
+                "maxbins": 3
+            }
+        }
+    ],
+    "mark": {
+        "point": {
+            "fill": "black"
+        },
+        "type": "line"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv",
+        "format": {
+            "parse": {
+                "date": "date:'%Y/%m/%d'"
+            }
+        }
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "tbin",
+            "type": "temporal",
+            "axis": {
+                "format": "%b"
+            }
+        },
+        "y": {
+            "field": "maxTemp",
+            "aggregate": "max",
+            "type": "quantitative"
+        }
+    }
+}

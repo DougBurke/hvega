@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 --
 -- Based on the Elm VegaLite FillStrokeTests.elm as of version 1.12.0
@@ -10,6 +11,9 @@
 module FillStrokeTests (testSpecs) where
 
 -- import qualified Data.Text as T
+
+import Data.Aeson (Value)
+import Data.Aeson.QQ.Simple (aesonQQ)
 
 import Graphics.Vega.VegaLite hiding (filter, repeat)
 
@@ -32,6 +36,8 @@ testSpecs = [ ("default", defChart)
             , ("gradientr1", gradientr1)
             , ("gradientr2", gradientr2)
             , ("gradientr3", gradientr3)
+            , ("vrounded", vrounded)
+            , ("hrounded", hrounded)
             ]
 
 encChart :: ([a] -> [EncodingSpec]) -> VegaLite
@@ -207,3 +213,49 @@ gradientr3 =
              ]
 
   in gradientTest markType
+
+
+{-
+From https://vega.github.io/vega-lite/docs/bar.html#bar-chart-with-rounded-corners
+
+{
+  "data": {
+    "values": [
+      {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
+      {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
+      {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
+    ]
+  },
+  "mark": {"type": "bar", "cornerRadiusEnd": 4},
+  "encoding": {
+    "x": {"field": "a", "type": "ordinal"},
+    "y": {"field": "b", "type": "quantitative"}
+  }
+}
+
+-}
+
+barData :: Value
+barData = [aesonQQ|
+[
+  {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
+  {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
+  {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
+]
+|]
+
+rounded :: Position -> Position -> VegaLite
+rounded h v =
+  toVegaLite [ dataFromJson barData []
+             , mark Bar [ MCornerRadiusEnd 4 ]
+             , encoding
+               . position h [ PName "a", PmType Ordinal ]
+               . position v [ PName "b", PmType Quantitative ]
+               $ []
+             ]
+
+vrounded :: VegaLite
+vrounded = rounded X Y
+
+hrounded :: VegaLite
+hrounded = rounded Y X

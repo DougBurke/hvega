@@ -400,15 +400,16 @@ module Graphics.Vega.VegaLite
          --
          -- $markprops
 
-       , VL.size
        , VL.color
        , VL.fill
-       , VL.stroke
-       , VL.strokeWidth
-       , VL.opacity
        , VL.fillOpacity
-       , VL.strokeOpacity
+       , VL.opacity
        , VL.shape
+       , VL.size
+       , VL.stroke
+       , VL.strokeDash
+       , VL.strokeOpacity
+       , VL.strokeWidth
 
          -- *** Mark Channel properties
 
@@ -671,6 +672,10 @@ module Graphics.Vega.VegaLite
          -- * Update notes
          --
          -- $update
+
+         -- ** Version 0.6
+         --
+         -- $update0600
 
          -- ** Version 0.5
          --
@@ -1055,6 +1060,43 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0600
+-- The @0.6.0.0@ release updates @hvega@ to support version 4.2 of
+-- the Vega-Lite schema.
+--
+-- __New functionality__
+--
+-- New function for use with 'VL.encoding': 'VL.strokeDash'.
+--
+-- __Breaking Change__
+--
+-- The constructors for 'VL.FacetConfig' have been renamed from @FColumns@
+-- and @FSpacing@ to 'VL.FacetColumns' and 'VL.FacetSpacing'. This is to
+-- support the new 'VL.FSpacing' constructor for 'VL.FacetChannel'.
+--
+-- __New constructors__:
+--
+-- 'VL.FacetChannel' has gained the following constructors:
+-- 'VL.FAlign', 'VL.FCenter', and 'VL.FSpacing'. The last one
+-- has caused the renaming of the constructors for the 'VL.FacetConfig'
+-- type.
+--
+-- 'VL.MSymbol' has been added to 'VL.MarkChannel' which can be
+-- used to make the 'VL.shape' encoding conditional on a data
+-- or selection condition.
+--
+-- The 'VL.TUStep' and 'VL.TUMaxBins' constructors have been added to
+-- 'VL.TimeUnit' for controlling how time values are binned.
+--
+-- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
+-- constructor, which is used to draw rounded histogram bars.
+--
+-- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
+-- for asymmetric diverging color scales.
+--
+-- Labels can now be vertically aligned to their baseline with the
+-- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

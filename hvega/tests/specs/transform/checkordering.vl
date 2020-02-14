@@ -1,0 +1,35 @@
+{
+    "transform": [
+        {
+            "as": "myAcceleration",
+            "calculate": "datum.Acceleration"
+        },
+        {
+            "groupby": [
+                "Cylinders"
+            ],
+            "aggregate": [
+                {
+                    "op": "mean",
+                    "as": "mean_acceleration",
+                    "field": "myAcceleration"
+                }
+            ]
+        }
+    ],
+    "mark": "bar",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "Cylinders",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "mean_acceleration",
+            "type": "quantitative"
+        }
+    }
+}

@@ -80,15 +80,16 @@ module Graphics.Vega.VegaLite.Core
        , AxisProperty(..)
        , ConditionalAxisProperty(..)
 
-       , size
        , color
        , fill
-       , stroke
-       , strokeWidth
-       , opacity
        , fillOpacity
-       , strokeOpacity
+       , opacity
        , shape
+       , size
+       , stroke
+       , strokeDash
+       , strokeOpacity
+       , strokeWidth
 
        , MarkChannel(..)
 
@@ -219,6 +220,7 @@ import Graphics.Vega.VegaLite.Foundation
   , CInterpolate
   , ViewBackground
   , HeaderProperty
+  , Symbol
   , fromT
   , fromColor
   , fromDS
@@ -249,6 +251,7 @@ import Graphics.Vega.VegaLite.Foundation
   , repeatFieldsProperty
   , cInterpolateSpec
   , viewBackgroundSpec
+  , symbolLabel
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -287,9 +290,8 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
-  , timeUnit_
   , dateTimeProperty
-  , timeUnitLabel
+  , timeUnitSpec
   )
 import Graphics.Vega.VegaLite.Transform
   ( Operation(Count)
@@ -334,6 +336,9 @@ mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
 
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
+
+timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ tu = "timeUnit" .= timeUnitSpec tu
 
 -- The assumption at the moment is that it's always correct to
 -- replace the empty list by null.
@@ -530,6 +535,21 @@ data MarkChannel
       -- ^ Literal string value when encoding with a mark property channel.
     | MBoolean Bool
       -- ^ Boolean value when encoding with a mark property channel.
+    | MSymbol Symbol
+      -- ^ A symbol literal. This can be useful when making a symbol dependent on some data or
+      --   selection condition (e.g. 'MDataCondition' or 'MSelectionCondition').
+      --
+      --   For example:
+      --
+      --   @
+      --   'encoding'
+      --     . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' "to", 'PmType' 'Graphics.Vega.VegaLite.Quantitative', 'PAxis' [] ]
+      --     . 'shape' ['MDataCondition'
+      --               [('Expr' "datum.to > 100", [MSymbol 'Graphics.Vega.VegaLite.SymTriangleRight'])]
+      --               [MSymbol 'Graphics.Vega.VegaLite.SymTriangleLeft']
+      --   @
+      --
+      --   @since 0.6.0.0
 
 markChannelProperty :: MarkChannel -> [LabelledSpec]
 markChannelProperty (MName s) = [field_ s]
@@ -550,6 +570,7 @@ markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
+markChannelProperty (MSymbol s) = ["value" .= symbolLabel s]
 markChannelProperty (MTitle s) = ["title" .= splitOnNewline s]
 markChannelProperty MNoTitle = ["title" .= A.Null]
 
@@ -573,7 +594,7 @@ so it can either be used to add further encoding specifications or as
 The supported encodings are:
 'color', 'column', 'detail', 'fill', 'fillOpacity', 'hyperlink',
 'opacity', 'order', 'position', 'row', 'shape', 'size',
-'stroke', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
+'stroke', 'strokeDash', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
 'tooltips', and 'url'.
 
 There is currently no support for encoding by
@@ -700,6 +721,10 @@ data ScaleProperty
       --   @since 0.4.0.0
     | SDomain ScaleDomain
       -- ^ Custom scaling domain.
+    | SDomainMid Double
+      -- ^ Set the mid-point of a continuous diverging domain.
+      --
+      --   @since 0.6.0.0
     | SExponent Double
       -- ^ The exponent to use for power scaling ('Graphics.Vega.VegaLite.ScPow').
       --
@@ -745,6 +770,7 @@ scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
+scaleProperty (SDomainMid x) = "domainMid" .= x
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
 scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
@@ -2000,6 +2026,8 @@ multiples.
 -}
 
 -- based on schema 3.3.0 #/definitions/FacetFieldDef
+-- although it's a bit different now (maybe RowColumnEncodingFieldDef in 4.2.0)
+
 
 data FacetChannel
     = FName FieldName
@@ -2008,15 +2036,31 @@ data FacetChannel
       -- ^ The encoded field's type of measurement.
     | FAggregate Operation
       -- ^ Aggregation function for the field.
+    | FAlign CompositionAlignment
+      -- ^ The alignment to apply to the row- or column- facet's subplot.
+      --
+      --   @since 0.6.0.0
     | FBin [BinProperty]
       -- ^ Describe how to bin quantitative fields, or whether the
       --   channels are already binned.
+    | FCenter Bool
+      -- ^ Should sub-views be centered relative to their respective rows or
+      --   columns.
+      --
+      --   @since 0.6.0.0
     | FHeader [HeaderProperty]
       -- ^ The properties of a facet's header.
     | FSort [SortProperty]
       -- ^ Sort order for the encoded field.
       --
       --   @since 0.4.0.0
+    | FSpacing Double
+      -- ^ The pixel spacing between sub-views.
+      --
+      --   Prior to @0.6.0.0@ @FSpacing@ was used with the 'Graphics.Vega.VegaLite.FacetConfig'
+      --   type.
+      --
+      --   @since 0.6.0.0
     | FTimeUnit TimeUnit
       -- ^ The time-unit for a temporal field.
     | FTitle T.Text
@@ -2031,10 +2075,13 @@ data FacetChannel
 facetChannelProperty :: FacetChannel -> LabelledSpec
 facetChannelProperty (FName s) = field_ s
 facetChannelProperty (FmType measure) = mtype_ measure
+facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FCenter b) = "center" .= b
 facetChannelProperty (FHeader hps) = header_ hps
 facetChannelProperty (FSort sps) = sort_ sps
+facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s
 facetChannelProperty FNoTitle = "title" .= A.Null
 facetChannelProperty (FTimeUnit tu) = timeUnit_ tu
@@ -4402,6 +4449,54 @@ stroke markProps ols = mchan_ "stroke" markProps : ols
 
 {-|
 
+Encode a stroke-dash channel.
+
+The following will use a different dash style for each value in the
+\"symbol" field (a multi-series line chart):
+
+@
+'Graphics.Vega.VegaLite.toVegaLite' [ 'Graphics.Vega.VegaLite.dataFromUrl' \"data/stocks.csv\" []
+           , 'mark' 'Graphics.Vega.VegaLite.Line' []
+           , 'encoding'
+             . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal' ]
+             . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"price\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+             . strokeDash [ 'MName' \"symbol\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
+             $ []
+           ]
+@
+
+It can also be used to change the line style for connected
+points (e.g. to indicate where the data changes its \"predicted\"
+value, noting that there are two points at @\"a\"@ equal to @\"E\"@):
+
+@
+'Graphics.Vega.VegaLite.toVegaLite' [ 'Graphics.Vega.VegaLite.dataFromColumns' []
+             . 'Graphics.Vega.VegaLite.dataColumn' \"a\" ('Strings' [ \"A\", \"B\", \"D\", \"E\", \"E\", \"G\", \"H\"])
+             . 'Graphics.Vega.VegaLite.dataColumn' \"b\" ('Numbers' [ 28, 55, 91, 81, 81, 19, 87 ])
+             . 'Graphics.Vega.VegaLite.dataColumn' \"predicted\" ('Booleans' [False, False, False, False, True, True, True])
+             $ []
+           , 'mark' 'Graphics.Vega.VegaLite.Line' []
+           , 'encoding'
+             . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"a\", 'PmType' 'Graphics.Vega.VegaLite.Ordinal' ]
+             . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PName' \"b\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
+             . strokeDash [ 'MName' \"predicted\", 'MmType' 'Graphics.Vega.VegaLite.Nominal' ]
+             $ []
+           ]
+@
+
+@since 0.6.0.0
+
+-}
+
+strokeDash ::
+  [MarkChannel]
+  -- ^ What data values are used to control the stoke opacity parameters of the mark.
+  -> BuildEncodingSpecs
+strokeDash markProps ols = mchan_ "strokeDash" markProps : ols
+
+
+{-|
+
 Encode a stroke opacity channel. This acts in a similar way to encoding by
 'opacity' but only affects the exterior boundary of marks. If both 'opacity' and
 @strokeOpacity@ are specified, @strokeOpacity@ takes precedence for stroke encoding.
@@ -4486,7 +4581,7 @@ timeUnitAs ::
   -- ^ The name of the binned data created by this routine.
   -> BuildTransformSpecs
 timeUnitAs tu field label ols =
-  let fields = [ "timeUnit" .= timeUnitLabel tu
+  let fields = [ "timeUnit" .= timeUnitSpec tu
                , "field" .= field
                , "as" .= label ]
   in TS (object fields) : ols

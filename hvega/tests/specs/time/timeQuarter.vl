@@ -11,7 +11,9 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": "quarter",
+            "timeUnit": {
+                "unit": "quarter"
+            },
             "type": "temporal"
         },
         "y": {

@@ -6,7 +6,9 @@
         {
             "as": "year",
             "field": "Release_Date",
-            "timeUnit": "year"
+            "timeUnit": {
+                "unit": "year"
+            }
         },
         {
             "window": [
@@ -32,7 +34,7 @@
         "url": "https://vega.github.io/vega-lite/data/movies.json",
         "format": {
             "parse": {
-                "Release_Date": "date:'%d-%b-%y'"
+                "Release_Date": "date:'%b %d %Y'"
             }
         }
     },

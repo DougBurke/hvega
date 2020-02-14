@@ -5,6 +5,7 @@
 --
 module ViewCompositionTests (testSpecs) where
 
+import qualified Data.Text as T
 import qualified Prelude as P
 
 import Graphics.Vega.VegaLite
@@ -17,6 +18,7 @@ testSpecs = [ ("columns1", columns1)
             , ("columns2", columns2)
             , ("columns3", columns3)
             , ("columns4", columns4)
+            , ("groupyage", groupByAge)
             , ("grid1", grid1)
             , ("grid2", grid2)
             , ("grid3", grid3)
@@ -43,6 +45,7 @@ genderChart hdProps cProps =
                   [ FName "gender"
                   , FmType Nominal
                   , FHeader hdProps
+                  , FSpacing 0
                   ]
               . position X
                   [ PName "age"
@@ -75,6 +78,53 @@ columns4 =
         , HLabelPadding 40
         ]
         []
+
+
+groupByAge :: VegaLite
+groupByAge =
+  let conf = configure
+             . configuration (View [ ViewStroke Nothing ])
+             . configuration (Axis [ DomainWidth 1 ] )
+
+      pop = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+
+      trans =
+          transform
+              . filter (FExpr "datum.year == 2000")
+              . calculateAs "datum.sex == 2 ? 'Female' : 'Male'" "gender"
+
+      enc =
+          encoding
+              . column
+                  [ FName "age"
+                  , FmType Ordinal
+                  , FSpacing 10
+                  ]
+              . position Y
+                  [ PName "people"
+                  , PmType Quantitative
+                  , PAggregate Sum
+                  , PAxis [ AxTitle "Population", AxGrid False ]
+                  ]
+              . position X
+                  [ PName "gender"
+                  , PmType Nominal
+                  , PAxis [ AxNoTitle ]
+                  ]
+              . color
+                  [ MName "gender"
+                  , MmType Nominal
+                  , MScale [ SRange (RStrings [ "#675193", "#ca8861" ]) ]
+                  ]
+
+  in toVegaLite [ conf []
+                , pop
+                , trans []
+                , widthStep 12
+                , mark Bar []
+                , enc []
+                ]
+
 
 dataVals :: [DataColumn] -> Data
 dataVals =
@@ -119,19 +169,23 @@ gridConfig :: [FacetConfig] -> [ConfigureSpec] -> PropertySpec
 gridConfig fopts =
   configure
   . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-  . configuration (View [ ViewStroke Nothing, ViewContinuousHeight 120 ])
+  . configuration (View [ ViewStroke (Just "black")
+                        , ViewStrokeWidth 2
+                        , ViewFill (Just "gray")
+                        , ViewFillOpacity 0.2
+                        , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)
 
 
 grid1 :: VegaLite
 grid1 =
-    let cfg = gridConfig [ FSpacing 80, FColumns 5 ]
+    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
 
     in
     toVegaLite
         [ cfg []
         , dataVals []
-        , spacingRC 20 80
+        , spacingRC 10 30
         , specification specByCatVal
         , facet
             [ RowBy [ FName "row", FmType Ordinal, FNoTitle ]
@@ -142,7 +196,7 @@ grid1 =
 
 grid2 :: VegaLite
 grid2 =
-    let cfg = gridConfig [ FSpacing 80, FColumns 5 ]
+    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
 
     in
     toVegaLite
@@ -155,20 +209,16 @@ grid2 =
         ]
 
 
--- This has been changed from the Elm version so that it validates
--- against the v3.4.0 specification.
--- (not sure if this is still a valid comment)
---
 grid3 :: VegaLite
 grid3 =
-    let cfg = gridConfig [ FSpacing 80 ]
+    let cfg = gridConfig [ FacetSpacing 80 ]
 
     in
     toVegaLite
         [ cfg []
         , dataVals []
         , gridTransform
-        , columns 5
+        , columns 0
         , specification specByCatVal
         , facetFlow [ FName "index", FmType Ordinal, FHeader [ HNoTitle ] ]
         ]
@@ -188,10 +238,14 @@ carGrid rpt opts =
   in toVegaLite (specification spec : opts)
 
 
+carFields :: [T.Text]
+carFields = [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
+
+
 grid4 :: VegaLite
 grid4 =
   let opts = [ columns 3
-             , repeatFlow [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
+             , repeatFlow carFields
              ]
 
   in carGrid Flow opts
@@ -200,7 +254,7 @@ grid4 =
 grid5 :: VegaLite
 grid5 =
   let opts = [ repeat
-               [ RowFields [ "Horsepower", "Miles_per_Gallon", "Acceleration", "Displacement", "Weight_in_lbs" ]
+               [ RowFields carFields
                ]
              ]
 
