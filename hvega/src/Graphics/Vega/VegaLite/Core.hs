@@ -1576,11 +1576,6 @@ is 'True', and the third is the value for when it is 'False'.
 @since 0.5.0.0
 -}
 
--- The 4.0.2 Vega Lite spec does not correctly map the conditional
--- label align, so that CAxLabelAlign will generate an invalid JSON
--- file. This has been fixed (presumably for 4.0.3); see
--- https://github.com/vega/vega-lite/issues/5717
-
 data ConditionalAxisProperty
   = CAxGridColor Color Color
     -- ^ The color for the axis grid.

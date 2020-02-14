@@ -119,10 +119,6 @@ def process(schema):
                     allowed = deque(['encoding', 'fill'])
                 elif infile == 'stroke1.vl':
                     allowed = deque(['encoding', 'stroke'])
-            elif root == 'tests/specs/conditional' and infile == 'axisCondition3.vl':
-                # this is an error in the 4.0.2 spec, so hopefully we can remove
-                # this once 4.0.3 is available
-                allowed = deque(['encoding', 'x', 'axis', 'labelAlign', 'condition', 'value'])
 
             fullname = os.path.join(root, infile)
             js = read_json(fullname)
