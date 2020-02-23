@@ -498,6 +498,14 @@ data MarkProperty
       -- ^ Interpolation tension used when interpolating line and area marks.
     | MText T.Text
       -- ^ Placeholder text for a text mark for when a text channel is not specified.
+      --
+      --   See 'MTexts' for supplying an array of text values.
+    | MTexts [T.Text]
+      -- ^ Placeholder text for a text mark for when a text channel is not specified.
+      --
+      --   See 'MText' for supplying a single text value.
+      --
+      --   @since 0.6.0.0
     | MTheta Double
       -- ^ Polar coordinate angle (clockwise from north in radians)
       --   of a text mark from the origin (determined by its
@@ -669,7 +677,8 @@ markProperty (MStrokeWidth w) = "strokeWidth" .= w
 markProperty (MStyle [style]) = "style" .= style  -- special case singleton
 markProperty (MStyle styles) = "style" .= styles
 markProperty (MTension x) = "tension" .= x
-markProperty (MText txt) = "text" .= txt
+markProperty (MText t) = "text" .= t
+markProperty (MTexts ts) = "text" .= ts
 markProperty (MTheta x) = "theta" .= x
 markProperty (MThickness x) = "thickness" .= x
 
