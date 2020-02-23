@@ -293,100 +293,66 @@ layer5 =
 
 layer6 :: VegaLite
 layer6 =
-    let
-        enc1 =
-            encoding
-                . position Y [ PName "record.low", PmType Quantitative, PScale [ SDomain (DNumbers [ 10, 70 ]) ], PAxis [ AxTitle "Temperature (F)" ] ]
-                . position Y2 [ PName "record.high" ]
-                . position X [ PName "id", PmType Ordinal, PAxis [ AxTitle "Day" ] ]
-                . size [ MNumber 20 ]
-                . color [ MString "#ccc" ]
+  let label = description "A layered bar chart with floating bars representing weekly weather data"
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/weather.json" []
 
-        spec1 =
-            asSpec [ mark Bar [], enc1 [] ]
+      titleOpts = title "Weekly Weather\nObservations and Predictions" [TFrame FrGroup]
 
-        enc2 =
-            encoding
-                . position Y [ PName "normal.low", PmType Quantitative ]
-                . position Y2 [ PName "normal.high" ]
-                . position X [ PName "id", PmType Ordinal ]
-                . size [ MNumber 20 ]
-                . color [ MString "#999" ]
+      axis1 = [AxDomain False, AxTicks False, AxLabels False, AxNoTitle, AxTitlePadding 25, AxOrient STop]
+      enc = encoding (position X [PName "id", PmType Ordinal, PAxis axis1] [])
 
-        spec2 =
-            asSpec [ mark Bar [], enc2 [] ]
+      enc1 = encoding
+             . position Y [ PName "record.low", PmType Quantitative
+                          , PScale [SDomain (DNumbers [10, 70])]
+                          , PAxis [AxTitle "Temperature (F)"]
+                          ]
+             . position Y2 [PName "record.high"]
+             . size [MNumber 20]
+             . color [MString "#ccc"]
+      lyr1 = [mark Bar [MStyle ["box"]], enc1 []]
 
-        enc3 =
-            encoding
-                . position Y [ PName "actual.low", PmType Quantitative ]
-                . position Y2 [ PName "actual.high" ]
-                . position X [ PName "id", PmType Ordinal ]
-                . size [ MNumber 12 ]
-                . color [ MString "#000" ]
+      enc2 = encoding
+             . position Y [PName "normal.low", PmType Quantitative]
+             . position Y2 [PName "normal.high"]
+             . size [MNumber 20]
+             . color [MString "#999"]
+      lyr2 = [mark Bar [MStyle ["box"]], enc2 []]
 
-        spec3 =
-            asSpec [ mark Bar [], enc3 [] ]
+      enc3 = encoding
+             . position Y [PName "actual.low", PmType Quantitative]
+             . position Y2 [PName "actual.high"]
+             . size [MNumber 12]
+             . color [MString "#000"]
+      lyr3 = [mark Bar [MStyle ["box"]], enc3 []]
 
-        enc4 =
-            encoding
-                . position Y [ PName "forecast.low.low", PmType Quantitative ]
-                . position Y2 [ PName "forecast.low.high" ]
-                . position X [ PName "id", PmType Ordinal ]
-                . size [ MNumber 12 ]
-                . color [ MString "#000" ]
+      enc4 = encoding
+             . position Y [PName "forecast.low.low", PmType Quantitative]
+             . position Y2 [PName "forecast.low.high"]
+             . size [MNumber 12]
+             . color [MString "#000"]
+      lyr4 = [mark Bar [MStyle ["box"]], enc4 []]
 
-        spec4 =
-            asSpec [ mark Bar [], enc4 [] ]
+      enc5 = encoding
+             . position Y [PName "forecast.low.high", PmType Quantitative]
+             . position Y2 [PName "forecast.high.low"]
+             . size [MNumber 3]
+             . color [MString "#000"]
+      lyr5 = [mark Bar [MStyle ["box"]], enc5 []]
 
-        enc5 =
-            encoding
-                . position Y [ PName "forecast.low.high", PmType Quantitative ]
-                . position Y2 [ PName "forecast.high.low" ]
-                . position X [ PName "id", PmType Ordinal ]
-                . size [ MNumber 3 ]
-                . color [ MString "#000" ]
+      enc6 = encoding
+             . position Y [PName "forecast.high.low", PmType Quantitative]
+             . position Y2 [PName "forecast.high.high"]
+             . size [MNumber 12]
+             . color [MString "#000"]
+      lyr6 = [mark Bar [MStyle ["box"]], enc6 []]
 
-        spec5 =
-            asSpec [ mark Bar [], enc5 [] ]
+      enc7 = encoding (text [TName "day", TmType Nominal] [])
+      lyr7 = [mark Text [MAlign AlignCenter, MBaseline AlignBottom, MY (-5)], enc7]
 
-        enc6 =
-            encoding
-                . position Y [ PName "forecast.high.low", PmType Quantitative ]
-                . position Y2 [ PName "forecast.high.high" ]
-                . position X [ PName "id", PmType Ordinal ]
-                . size [ MNumber 12 ]
-                . color [ MString "#000" ]
+      lyr = layer (map asSpec [lyr1, lyr2, lyr3, lyr4, lyr5, lyr6, lyr7])
 
-        spec6 =
-            asSpec [ mark Bar [], enc6 [] ]
+  in toVegaLite [label, titleOpts, dvals, width 250, height 200, enc, lyr]
 
-        enc7 =
-            encoding
-                . position X
-                    [ PName "id"
-                    , PmType Ordinal
-                    , PAxis
-                        [ AxDomain False
-                        , AxTicks False
-                        , AxLabels False
-                        , AxTitle "Day"
-                        , AxTitlePadding 25
-                        , AxOrient STop
-                        ]
-                    ]
-                . text [ TName "day", TmType Nominal ]
-
-        spec7 =
-            asSpec [ mark Text [ MAlign AlignCenter, MdY (-105) ], enc7 [] ]
-    in
-    toVegaLite
-        [ description "A layered bar chart with floating bars representing weekly weather data"
-        , title "Weekly Weather Observations and Predictions" []
-        , width 250
-        , height 200
-        , dataFromUrl "https://vega.github.io/vega-lite/data/weather.json" []
-        , layer [ spec1, spec2, spec3, spec4, spec5, spec6, spec7 ]
-        ]
 
 
 -- From
