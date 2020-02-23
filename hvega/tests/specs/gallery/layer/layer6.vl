@@ -5,23 +5,25 @@
     },
     "width": 250,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Weekly Weather Observations and Predictions",
+    "title": {
+        "text": [
+            "Weekly Weather",
+            "Observations and Predictions"
+        ],
+        "frame": "group"
+    },
     "layer": [
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#ccc"
                 },
                 "size": {
                     "value": 20
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal",
-                    "axis": {
-                        "title": "Day"
-                    }
                 },
                 "y2": {
                     "field": "record.high"
@@ -42,17 +44,16 @@
             }
         },
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#999"
                 },
                 "size": {
                     "value": 20
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
                 },
                 "y2": {
                     "field": "normal.high"
@@ -64,17 +65,16 @@
             }
         },
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#000"
                 },
                 "size": {
                     "value": 12
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
                 },
                 "y2": {
                     "field": "actual.high"
@@ -86,17 +86,16 @@
             }
         },
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#000"
                 },
                 "size": {
                     "value": 12
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
                 },
                 "y2": {
                     "field": "forecast.low.high"
@@ -108,17 +107,16 @@
             }
         },
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#000"
                 },
                 "size": {
                     "value": 3
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
                 },
                 "y2": {
                     "field": "forecast.high.low"
@@ -130,17 +128,16 @@
             }
         },
         {
-            "mark": "bar",
+            "mark": {
+                "style": "box",
+                "type": "bar"
+            },
             "encoding": {
                 "color": {
                     "value": "#000"
                 },
                 "size": {
                     "value": 12
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal"
                 },
                 "y2": {
                     "field": "forecast.high.high"
@@ -153,29 +150,32 @@
         },
         {
             "mark": {
-                "dy": -105,
                 "align": "center",
-                "type": "text"
+                "type": "text",
+                "baseline": "bottom",
+                "y": -5
             },
             "encoding": {
                 "text": {
                     "field": "day",
                     "type": "nominal"
-                },
-                "x": {
-                    "field": "id",
-                    "type": "ordinal",
-                    "axis": {
-                        "domain": false,
-                        "orient": "top",
-                        "titlePadding": 25,
-                        "labels": false,
-                        "title": "Day",
-                        "ticks": false
-                    }
                 }
             }
         }
     ],
+    "encoding": {
+        "x": {
+            "field": "id",
+            "type": "ordinal",
+            "axis": {
+                "domain": false,
+                "orient": "top",
+                "titlePadding": 25,
+                "labels": false,
+                "title": null,
+                "ticks": false
+            }
+        }
+    },
     "description": "A layered bar chart with floating bars representing weekly weather data"
 }

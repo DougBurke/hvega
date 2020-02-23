@@ -29,7 +29,8 @@ The `TUStep` and `TUMaxBins` constructors have been added to `TimeUnit`
 for controlling how time values are binned.
 
 The `MarkProperty` type has gained the `MCornerRadiusEnd` constructor,
-which is used to draw rounded histogram bars.
+which is used to draw rounded histogram bars, and `MTexts` for
+specifying multiple text values.
 
 The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
 diverging color scales.

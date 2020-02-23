@@ -1,10 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 --
 -- Based on the Elm VegaLite GalleryLabel.elm (from development of version
 -- 1.13.0)
 --
 module Gallery.Label (testSpecs) where
+
+import Data.Aeson (Value)
+import Data.Aeson.QQ.Simple (aesonQQ)
 
 import Graphics.Vega.VegaLite
 
@@ -20,6 +24,7 @@ testSpecs = [ ("label1", label1)
             , ("label7", label7)
             , ("label8", label8)
             , ("label9", label9)
+            , ("voyager", voyager)
             , ("baselines", baselines)
             ]
 
@@ -582,6 +587,164 @@ label9 =
                 , spacing 10
                 , vConcat [ specLickert, specLabels ]
                 ]
+
+-- like label9 but trying to match the current version (Feb 2020) of
+-- https://vega.github.io/vega-lite/examples/concat_layer_voyager_result.html
+--
+voyagerData :: Value
+voyagerData = [aesonQQ|
+[ { "measure": "Open Exploration",
+    "mean": 1.813,
+    "lo": 1.255,
+    "hi": 2.37,
+    "study": "PoleStar vs Voyager"
+  },
+  {
+    "measure": "Focused Question Answering",
+    "mean": -1.688,
+    "lo": -2.325,
+    "hi": -1.05,
+    "study": "PoleStar vs Voyager"
+  },
+  {
+    "measure": "Open Exploration",
+    "mean": 2.1875,
+    "lo": 1.665,
+    "hi": 2.71,
+    "study": "PoleStar vs Voyager 2"
+  },
+  {
+    "measure": "Focused Question Answering",
+    "mean": -0.0625,
+    "lo": -0.474,
+    "hi": 0.349,
+    "study": "PoleStar vs Voyager 2"
+  } ]
+|]
+
+voyager :: VegaLite
+voyager =
+  let dataPlot = [ title "Mean of Subject Ratings (95% CIs)" [TFrame FrBounds]
+                 , encoding
+                   . position Y [ PName "study"
+                                , PmType Nominal
+                                , PAxis [ AxNoTitle
+                                        , AxLabelPadding 5
+                                        , AxDomain False
+                                        , AxTicks False
+                                        , AxGrid False
+                                        ]
+                                ]
+                   $ []
+                 , layer [asSpec rulePlot, asSpec circlePlot]
+                 ]
+
+      gridColor = AxDataCondition (Expr "datum.value === 0")
+                                  (CAxGridColor "#666" "#CCC")
+
+      rulePlot = [ mark Rule []
+                 , encoding
+                   . position X [ PName "lo"
+                                , PmType Quantitative
+                                , PScale [SDomain (DNumbers [-3, 3])]
+                                , PAxis [ AxTitle ""
+                                        , AxGridDash [3, 3]
+                                        , gridColor
+                                        ]
+                                ]
+                   . position X2 [PName "hi"]
+                   $ []
+                 ]
+
+      circlePlot = [ mark Circle [MStroke "black", MOpacity 1]
+                   , encoding
+                     . position X [PName "mean", PmType Quantitative]
+                     . color [ MName "measure"
+                             , MmType Nominal
+                             , MScale [SRange (RStrings ["black", "white"])]
+                             , MLegend []
+                             ]
+                     $ []
+                   ]
+
+      labelPlot = [ dataFromColumns []
+                    . dataColumn "from" (Numbers [-0.25, 0.25])
+                    . dataColumn "to" (Numbers [-2.9, 2.9])
+                    . dataColumn "label" (Strings ["PoleStar", "Voyager / Voyager 2"])
+                    $ []
+                  , layer (map asSpec [linePlot, arrowsPlot, pTextPlot, vTextPlot])
+                  ]
+
+      linePlot = [ mark Rule []
+                 , encoding
+                   . position X [ PName "from"
+                                , PmType Quantitative
+                                , PScale [SZero False]
+                                , PAxis []
+                                ]
+                   . position X2 [PName "to"]
+                   $ []
+                 ]
+
+      shapeOpts = MDataCondition
+                      [(Expr "datum.to > 0", [MSymbol SymTriangleRight])]
+                      [MSymbol SymTriangleLeft]
+
+      arrowsPlot = [ mark Point [ MFilled True
+                                , MFill "black"
+                                , MSize 60 ]
+                   , encoding
+                     . position X [ PName "to"
+                                  , PmType Quantitative
+                                  , PAxis []
+                                  ]
+                     . shape [ shapeOpts ]
+                     $ []
+                   ]
+
+      from = position X [PName "from", PmType Quantitative, PAxis []]
+
+      pTextPlot = [ mark Text [ MAlign AlignRight
+                              , MStyle ["arrow-label"]
+                              , MTexts ["Polestar", "More Valuable"]
+                              ]
+                  , transform
+                    . filter (FExpr "datum.label === 'PoleStar'")
+                    $ []
+                  , encoding
+                    . from
+                    $ []
+                  ]
+
+      vTextPlot = [ mark Text [ MAlign AlignLeft
+                              , MStyle ["arrow-label"]
+                              , MTexts ["Voyager / Voyager 2", "More Valuable"]
+                              ]
+                  , transform
+                    . filter (FExpr "datum.label !== 'PoleStar'")
+                    $ []
+                  , encoding
+                    . from
+                    $ []
+                  ]
+
+      styles = NamedStyles
+                   [ ("arrow-label", [MdY 12, MFontSize 9.5])
+                   , ("arrow-label2", [MdY 24, MFontSize 9.5])
+                   ]
+      conf = configure
+             . configuration (View [ViewStroke (Just "transparent")])
+             . configuration styles
+             . configuration (TitleStyle [TFontSize 12])
+
+      v = [ dataFromJson voyagerData []
+          , spacing 10
+          , vConcat [asSpec dataPlot, asSpec labelPlot]
+          , conf []
+          ]
+
+  in toVegaLite v
+
 
 baselines :: VegaLite
 baselines =

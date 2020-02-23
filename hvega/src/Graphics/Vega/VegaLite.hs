@@ -1090,7 +1090,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.TimeUnit' for controlling how time values are binned.
 --
 -- The 'VL.MarkProperty' type has gained the 'VL.MCornerRadiusEnd'
--- constructor, which is used to draw rounded histogram bars.
+-- constructor, which is used to draw rounded histogram bars, and
+-- 'VL.MTexts' for specifying multiple text values.
 --
 -- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
 -- for asymmetric diverging color scales.
