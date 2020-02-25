@@ -13,9 +13,7 @@
     "encoding": {
         "x": {
             "field": "Year",
-            "timeUnit": {
-                "unit": "year"
-            },
+            "timeUnit": "year",
             "type": "temporal",
             "axis": {
                 "gridWidth": {
@@ -28,9 +26,7 @@
                                 "month": "Jan"
                             },
                             "field": "value",
-                            "timeUnit": {
-                                "unit": "monthdate"
-                            }
+                            "timeUnit": "monthdate"
                         }
                     }
                 }

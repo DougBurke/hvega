@@ -240,9 +240,7 @@
                             }
                         ]
                     },
-                    "timeUnit": {
-                        "unit": "yearmonthdate"
-                    },
+                    "timeUnit": "yearmonthdate",
                     "type": "temporal",
                     "axis": {
                         "format": "%m/%d",
@@ -274,9 +272,7 @@
                 },
                 "x": {
                     "field": "date",
-                    "timeUnit": {
-                        "unit": "yearmonthdate"
-                    },
+                    "timeUnit": "yearmonthdate",
                     "type": "temporal"
                 },
                 "y2": {

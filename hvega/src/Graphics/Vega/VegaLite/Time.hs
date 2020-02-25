@@ -122,6 +122,32 @@ for further details.
 @
 -}
 
+-- Vega-Lite 4.4.0 has
+--   LocalMultiTimeUnit which is yearquarter, yearquartermonth, ,secondsmilliseconds
+--   LocalSingleTimeUnit year, quarter, ..., milliseconds
+-- and
+--   UtcMultiTimeUnit which is utc <> LocalMultiTimeUnit
+--   UtcSingleTimeUnit         utc <> LocalSingleTimeUnit
+--
+-- TimeUnit       is either of SingleTimeUnit or MultiTimeUnit
+-- SingleTimeUnut is either of LocalSingleTimeUnit or UtcSingleTimeUnit
+-- MultiTimeUnit  is either of LocalMultiTieUnit or UtcMultiTimeUnit
+--
+-- "timeUnit" settings are TimeUnit or TimeUnitParams
+--
+-- TimeUnitParams is an object with fields
+--   maxbins - number
+--   step    - number
+--   unit    - this is TimeUnit
+--   utc     - boolean
+--
+-- So, could be something like "TU <time unit type> [options]"
+-- where an empty array means it's a "TimeUnit", and the options are from
+-- TimeUnitParams (apart from the unit field). Unfortunately this doesn't
+-- capture the use case of supplying "maxbins" only (it may be that "step"
+-- can also be used without any other value).
+--
+
 data TimeUnit
     = Year
       -- ^ Year.
@@ -264,5 +290,13 @@ timeUnitProperties (TUStep x tu) = "step" .= x : timeUnitProperties tu
 timeUnitProperties (TUMaxBins n) = [ "maxbins" .= n ]
 
 
+-- Special case this so that
+--   {'unit': blah}              -> blah
+--   {'unit': blah, 'utc': true} -> 'utc' <> blah  [would be nice but not done for now]
+--
 timeUnitSpec :: TimeUnit -> VLSpec
-timeUnitSpec = object . timeUnitProperties
+timeUnitSpec tu =
+  let props = timeUnitProperties tu
+  in case props of
+    [(k, v)] | k == "unit" -> v
+    _ -> object props

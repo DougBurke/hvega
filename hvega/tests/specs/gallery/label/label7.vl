@@ -188,9 +188,7 @@
             "encoding": {
                 "x2": {
                     "field": "end",
-                    "timeUnit": {
-                        "unit": "year"
-                    }
+                    "timeUnit": "year"
                 },
                 "color": {
                     "field": "event",
@@ -198,9 +196,7 @@
                 },
                 "x": {
                     "field": "start",
-                    "timeUnit": {
-                        "unit": "year"
-                    },
+                    "timeUnit": "year",
                     "type": "temporal",
                     "axis": null
                 }
@@ -214,9 +210,7 @@
                 },
                 "x": {
                     "field": "year",
-                    "timeUnit": {
-                        "unit": "year"
-                    },
+                    "timeUnit": "year",
                     "type": "temporal",
                     "axis": {
                         "title": null
@@ -236,9 +230,7 @@
                 },
                 "x": {
                     "field": "year",
-                    "timeUnit": {
-                        "unit": "year"
-                    },
+                    "timeUnit": "year",
                     "type": "temporal",
                     "axis": {
                         "title": null

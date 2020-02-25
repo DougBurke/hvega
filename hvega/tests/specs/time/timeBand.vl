@@ -13,9 +13,7 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": {
-                "unit": "month"
-            },
+            "timeUnit": "month",
             "type": "temporal",
             "band": 0.5
         },

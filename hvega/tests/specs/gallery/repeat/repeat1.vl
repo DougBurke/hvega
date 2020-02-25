@@ -23,16 +23,12 @@
                     },
                     "x": {
                         "field": "date",
-                        "timeUnit": {
-                            "unit": "month"
-                        },
+                        "timeUnit": "month",
                         "type": "ordinal"
                     },
                     "detail": {
                         "field": "date",
-                        "timeUnit": {
-                            "unit": "year"
-                        },
+                        "timeUnit": "year",
                         "type": "temporal"
                     },
                     "y": {
@@ -53,9 +49,7 @@
                     },
                     "x": {
                         "field": "date",
-                        "timeUnit": {
-                            "unit": "month"
-                        },
+                        "timeUnit": "month",
                         "type": "ordinal"
                     },
                     "y": {
