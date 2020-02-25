@@ -9,9 +9,7 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": {
-                "unit": "yearmonth"
-            },
+            "timeUnit": "yearmonth",
             "type": "temporal",
             "axis": {
                 "format": "%Y"

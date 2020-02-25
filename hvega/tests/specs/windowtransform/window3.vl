@@ -6,9 +6,7 @@
         {
             "as": "year",
             "field": "Release_Date",
-            "timeUnit": {
-                "unit": "year"
-            }
+            "timeUnit": "year"
         },
         {
             "window": [

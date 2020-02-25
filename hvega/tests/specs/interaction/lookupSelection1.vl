@@ -100,9 +100,7 @@
                     "encoding": {
                         "text": {
                             "field": "date",
-                            "timeUnit": {
-                                "unit": "yearmonth"
-                            },
+                            "timeUnit": "yearmonth",
                             "type": "temporal"
                         },
                         "y": {

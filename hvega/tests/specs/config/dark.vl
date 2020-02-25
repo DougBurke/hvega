@@ -59,9 +59,7 @@
                 },
                 "x": {
                     "field": "Year",
-                    "timeUnit": {
-                        "unit": "year"
-                    },
+                    "timeUnit": "year",
                     "type": "temporal"
                 },
                 "y": {

@@ -60,9 +60,7 @@
                 },
                 "x": {
                     "field": "date",
-                    "timeUnit": {
-                        "unit": "monthdate"
-                    },
+                    "timeUnit": "monthdate",
                     "type": "temporal",
                     "axis": {
                         "format": "%b",

@@ -11,9 +11,7 @@
         {
             "as": "month",
             "field": "sampleDate",
-            "timeUnit": {
-                "unit": "month"
-            }
+            "timeUnit": "month"
         }
     ],
     "mark": {

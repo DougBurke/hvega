@@ -24,9 +24,7 @@
                 },
                 "x": {
                     "field": "date",
-                    "timeUnit": {
-                        "unit": "month"
-                    },
+                    "timeUnit": "month",
                     "type": "ordinal"
                 }
             }

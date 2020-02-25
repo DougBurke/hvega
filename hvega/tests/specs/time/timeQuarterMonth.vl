@@ -11,9 +11,7 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": {
-                "unit": "quartermonth"
-            },
+            "timeUnit": "quartermonth",
             "type": "temporal"
         },
         "y": {

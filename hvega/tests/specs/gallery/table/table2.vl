@@ -24,9 +24,7 @@
         },
         "x": {
             "field": "date",
-            "timeUnit": {
-                "unit": "date"
-            },
+            "timeUnit": "date",
             "type": "ordinal",
             "axis": {
                 "labelAngle": 0,
@@ -36,9 +34,7 @@
         },
         "y": {
             "field": "date",
-            "timeUnit": {
-                "unit": "month"
-            },
+            "timeUnit": "month",
             "type": "ordinal",
             "axis": {
                 "title": "Month"
