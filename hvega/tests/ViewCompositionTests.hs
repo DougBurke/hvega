@@ -27,6 +27,11 @@ testSpecs = [ ("columns1", columns1)
             ]
 
 
+noStroke :: [ConfigureSpec] -> PropertySpec
+noStroke = configure
+           . configuration (ViewStyle [ ViewNoStroke ])
+
+
 genderChart :: [HeaderProperty] -> [HeaderProperty] -> VegaLite
 genderChart hdProps cProps =
   let conf = configure . configuration (HeaderStyle cProps)
@@ -82,8 +87,7 @@ columns4 =
 
 groupByAge :: VegaLite
 groupByAge =
-  let conf = configure
-             . configuration (ViewStyle [ ViewStroke Nothing ])
+  let conf = noStroke
              . configuration (Axis [ DomainWidth 1 ] )
 
       pop = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
@@ -169,9 +173,9 @@ gridConfig :: [CompositionConfig] -> [ConfigureSpec] -> PropertySpec
 gridConfig fopts =
   configure
   . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-  . configuration (ViewStyle [ ViewStroke (Just "black")
+  . configuration (ViewStyle [ ViewStroke "black"
                              , ViewStrokeWidth 2
-                             , ViewFill (Just "gray")
+                             , ViewFill "gray"
                              , ViewFillOpacity 0.2
                              , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)

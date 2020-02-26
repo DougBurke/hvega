@@ -19,6 +19,14 @@ The `ConcatStyle` and `FacetStyle` constructors for
 So `ConcatColumns` and `FColumns` have been replaced by `CompColumns`,
 and `CompSpacing` and `FSpacing` by `CompSpacing`.
 
+The `ViewFill` and `ViewStroke` constructors of `ViewConfig` no longer
+take an optional `Color` argument. The Nothing case has been replaced
+by new constructors: `ViewNoFill` and `ViewNoStroke`.
+
+The `VBFill` and `VBStroke` constructors of `ViewBackground` no longer
+take an optional `Color` argument. The Nothing case has been replaced
+by new constructors: `VBNoFill` and `VBNoStroke`.
+
 ### New constructors
 
 `FacetChannel` has gained the following constructors: `FAlign`,

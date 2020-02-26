@@ -143,9 +143,9 @@ vbTest =
                 , width 200
                 , height 200
                 , viewBackground
-                    [ VBFill (Just "white")
+                    [ VBFill "white"
                     , VBCornerRadius 18
-                    , VBStroke (Just "red")
+                    , VBStroke "red"
                     , VBStrokeWidth 4
                     , VBStrokeCap CRound
                     , VBStrokeDash [ 10, 10 ]
@@ -163,7 +163,7 @@ vbTest =
                         , ( "mySecondStyle", [ MFill "black", MStroke "blue" ] )
                         ]
                     )
-                . configuration (ViewStyle [ ViewBackgroundStyle [ VBFill (Just "#feb") ] ])
+                . configuration (ViewStyle [ ViewBackgroundStyle [ VBFill "#feb" ] ])
 
         streamSpec =
             asSpec

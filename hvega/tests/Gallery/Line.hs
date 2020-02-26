@@ -291,7 +291,7 @@ line10 =
             asSpec [ transTextMax [], mark Text [ MAlign AlignLeft, MBaseline AlignBottom, MdX 3, MdY 1 ], encTextMax [] ]
 
         config =
-            configure . configuration (ViewStyle [ ViewStroke Nothing ])
+            configure . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite
         [ des

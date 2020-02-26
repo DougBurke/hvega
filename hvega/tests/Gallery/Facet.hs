@@ -208,6 +208,6 @@ facet7 =
 
         cfg =
             configure
-                . configuration (ViewStyle [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite [ des, width 300, height 50, cfg [], res [], dvals [], mark Area [], enc [] ]

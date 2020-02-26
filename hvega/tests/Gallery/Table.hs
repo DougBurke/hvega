@@ -95,7 +95,7 @@ table3 =
         config =
             configure
                 . configuration (RangeStyle [ RHeatmap "greenblue" ])
-                . configuration (ViewStyle [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite
         [ des

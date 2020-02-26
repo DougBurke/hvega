@@ -1072,6 +1072,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- So @ConcatColumns@ and @FColumns@ have been replaced by 'VL.CompColumns',
 -- and @CompSpacing@ and @FSpacing@ by 'VL.CompSpacing'.
 --
+-- The 'VL.ViewFill' and 'VL.ViewStroke' constructors of 'VL.ViewConfig'
+-- no longer take an optional 'VL.Color' argument. The @Nothing@
+-- case has been replaced by new constructors: 'VL.ViewNoFill'
+-- and 'VL.ViewNoStroke'.
+--
+-- The 'VL.VBFill' and 'VL.VBStroke' constructors of 'VL.ViewBackground'
+-- no longer take an optional 'VL.Color' argument. The @Nothing@
+-- case has been replaced by new constructors: 'VL.VBNoFill'
+-- and 'VL.VBNoStroke'.
+--
 -- __New constructors__:
 --
 -- 'VL.FacetChannel' has gained the following constructors:

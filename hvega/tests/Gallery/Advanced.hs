@@ -369,7 +369,7 @@ advanced8 =
 
         cfg =
             configure
-                . configuration (ViewStyle [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
                 . configuration (AxisX [ Domain False, LabelAngle 0, TickColor "#ccc" ])
                 . configuration
                     (NamedStyles

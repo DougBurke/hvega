@@ -246,7 +246,7 @@ area7 =
 
         cfg =
             configure
-                . configuration (ViewStyle [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
                 . configuration (Axis [ Domain False, Ticks False, Labels False, Grid False ])
                 . configuration (ConcatStyle [ CompSpacing 10 ])
 

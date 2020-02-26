@@ -30,7 +30,7 @@ testSpecs = [ ("label1", label1)
 
 
 noStroke :: [ConfigureSpec] -> PropertySpec
-noStroke = configure . configuration (ViewStyle [ViewStroke Nothing])
+noStroke = configure . configuration (ViewStyle [ViewNoStroke])
 
 
 label1 :: VegaLite
@@ -733,7 +733,7 @@ voyager =
                    , ("arrow-label2", [MdY 24, MFontSize 9.5])
                    ]
       conf = configure
-             . configuration (ViewStyle [ViewStroke (Just "transparent")])
+             . configuration (ViewStyle [ViewStroke "transparent"])
              . configuration styles
              . configuration (TitleStyle [TFontSize 12])
 

@@ -1317,12 +1317,19 @@ cInterpolateSpec (CubeHelix gamma) = object [pairT "type" "cubehelix", "gamma" .
 cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", "gamma" .= gamma]
 
 
--- | The properties for a single view or layer background.
---
---   Used with 'Graphics.Vega.VegaLite.viewBackground' and
---   'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
---
---   @since 0.4.0.0
+{-| The properties for a single view or layer background.
+
+Used with 'Graphics.Vega.VegaLite.viewBackground' and
+'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
+
+In version @0.6.0.0@ the constructors that used to take an optional color,
+namely 'VBFill' and 'VBStroke', were split out, so that they
+now take a 'Color' argument and new constructors - 'VBNoFill' and
+'VBNoStroke' - were added to replace the @Nothing@ versions.
+
+@since 0.4.0.0
+
+-}
 
 data ViewBackground
     = VBStyle [T.Text]
@@ -1332,19 +1339,28 @@ data ViewBackground
     --   properties.
     | VBCornerRadius Double
     -- ^ The radius in pixels of rounded corners.
-    | VBFill (Maybe Color)
-    -- ^ Fill color.
+    | VBFill Color
+    -- ^ Fill color. See also 'VBNoFill'.
     --
-    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+    --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | VBNoFill
+    -- ^ Do not use a fill. See also 'VBFill'.
+    --
+    --   @since 0.6.0.0
     | VBFillOpacity Opacity
     -- ^ Fill opacity.
     | VBOpacity Opacity
     -- ^ Overall opacity.
-    | VBStroke (Maybe Color)
-    -- ^ The stroke color for a line around the background. If @Nothing@ then
-    --   no line is drawn.
+    | VBStroke Color
+    -- ^ The stroke color for a line around the background. See also 'VBNoStroke'.
     --
-    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+    --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | VBNoStroke
+    -- ^ Do not use a stroke. See also 'VBStroke'.
+    --
+    --   @since 0.6.0.0
     | VBStrokeOpacity Opacity
     -- ^ The opacity of the line around the background, if drawn.
     | VBStrokeWidth Double
@@ -1365,12 +1381,12 @@ viewBackgroundSpec :: ViewBackground -> LabelledSpec
 viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
 viewBackgroundSpec (VBStyle styles) = "style" .= styles
 viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
-viewBackgroundSpec (VBFill (Just s)) = "fill" .= s
-viewBackgroundSpec (VBFill Nothing) = "fill" .= A.Null
+viewBackgroundSpec (VBFill s) = "fill" .= s
+viewBackgroundSpec VBNoFill = "fill" .= A.Null
 viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
 viewBackgroundSpec (VBOpacity x) = "opacity" .= x
-viewBackgroundSpec (VBStroke (Just s)) = "stroke" .= s
-viewBackgroundSpec (VBStroke Nothing) = "stroke" .= A.Null
+viewBackgroundSpec (VBStroke s) = "stroke" .= s
+viewBackgroundSpec VBNoStroke = "stroke" .= A.Null
 viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn

@@ -937,9 +937,14 @@ scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
 {-|
 
 View configuration property. These are used to configure the style of a single
-view within a visualization such as its size and default fill and stroke colors.
+view within a visualization (via 'ViewStyle') such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
+
+In version @0.6.0.0@ the constructors that used to take an optional color,
+namely 'ViewFill' and 'ViewStroke', were split out, so that they
+now take a 'Color' argument and new constructors - 'ViewNoFill' and
+'ViewNoStroke' - were added to replace the @Nothing@ versions.
 
 In version @0.5.0.0@ the @ViewWidth@ and @ViewHeight@ constructors have
 been deprecated, and replaced by
@@ -991,10 +996,15 @@ data ViewConfig
       --   visualization has a discrete y field.
       --
       --   @since 0.5.0.0
-    | ViewFill (Maybe Color)
-      -- ^ The fill color.
+    | ViewFill Color
+      -- ^ The fill color. See also 'ViewNoFill'.
       --
-      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+      --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | ViewNoFill
+      -- ^ Do not use a fill. See also 'ViewFill'.
+      --
+      --   @since 0.6.0.0
     | ViewFillOpacity Opacity
       -- ^ The fill opacity.
     | ViewOpacity Opacity
@@ -1012,10 +1022,15 @@ data ViewConfig
       --   'ScaleConfig'.
       --
       --   @since 0.5.0.0
-    | ViewStroke (Maybe Color)
-      -- ^ The stroke color.
+    | ViewStroke Color
+      -- ^ The stroke color. See also 'ViewNoStroke'.
       --
-      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+      --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | ViewNoStroke
+      -- ^ Do not use a stroke color. See also 'ViewStroke'.
+      --
+      --   @since 0.6.0.0
     | ViewStrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --
@@ -1054,11 +1069,13 @@ viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
 viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
 viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
 viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
-viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewFill ms) = ["fill" .= fromColor ms]
+viewConfigProperties ViewNoFill = ["fill" .= A.Null]
 viewConfigProperties (ViewFillOpacity x) = ["fillOpacity" .= x]
 viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
 viewConfigProperties (ViewStep x) = ["step" .= x]
-viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewStroke ms) = ["stroke" .= fromColor ms]
+viewConfigProperties ViewNoStroke = ["stroke" .= A.Null]
 viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
 viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= fromDS xs]
 viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
