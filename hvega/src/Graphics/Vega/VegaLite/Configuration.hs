@@ -179,6 +179,14 @@ data ConfigurationProperty
       -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
       -- ^ The default appearance of the Y axes.
+    | AxisQuantitative [AxisConfig]
+      -- ^ The default appearance of quantitative axes.
+      --
+      --   @since 0.6.0.0
+    | AxisTemporal [AxisConfig]
+      -- ^ The default appearance of temporal axes.
+      --
+      --   @since 0.6.0.0
     | Background Color
       -- ^ The default background color of visualizations.
       --
@@ -255,6 +263,10 @@ data ConfigurationProperty
     | View [ViewConfig]
       -- ^ The default single view style.
 
+
+toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
+toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
+
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
@@ -265,14 +277,16 @@ configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
 configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt
-configProperty (Axis acs) = "axis" .= object (map axisConfigProperty acs)
-configProperty (AxisX acs) = "axisX" .= object (map axisConfigProperty acs)
-configProperty (AxisY acs) = "axisY" .= object (map axisConfigProperty acs)
-configProperty (AxisLeft acs) = "axisLeft" .= object (map axisConfigProperty acs)
-configProperty (AxisRight acs) = "axisRight" .= object (map axisConfigProperty acs)
-configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
-configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
-configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
+configProperty (Axis acs) = toAxis "axis" acs
+configProperty (AxisBand acs) = toAxis "axisBand" acs
+configProperty (AxisBottom acs) = toAxis "axisBottom" acs
+configProperty (AxisLeft acs) = toAxis "axisLeft" acs
+configProperty (AxisRight acs) = toAxis "axisRight" acs
+configProperty (AxisTop acs) = toAxis "axisTop" acs
+configProperty (AxisX acs) = toAxis "axisX" acs
+configProperty (AxisY acs) = toAxis "axisY" acs
+configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
+configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (MarkStyle mps) = mprops_ "mark" mps
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)

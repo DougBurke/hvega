@@ -1098,6 +1098,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- Labels can now be vertically aligned to their baseline with the
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
+--
+-- 'VL.ConfigurationProperty' has added new constructors:
+-- 'VL.AxisQuantitative' and 'VL.AxisTemporal'.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

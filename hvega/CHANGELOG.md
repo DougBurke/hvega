@@ -38,6 +38,9 @@ diverging color scales.
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
 
+`ConfigurationProperty` has added new constructors:
+`AxisQuantitative` and `AxisTemporal`.
+
 ## 0.5.0.0
 
 Update to version 4.0 of the Vega-Lite specification (tested against
