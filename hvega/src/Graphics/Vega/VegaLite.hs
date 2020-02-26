@@ -1102,9 +1102,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
 -- 'VL.RepeatStyle'.
 --
--- The @Range@ and @Scale@ constructors for 'VL.ConfigurationProperty'
--- are now deprecated, and are replaced by 'VL.RangeStyle' and
--- 'VL.ScaleStyle' respectively.
+-- The @Background@, @Projection@, @Range@, and @Scale@ constructors for
+-- 'VL.ConfigurationProperty' are now deprecated, and are replaced by
+-- 'VL.BackgroundStyle', 'VL.ProjectionStyle', 'VL.RangeStyle',
+-- and 'VL.ScaleStyle'
+-- respectively.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4
@@ -1130,7 +1132,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   previous versions it was transparent. If you
 --   need a transparent background then add the following configuration
 --   to the visualization:
---   @'VL.configuration' ('VL.Background' \"rgba(0,0,0,0)\")@.
+--   @'VL.configuration' ('VL.BackgroundStyle' \"rgba(0,0,0,0)\")@.
 --
 -- * Tooltips are now disabled by default. To enable, either use the
 --   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.

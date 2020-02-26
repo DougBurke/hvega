@@ -521,7 +521,7 @@ stripPlot = toVegaLite
 -- Vega-Embed PNG and SVG output, is white (in Vega-Lite version 4;
 -- prior to this it was transparent). In many cases this is
 -- perfectly fine, but an explicit color can be specified using the
--- 'Background' configuration option, as shown here, or with the
+-- 'BackgroundStyle' configuration option, as shown here, or with the
 -- 'background' function, which is used in the choropleth examples
 -- below ('choroplethLookupToGeo').
 
@@ -543,7 +543,7 @@ let enc = encoding
             . position X [ PName \"plx\", PmType Quantitative ]
 
     conf = 'configure'
-             . 'configuration' ('Background' "rgba(0, 0, 0, 0.1)")
+             . 'configuration' ('BackgroundStyle' "rgba(0, 0, 0, 0.1)")
 
 in toVegaLite
     [ dataFromUrl \"https:\/\/raw.githubusercontent.com\/DougBurke\/hvega\/master\/hvega\/data\/gaia-aa-616-a10-table1a.no-header.tsv\" [TSV]
@@ -557,7 +557,7 @@ If you want a transparent background (as was the default with Vega-Lite 3
 and earlier), you would use
 
 @
-'configuration' ('Background' "rgba(0, 0, 0, 0)")
+'configuration' ('BackgroundStyle' "rgba(0, 0, 0, 0)")
 @
 
 -}
@@ -567,7 +567,7 @@ stripPlotWithBackground = toVegaLite
     [ dataFromUrl "https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/data/gaia-aa-616-a10-table1a.no-header.tsv" [TSV]
     , mark Tick []
     , encoding (position X [ PName "plx", PmType Quantitative ] [])
-    , configure (configuration (Background "rgba(0, 0, 0, 0.1)") [])
+    , configure (configuration (BackgroundStyle "rgba(0, 0, 0, 0.1)") [])
     ]
 
 
@@ -3671,7 +3671,7 @@ let picked = "picked"
                                    ]
 
    conf = configure
-            . configuration (Background "beige")
+            . configuration (BackgroundStyle "beige")
 
 in toVegaLite (conf [] :
                sel [] :
@@ -3705,7 +3705,7 @@ widgetSelection =
                                      ]
 
       conf = configure
-               . configuration (Background "beige")
+               . configuration (BackgroundStyle "beige")
 
   in toVegaLite (conf [] :
                  sel [] :

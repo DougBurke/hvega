@@ -128,8 +128,10 @@ Used by 'configuration'.
 
 In @version 0.6.0.0@:
 
-- the @Range@ and @Scale@ constructors have neen deprecated, and should
-  be replaced by 'RangeStyle' and 'ScaleStyle' respectively.
+- the @Background@, @Projection@, @Range@, and @Scale@
+  constructors have been deprecated, and should be replaced by
+  'BackgroundStyle', 'ProjectionStyle', 'RangeStyle', and 'ScaleStyle'
+  respectively.
 
 - new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
   'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
@@ -151,6 +153,8 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 
 -}
 
+{-# DEPRECATED Background "Please change Background to BackgroundStyle" #-}
+{-# DEPRECATED Projection "Please change Projection to ProjectionStyle" #-}
 {-# DEPRECATED Range "Please change Range to RangeStyle" #-}
 {-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
 data ConfigurationProperty
@@ -182,10 +186,14 @@ data ConfigurationProperty
       -- ^ The default appearance of temporal axes.
       --
       --   @since 0.6.0.0
-    | Background Color
+    | BackgroundStyle Color
       -- ^ The default background color of visualizations.
       --
       --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --
+      --   This was renamed from @Background@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | BarStyle [MarkProperty]
       -- ^ The default appearance of bar marks.
     | BoxplotStyle [MarkProperty]
@@ -263,14 +271,18 @@ data ConfigurationProperty
       --   to the data rectangle.
     | PointStyle [MarkProperty]
       -- ^ The default appearance of point marks.
-    | Projection [ProjectionProperty]
+    | ProjectionStyle [ProjectionProperty]
       -- ^ The default style of map projections.
+      --
+      --   This was renamed from @Projection@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | RangeStyle [RangeConfig]
       -- ^ The default range properties used when scaling.
       --
       --   This was renamed from @Range@ in @0.6.0.0@.
       --
-      --   since @0.6.0.0
+      --   @since 0.6.0.0
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
     | RepeatStyle [CompositionConfig]
@@ -284,7 +296,7 @@ data ConfigurationProperty
       --
       --   This was renamed from @Scale@ in @0.6.0.0@.
       --
-      --   since @0.6.0.0
+      --   @since 0.6.0.0
     | SelectionStyle [(Selection, [SelectionProperty])]
       -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
@@ -303,6 +315,12 @@ data ConfigurationProperty
       --   @since 0.4.0.0
     | View [ViewConfig]
       -- ^ The default single view style.
+    | Background Color
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'BackgroundStyle' should be used
+      --   instead.
+    | Projection [ProjectionProperty]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ProjectionStyle' should be used
+      --   instead.
     | Range [RangeConfig]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'RangeStyle' should be used
       --   instead.
@@ -317,7 +335,6 @@ toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
 configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
@@ -336,8 +353,8 @@ configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (MarkStyle mps) = mprops_ "mark" mps
-configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (BackgroundStyle bg) = "background" .= bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
@@ -356,6 +373,7 @@ configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
 configProperty (PointStyle mps) = mprops_ "point" mps
+configProperty (ProjectionStyle pps) = "projection" .= object (map projectionProperty pps)
 configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (RectStyle mps) = mprops_ "rect" mps
 configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
@@ -371,6 +389,9 @@ configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
+-- deprecated aliases
+configProperty (Background bg) = "background" .= bg
+configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
 

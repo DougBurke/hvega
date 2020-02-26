@@ -196,7 +196,7 @@ defaultCfg =
 darkCfg :: VegaLite
 darkCfg =
     configure
-        . configuration (Background "black")
+        . configuration (BackgroundStyle "black")
         . configuration (TitleStyle [ TFont "Roboto", TColor "#fff" ])
         . configuration (Axis [ DomainColor "yellow", GridColor "rgb(255,255,200)", GridOpacity 0.2, LabelColor "#fcf", TickColor "white", TitleColor "rgb(200,255,200)", LabelFont "Roboto", TitleFont "Roboto" ])
         . configuration (Legend [ LeFillColor "#333", LeStrokeColor "#444", LeTitleColor "rgb(200,200,200)", LeLabelColor "white", LeSymbolFillColor "red", LeGradientStrokeColor "yellow", LeLabelFont "Roboto", LeTitleFont "Roboto" ])

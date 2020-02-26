@@ -48,9 +48,10 @@ Labels can now be vertically aligned to their baseline with the
 `HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and
 `RepeatStyle`.
 
-The `Range` and `Scale` constructors for `ConfigurationProperty`
-are now deprecated, and are replaced by `RangeStyle` and
-`ScaleStyle` respectively.
+The `Background`, `Projection`, `Range`, and `Scale` constructors for
+`ConfigurationProperty` are now deprecated, and are replaced by
+`BackgroundStyle`, `ProjectionStyle`, `RangeStyle`, and `ScaleStyle`
+respectively.
 
 ## 0.5.0.0
 
