@@ -39,7 +39,8 @@ Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
 
 `ConfigurationProperty` has added new constructors:
-`AxisQuantitative`, `AxisTemporal`, `HeaderColumnStyle`,
+`AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
+`ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,
 `HeaderFacetStyle`, `HeaderRowStyle`, and `ImageStyle`.
 
 ## 0.5.0.0

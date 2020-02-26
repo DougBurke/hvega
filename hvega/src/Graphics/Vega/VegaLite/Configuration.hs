@@ -193,6 +193,10 @@ data ConfigurationProperty
       --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
     | BarStyle [MarkProperty]
       -- ^ The default appearance of bar marks.
+    | BoxplotStyle [MarkProperty]
+      -- ^ The default appearance for box plots.
+      --
+      --   @since 0.6.0.0
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
     | ConcatStyle [ConcatConfig]
@@ -201,6 +205,14 @@ data ConfigurationProperty
       --   @since 0.4.0.0
     | CountTitle T.Text
       -- ^ The default title style for count fields.
+    | ErrorBandStyle [MarkProperty]
+      -- ^ The default appearance for error bands.
+      --
+      --   @since 0.6.0.0
+    | ErrorBarStyle [MarkProperty]
+      -- ^ The default appearance for error bars.
+      --
+      --   @since 0.6.0.0
     | FacetStyle [FacetConfig]
       -- ^ The default appearance of facet layouts.
       --
@@ -308,7 +320,10 @@ configProperty (MarkStyle mps) = mprops_ "mark" mps
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (AreaStyle mps) = mprops_ "area" mps
 configProperty (BarStyle mps) = mprops_ "bar" mps
+configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
+configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
+configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
 configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
