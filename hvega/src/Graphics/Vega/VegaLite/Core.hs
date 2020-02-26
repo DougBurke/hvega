@@ -2074,7 +2074,7 @@ facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FBin bps) = bin bps
 facetChannelProperty (FCenter b) = "center" .= b
-facetChannelProperty (FHeader hps) = header_ hps
+facetChannelProperty (FHeader hps) = header_ "" hps
 facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s

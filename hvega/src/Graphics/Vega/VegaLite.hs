@@ -1100,7 +1100,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
--- 'VL.AxisQuantitative' and 'VL.AxisTemporal'.
+-- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.HeaderColumnStyle',
+-- 'VL.HeaderFacetStyle', and 'VL.HeaderRowStyle'.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

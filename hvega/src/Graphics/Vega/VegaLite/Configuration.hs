@@ -212,9 +212,21 @@ data ConfigurationProperty
       --
       --   @since 0.4.0.0
     | HeaderStyle [HeaderProperty]
-      -- ^ The default appearance of facet headers.
+      -- ^ The default appearance of all headers.
       --
       --   @since 0.4.0.0
+    | HeaderColumnStyle [HeaderProperty]
+      -- ^ The default appearance for column headers.
+      --
+      --   @since 0.6.0.0
+    | HeaderFacetStyle [HeaderProperty]
+      -- ^ The default appearance for non-row and non-column facet headers.
+      --
+      --   @since 0.6.0.0
+    | HeaderRowStyle [HeaderProperty]
+      -- ^ The default appearance for row headers.
+      --
+      --   @since 0.6.0.0
     | Legend [LegendConfig]
       -- ^ The default appearance of legends.
     | LineStyle [MarkProperty]
@@ -295,7 +307,10 @@ configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
-configProperty (HeaderStyle hps) = header_ hps
+configProperty (HeaderStyle hps) = header_ "" hps
+configProperty (HeaderColumnStyle hps) = header_ "Column" hps
+configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
+configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (LineStyle mps) = mprops_ "line" mps
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (RectStyle mps) = mprops_ "rect" mps

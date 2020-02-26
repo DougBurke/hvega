@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -7,7 +8,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 Basic types that are used throughout VegaLite.
 Would it make sense to break this up into
@@ -118,6 +119,9 @@ import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
 
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
@@ -133,8 +137,8 @@ import Graphics.Vega.VegaLite.Specification
 field_ :: FieldName -> LabelledSpec
 field_ f = "field" .= f
 
-header_ :: [HeaderProperty] -> LabelledSpec
-header_ hps = "header" .= object (map headerProperty hps)
+header_ :: T.Text -> [HeaderProperty] -> LabelledSpec
+header_ extra hps = ("header" <> extra) .= object (map headerProperty hps)
 
 -- could restrict to ascending/descending
 order_ :: T.Text -> LabelledSpec
