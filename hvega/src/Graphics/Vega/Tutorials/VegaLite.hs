@@ -2409,7 +2409,7 @@ let trans = transform
     labelSpec = asSpec [ labelEnc [], mark 'Text' [ 'MdY' (-6) ] ]
 
     cfg = configure
-          . configuration ('View' ['ViewStroke' Nothing])
+          . configuration ('ViewStyle' ['ViewStroke' Nothing])
 
 in toVegaLite [ width 300
               , height 250
@@ -2467,7 +2467,7 @@ layeredCount =
       labelSpec = asSpec [ labelEnc [], mark Text [ MdY (-6) ] ]
 
       cfg = configure
-            . configuration (View [ViewStroke Nothing])
+            . configuration (ViewStyle [ViewStroke Nothing])
 
   in toVegaLite [ width 300
                 , height 250
@@ -2897,7 +2897,7 @@ let trans = transform
     s2 = rSpec 0 \"12\"
     s3 = rSpec 120 \"4\"
 
-    setup = configure . configuration (View [ ViewStroke Nothing ])
+    setup = configure . configuration (ViewStyle [ ViewStroke Nothing ])
 
 in toVegaLite [ setup []
               , gaiaData
@@ -2979,7 +2979,7 @@ concatenatedSkyPlot =
       s2 = rSpec 0 "12"
       s3 = rSpec 120 "4"
 
-      setup = configure . configuration (View [ ViewStroke Nothing ])
+      setup = configure . configuration (ViewStyle [ ViewStroke Nothing ])
 
   in toVegaLite [ setup []
                 , gaiaData
@@ -5025,7 +5025,7 @@ in toVegaLite
    , vConcat allSpecs
      -- remove the "other" axis (e.g. top of Y, right for X)
    , configure
-       . configuration (View [ ViewStroke (Just \"transparent\") ])
+       . configuration (ViewStyle [ ViewStroke (Just \"transparent\") ])
        $ []
    , title \"Gaia data from arXiv:1804.09378\" [ 'TAnchor' 'AMiddle' ]
    ]
@@ -5199,7 +5199,7 @@ combinedPlot =
      , vConcat allSpecs
      -- remove the "other" axis (e.g. top of Y, right for X)
      , configure
-         . configuration (View [ ViewStroke (Just "transparent") ])
+         . configuration (ViewStyle [ ViewStroke (Just "transparent") ])
          $ []
      , title "Gaia data from arXiv:1804.09378" [ TAnchor AMiddle ]
      ]
@@ -5739,7 +5739,7 @@ graticuleSpec =
 aitoffConfig :: [ConfigureSpec] -> PropertySpec
 aitoffConfig =
   configure
-  . configuration (View [ ViewStroke Nothing ])
+  . configuration (ViewStyle [ ViewStroke Nothing ])
   . configuration (FacetStyle [ CompSpacing 0 ])
   . configuration (HeaderStyle [ HLabelAngle 0 ])
   . configuration (LegendStyle [ LeOrient LOBottom, LeNoTitle ])
@@ -5840,7 +5840,7 @@ aitoffConfig =
 --  aitoffConfig :: ['ConfigureSpec'] -> 'PropertySpec'
 --  aitoffConfig =
 --    configure
---    . configuration (View [ ViewStroke Nothing ])
+--    . configuration (ViewStyle [ ViewStroke Nothing ])
 --    . configuration ('FacetStyle' [ 'CompSpacing' 0 ])
 --    . configuration ('HeaderStyle' [ 'HLabelAngle' 0 ])
 --    . configuration ('LegendStyle' [ 'LeOrient' LOBottom, 'LeNoTitle' ])

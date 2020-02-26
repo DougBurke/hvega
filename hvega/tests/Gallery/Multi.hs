@@ -381,7 +381,7 @@ multi6 =
 
         cfg =
             configure
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
     in
     toVegaLite
         [ desc, cfg [], dvals [], trans [], res [], hConcat [ specPoint, specHPText, specMPGText, specOriginText ] ]
@@ -392,7 +392,7 @@ multi7 =
   let des = description "One dot per airport in the US overlayed on geoshape"
 
       cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
+            . configuration (ViewStyle [ ViewStroke Nothing ])
 
       backdropSpec =
         asSpec

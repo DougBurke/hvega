@@ -257,7 +257,7 @@ personGrid =
     let
         config =
             configure
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
 
         dataVals =
             dataFromColumns []

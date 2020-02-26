@@ -177,7 +177,7 @@ repeat5 =
         config =
             configure
                 . configuration (RangeStyle [ RHeatmap "greenblue" ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
 
         enc1 =
             encoding

@@ -49,7 +49,7 @@ table2 =
 
         conf =
             configure
-                . configuration (View [ ViewStrokeWidth 0, ViewStep 13 ])
+                . configuration (ViewStyle [ ViewStrokeWidth 0, ViewStep 13 ])
                 . configuration (Axis [ Domain False ])
 
         enc =
@@ -95,7 +95,7 @@ table3 =
         config =
             configure
                 . configuration (RangeStyle [ RHeatmap "greenblue" ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
     in
     toVegaLite
         [ des

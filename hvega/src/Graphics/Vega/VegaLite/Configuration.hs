@@ -129,13 +129,14 @@ Used by 'configuration'.
 In @version 0.6.0.0@:
 
 - the @Autosize@, @Background@, @CountTitle@, @FieldTitle@, @Legend@,
-  @NumberFormat@, @Padding@, @Projection@, @Range@, @Scale@ and
-  @TimeFormat@
+  @NumberFormat@, @Padding@, @Projection@, @Range@, @Scale@.
+  @TimeFormat@, and @View@
   constructors have been deprecated, and should be replaced by
   'AutosizeStyle', 'BackgroundStyle', 'CountTitleStyle', 'FieldTitleStyle',
   'LegendStyle', 'NumberFormatStyle', 'PaddingStyle', 'ProjectionStyle',
-  'RangeStyle', 'ScaleStyle', and 'TimeFormatStyle'
-  respectively.
+  'RangeStyle', 'ScaleStyle', 'TimeFormatStyle', and 'ViewStyle'
+  respectively. The axis configuration options have not been updated
+  to this system.
 
 - new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
   'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
@@ -168,6 +169,7 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 {-# DEPRECATED Range "Please change Range to RangeStyle" #-}
 {-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
 {-# DEPRECATED TimeFormat "Please change TimeFormat to TimeFormatStyle" #-}
+{-# DEPRECATED View "Please change View to ViewStyle" #-}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -360,8 +362,13 @@ data ConfigurationProperty
       -- ^ The default style of trail marks.
       --
       --   @since 0.4.0.0
-    | View [ViewConfig]
-      -- ^ The default single view style.
+    | ViewStyle [ViewConfig]
+      -- ^ The default properties for
+      --   [single view plots](https://vega.github.io/vega-lite/docs/spec.html#single).
+      --
+      --   This was renamed from @View@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | Autosize [Autosize]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'AutosizeStyle' should be used
       --   instead.
@@ -394,6 +401,9 @@ data ConfigurationProperty
       --   instead.
     | TimeFormat T.Text
       -- ^ As of version @0.6.0.0@ this is deprecated and 'TimeFormatStyle' should be used
+      --   instead.
+    | View [ViewConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ViewStyle' should be used
       --   instead.
 
 
@@ -455,7 +465,7 @@ configProperty (TickStyle mps) = mprops_ "tick" mps
 configProperty (TimeFormatStyle fmt) = "timeFormat" .= fmt
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
+configProperty (ViewStyle vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 -- deprecated aliases
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
@@ -469,6 +479,7 @@ configProperty (Projection pps) = "projection" .= object (map projectionProperty
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt
+configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 {-|
 

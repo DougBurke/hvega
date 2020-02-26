@@ -141,7 +141,7 @@ bar4 =
         config =
             configure
                 . configuration (Axis [ DomainWidth 1 ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
     in
     toVegaLite
         [ des
@@ -436,7 +436,7 @@ bar13 =
 
         config =
             configure
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
 
         dvals =
             dataFromRows []
@@ -489,7 +489,7 @@ bar14 =
 
         config =
             configure
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewStroke Nothing ])
 
         dvals =
             dataFromRows []
@@ -615,7 +615,7 @@ signedPopulation =
                     ]
 
       cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
+            . configuration (ViewStyle [ ViewStroke Nothing ])
             . configuration (Axis [ Grid False ])
 
   in toVegaLite [ width 300
@@ -697,7 +697,7 @@ wilkinsonDotPlot =
   let desc = description "A Wilkinson dot plot"
 
       cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
+            . configuration (ViewStyle [ ViewStroke Nothing ])
 
       dvals = dataFromColumns []
               . dataColumn "data" (Numbers [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4 ])

@@ -49,12 +49,13 @@ Labels can now be vertically aligned to their baseline with the
 `RepeatStyle`.
 
 The `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
-`NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`, and
-`TimeFormat` constructors for `ConfigurationProperty` are now
-deprecated, and are replaced by `AutosizeStyle`, `BackgroundStyle`,
-`CountTitleStyle`, `FieldTitleStyle`, `LegendStyle`,
-`NUmberFormatStyle`, `PaddingStyle`, `ProjectionStyle`, `RangeStyle`,
-`ScaleStyle`, and `TimeFormatStyle` respectively.
+`NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
+`TimeFormat`, and `View` constructors for `ConfigurationProperty` are
+now deprecated, and are replaced by `AutosizeStyle`,
+`BackgroundStyle`, `CountTitleStyle`, `FieldTitleStyle`,
+`LegendStyle`, `NUmberFormatStyle`, `PaddingStyle`, `ProjectionStyle`,
+`RangeStyle`, `ScaleStyle`, `TimeFormatStyle`, `ViewStyle`
+respectively.
 
 ## 0.5.0.0
 

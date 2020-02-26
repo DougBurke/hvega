@@ -83,7 +83,7 @@ columns4 =
 groupByAge :: VegaLite
 groupByAge =
   let conf = configure
-             . configuration (View [ ViewStroke Nothing ])
+             . configuration (ViewStyle [ ViewStroke Nothing ])
              . configuration (Axis [ DomainWidth 1 ] )
 
       pop = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
@@ -169,11 +169,11 @@ gridConfig :: [CompositionConfig] -> [ConfigureSpec] -> PropertySpec
 gridConfig fopts =
   configure
   . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-  . configuration (View [ ViewStroke (Just "black")
-                        , ViewStrokeWidth 2
-                        , ViewFill (Just "gray")
-                        , ViewFillOpacity 0.2
-                        , ViewContinuousHeight 120 ])
+  . configuration (ViewStyle [ ViewStroke (Just "black")
+                             , ViewStrokeWidth 2
+                             , ViewFill (Just "gray")
+                             , ViewFillOpacity 0.2
+                             , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)
 
 

@@ -30,7 +30,7 @@ testSpecs = [ ("geo1", geo1)
 cfg :: [ConfigureSpec] -> PropertySpec
 cfg =
     configure
-        . configuration (View [ ViewStroke Nothing ])
+        . configuration (ViewStyle [ ViewStroke Nothing ])
 
 
 geo1 :: VegaLite
