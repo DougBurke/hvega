@@ -176,7 +176,7 @@ repeat5 =
 
         config =
             configure
-                . configuration (Range [ RHeatmap "greenblue" ])
+                . configuration (RangeStyle [ RHeatmap "greenblue" ])
                 . configuration (View [ ViewStroke Nothing ])
 
         enc1 =

@@ -42,7 +42,7 @@ interaction1 =
 
         config =
             configure
-                . configuration (Scale [ SCBandPaddingInner 0.2 ])
+                . configuration (ScaleStyle [ SCBandPaddingInner 0.2 ])
 
         dvals =
             dataFromColumns []

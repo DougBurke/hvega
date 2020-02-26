@@ -48,6 +48,10 @@ Labels can now be vertically aligned to their baseline with the
 `HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and
 `RepeatStyle`.
 
+The `Range` and `Scale` constructors for `ConfigurationProperty`
+are now deprecated, and are replaced by `RangeStyle` and
+`ScaleStyle` respectively.
+
 ## 0.5.0.0
 
 Update to version 4.0 of the Vega-Lite specification (tested against

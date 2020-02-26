@@ -1101,6 +1101,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',
 -- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
 -- 'VL.RepeatStyle'.
+--
+-- The @Range@ and @Scale@ constructors for 'VL.ConfigurationProperty'
+-- are now deprecated, and are replaced by 'VL.RangeStyle' and
+-- 'VL.ScaleStyle' respectively.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

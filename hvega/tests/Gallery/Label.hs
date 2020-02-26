@@ -84,7 +84,7 @@ label2 =
 
         config =
             configure
-                . configuration (Scale [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
+                . configuration (ScaleStyle [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
                 . configuration (TextStyle [ MBaseline AlignMiddle ])
     in
     toVegaLite

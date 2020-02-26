@@ -94,7 +94,7 @@ table3 =
 
         config =
             configure
-                . configuration (Range [ RHeatmap "greenblue" ])
+                . configuration (RangeStyle [ RHeatmap "greenblue" ])
                 . configuration (View [ ViewStroke Nothing ])
     in
     toVegaLite
@@ -157,7 +157,7 @@ table5 =
 
         config =
             configure
-                . configuration (Scale [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
+                . configuration (ScaleStyle [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
                 . configuration (TextStyle [ MBaseline AlignMiddle ])
     in
     toVegaLite

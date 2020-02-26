@@ -126,6 +126,18 @@ for details.
 
 Used by 'configuration'.
 
+In @version 0.6.0.0@:
+
+- the @Range@ and @Scale@ constructors have neen deprecated, and should
+  be replaced by 'RangeStyle' and 'ScaleStyle' respectively.
+
+- new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
+  'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
+  ' HeaderFacetStyle', 'HeaderRowStyle', 'ImageStyle', and 'RepeatStyle'.
+
+- 'ConcatStyle' and 'FacetStyle' now take a common type, 'CompositionConfig',
+  rather than @ConcatConfig@ and @FacetStyle@.
+
 In @version 0.5.0.0@:
 
 - the @RemoveInvalid@ constructor was removed, as
@@ -139,6 +151,8 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 
 -}
 
+{-# DEPRECATED Range "Please change Range to RangeStyle" #-}
+{-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -251,8 +265,12 @@ data ConfigurationProperty
       -- ^ The default appearance of point marks.
     | Projection [ProjectionProperty]
       -- ^ The default style of map projections.
-    | Range [RangeConfig]
+    | RangeStyle [RangeConfig]
       -- ^ The default range properties used when scaling.
+      --
+      --   This was renamed from @Range@ in @0.6.0.0@.
+      --
+      --   since @0.6.0.0
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
     | RepeatStyle [CompositionConfig]
@@ -261,8 +279,12 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
-    | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
+    | ScaleStyle [ScaleConfig]
       -- ^ The default properties used when scaling.
+      --
+      --   This was renamed from @Scale@ in @0.6.0.0@.
+      --
+      --   since @0.6.0.0
     | SelectionStyle [(Selection, [SelectionProperty])]
       -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
@@ -281,6 +303,12 @@ data ConfigurationProperty
       --   @since 0.4.0.0
     | View [ViewConfig]
       -- ^ The default single view style.
+    | Range [RangeConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'RangeStyle' should be used
+      --   instead.
+    | Scale [ScaleConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ScaleStyle' should be used
+      --   instead.
 
 
 toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
@@ -323,26 +351,28 @@ configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
 configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LineStyle mps) = mprops_ "line" mps
-configProperty (PointStyle mps) = mprops_ "point" mps
-configProperty (RectStyle mps) = mprops_ "rect" mps
-configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
-configProperty (RuleStyle mps) = mprops_ "rule" mps
-configProperty (SquareStyle mps) = mprops_ "square" mps
-configProperty (TextStyle mps) = mprops_ "text" mps
-configProperty (TickStyle mps) = mprops_ "tick" mps
-configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
-configProperty (Scale scs) = scaleConfig_ scs
-configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (PointStyle mps) = mprops_ "point" mps
+configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
+configProperty (RuleStyle mps) = mprops_ "rule" mps
+configProperty (ScaleStyle scs) = scaleConfig_ scs
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
   in "selection" .= object (map selProp selConfig)
+configProperty (SquareStyle mps) = mprops_ "square" mps
+configProperty (TextStyle mps) = mprops_ "text" mps
+configProperty (TickStyle mps) = mprops_ "tick" mps
+configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
+configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (Scale scs) = scaleConfig_ scs
 
 {-|
 

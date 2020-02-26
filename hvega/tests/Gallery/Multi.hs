@@ -216,7 +216,7 @@ multi4 =
                     ]
 
         config =
-            configure . configuration (Range [ RHeatmap "greenblue" ])
+            configure . configuration (RangeStyle [ RHeatmap "greenblue" ])
 
         res =
             resolve
