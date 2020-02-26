@@ -129,15 +129,17 @@ Used by 'configuration'.
 In @version 0.6.0.0@:
 
 - the @Autosize@, @Background@, @CountTitle@, @FieldTitle@, @Legend@,
-  @Projection@, @Range@, and @Scale@
+  @NumberFormat@, @Padding@, @Projection@, @Range@, @Scale@ and
+  @TimeFormat@
   constructors have been deprecated, and should be replaced by
   'AutosizeStyle', 'BackgroundStyle', 'CountTitleStyle', 'FieldTitleStyle',
-  'LegendStyle', 'ProjectionStyle', 'RangeStyle', and 'ScaleStyle'
+  'LegendStyle', 'NumberFormatStyle', 'PaddingStyle', 'ProjectionStyle',
+  'RangeStyle', 'ScaleStyle', and 'TimeFormatStyle'
   respectively.
 
 - new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
   'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
-  ' HeaderFacetStyle', 'HeaderRowStyle', 'ImageStyle', and 'RepeatStyle'.
+  'HeaderFacetStyle', 'HeaderRowStyle', 'ImageStyle', and 'RepeatStyle'.
 
 - 'ConcatStyle' and 'FacetStyle' now take a common type, 'CompositionConfig',
   rather than @ConcatConfig@ and @FacetStyle@.
@@ -160,9 +162,12 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 {-# DEPRECATED CountTitle "Please change CountTitle to CountTitleStyle" #-}
 {-# DEPRECATED FieldTitle "Please change FieldTitle to FieldTitleStyle" #-}
 {-# DEPRECATED Legend "Please change Legend to LegendStyle" #-}
+{-# DEPRECATED NumberFormat "Please change NumberFormat to NumberFormatStyle" #-}
+{-# DEPRECATED Padding "Please change Padding to PaddingStyle" #-}
 {-# DEPRECATED Projection "Please change Projection to ProjectionStyle" #-}
 {-# DEPRECATED Range "Please change Range to RangeStyle" #-}
 {-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
+{-# DEPRECATED TimeFormat "Please change TimeFormat to TimeFormatStyle" #-}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -287,11 +292,22 @@ data ConfigurationProperty
       -- ^ The default appearance of a list of named styles.
       --
       --   @since 0.4.0.0
-    | NumberFormat T.Text
-      -- ^ The default number formatting for axis and text labels.
-    | Padding Padding
+    | NumberFormatStyle T.Text
+      -- ^ The default number formatting for axis and text labels, using
+      --   [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
+      --
+      --   As an example @NumberFormatStyle "s"@ will use SI units.
+      --
+      --   This was renamed from @NumberFormat@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
+    | PaddingStyle Padding
       -- ^ The default padding in pixels from the edge of the of visualization
       --   to the data rectangle.
+      --
+      --   This was renamed from @Padding@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | PointStyle [MarkProperty]
       -- ^ The default appearance of point marks.
     | ProjectionStyle [ProjectionProperty]
@@ -328,8 +344,16 @@ data ConfigurationProperty
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
       -- ^ The default appearance of tick marks.
-    | TimeFormat T.Text
-      -- ^ The default time format for axis and legend labels.
+    | TimeFormatStyle T.Text
+      -- ^ The default time format for raw time values (without time units)
+      --   in text marks, legend labels, and header labels. This does /not/
+      --   control the appearance of axis labels.
+      --
+      --   The default is @\"%b %d, %Y\"@.
+      --
+      --   This was renamed from @TimeFormat@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | TitleStyle [TitleConfig]
       -- ^ The default appearance of visualization titles.
     | TrailStyle [MarkProperty]
@@ -353,6 +377,12 @@ data ConfigurationProperty
     | Legend [LegendConfig]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'LegendStyle' should be used
       --   instead.
+    | NumberFormat T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'NumberFormatStyle' should be used
+      --   instead.
+    | Padding Padding
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'PaddingStyle' should be used
+      --   instead.
     | Projection [ProjectionProperty]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'ProjectionStyle' should be used
       --   instead.
@@ -361,6 +391,9 @@ data ConfigurationProperty
       --   instead.
     | Scale [ScaleConfig]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'ScaleStyle' should be used
+      --   instead.
+    | TimeFormat T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'TimeFormatStyle' should be used
       --   instead.
 
 
@@ -404,8 +437,8 @@ configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
-configProperty (NumberFormat fmt) = "numberFormat" .= fmt
-configProperty (Padding pad) = "padding" .= paddingSpec pad
+configProperty (NumberFormatStyle fmt) = "numberFormat" .= fmt
+configProperty (PaddingStyle pad) = "padding" .= paddingSpec pad
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (ProjectionStyle pps) = "projection" .= object (map projectionProperty pps)
 configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
@@ -419,7 +452,7 @@ configProperty (SelectionStyle selConfig) =
 configProperty (SquareStyle mps) = mprops_ "square" mps
 configProperty (TextStyle mps) = mprops_ "text" mps
 configProperty (TickStyle mps) = mprops_ "tick" mps
-configProperty (TimeFormat fmt) = "timeFormat" .= fmt
+configProperty (TimeFormatStyle fmt) = "timeFormat" .= fmt
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
@@ -430,9 +463,12 @@ configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
+configProperty (NumberFormat fmt) = "numberFormat" .= fmt
+configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
+configProperty (TimeFormat fmt) = "timeFormat" .= fmt
 
 {-|
 

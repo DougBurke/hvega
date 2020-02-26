@@ -224,7 +224,7 @@ paddingTest :: Autosize -> VegaLite
 paddingTest a =
   configure
   . configuration (AutosizeStyle [ a ])
-  . configuration (Padding (PEdges 90 60 30 0))
+  . configuration (PaddingStyle (PEdges 90 60 30 0))
   & singleVis
 
 
