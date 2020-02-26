@@ -641,17 +641,11 @@ module Graphics.Vega.VegaLite
        , VL.APosition(..)
        , VL.FieldTitleProperty(..)
 
-         -- ** Facet Configuration Options
+         -- ** Composition Configuration Options
          --
-         -- $facetconfig
+         -- $compositionconfig
 
-       , VL.FacetConfig(..)
-
-         -- ** Concatenated View Configuration Options
-         --
-         -- $concatconfig
-
-       , VL.ConcatConfig(..)
+       , VL.CompositionConfig(..)
 
          -- * General Data types
          --
@@ -1040,13 +1034,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- See the
 -- [Vega-Lite view configuration documentation](https://vega.github.io/vega-lite/docs/spec.html#config).
 
--- $facetconfig
+-- $compositionconfig
 -- See the
--- [Vega-Lite facet configuration documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
-
--- $concatconfig
--- See the
--- [Vega-Lite concat configuration documentation](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration).
+-- [Vega-Lite facet](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration)
+-- and the
+-- [Vega-Lite concat](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration)
+-- configuration documentation.
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -1071,16 +1064,19 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __Breaking Change__
 --
--- The constructors for 'VL.FacetConfig' have been renamed from @FColumns@
--- and @FSpacing@ to 'VL.FacetColumns' and 'VL.FacetSpacing'. This is to
--- support the new 'VL.FSpacing' constructor for 'VL.FacetChannel'.
+-- The 'VL.ConcatStyle' and 'VL.FacetStyle' constructors for
+-- 'VL.ConfigurationProperty' now accept a common type,
+-- 'VL.CompositionConfig', rather than having separate
+-- @ConcatConfig@ and @FacetConfig@ types with the same meaning.
+-- So @ConcatColumns@ and @FColumns@ have been replaced by 'VL.CompColumns',
+-- and @CompSpacing@ and @FSpacing@ by 'VL.CompSpacing'.
 --
 -- __New constructors__:
 --
 -- 'VL.FacetChannel' has gained the following constructors:
 -- 'VL.FAlign', 'VL.FCenter', and 'VL.FSpacing'. The last one
--- has caused the renaming of the constructors for the 'VL.FacetConfig'
--- type.
+-- would have collided with the @FacetStyle@ option,
+-- but this has fortuitously been renamed to 'VL.CompSpacing'.
 --
 -- 'VL.MSymbol' has been added to 'VL.MarkChannel' which can be
 -- used to make the 'VL.shape' encoding conditional on a data

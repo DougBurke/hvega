@@ -12,15 +12,19 @@ New function for use with `encoding`: `strokeDash`.
 
 ### Breaking changes
 
-The constructors for `FacetConfig` have been renamed from `FColumns`
-and `FSpacing` to `FacetColumns` and `FacetSpacing`. This is to
-support the new `FSpacing` constructor for `FacetChannel`.
+The `ConcatStyle` and `FacetStyle` constructors for
+`ConfigurationProperty` now accept a common type,
+`CompositionConfig`, rather than having separate
+`ConcatConfig` and `FacetConfig` types with the same meaning.
+So `ConcatColumns` and `FColumns` have been replaced by `CompColumns`,
+and `CompSpacing` and `FSpacing` by `CompSpacing`.
 
 ### New constructors
 
 `FacetChannel` has gained the following constructors: `FAlign`,
-`FCenter`, and `FSpacing`. The last one has caused the renaming of the
-constructors for the `FacetConfig` type.
+`FCenter`, and `FSpacing`. The last one would have collides with
+the `FacetStyle` option, but this has fortuitously been renamed to
+`CompSpacing`.
 
 `MSymbol` has been added to `MarkChannel` which can be used to make the
 `shape` encoding conditional on a data or selection condition.

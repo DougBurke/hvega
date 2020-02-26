@@ -20,8 +20,7 @@ module Graphics.Vega.VegaLite.Configuration
        , FieldTitleProperty(..)
 
        , ViewConfig(..)
-       , FacetConfig(..)
-       , ConcatConfig(..)
+       , CompositionConfig(..)
        , ScaleConfig(..)
        , RangeConfig(..)
        , AxisConfig(..)
@@ -140,24 +139,6 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 
 -}
 
--- based on schema 3.3.0 #/definitions/Config
---
--- TODO:
---   Bar - change to BarConfig rather than MarkProperty?
---     BoxplotStyle BoxPlotConfig
---     Concat CompositionConfig
---     ErrorBand ErrorBandCOnfig
---     ErrorBar ErrorBarCOnfig
---   Facet takes CompositionConfig not FacetConfig
---     HeaderColumn takes HeaderConfig, just as HeaderStyle does
---     HeaderFacet ditto
---     HeaderRow ditto
---   LineStyle takes LineConfig not MarkConfig
---   TextStyle takes TextConfig not MarkConfig
---   TickStyle takes TickConfig not MarkConfig
---   TrailStyle takes LineConfig not MarkConfig
---
-
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -199,8 +180,11 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
-    | ConcatStyle [ConcatConfig]
+    | ConcatStyle [CompositionConfig]
       -- ^ The default appearance of concatenated layouts.
+      --
+      --   In @0.6.0.0@ this was changed from accepting @ConcatConfig@ to
+      --   'CompositionConfig'.
       --
       --   @since 0.4.0.0
     | CountTitle T.Text
@@ -213,8 +197,11 @@ data ConfigurationProperty
       -- ^ The default appearance for error bars.
       --
       --   @since 0.6.0.0
-    | FacetStyle [FacetConfig]
+    | FacetStyle [CompositionConfig]
       -- ^ The default appearance of facet layouts.
+      --
+      --   In @0.6.0.0@ this was changed from accepting @FacetConfig@ to
+      --   'CompositionConfig'.
       --
       --   @since 0.4.0.0
     | FieldTitle FieldTitleProperty
@@ -300,7 +287,7 @@ configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .= bg
 configProperty (CountTitle ttl) = "countTitle" .= ttl
-configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
+configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
 configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (NumberFormat fmt) = "numberFormat" .= fmt
 configProperty (Padding pad) = "padding" .= paddingSpec pad
@@ -324,7 +311,7 @@ configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
-configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
+configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
@@ -1240,32 +1227,6 @@ axisConfigProperty (TitleX x) = "titleX" .= x
 axisConfigProperty (TitleY x) = "titleY" .= x
 axisConfigProperty (TranslateOffset x) = "translate" .= x
 
-{-|
-
-Configuration options for faceted views, used with 'Graphics.Vega.VegaLite.FacetStyle'.
-
-See the
-<https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
-
-@since 0.4.0.0
-
--}
-data FacetConfig
-    = FacetColumns Int
-    -- ^ The maximum number of columns to use in a faceted-flow layout.
-    --
-    --   Renamed from @FColumns@ in @0.6.0.0@
-    | FacetSpacing Double
-    -- ^ The spacing in pixels between sub-views in a faceted composition.
-    --
-    --   Renamed from 'Graphics.Vega.VegaLite.FSpacing' in @0.6.0.0@ as
-    --   this is now used with @FacetChannel@.
-
-
-facetConfigProperty :: FacetConfig -> LabelledSpec
-facetConfigProperty (FacetColumns n) = "columns" .= n
-facetConfigProperty (FacetSpacing x) = "spacing" .= x
-
 
 -- | Specifies how the title anchor is positioned relative to the frame.
 --
@@ -1427,21 +1388,30 @@ titleConfigSpec (TZIndex z) = "zindex" .= z
 
 {-|
 
-Configuration options for concatenated views, used with 'Graphics.Vega.VegaLite.ConcatStyle'.
+Configuration options for composition views, used with 'ConcatStyle' and 'FacetStyle'.
 
-@since 0.4.0.0
+Prior to @0.6.0.0@ this information was made available in
+two types - @ConcatConfig@ and @FacetConfig@ - which had
+the same meaning.
+
+@since 0.6.0.0
 
 -}
-data ConcatConfig
-    = ConcatColumns Int
-      -- ^ The maximum number of columns to use in a concatenated flow layout.
-    | ConcatSpacing Double
-      -- ^ The spacing in pixels between sub-views in a concatenated view.
+data CompositionConfig
+    = CompColumns Int
+      -- ^ The number of columns to use. The default is to use a single
+      --   row (an infinite number of columns).
+      --
+      --   Prior to @0.6.0.0@ this was either @ConcatColumns@ or @FColumns@.
+    | CompSpacing Double
+      -- ^ The spacing in pixels between sub-views. The default is 20.
+      --
+      --   Prior to @0.6.0.0@ this was either @ConcatSpacing@ or @FSpacing@.
 
 
-concatConfigProperty :: ConcatConfig -> LabelledSpec
-concatConfigProperty (ConcatColumns n) = "columns" .= n
-concatConfigProperty (ConcatSpacing x) = "spacing" .= x
+compConfigProperty :: CompositionConfig -> LabelledSpec
+compConfigProperty (CompColumns n) = "columns" .= n
+compConfigProperty (CompSpacing x) = "spacing" .= x
 
 
 {-|

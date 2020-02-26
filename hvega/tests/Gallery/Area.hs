@@ -248,7 +248,7 @@ area7 =
             configure
                 . configuration (View [ ViewStroke Nothing ])
                 . configuration (Axis [ Domain False, Ticks False, Labels False, Grid False ])
-                . configuration (ConcatStyle [ ConcatSpacing 10 ])
+                . configuration (ConcatStyle [ CompSpacing 10 ])
 
         res =
             resolve

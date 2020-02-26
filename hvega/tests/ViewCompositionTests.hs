@@ -165,7 +165,7 @@ gridTransform :: PropertySpec
 gridTransform = transform
                 (calculateAs "datum.row * 1000 + datum.col" "index" [])
 
-gridConfig :: [FacetConfig] -> [ConfigureSpec] -> PropertySpec
+gridConfig :: [CompositionConfig] -> [ConfigureSpec] -> PropertySpec
 gridConfig fopts =
   configure
   . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
@@ -179,7 +179,7 @@ gridConfig fopts =
 
 grid1 :: VegaLite
 grid1 =
-    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
+    let cfg = gridConfig [ CompSpacing 80, CompColumns 5 ]
 
     in
     toVegaLite
@@ -196,7 +196,7 @@ grid1 =
 
 grid2 :: VegaLite
 grid2 =
-    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
+    let cfg = gridConfig [ CompSpacing 80, CompColumns 5 ]
 
     in
     toVegaLite
@@ -211,7 +211,7 @@ grid2 =
 
 grid3 :: VegaLite
 grid3 =
-    let cfg = gridConfig [ FacetSpacing 80 ]
+    let cfg = gridConfig [ CompSpacing 80 ]
 
     in
     toVegaLite
