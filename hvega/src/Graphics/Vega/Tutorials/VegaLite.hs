@@ -5742,7 +5742,7 @@ aitoffConfig =
   . configuration (View [ ViewStroke Nothing ])
   . configuration (FacetStyle [ CompSpacing 0 ])
   . configuration (HeaderStyle [ HLabelAngle 0 ])
-  . configuration (Legend [ LeOrient LOBottom, LeNoTitle ])
+  . configuration (LegendStyle [ LeOrient LOBottom, LeNoTitle ])
   . configuration (Axis [ Domain False
                         , Grid False
                         , Labels False
@@ -5843,7 +5843,7 @@ aitoffConfig =
 --    . configuration (View [ ViewStroke Nothing ])
 --    . configuration ('FacetStyle' [ 'CompSpacing' 0 ])
 --    . configuration ('HeaderStyle' [ 'HLabelAngle' 0 ])
---    . configuration ('Legend' [ 'LeOrient' LOBottom, 'LeNoTitle' ])
+--    . configuration ('LegendStyle' [ 'LeOrient' LOBottom, 'LeNoTitle' ])
 --    . configuration ('Axis' [ 'Domain' False
 --                          , 'Grid' False
 --                          , 'Labels' False

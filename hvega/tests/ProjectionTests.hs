@@ -92,7 +92,7 @@ configExample =
                 . configuration (View [ ViewContinuousWidth 500
                                       , ViewContinuousHeight 300
                                       , ViewStroke Nothing ])
-                . configuration (Autosize [ AFit ])
+                . configuration (AutosizeStyle [ AFit ])
                 . configuration (ProjectionStyle [ PrType Orthographic, PrRotate 0 0 0 ])
 
         globeSpec =

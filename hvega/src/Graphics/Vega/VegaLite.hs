@@ -1102,11 +1102,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
 -- 'VL.RepeatStyle'.
 --
--- The @Background@, @Projection@, @Range@, and @Scale@ constructors for
+-- The @Autosize@, @Background@, @CountTitle@, @FieldTitle@,
+-- @Legend@, @Projection@, @Range@, and @Scale@ constructors for
 -- 'VL.ConfigurationProperty' are now deprecated, and are replaced by
--- 'VL.BackgroundStyle', 'VL.ProjectionStyle', 'VL.RangeStyle',
--- and 'VL.ScaleStyle'
--- respectively.
+-- 'VL.AutosizeStyle', 'VL.BackgroundStyle', 'VL.CountTitleStyle',
+-- 'VL.FieldTitleStyle', 'VL.LegendStyle', 'VL.ProjectionStyle',
+-- 'VL.RangeStyle', and 'VL.ScaleStyle' respectively.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

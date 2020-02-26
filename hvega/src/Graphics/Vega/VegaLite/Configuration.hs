@@ -128,9 +128,11 @@ Used by 'configuration'.
 
 In @version 0.6.0.0@:
 
-- the @Background@, @Projection@, @Range@, and @Scale@
+- the @Autosize@, @Background@, @CountTitle@, @FieldTitle@, @Legend@,
+  @Projection@, @Range@, and @Scale@
   constructors have been deprecated, and should be replaced by
-  'BackgroundStyle', 'ProjectionStyle', 'RangeStyle', and 'ScaleStyle'
+  'AutosizeStyle', 'BackgroundStyle', 'CountTitleStyle', 'FieldTitleStyle',
+  'LegendStyle', 'ProjectionStyle', 'RangeStyle', and 'ScaleStyle'
   respectively.
 
 - new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
@@ -153,15 +155,23 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 
 -}
 
+{-# DEPRECATED Autosize "Please change Autosize to AutosizeStyle" #-}
 {-# DEPRECATED Background "Please change Background to BackgroundStyle" #-}
+{-# DEPRECATED CountTitle "Please change CountTitle to CountTitleStyle" #-}
+{-# DEPRECATED FieldTitle "Please change FieldTitle to FieldTitleStyle" #-}
+{-# DEPRECATED Legend "Please change Legend to LegendStyle" #-}
 {-# DEPRECATED Projection "Please change Projection to ProjectionStyle" #-}
 {-# DEPRECATED Range "Please change Range to RangeStyle" #-}
 {-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
-    | Autosize [Autosize]
+    | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
+      --
+      --   This was renamed from @Autosize@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | Axis [AxisConfig]
       -- ^ The default appearance of axes.
     | AxisBand [AxisConfig]
@@ -209,8 +219,13 @@ data ConfigurationProperty
       --   'CompositionConfig'.
       --
       --   @since 0.4.0.0
-    | CountTitle T.Text
-      -- ^ The default title style for count fields.
+    | CountTitleStyle T.Text
+      -- ^ The default axis and legend title for count fields. The default is
+      --   @"Count of Records"@.
+      --
+      --   This was renamed from @CountTitle@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | ErrorBandStyle [MarkProperty]
       -- ^ The default appearance for error bands.
       --
@@ -226,8 +241,12 @@ data ConfigurationProperty
       --   'CompositionConfig'.
       --
       --   @since 0.4.0.0
-    | FieldTitle FieldTitleProperty
+    | FieldTitleStyle FieldTitleProperty
       -- ^ The default title-generation style for fields.
+      --
+      --   This was renamed from @FieldTitle@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | GeoshapeStyle [MarkProperty]
       -- ^ The default appearance of geoshape marks.
       --
@@ -252,8 +271,12 @@ data ConfigurationProperty
       -- ^ The default appearance for images.
       --
       --   @since 0.6.0.0
-    | Legend [LegendConfig]
+    | LegendStyle [LegendConfig]
       -- ^ The default appearance of legends.
+      --
+      --   This was renamed from @Legend@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | LineStyle [MarkProperty]
       -- ^ The default appearance of line marks.
     | MarkStyle [MarkProperty]
@@ -315,8 +338,20 @@ data ConfigurationProperty
       --   @since 0.4.0.0
     | View [ViewConfig]
       -- ^ The default single view style.
+    | Autosize [Autosize]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'AutosizeStyle' should be used
+      --   instead.
     | Background Color
       -- ^ As of version @0.6.0.0@ this is deprecated and 'BackgroundStyle' should be used
+      --   instead.
+    | CountTitle T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'CountTitleStyle' should be used
+      --   instead.
+    | FieldTitle FieldTitleProperty
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'FieldTitleStyle' should be used
+      --   instead.
+    | Legend [LegendConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'LegendStyle' should be used
       --   instead.
     | Projection [ProjectionProperty]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'ProjectionStyle' should be used
@@ -334,13 +369,8 @@ toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
-configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (CountTitle ttl) = "countTitle" .= ttl
-configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
-configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (NumberFormat fmt) = "numberFormat" .= fmt
-configProperty (Padding pad) = "padding" .= paddingSpec pad
-configProperty (TimeFormat fmt) = "timeFormat" .= fmt
+configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "axis" acs
 configProperty (AxisBand acs) = toAxis "axisBand" acs
 configProperty (AxisBottom acs) = toAxis "axisBottom" acs
@@ -351,27 +381,31 @@ configProperty (AxisX acs) = toAxis "axisX" acs
 configProperty (AxisY acs) = toAxis "axisY" acs
 configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
-configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (MarkStyle mps) = mprops_ "mark" mps
-configProperty (AreaStyle mps) = mprops_ "area" mps
 configProperty (BackgroundStyle bg) = "background" .= bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
+configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
+configProperty (CountTitleStyle ttl) = "countTitle" .= ttl
 configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
 configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
+configProperty (FieldTitleStyle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
 configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
 configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
+configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
 configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
+configProperty (NumberFormat fmt) = "numberFormat" .= fmt
+configProperty (Padding pad) = "padding" .= paddingSpec pad
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (ProjectionStyle pps) = "projection" .= object (map projectionProperty pps)
 configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
@@ -385,12 +419,17 @@ configProperty (SelectionStyle selConfig) =
 configProperty (SquareStyle mps) = mprops_ "square" mps
 configProperty (TextStyle mps) = mprops_ "text" mps
 configProperty (TickStyle mps) = mprops_ "tick" mps
+configProperty (TimeFormat fmt) = "timeFormat" .= fmt
 configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 -- deprecated aliases
+configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .= bg
+configProperty (CountTitle ttl) = "countTitle" .= ttl
+configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
+configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
