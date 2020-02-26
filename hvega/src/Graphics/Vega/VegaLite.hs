@@ -1035,11 +1035,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- [Vega-Lite view configuration documentation](https://vega.github.io/vega-lite/docs/spec.html#config).
 
 -- $compositionconfig
--- See the
--- [Vega-Lite facet](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration)
--- and the
--- [Vega-Lite concat](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration)
--- configuration documentation.
+-- See the Vega-Lite
+-- [concat](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration),
+-- [facet](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration),
+-- and
+-- [repeat](https://vega.github.io/vega-lite/docs/repeat.html#repeat-configuration)
+-- configuration documentation pages.
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -1098,7 +1099,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',
--- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', and 'VL.ImageStyle'.
+-- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
+-- 'VL.RepeatStyle'.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

@@ -255,6 +255,10 @@ data ConfigurationProperty
       -- ^ The default range properties used when scaling.
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
+    | RepeatStyle [CompositionConfig]
+      -- ^ The default appearance for the 'Graphics.Vega.VegaLite.repeat` operator.
+      --
+      --   @since 0.6.0.0
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
     | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
@@ -321,6 +325,7 @@ configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LineStyle mps) = mprops_ "line" mps
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
 configProperty (RuleStyle mps) = mprops_ "rule" mps
 configProperty (SquareStyle mps) = mprops_ "square" mps
 configProperty (TextStyle mps) = mprops_ "text" mps
@@ -1388,7 +1393,8 @@ titleConfigSpec (TZIndex z) = "zindex" .= z
 
 {-|
 
-Configuration options for composition views, used with 'ConcatStyle' and 'FacetStyle'.
+Configuration options for composition views, used with
+'ConcatStyle', 'FacetStyle', and 'RepeatStyle'.
 
 Prior to @0.6.0.0@ this information was made available in
 two types - @ConcatConfig@ and @FacetConfig@ - which had
