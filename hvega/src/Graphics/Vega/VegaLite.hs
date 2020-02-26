@@ -1101,7 +1101,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.HeaderColumnStyle',
--- 'VL.HeaderFacetStyle', and 'VL.HeaderRowStyle'.
+-- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', and 'VL.ImageStyle'.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4

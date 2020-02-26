@@ -40,7 +40,7 @@ Labels can now be vertically aligned to their baseline with the
 
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `HeaderColumnStyle`,
-`HeaderFacetStyle`, and `HeaderRowStyle`.
+`HeaderFacetStyle`, `HeaderRowStyle`, and `ImageStyle`.
 
 ## 0.5.0.0
 

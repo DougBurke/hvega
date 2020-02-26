@@ -227,6 +227,10 @@ data ConfigurationProperty
       -- ^ The default appearance for row headers.
       --
       --   @since 0.6.0.0
+    | ImageStyle [MarkProperty]
+      -- ^ The default appearance for images.
+      --
+      --   @since 0.6.0.0
     | Legend [LegendConfig]
       -- ^ The default appearance of legends.
     | LineStyle [MarkProperty]
@@ -311,6 +315,7 @@ configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
 configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
 configProperty (HeaderRowStyle hps) = header_ "Row" hps
+configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LineStyle mps) = mprops_ "line" mps
 configProperty (PointStyle mps) = mprops_ "point" mps
 configProperty (RectStyle mps) = mprops_ "rect" mps
