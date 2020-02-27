@@ -51,6 +51,7 @@ testSpecs = [ ("defaultSize1", defaultSize1)
 -}
 
 
+noStroke :: PropertySpec
 noStroke = configure $ configuration (ViewStyle [ ViewNoStroke ]) []
 
 

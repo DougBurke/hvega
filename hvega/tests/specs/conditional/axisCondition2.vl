@@ -14,6 +14,13 @@
             "field": "IMDB_Rating",
             "type": "quantitative",
             "axis": {
+                "tickSize": {
+                    "value": 5,
+                    "condition": {
+                        "value": 20,
+                        "test": "(datum.value > 0) && (datum.value < 3)"
+                    }
+                },
                 "tickWidth": {
                     "value": 2,
                     "condition": {
@@ -37,6 +44,13 @@
                     "condition": {
                         "value": 0.3,
                         "test": "datum.value >=8"
+                    }
+                },
+                "labelPadding": {
+                    "value": 5,
+                    "condition": {
+                        "value": 20,
+                        "test": "(datum.value >= 1) && (datum.value <= 4)"
                     }
                 },
                 "tickColor": {

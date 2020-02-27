@@ -1570,8 +1570,8 @@ For use with 'AxDataCondition', and defines those axis properties
 which can be conditioned on their position (or label).
 
 The constuctor determines the axis property (a label, tick, or
-grid element), the second is the value to set if the condition
-is 'True', and the third is the value for when it is 'False'.
+grid element), and the two arguments are the value to set if the condition
+is 'True' (first), and for when it is 'False' (second).
 
 @since 0.5.0.0
 -}
@@ -1603,6 +1603,10 @@ data ConditionalAxisProperty
     -- ^ Axis label font weight.
   | CAxLabelOpacity Opacity Opacity
     -- ^ Axis label opacity.
+  | CAxLabelPadding Double Double
+    -- ^ Axis label padding.
+    --
+    --   @since 0.6.0.0
   | CAxTickColor T.Text T.Text
     -- ^ Tick color for the axis.
   | CAxTickDash DashStyle DashStyle
@@ -1611,8 +1615,12 @@ data ConditionalAxisProperty
     -- ^ The offset for the dash pattern.
   | CAxTickOpacity Opacity Opacity
     -- ^ Opacity of the axis tick marks.
+  | CAxTickSize Double Double
+    -- ^ Size, in pixels, of the axis tick marks.
+    --
+    --   @since 0.6.0.0
   | CAxTickWidth Double Double
-    -- ^ Width of the axis tick marks.
+    -- ^ Width, in pixels, of the axis tick marks.
 
 
 conditionalAxisProperty :: ConditionalAxisProperty -> (AxisProperty, AxisProperty)
@@ -1629,10 +1637,12 @@ conditionalAxisProperty (CAxLabelFontSize t f) = (AxLabelFontSize t, AxLabelFont
 conditionalAxisProperty (CAxLabelFontStyle t f) = (AxLabelFontStyle t, AxLabelFontStyle f)
 conditionalAxisProperty (CAxLabelFontWeight t f) = (AxLabelFontWeight t, AxLabelFontWeight f)
 conditionalAxisProperty (CAxLabelOpacity t f) = (AxLabelOpacity t, AxLabelOpacity f)
+conditionalAxisProperty (CAxLabelPadding t f) = (AxLabelPadding t, AxLabelPadding f)
 conditionalAxisProperty (CAxTickColor t f) = (AxTickColor t, AxTickColor f)
 conditionalAxisProperty (CAxTickDash t f) = (AxTickDash t, AxTickDash f)
 conditionalAxisProperty (CAxTickDashOffset t f) = (AxTickDashOffset t, AxTickDashOffset f)
 conditionalAxisProperty (CAxTickOpacity t f) = (AxTickOpacity t, AxTickOpacity f)
+conditionalAxisProperty (CAxTickSize t f) = (AxTickSize t, AxTickSize f)
 conditionalAxisProperty (CAxTickWidth t f) = (AxTickWidth t, AxTickWidth f)
 
 

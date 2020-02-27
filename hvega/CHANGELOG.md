@@ -54,6 +54,10 @@ Headers (`HeaderProperty`) have gained the following constructors:
 `HLabel`, `HLabelExpr`, `HLabelFontStyle`, `HTitleFontStyle`,
 and `HTitleLineHeight`.
 
+Conditional axis (`ConditionalAxisProperty`) has gained the following
+two constructors for features added in Vega-Lite v4.2:
+`CAxLabelPadding` and `CAxTickSize`.
+
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
 `ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,

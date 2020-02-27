@@ -1110,6 +1110,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HLabel', 'VL.HLabelExpr', 'VL.HLabelFontStyle', 'VL.HTitleFontStyle',
 -- and 'VL.HTitleLineHeight'.
 --
+-- Conditional axis ('VL.ConditionalAxisProperty') has gained the following
+-- two constructors for features added in Vega-Lite v4.2:
+-- 'VL.CAxLabelPadding' and 'VL.CAxTickSize'.
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
