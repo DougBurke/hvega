@@ -127,6 +127,10 @@ axisCondition2 =
            , AxDataCondition (Expr "(datum.value >= 3) && (datum.value <= 7)")
                               (CAxTickDashOffset 4 0)
            -}
+           , AxDataCondition (Expr "(datum.value > 0) && (datum.value < 3)")
+                              (CAxTickSize 20 5)
+           , AxDataCondition (Expr "(datum.value >= 1) && (datum.value <= 4)")
+                              (CAxLabelPadding 20 5)
            ]
 
 
