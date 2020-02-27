@@ -26,7 +26,13 @@
             "field": "symbol",
             "header": {
                 "labelAngle": 0,
-                "title": "Stock price",
+                "labelFontStyle": "italic",
+                "labelExpr": "'{' + datum.label + '}'",
+                "titleLineHeight": 20,
+                "title": [
+                    "Stock",
+                    "price"
+                ],
                 "labelAlign": "left"
             },
             "type": "nominal"

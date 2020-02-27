@@ -1106,6 +1106,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Labels can now be vertically aligned to their baseline with the
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
 --
+-- Headers ('VL.HeaderProperty') have gained the following constructors:
+-- 'VL.HLabel', 'VL.HLabelExpr', 'VL.HLabelFontStyle', 'VL.HTitleFontStyle',
+-- and 'VL.HTitleLineHeight'.
+--
+--
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',
@@ -1243,8 +1248,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
 --
 -- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
---   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
---   and `VL.MarkProperty` respectively.
+--   constructors have been removed from 'VL.AxisConfig', 'VL.LegendConfig',
+--   and 'VL.MarkProperty' respectively.
 --
 -- __New constructors__:
 --

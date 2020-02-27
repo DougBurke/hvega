@@ -50,6 +50,10 @@ diverging color scales.
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
 
+Headers (`HeaderProperty`) have gained the following constructors:
+`HLabel`, `HLabelExpr`, `HLabelFontStyle`, `HTitleFontStyle`,
+and `HTitleLineHeight`.
+
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
 `ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,

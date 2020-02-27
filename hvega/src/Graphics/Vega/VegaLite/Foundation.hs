@@ -1406,8 +1406,15 @@ title is the overall title of the collection.
 
 -}
 
--- TODO: should there be a HLabelBaseline, HTitleFontStyle, ...?
---       However, the following covers the vega-lite 3.3.0 schema
+{-
+In 4.2.0 this represents both
+
+  HeaderConfig
+  Header
+
+which have the same keys.
+
+-}
 
 data HeaderProperty
     = HFormat T.Text
@@ -1426,12 +1433,10 @@ data HeaderProperty
       --   with 'HFormat'.
       --
       -- @since 0.4.0.0
-    | HTitle T.Text
-      -- ^ The title for the facets.
-    | HNoTitle
-      -- ^ Draw no title for the facets.
+    | HLabel Bool
+      -- ^ Should labels be included as part of the header. The default is @True@.
       --
-      -- @since 0.4.0.0
+      --   @since 0.6.0.0
     | HLabelAlign HAlign
       -- ^ The horizontal alignment of the labels.
       --
@@ -1441,13 +1446,21 @@ data HeaderProperty
       --
       -- @since 0.4.0.0
     | HLabelAngle Angle
-      -- ^ The angle to draw the labels.
+      -- ^ The angle to draw the labels. The default is 0 for column headers
+      --   and -90 for row headers.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | HLabelColor Color
       -- ^ The color of the labels.
       --
       -- @since 0.4.0.0
+    | HLabelExpr VegaExpr
+      -- ^ The expression used to generate header labels.
+      --
+      --   The expression can use @datum.value@ and @datum.label@ to access
+      --   the data value and default label text respectively.
+      --
+      --   @since 0.6.0.0
     | HLabelFont T.Text
       -- ^ The font for the labels.
       --
@@ -1456,6 +1469,10 @@ data HeaderProperty
       -- ^ The font size for the labels.
       --
       -- @since 0.4.0.0
+    | HLabelFontStyle T.Text
+      -- ^ The font style for the labels.
+      --
+      --   @since 0.6.0.0
     | HLabelLimit Double
       -- ^ The maximum length of each label.
       --
@@ -1466,6 +1483,12 @@ data HeaderProperty
       -- @since 0.4.0.0
     | HLabelPadding Double
       -- ^ The spacing in pixels between the label and its sub-plot.
+      --
+      -- @since 0.4.0.0
+    | HTitle T.Text
+      -- ^ The title for the facets.
+    | HNoTitle
+      -- ^ Draw no title for the facets.
       --
       -- @since 0.4.0.0
     | HTitleAlign HAlign
@@ -1496,6 +1519,10 @@ data HeaderProperty
       -- ^ The font size for the title.
       --
       -- @since 0.4.0.0
+    | HTitleFontStyle T.Text
+      -- ^ The font style for the title.
+      --
+      --   @since 0.6.0.0
     | HTitleFontWeight T.Text
       -- ^ The font weight for the title.
       --
@@ -1504,6 +1531,10 @@ data HeaderProperty
       -- ^ The maximum length of the title.
       --
       -- @since 0.4.0.0
+    | HTitleLineHeight Double
+      -- ^ The line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.6.0.0
     | HTitleOrient Side
       -- ^ The position of the title relative to the sub-plots.
       --
@@ -1520,12 +1551,15 @@ headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
 headerProperty (HTitle ttl) = "title" .= splitOnNewline ttl
 headerProperty HNoTitle = "title" .= A.Null
+headerProperty (HLabel b) = "labels" .= b
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
 headerProperty (HLabelColor s) = "labelColor" .= fromColor s
+headerProperty (HLabelExpr s) = "labelExpr" .= s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
+headerProperty (HLabelFontStyle s) = "labelFontStyle" .= s
 headerProperty (HLabelLimit x) = "labelLimit" .= x
 headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
 headerProperty (HLabelPadding x) = "labelPadding" .= x
@@ -1537,6 +1571,8 @@ headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
 headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x
+headerProperty (HTitleFontStyle s) = "titleFontStyle" .= s
 headerProperty (HTitleLimit x) = "titleLimit" .= x
+headerProperty (HTitleLineHeight x) = "titleLineHeight" .= x
 headerProperty (HTitleOrient orient) = "titleOrient" .= sideLabel orient
 headerProperty (HTitlePadding x) = "titlePadding" .= x
