@@ -25,13 +25,29 @@ testSpecs = [ ("markCondition1", markCondition1)
             , ("bindScales1", bindScales1)
             , ("bindScales2", bindScales2)
             ]
-            
+
+
+movieData, carData :: Data
+movieData = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+carData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+rtRating :: BuildEncodingSpecs
+rtRating = position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
+
+encCars :: [EncodingSpec] -> PropertySpec
+encCars = encoding
+          . position Y [ PName "Origin", PmType Ordinal ]
+          . position X [ PName "Cylinders", PmType Ordinal ]
+
+encHorses :: [EncodingSpec] -> PropertySpec
+encHorses = encoding
+            . position X [ PName "Horsepower", PmType Quantitative ]
+            . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+
+
 markCondition1 :: VegaLite
 markCondition1 =
     let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
-
         config =
             configure
                 . configuration (MarkStyle [ MRemoveInvalid False ])
@@ -39,7 +55,7 @@ markCondition1 =
         enc =
             encoding
                 . position X [ PName "IMDB_Rating", PmType Quantitative ]
-                . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
+                . rtRating
                 . color
                     [ MDataCondition
                         [ ( Or (Expr "datum.IMDB_Rating === null")
@@ -51,7 +67,7 @@ markCondition1 =
                     ]
     in
     toVegaLite [ config []
-               , dataVals
+               , movieData
                -- Vega-Lite 4 turned off tooltips by default, so
                -- enable them here
                , mark Point [ MTooltip TTEncoding ]
@@ -82,17 +98,15 @@ markCondition2 =
 
 axisTest :: [AxisProperty] -> VegaLite
 axisTest axConds =
-  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
-
-      enc = encoding
+  let enc = encoding
                 . position X
                     [ PName "IMDB_Rating"
                     , PmType Quantitative
                     , PAxis (AxTickCount 20 : axConds)
                     ]
-                . position Y [ PName "Rotten_Tomatoes_Rating", PmType Quantitative ]
+                . rtRating
 
-  in toVegaLite [ width 600, height 600, dvals, mark Point [ MOpacity 0.1 ], enc [] ]
+  in toVegaLite [ width 600, height 600, movieData, mark Point [ MOpacity 0.1 ], enc [] ]
 
 
 axisCondition1 :: VegaLite
@@ -135,9 +149,7 @@ axisCondition3 =
 --
 axisDateCondition1 :: VegaLite
 axisDateCondition1 =
-  let dataVals = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-      enc =
+  let enc =
         encoding
           . position X [ PName "Year"
                        , PmType Temporal
@@ -155,15 +167,12 @@ axisDateCondition1 =
 
       mopts = [ MExtent Iqr, MInterpolate Monotone, MBorders [] ]
 
-  in toVegaLite [ width 600, dataVals, enc [], mark ErrorBand mopts ]
+  in toVegaLite [ width 600, carData, enc [], mark ErrorBand mopts ]
 
 
 selectionCondition1 :: VegaLite
 selectionCondition1 =
-    let dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        sel =
+    let sel =
             selection
                 . select "alex"
                     Interval
@@ -177,23 +186,16 @@ selectionCondition1 =
                     , SelectionMark [ SMFill "#fdbb84", SMFillOpacity 0.5, SMStroke "#e34a33" ]
                     ]
 
-        enc =
-            encoding
-                . position Y [ PName "Origin", PmType Ordinal ]
-                . position X [ PName "Cylinders", PmType Ordinal ]
+        enc = encCars
                 . color [ MAggregate Count, MName "*", MmType Quantitative ]
     in
     toVegaLite
-        [ dataVals, sel [], mark Rect [ MCursor CGrab ], enc [] ]
+        [ carData, sel [], mark Rect [ MCursor CGrab ], enc [] ]
 
 
 selectionCondition2 :: VegaLite
 selectionCondition2 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        sel =
+    let sel =
             selection
                 . select "alex"
                     Interval
@@ -207,10 +209,7 @@ selectionCondition2 =
                     , SelectionMark [ SMFill "#fdbb84", SMFillOpacity 0.5, SMStroke "#e34a33" ]
                     ]
 
-        enc =
-            encoding
-                . position Y [ PName "Origin", PmType Ordinal ]
-                . position X [ PName "Cylinders", PmType Ordinal ]
+        enc = encCars
                 . color
                     [ MSelectionCondition
                         (And (SelectionName "alex") (SelectionName "morgan"))
@@ -219,16 +218,12 @@ selectionCondition2 =
                     ]
     in
     toVegaLite
-        [ dataVals, sel [], mark Rect [ MCursor CGrab ], enc [] ]
+        [ carData, sel [], mark Rect [ MCursor CGrab ], enc [] ]
 
 
 selectionCondition3 :: VegaLite
 selectionCondition3 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        trans =
+    let trans =
             transform
                 . filter (FCompose (And (Selection "brush") (Expr "datum.Weight_in_lbs > 3000")))
 
@@ -236,13 +231,8 @@ selectionCondition3 =
             selection
                 . select "brush" Interval []
 
-        enc1 =
-            encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
-
         spec1 =
-            asSpec [ sel [], mark Point [], enc1 [] ]
+            asSpec [ sel [], mark Point [], encHorses [] ]
 
         enc2 =
             encoding
@@ -253,16 +243,12 @@ selectionCondition3 =
             asSpec [ trans [], mark Point [], enc2 [] ]
     in
     toVegaLite
-        [ dataVals, vConcat [ spec1, spec2 ] ]
+        [ carData, vConcat [ spec1, spec2 ] ]
 
 
 selectionCondition4 :: VegaLite
 selectionCondition4 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        sel =
+    let sel =
             selection
                 . select "mySelection"
                     Interval
@@ -271,10 +257,7 @@ selectionCondition4 =
                     , Translate "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     ]
 
-        enc =
-            encoding
-                . position Y [ PName "Origin", PmType Ordinal ]
-                . position X [ PName "Cylinders", PmType Ordinal ]
+        enc = encCars
                 . color
                     [ MSelectionCondition
                         (SelectionName "mySelection")
@@ -283,16 +266,12 @@ selectionCondition4 =
                     ]
     in
     toVegaLite
-        [ dataVals, sel [], mark Rect [ MCursor CGrab ], enc [] ]
+        [ carData, sel [], mark Rect [ MCursor CGrab ], enc [] ]
 
 
 selectionCondition5 :: VegaLite
 selectionCondition5 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        sel =
+    let sel =
             selection
                 . select "mySelection"
                     Interval
@@ -302,10 +281,7 @@ selectionCondition5 =
                     , Translate "[mousedown[!event.shiftKey], mouseup] > mousemove"
                     ]
 
-        enc =
-            encoding
-                . position Y [ PName "Origin", PmType Ordinal ]
-                . position X [ PName "Cylinders", PmType Ordinal ]
+        enc = encCars
                 . color
                     [ MSelectionCondition
                         (SelectionName "mySelection")
@@ -314,44 +290,28 @@ selectionCondition5 =
                     ]
     in
     toVegaLite
-        [ dataVals, sel [], mark Rect [ MCursor CGrab ], enc [] ]
+        [ carData, sel [], mark Rect [ MCursor CGrab ], enc [] ]
 
 
 bindScales1 :: VegaLite
 bindScales1 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
-
-        sel =
+    let sel =
             selection
                 . select "myZoomPan" Interval [ BindScales ]
 
-        enc =
-            encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
     in
     toVegaLite
-        [ width 300, height 300, dataVals [], sel [], mark Circle [], enc [] ]
+        [ width 300, height 300, carData, sel [], mark Circle [], encHorses [] ]
 
 
 bindScales2 :: VegaLite
 bindScales2 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
-
-        sel =
+    let sel =
             selection
                 . select "myZoomPan"
                     Interval
                     [ BindScales, Clear "click[event.shiftKey]" ]
 
-        enc =
-            encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
     in
     toVegaLite
-        [ width 300, height 300, dataVals [], sel [], mark Circle [], enc [] ]
+        [ width 300, height 300, carData, sel [], mark Circle [], encHorses [] ]
