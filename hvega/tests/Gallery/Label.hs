@@ -28,6 +28,11 @@ testSpecs = [ ("label1", label1)
             , ("baselines", baselines)
             ]
 
+
+noStroke :: [ConfigureSpec] -> PropertySpec
+noStroke = configure . configuration (ViewStyle [ViewNoStroke])
+
+
 label1 :: VegaLite
 label1 =
     let
@@ -84,7 +89,7 @@ label2 =
 
         config =
             configure
-                . configuration (Scale [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
+                . configuration (ScaleStyle [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
                 . configuration (TextStyle [ MBaseline AlignMiddle ])
     in
     toVegaLite
@@ -160,12 +165,10 @@ label3 =
         specTextMax =
             asSpec [ transTextMax [], mark Text [ MAlign AlignLeft, MBaseline AlignBottom, MdX 3, MdY 1 ], encTextMax [] ]
 
-        config =
-            configure . configuration (View [ ViewStroke Nothing ])
     in
     toVegaLite
         [ des
-        , config []
+        , noStroke []
         , width 800
         , height 500
         , dataFromUrl "https://vega.github.io/vega-lite/data/co2-concentration.csv" [ Parse [ ( "Date", FoUtc "%Y-%m-%d" ) ] ]
@@ -419,10 +422,8 @@ label8 =
       specTextHi =
         asSpec [ encTextHi [], mark Text [ MX 255, MAlign AlignLeft ] ]
 
-      cfg = configure . configuration (View [ ViewStroke Nothing ])
-
   in toVegaLite
-        [ cfg []
+        [ noStroke []
         , datasets [ ( "medians", medians [] ), ( "values", values [] ) ]
         , dataFromSource "medians" []
         , title "Questionnaire Ratings" []
@@ -437,8 +438,7 @@ label9 :: VegaLite
 label9 =
   let des = description "Comparing Likert scale ratings between two conditions."
 
-      cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
+      cfg = noStroke
             . configuration
                     (NamedStyles
                         [ ( "arrow-label", [ MdY 12, MFontSize 9.5 ] )
@@ -733,7 +733,7 @@ voyager =
                    , ("arrow-label2", [MdY 24, MFontSize 9.5])
                    ]
       conf = configure
-             . configuration (View [ViewStroke (Just "transparent")])
+             . configuration (ViewStyle [ViewStroke "transparent"])
              . configuration styles
              . configuration (TitleStyle [TFontSize 12])
 

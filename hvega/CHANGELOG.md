@@ -12,15 +12,27 @@ New function for use with `encoding`: `strokeDash`.
 
 ### Breaking changes
 
-The constructors for `FacetConfig` have been renamed from `FColumns`
-and `FSpacing` to `FacetColumns` and `FacetSpacing`. This is to
-support the new `FSpacing` constructor for `FacetChannel`.
+The `ConcatStyle` and `FacetStyle` constructors for
+`ConfigurationProperty` now accept a common type,
+`CompositionConfig`, rather than having separate
+`ConcatConfig` and `FacetConfig` types with the same meaning.
+So `ConcatColumns` and `FColumns` have been replaced by `CompColumns`,
+and `CompSpacing` and `FSpacing` by `CompSpacing`.
+
+The `ViewFill` and `ViewStroke` constructors of `ViewConfig` no longer
+take an optional `Color` argument. The Nothing case has been replaced
+by new constructors: `ViewNoFill` and `ViewNoStroke`.
+
+The `VBFill` and `VBStroke` constructors of `ViewBackground` no longer
+take an optional `Color` argument. The Nothing case has been replaced
+by new constructors: `VBNoFill` and `VBNoStroke`.
 
 ### New constructors
 
 `FacetChannel` has gained the following constructors: `FAlign`,
-`FCenter`, and `FSpacing`. The last one has caused the renaming of the
-constructors for the `FacetConfig` type.
+`FCenter`, and `FSpacing`. The last one would have collides with
+the `FacetStyle` option, but this has fortuitously been renamed to
+`CompSpacing`.
 
 `MSymbol` has been added to `MarkChannel` which can be used to make the
 `shape` encoding conditional on a data or selection condition.
@@ -37,6 +49,25 @@ diverging color scales.
 
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
+
+Headers (`HeaderProperty`) have gained the following constructors:
+`HLabel`, `HLabelExpr`, `HLabelFontStyle`, `HTitleFontStyle`,
+and `HTitleLineHeight`.
+
+`ConfigurationProperty` has added new constructors:
+`AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
+`ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,
+`HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and
+`RepeatStyle`.
+
+The `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
+`NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
+`TimeFormat`, and `View` constructors for `ConfigurationProperty` are
+now deprecated, and are replaced by `AutosizeStyle`,
+`BackgroundStyle`, `CountTitleStyle`, `FieldTitleStyle`,
+`LegendStyle`, `NUmberFormatStyle`, `PaddingStyle`, `ProjectionStyle`,
+`RangeStyle`, `ScaleStyle`, `TimeFormatStyle`, `ViewStyle`
+respectively.
 
 ## 0.5.0.0
 

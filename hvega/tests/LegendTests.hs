@@ -57,7 +57,7 @@ legendCoreCfg cfg =
                 . opacity [ MName "Weight_in_lbs", MmType Quantitative ]
     in
     toVegaLite
-        [ (configure . configuration (Legend cfg)) []
+        [ (configure . configuration (LegendStyle cfg)) []
         , width 300
         , height 300
         , dataVals []

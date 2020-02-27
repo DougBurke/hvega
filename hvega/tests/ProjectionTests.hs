@@ -87,13 +87,13 @@ configExample =
     let
         cfg =
             configure
-                . configuration (Background "rgb(251,247,238)")
+                . configuration (BackgroundStyle "rgb(251,247,238)")
                 . configuration (TitleStyle [ TFont "Roboto", TFontWeight W600, TFontSize 18 ])
-                . configuration (View [ ViewContinuousWidth 500
-                                      , ViewContinuousHeight 300
-                                      , ViewStroke Nothing ])
-                . configuration (Autosize [ AFit ])
-                . configuration (Projection [ PrType Orthographic, PrRotate 0 0 0 ])
+                . configuration (ViewStyle [ ViewContinuousWidth 500
+                                           , ViewContinuousHeight 300
+                                           , ViewNoStroke ])
+                . configuration (AutosizeStyle [ AFit ])
+                . configuration (ProjectionStyle [ PrType Orthographic, PrRotate 0 0 0 ])
 
         globeSpec =
             asSpec

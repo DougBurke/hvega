@@ -194,11 +194,14 @@ facet7 =
                 . row
                     [ FName "symbol"
                     , FmType Nominal
-                    , FHeader [ HTitle "Stock price"
+                    , FHeader [ HTitle "Stock\nprice"
+                              , HTitleLineHeight 20
                               , HLabelAngle 0
                               -- I don't know why the labels only align
                               -- when AlignLeft is used.
                               , HLabelAlign AlignLeft
+                              , HLabelExpr "'{' + datum.label + '}'"
+                              , HLabelFontStyle "italic"
                               ]
                     ]
 
@@ -208,6 +211,6 @@ facet7 =
 
         cfg =
             configure
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite [ des, width 300, height 50, cfg [], res [], dvals [], mark Area [], enc [] ]

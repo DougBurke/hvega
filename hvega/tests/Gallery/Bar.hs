@@ -50,6 +50,11 @@ pOrdinal = PmType Ordinal
 pQuant = PmType Quantitative
 
 
+noStroke :: [ConfigureSpec] -> PropertySpec
+noStroke = configure
+           . configuration (ViewStyle [ ViewNoStroke ])
+
+
 -- bar1 in GalleryBar.elm
 bar1 :: VegaLite
 bar1 =
@@ -138,10 +143,8 @@ bar4 =
                 . column [ FName "age", FmType Ordinal ]
                 . color [ MName "gender", MmType Nominal, MScale [ SRange (RStrings [ "#EA98D2", "#659CCA" ]) ] ]
 
-        config =
-            configure
+        config = noStroke
                 . configuration (Axis [ DomainWidth 1 ])
-                . configuration (View [ ViewStroke Nothing ])
     in
     toVegaLite
         [ des
@@ -434,10 +437,6 @@ bar13 =
         des =
             description "Isotype bar chart inspired by this Only An Ocean Between, 1943. Population Live Stock, p.13."
 
-        config =
-            configure
-                . configuration (View [ ViewStroke Nothing ])
-
         dvals =
             dataFromRows []
                 . toRows "Great Britain" [ ( "cattle", 3 ), ( "pigs", 2 ), ( "sheep", 10 ) ]
@@ -477,7 +476,7 @@ bar13 =
                 . opacity [ MNumber 1 ]
                 . size [ MNumber 200 ]
     in
-    toVegaLite [ des, config [], width 800, height 200, dvals [], mark Point [ MFilled True ], enc [] ]
+    toVegaLite [ des, noStroke [], width 800, height 200, dvals [], mark Point [ MFilled True ], enc [] ]
 
 
 -- bar20 in GalleryBar.elm
@@ -486,10 +485,6 @@ bar14 =
     let
         des =
             description "Isotype bar chart using emojis for symbols"
-
-        config =
-            configure
-                . configuration (View [ ViewStroke Nothing ])
 
         dvals =
             dataFromRows []
@@ -509,7 +504,7 @@ bar14 =
                 . text [ TName "emoji", TmType Nominal ]
                 . size [ MNumber 65 ]
     in
-    toVegaLite [ des, config [], width 800, height 200, dvals [], trans [], mark Text [ MBaseline AlignMiddle ], enc [] ]
+    toVegaLite [ des, noStroke [], width 800, height 200, dvals [], trans [], mark Text [ MBaseline AlignMiddle ], enc [] ]
 
 
 -- bar3 in GalleryBar.elm, see bar3 above
@@ -614,8 +609,7 @@ signedPopulation =
                     , MLegend [ LOrient LOTop, LTitle "" ]
                     ]
 
-      cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
+      cfg = noStroke
             . configuration (Axis [ Grid False ])
 
   in toVegaLite [ width 300
@@ -696,9 +690,6 @@ wilkinsonDotPlot :: VegaLite
 wilkinsonDotPlot =
   let desc = description "A Wilkinson dot plot"
 
-      cfg = configure
-            . configuration (View [ ViewStroke Nothing ])
-
       dvals = dataFromColumns []
               . dataColumn "data" (Numbers [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 4, 4, 4 ])
 
@@ -716,7 +707,7 @@ wilkinsonDotPlot =
 
   in toVegaLite
         [ desc
-        , cfg []
+        , noStroke []
         , height 100
         , dvals []
         , trans []

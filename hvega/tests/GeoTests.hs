@@ -51,6 +51,9 @@ testSpecs = [ ("defaultSize1", defaultSize1)
 -}
 
 
+noStroke = configure $ configuration (ViewStyle [ ViewNoStroke ]) []
+
+
 defaultSize1 :: VegaLite
 defaultSize1 =
     toVegaLite
@@ -66,8 +69,8 @@ defaultSize2 :: VegaLite
 defaultSize2 =
     toVegaLite
         [ description "Default map size with view width and height specified in config."
-        , configure $ configuration (View [ ViewContinuousWidth 500
-                                          , ViewContinuousHeight 300 ]) []
+        , configure $ configuration (ViewStyle [ ViewContinuousWidth 500
+                                               , ViewContinuousHeight 300 ]) []
         , projection [ PrType AlbersUsa ]
         , dataFromUrl "https://vega.github.io/vega-lite/data/us-10m.json" [ TopojsonFeature "counties" ]
         , mark Geoshape []
@@ -80,7 +83,7 @@ choropleth1 =
     toVegaLite
         [ width 900
         , height 500
-        , configure $ configuration (View [ ViewStroke Nothing ]) []
+        , noStroke
         , dataFromUrl "https://vega.github.io/vega-lite/data/londonBoroughs.json" [ TopojsonFeature "boroughs" ]
         , mark Geoshape [ MStrokeOpacity 0 ]
         , encoding $ color [ MName "id", MmType Nominal ] []
@@ -118,7 +121,7 @@ choropleth2 =
     toVegaLite
         [ width 1200
         , height 700
-        , configure $ configuration (View [ ViewStroke Nothing ]) []
+        , noStroke
         , layer [ polySpec, labelSpec ]
         ]
 
@@ -149,7 +152,7 @@ tubeLines2 =
     toVegaLite
         [ width 700
         , height 500
-        , configure $ configuration (View [ ViewStroke Nothing ]) []
+        , noStroke
         , dataFromUrl "https://vega.github.io/vega-lite/data/londonTubeLines.json" [ TopojsonFeature "line" ]
         , mark Geoshape [ MFilled False, MStrokeWidth 2 ]
         , enc []
@@ -199,7 +202,7 @@ tubeLines3 =
     toVegaLite
         [ width 700
         , height 500
-        , configure $ configuration (View [ ViewStroke Nothing ]) []
+        , noStroke
         , layer [ polySpec, labelSpec, routeSpec ]
         ]
 
@@ -446,7 +449,7 @@ mapComp2 =
             asSpec [ width 300, height 300, projection [ PrType Orthographic ], layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) []
+        [ noStroke
         , hConcat [ globe, globe, globe ]
         ]
 
@@ -473,7 +476,7 @@ mapComp3 =
             asSpec [ width 300, height 300, layer [ graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) []
+        [ noStroke
         , hConcat [ rotatedSpec (-65), rotatedSpec 115, rotatedSpec (-65) ]
         ]
 
@@ -507,7 +510,7 @@ mapComp4 =
             asSpec [ width 300, height 300, layer [ seaSpec, graticuleSpec, countrySpec ] ]
     in
     toVegaLite
-        [ configure $ configuration (View [ ViewStroke Nothing ]) []
+        [ noStroke
         , hConcat [ rotatedSpec 0, rotatedSpec (-40) ]
         ]
 
@@ -544,7 +547,7 @@ scribbleMap1 =
         config =
             configure
                 . configuration (TitleStyle [ TFont "Roboto", TFontWeight W300, TFontSize 28 ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
 
         trans =
             transform
@@ -581,7 +584,7 @@ scribbleMap2 =
         config =
             configure
                 . configuration (TitleStyle [ TFont "Roboto", TFontWeight W300, TFontSize 28 ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (ViewStyle [ ViewNoStroke ])
 
         trans =
             transform

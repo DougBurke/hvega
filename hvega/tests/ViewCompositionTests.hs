@@ -27,6 +27,11 @@ testSpecs = [ ("columns1", columns1)
             ]
 
 
+noStroke :: [ConfigureSpec] -> PropertySpec
+noStroke = configure
+           . configuration (ViewStyle [ ViewNoStroke ])
+
+
 genderChart :: [HeaderProperty] -> [HeaderProperty] -> VegaLite
 genderChart hdProps cProps =
   let conf = configure . configuration (HeaderStyle cProps)
@@ -82,8 +87,7 @@ columns4 =
 
 groupByAge :: VegaLite
 groupByAge =
-  let conf = configure
-             . configuration (View [ ViewStroke Nothing ])
+  let conf = noStroke
              . configuration (Axis [ DomainWidth 1 ] )
 
       pop = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
@@ -165,21 +169,21 @@ gridTransform :: PropertySpec
 gridTransform = transform
                 (calculateAs "datum.row * 1000 + datum.col" "index" [])
 
-gridConfig :: [FacetConfig] -> [ConfigureSpec] -> PropertySpec
+gridConfig :: [CompositionConfig] -> [ConfigureSpec] -> PropertySpec
 gridConfig fopts =
   configure
   . configuration (HeaderStyle [ HLabelFontSize 0.1 ])
-  . configuration (View [ ViewStroke (Just "black")
-                        , ViewStrokeWidth 2
-                        , ViewFill (Just "gray")
-                        , ViewFillOpacity 0.2
-                        , ViewContinuousHeight 120 ])
+  . configuration (ViewStyle [ ViewStroke "black"
+                             , ViewStrokeWidth 2
+                             , ViewFill "gray"
+                             , ViewFillOpacity 0.2
+                             , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)
 
 
 grid1 :: VegaLite
 grid1 =
-    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
+    let cfg = gridConfig [ CompSpacing 80, CompColumns 5 ]
 
     in
     toVegaLite
@@ -196,7 +200,7 @@ grid1 =
 
 grid2 :: VegaLite
 grid2 =
-    let cfg = gridConfig [ FacetSpacing 80, FacetColumns 5 ]
+    let cfg = gridConfig [ CompSpacing 80, CompColumns 5 ]
 
     in
     toVegaLite
@@ -211,7 +215,7 @@ grid2 =
 
 grid3 :: VegaLite
 grid3 =
-    let cfg = gridConfig [ FacetSpacing 80 ]
+    let cfg = gridConfig [ CompSpacing 80 ]
 
     in
     toVegaLite

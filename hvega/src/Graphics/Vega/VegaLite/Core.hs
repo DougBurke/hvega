@@ -2052,8 +2052,9 @@ data FacetChannel
     | FSpacing Double
       -- ^ The pixel spacing between sub-views.
       --
-      --   Prior to @0.6.0.0@ @FSpacing@ was used with the 'Graphics.Vega.VegaLite.FacetConfig'
-      --   type.
+      --   If you have code from a version of @hvega@ before @0.6.0.0@ that
+      --   uses @FSpacing@ (with 'Graphics.Vega.VegaLite.FacetStyle'), please
+      --   use 'Graphics.Vega.VegaLite.CompSpacing' as a replacement.
       --
       --   @since 0.6.0.0
     | FTimeUnit TimeUnit
@@ -2074,7 +2075,7 @@ facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FBin bps) = bin bps
 facetChannelProperty (FCenter b) = "center" .= b
-facetChannelProperty (FHeader hps) = header_ hps
+facetChannelProperty (FHeader hps) = header_ "" hps
 facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s

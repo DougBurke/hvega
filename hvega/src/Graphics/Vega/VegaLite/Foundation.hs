@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -7,7 +8,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 Basic types that are used throughout VegaLite.
 Would it make sense to break this up into
@@ -118,6 +119,9 @@ import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
 
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
@@ -133,8 +137,8 @@ import Graphics.Vega.VegaLite.Specification
 field_ :: FieldName -> LabelledSpec
 field_ f = "field" .= f
 
-header_ :: [HeaderProperty] -> LabelledSpec
-header_ hps = "header" .= object (map headerProperty hps)
+header_ :: T.Text -> [HeaderProperty] -> LabelledSpec
+header_ extra hps = ("header" <> extra) .= object (map headerProperty hps)
 
 -- could restrict to ascending/descending
 order_ :: T.Text -> LabelledSpec
@@ -1313,12 +1317,19 @@ cInterpolateSpec (CubeHelix gamma) = object [pairT "type" "cubehelix", "gamma" .
 cInterpolateSpec (CubeHelixLong gamma) = object [pairT "type" "cubehelix-long", "gamma" .= gamma]
 
 
--- | The properties for a single view or layer background.
---
---   Used with 'Graphics.Vega.VegaLite.viewBackground' and
---   'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
---
---   @since 0.4.0.0
+{-| The properties for a single view or layer background.
+
+Used with 'Graphics.Vega.VegaLite.viewBackground' and
+'Graphics.Vega.VegaLite.ViewBackgroundStyle'.
+
+In version @0.6.0.0@ the constructors that used to take an optional color,
+namely 'VBFill' and 'VBStroke', were split out, so that they
+now take a 'Color' argument and new constructors - 'VBNoFill' and
+'VBNoStroke' - were added to replace the @Nothing@ versions.
+
+@since 0.4.0.0
+
+-}
 
 data ViewBackground
     = VBStyle [T.Text]
@@ -1328,19 +1339,28 @@ data ViewBackground
     --   properties.
     | VBCornerRadius Double
     -- ^ The radius in pixels of rounded corners.
-    | VBFill (Maybe Color)
-    -- ^ Fill color.
+    | VBFill Color
+    -- ^ Fill color. See also 'VBNoFill'.
     --
-    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+    --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | VBNoFill
+    -- ^ Do not use a fill. See also 'VBFill'.
+    --
+    --   @since 0.6.0.0
     | VBFillOpacity Opacity
     -- ^ Fill opacity.
     | VBOpacity Opacity
     -- ^ Overall opacity.
-    | VBStroke (Maybe Color)
-    -- ^ The stroke color for a line around the background. If @Nothing@ then
-    --   no line is drawn.
+    | VBStroke Color
+    -- ^ The stroke color for a line around the background. See also 'VBNoStroke'.
     --
-    --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+    --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+    --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | VBNoStroke
+    -- ^ Do not use a stroke. See also 'VBStroke'.
+    --
+    --   @since 0.6.0.0
     | VBStrokeOpacity Opacity
     -- ^ The opacity of the line around the background, if drawn.
     | VBStrokeWidth Double
@@ -1361,12 +1381,12 @@ viewBackgroundSpec :: ViewBackground -> LabelledSpec
 viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
 viewBackgroundSpec (VBStyle styles) = "style" .= styles
 viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
-viewBackgroundSpec (VBFill (Just s)) = "fill" .= s
-viewBackgroundSpec (VBFill Nothing) = "fill" .= A.Null
+viewBackgroundSpec (VBFill s) = "fill" .= s
+viewBackgroundSpec VBNoFill = "fill" .= A.Null
 viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
 viewBackgroundSpec (VBOpacity x) = "opacity" .= x
-viewBackgroundSpec (VBStroke (Just s)) = "stroke" .= s
-viewBackgroundSpec (VBStroke Nothing) = "stroke" .= A.Null
+viewBackgroundSpec (VBStroke s) = "stroke" .= s
+viewBackgroundSpec VBNoStroke = "stroke" .= A.Null
 viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
 viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
 viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
@@ -1386,8 +1406,15 @@ title is the overall title of the collection.
 
 -}
 
--- TODO: should there be a HLabelBaseline, HTitleFontStyle, ...?
---       However, the following covers the vega-lite 3.3.0 schema
+{-
+In 4.2.0 this represents both
+
+  HeaderConfig
+  Header
+
+which have the same keys.
+
+-}
 
 data HeaderProperty
     = HFormat T.Text
@@ -1406,12 +1433,10 @@ data HeaderProperty
       --   with 'HFormat'.
       --
       -- @since 0.4.0.0
-    | HTitle T.Text
-      -- ^ The title for the facets.
-    | HNoTitle
-      -- ^ Draw no title for the facets.
+    | HLabel Bool
+      -- ^ Should labels be included as part of the header. The default is @True@.
       --
-      -- @since 0.4.0.0
+      --   @since 0.6.0.0
     | HLabelAlign HAlign
       -- ^ The horizontal alignment of the labels.
       --
@@ -1421,13 +1446,21 @@ data HeaderProperty
       --
       -- @since 0.4.0.0
     | HLabelAngle Angle
-      -- ^ The angle to draw the labels.
+      -- ^ The angle to draw the labels. The default is 0 for column headers
+      --   and -90 for row headers.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | HLabelColor Color
       -- ^ The color of the labels.
       --
       -- @since 0.4.0.0
+    | HLabelExpr VegaExpr
+      -- ^ The expression used to generate header labels.
+      --
+      --   The expression can use @datum.value@ and @datum.label@ to access
+      --   the data value and default label text respectively.
+      --
+      --   @since 0.6.0.0
     | HLabelFont T.Text
       -- ^ The font for the labels.
       --
@@ -1436,6 +1469,10 @@ data HeaderProperty
       -- ^ The font size for the labels.
       --
       -- @since 0.4.0.0
+    | HLabelFontStyle T.Text
+      -- ^ The font style for the labels.
+      --
+      --   @since 0.6.0.0
     | HLabelLimit Double
       -- ^ The maximum length of each label.
       --
@@ -1446,6 +1483,12 @@ data HeaderProperty
       -- @since 0.4.0.0
     | HLabelPadding Double
       -- ^ The spacing in pixels between the label and its sub-plot.
+      --
+      -- @since 0.4.0.0
+    | HTitle T.Text
+      -- ^ The title for the facets.
+    | HNoTitle
+      -- ^ Draw no title for the facets.
       --
       -- @since 0.4.0.0
     | HTitleAlign HAlign
@@ -1476,6 +1519,10 @@ data HeaderProperty
       -- ^ The font size for the title.
       --
       -- @since 0.4.0.0
+    | HTitleFontStyle T.Text
+      -- ^ The font style for the title.
+      --
+      --   @since 0.6.0.0
     | HTitleFontWeight T.Text
       -- ^ The font weight for the title.
       --
@@ -1484,6 +1531,10 @@ data HeaderProperty
       -- ^ The maximum length of the title.
       --
       -- @since 0.4.0.0
+    | HTitleLineHeight Double
+      -- ^ The line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.6.0.0
     | HTitleOrient Side
       -- ^ The position of the title relative to the sub-plots.
       --
@@ -1500,12 +1551,15 @@ headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
 headerProperty (HTitle ttl) = "title" .= splitOnNewline ttl
 headerProperty HNoTitle = "title" .= A.Null
+headerProperty (HLabel b) = "labels" .= b
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
 headerProperty (HLabelColor s) = "labelColor" .= fromColor s
+headerProperty (HLabelExpr s) = "labelExpr" .= s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
+headerProperty (HLabelFontStyle s) = "labelFontStyle" .= s
 headerProperty (HLabelLimit x) = "labelLimit" .= x
 headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
 headerProperty (HLabelPadding x) = "labelPadding" .= x
@@ -1517,6 +1571,8 @@ headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
 headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x
+headerProperty (HTitleFontStyle s) = "titleFontStyle" .= s
 headerProperty (HTitleLimit x) = "titleLimit" .= x
+headerProperty (HTitleLineHeight x) = "titleLineHeight" .= x
 headerProperty (HTitleOrient orient) = "titleOrient" .= sideLabel orient
 headerProperty (HTitlePadding x) = "titlePadding" .= x

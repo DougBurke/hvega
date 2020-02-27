@@ -49,7 +49,7 @@ table2 =
 
         conf =
             configure
-                . configuration (View [ ViewStrokeWidth 0, ViewStep 13 ])
+                . configuration (ViewStyle [ ViewStrokeWidth 0, ViewStep 13 ])
                 . configuration (Axis [ Domain False ])
 
         enc =
@@ -94,8 +94,8 @@ table3 =
 
         config =
             configure
-                . configuration (Range [ RHeatmap "greenblue" ])
-                . configuration (View [ ViewStroke Nothing ])
+                . configuration (RangeStyle [ RHeatmap "greenblue" ])
+                . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite
         [ des
@@ -157,7 +157,7 @@ table5 =
 
         config =
             configure
-                . configuration (Scale [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
+                . configuration (ScaleStyle [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
                 . configuration (TextStyle [ MBaseline AlignMiddle ])
     in
     toVegaLite

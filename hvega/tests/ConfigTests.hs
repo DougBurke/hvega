@@ -143,9 +143,9 @@ vbTest =
                 , width 200
                 , height 200
                 , viewBackground
-                    [ VBFill (Just "white")
+                    [ VBFill "white"
                     , VBCornerRadius 18
-                    , VBStroke (Just "red")
+                    , VBStroke "red"
                     , VBStrokeWidth 4
                     , VBStrokeCap CRound
                     , VBStrokeDash [ 10, 10 ]
@@ -163,7 +163,7 @@ vbTest =
                         , ( "mySecondStyle", [ MFill "black", MStroke "blue" ] )
                         ]
                     )
-                . configuration (View [ ViewBackgroundStyle [ VBFill (Just "#feb") ] ])
+                . configuration (ViewStyle [ ViewBackgroundStyle [ VBFill "#feb" ] ])
 
         streamSpec =
             asSpec
@@ -196,10 +196,10 @@ defaultCfg =
 darkCfg :: VegaLite
 darkCfg =
     configure
-        . configuration (Background "black")
+        . configuration (BackgroundStyle "black")
         . configuration (TitleStyle [ TFont "Roboto", TColor "#fff" ])
         . configuration (Axis [ DomainColor "yellow", GridColor "rgb(255,255,200)", GridOpacity 0.2, LabelColor "#fcf", TickColor "white", TitleColor "rgb(200,255,200)", LabelFont "Roboto", TitleFont "Roboto" ])
-        . configuration (Legend [ LeFillColor "#333", LeStrokeColor "#444", LeTitleColor "rgb(200,200,200)", LeLabelColor "white", LeSymbolFillColor "red", LeGradientStrokeColor "yellow", LeLabelFont "Roboto", LeTitleFont "Roboto" ])
+        . configuration (LegendStyle [ LeFillColor "#333", LeStrokeColor "#444", LeTitleColor "rgb(200,200,200)", LeLabelColor "white", LeSymbolFillColor "red", LeGradientStrokeColor "yellow", LeLabelFont "Roboto", LeTitleFont "Roboto" ])
         & compositeVis
 
 
@@ -223,8 +223,8 @@ markCfg2 =
 paddingTest :: Autosize -> VegaLite
 paddingTest a =
   configure
-  . configuration (Autosize [ a ])
-  . configuration (Padding (PEdges 90 60 30 0))
+  . configuration (AutosizeStyle [ a ])
+  . configuration (PaddingStyle (PEdges 90 60 30 0))
   & singleVis
 
 

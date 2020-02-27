@@ -20,8 +20,7 @@ module Graphics.Vega.VegaLite.Configuration
        , FieldTitleProperty(..)
 
        , ViewConfig(..)
-       , FacetConfig(..)
-       , ConcatConfig(..)
+       , CompositionConfig(..)
        , ScaleConfig(..)
        , RangeConfig(..)
        , AxisConfig(..)
@@ -127,6 +126,25 @@ for details.
 
 Used by 'configuration'.
 
+In @version 0.6.0.0@:
+
+- the @Autosize@, @Background@, @CountTitle@, @FieldTitle@, @Legend@,
+  @NumberFormat@, @Padding@, @Projection@, @Range@, @Scale@.
+  @TimeFormat@, and @View@
+  constructors have been deprecated, and should be replaced by
+  'AutosizeStyle', 'BackgroundStyle', 'CountTitleStyle', 'FieldTitleStyle',
+  'LegendStyle', 'NumberFormatStyle', 'PaddingStyle', 'ProjectionStyle',
+  'RangeStyle', 'ScaleStyle', 'TimeFormatStyle', and 'ViewStyle'
+  respectively. The axis configuration options have not been updated
+  to this system.
+
+- new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
+  'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
+  'HeaderFacetStyle', 'HeaderRowStyle', 'ImageStyle', and 'RepeatStyle'.
+
+- 'ConcatStyle' and 'FacetStyle' now take a common type, 'CompositionConfig',
+  rather than @ConcatConfig@ and @FacetStyle@.
+
 In @version 0.5.0.0@:
 
 - the @RemoveInvalid@ constructor was removed, as
@@ -140,29 +158,27 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 
 -}
 
--- based on schema 3.3.0 #/definitions/Config
---
--- TODO:
---   Bar - change to BarConfig rather than MarkProperty?
---     BoxplotStyle BoxPlotConfig
---     Concat CompositionConfig
---     ErrorBand ErrorBandCOnfig
---     ErrorBar ErrorBarCOnfig
---   Facet takes CompositionConfig not FacetConfig
---     HeaderColumn takes HeaderConfig, just as HeaderStyle does
---     HeaderFacet ditto
---     HeaderRow ditto
---   LineStyle takes LineConfig not MarkConfig
---   TextStyle takes TextConfig not MarkConfig
---   TickStyle takes TickConfig not MarkConfig
---   TrailStyle takes LineConfig not MarkConfig
---
-
+{-# DEPRECATED Autosize "Please change Autosize to AutosizeStyle" #-}
+{-# DEPRECATED Background "Please change Background to BackgroundStyle" #-}
+{-# DEPRECATED CountTitle "Please change CountTitle to CountTitleStyle" #-}
+{-# DEPRECATED FieldTitle "Please change FieldTitle to FieldTitleStyle" #-}
+{-# DEPRECATED Legend "Please change Legend to LegendStyle" #-}
+{-# DEPRECATED NumberFormat "Please change NumberFormat to NumberFormatStyle" #-}
+{-# DEPRECATED Padding "Please change Padding to PaddingStyle" #-}
+{-# DEPRECATED Projection "Please change Projection to ProjectionStyle" #-}
+{-# DEPRECATED Range "Please change Range to RangeStyle" #-}
+{-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
+{-# DEPRECATED TimeFormat "Please change TimeFormat to TimeFormatStyle" #-}
+{-# DEPRECATED View "Please change View to ViewStyle" #-}
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
-    | Autosize [Autosize]
+    | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
+      --
+      --   This was renamed from @Autosize@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | Axis [AxisConfig]
       -- ^ The default appearance of axes.
     | AxisBand [AxisConfig]
@@ -179,36 +195,95 @@ data ConfigurationProperty
       -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
       -- ^ The default appearance of the Y axes.
-    | Background Color
+    | AxisQuantitative [AxisConfig]
+      -- ^ The default appearance of quantitative axes.
+      --
+      --   @since 0.6.0.0
+    | AxisTemporal [AxisConfig]
+      -- ^ The default appearance of temporal axes.
+      --
+      --   @since 0.6.0.0
+    | BackgroundStyle Color
       -- ^ The default background color of visualizations.
       --
       --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --
+      --   This was renamed from @Background@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | BarStyle [MarkProperty]
       -- ^ The default appearance of bar marks.
+    | BoxplotStyle [MarkProperty]
+      -- ^ The default appearance for box plots.
+      --
+      --   @since 0.6.0.0
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
-    | ConcatStyle [ConcatConfig]
+    | ConcatStyle [CompositionConfig]
       -- ^ The default appearance of concatenated layouts.
       --
-      --   @since 0.4.0.0
-    | CountTitle T.Text
-      -- ^ The default title style for count fields.
-    | FacetStyle [FacetConfig]
-      -- ^ The default appearance of facet layouts.
+      --   In @0.6.0.0@ this was changed from accepting @ConcatConfig@ to
+      --   'CompositionConfig'.
       --
       --   @since 0.4.0.0
-    | FieldTitle FieldTitleProperty
+    | CountTitleStyle T.Text
+      -- ^ The default axis and legend title for count fields. The default is
+      --   @"Count of Records"@.
+      --
+      --   This was renamed from @CountTitle@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
+    | ErrorBandStyle [MarkProperty]
+      -- ^ The default appearance for error bands.
+      --
+      --   @since 0.6.0.0
+    | ErrorBarStyle [MarkProperty]
+      -- ^ The default appearance for error bars.
+      --
+      --   @since 0.6.0.0
+    | FacetStyle [CompositionConfig]
+      -- ^ The default appearance of facet layouts.
+      --
+      --   In @0.6.0.0@ this was changed from accepting @FacetConfig@ to
+      --   'CompositionConfig'.
+      --
+      --   @since 0.4.0.0
+    | FieldTitleStyle FieldTitleProperty
       -- ^ The default title-generation style for fields.
+      --
+      --   This was renamed from @FieldTitle@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | GeoshapeStyle [MarkProperty]
       -- ^ The default appearance of geoshape marks.
       --
       --   @since 0.4.0.0
     | HeaderStyle [HeaderProperty]
-      -- ^ The default appearance of facet headers.
+      -- ^ The default appearance of all headers.
       --
       --   @since 0.4.0.0
-    | Legend [LegendConfig]
+    | HeaderColumnStyle [HeaderProperty]
+      -- ^ The default appearance for column headers.
+      --
+      --   @since 0.6.0.0
+    | HeaderFacetStyle [HeaderProperty]
+      -- ^ The default appearance for non-row and non-column facet headers.
+      --
+      --   @since 0.6.0.0
+    | HeaderRowStyle [HeaderProperty]
+      -- ^ The default appearance for row headers.
+      --
+      --   @since 0.6.0.0
+    | ImageStyle [MarkProperty]
+      -- ^ The default appearance for images.
+      --
+      --   @since 0.6.0.0
+    | LegendStyle [LegendConfig]
       -- ^ The default appearance of legends.
+      --
+      --   This was renamed from @Legend@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | LineStyle [MarkProperty]
       -- ^ The default appearance of line marks.
     | MarkStyle [MarkProperty]
@@ -219,23 +294,50 @@ data ConfigurationProperty
       -- ^ The default appearance of a list of named styles.
       --
       --   @since 0.4.0.0
-    | NumberFormat T.Text
-      -- ^ The default number formatting for axis and text labels.
-    | Padding Padding
+    | NumberFormatStyle T.Text
+      -- ^ The default number formatting for axis and text labels, using
+      --   [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
+      --
+      --   As an example @NumberFormatStyle "s"@ will use SI units.
+      --
+      --   This was renamed from @NumberFormat@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
+    | PaddingStyle Padding
       -- ^ The default padding in pixels from the edge of the of visualization
       --   to the data rectangle.
+      --
+      --   This was renamed from @Padding@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | PointStyle [MarkProperty]
       -- ^ The default appearance of point marks.
-    | Projection [ProjectionProperty]
+    | ProjectionStyle [ProjectionProperty]
       -- ^ The default style of map projections.
-    | Range [RangeConfig]
+      --
+      --   This was renamed from @Projection@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
+    | RangeStyle [RangeConfig]
       -- ^ The default range properties used when scaling.
+      --
+      --   This was renamed from @Range@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
+    | RepeatStyle [CompositionConfig]
+      -- ^ The default appearance for the 'Graphics.Vega.VegaLite.repeat` operator.
+      --
+      --   @since 0.6.0.0
     | RuleStyle [MarkProperty]
       -- ^ The default appearance of rule marks.
-    | Scale [ScaleConfig]   -- TODO: rename ScaleStyle
+    | ScaleStyle [ScaleConfig]
       -- ^ The default properties used when scaling.
+      --
+      --   This was renamed from @Scale@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | SelectionStyle [(Selection, [SelectionProperty])]
       -- ^ The default appearance of selection marks.
     | SquareStyle [MarkProperty]
@@ -244,64 +346,140 @@ data ConfigurationProperty
       -- ^ The default appearance of text marks.
     | TickStyle [MarkProperty]
       -- ^ The default appearance of tick marks.
-    | TimeFormat T.Text
-      -- ^ The default time format for axis and legend labels.
+    | TimeFormatStyle T.Text
+      -- ^ The default time format for raw time values (without time units)
+      --   in text marks, legend labels, and header labels. This does /not/
+      --   control the appearance of axis labels.
+      --
+      --   The default is @\"%b %d, %Y\"@.
+      --
+      --   This was renamed from @TimeFormat@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
     | TitleStyle [TitleConfig]
       -- ^ The default appearance of visualization titles.
     | TrailStyle [MarkProperty]
       -- ^ The default style of trail marks.
       --
       --   @since 0.4.0.0
+    | ViewStyle [ViewConfig]
+      -- ^ The default properties for
+      --   [single view plots](https://vega.github.io/vega-lite/docs/spec.html#single).
+      --
+      --   This was renamed from @View@ in @0.6.0.0@.
+      --
+      --   @since 0.6.0.0
+    | Autosize [Autosize]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'AutosizeStyle' should be used
+      --   instead.
+    | Background Color
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'BackgroundStyle' should be used
+      --   instead.
+    | CountTitle T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'CountTitleStyle' should be used
+      --   instead.
+    | FieldTitle FieldTitleProperty
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'FieldTitleStyle' should be used
+      --   instead.
+    | Legend [LegendConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'LegendStyle' should be used
+      --   instead.
+    | NumberFormat T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'NumberFormatStyle' should be used
+      --   instead.
+    | Padding Padding
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'PaddingStyle' should be used
+      --   instead.
+    | Projection [ProjectionProperty]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ProjectionStyle' should be used
+      --   instead.
+    | Range [RangeConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'RangeStyle' should be used
+      --   instead.
+    | Scale [ScaleConfig]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ScaleStyle' should be used
+      --   instead.
+    | TimeFormat T.Text
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'TimeFormatStyle' should be used
+      --   instead.
     | View [ViewConfig]
-      -- ^ The default single view style.
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'ViewStyle' should be used
+      --   instead.
+
+
+toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
+toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
-configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Background bg) = "background" .= bg
-configProperty (CountTitle ttl) = "countTitle" .= ttl
-configProperty (ConcatStyle cps) = "concat" .= object (map concatConfigProperty cps)
-configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (NumberFormat fmt) = "numberFormat" .= fmt
-configProperty (Padding pad) = "padding" .= paddingSpec pad
-configProperty (TimeFormat fmt) = "timeFormat" .= fmt
-configProperty (Axis acs) = "axis" .= object (map axisConfigProperty acs)
-configProperty (AxisX acs) = "axisX" .= object (map axisConfigProperty acs)
-configProperty (AxisY acs) = "axisY" .= object (map axisConfigProperty acs)
-configProperty (AxisLeft acs) = "axisLeft" .= object (map axisConfigProperty acs)
-configProperty (AxisRight acs) = "axisRight" .= object (map axisConfigProperty acs)
-configProperty (AxisTop acs) = "axisTop" .= object (map axisConfigProperty acs)
-configProperty (AxisBottom acs) = "axisBottom" .= object (map axisConfigProperty acs)
-configProperty (AxisBand acs) = "axisBand" .= object (map axisConfigProperty acs)
-configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
-configProperty (MarkStyle mps) = mprops_ "mark" mps
-configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
 configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
+configProperty (Axis acs) = toAxis "axis" acs
+configProperty (AxisBand acs) = toAxis "axisBand" acs
+configProperty (AxisBottom acs) = toAxis "axisBottom" acs
+configProperty (AxisLeft acs) = toAxis "axisLeft" acs
+configProperty (AxisRight acs) = toAxis "axisRight" acs
+configProperty (AxisTop acs) = toAxis "axisTop" acs
+configProperty (AxisX acs) = toAxis "axisX" acs
+configProperty (AxisY acs) = toAxis "axisY" acs
+configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
+configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
+configProperty (MarkStyle mps) = mprops_ "mark" mps
+configProperty (BackgroundStyle bg) = "background" .= bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
+configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
-configProperty (FacetStyle fps) = "facet" .= object (map facetConfigProperty fps)
+configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
+configProperty (CountTitleStyle ttl) = "countTitle" .= ttl
+configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
+configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
+configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
+configProperty (FieldTitleStyle ftp) = "fieldTitle" .= fieldTitleLabel ftp
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
-configProperty (HeaderStyle hps) = header_ hps
+configProperty (HeaderStyle hps) = header_ "" hps
+configProperty (HeaderColumnStyle hps) = header_ "Column" hps
+configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
+configProperty (HeaderRowStyle hps) = header_ "Row" hps
+configProperty (ImageStyle mps) = mprops_ "image" mps
+configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
-configProperty (PointStyle mps) = mprops_ "point" mps
-configProperty (RectStyle mps) = mprops_ "rect" mps
-configProperty (RuleStyle mps) = mprops_ "rule" mps
-configProperty (SquareStyle mps) = mprops_ "square" mps
-configProperty (TextStyle mps) = mprops_ "text" mps
-configProperty (TickStyle mps) = mprops_ "tick" mps
-configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
-configProperty (Scale scs) = scaleConfig_ scs
-configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (NumberFormatStyle fmt) = "numberFormat" .= fmt
+configProperty (PaddingStyle pad) = "padding" .= paddingSpec pad
+configProperty (PointStyle mps) = mprops_ "point" mps
+configProperty (ProjectionStyle pps) = "projection" .= object (map projectionProperty pps)
+configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
+configProperty (RuleStyle mps) = mprops_ "rule" mps
+configProperty (ScaleStyle scs) = scaleConfig_ scs
 configProperty (SelectionStyle selConfig) =
   let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
   in "selection" .= object (map selProp selConfig)
+configProperty (SquareStyle mps) = mprops_ "square" mps
+configProperty (TextStyle mps) = mprops_ "text" mps
+configProperty (TickStyle mps) = mprops_ "tick" mps
+configProperty (TimeFormatStyle fmt) = "timeFormat" .= fmt
+configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
+configProperty (ViewStyle vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
+-- deprecated aliases
+configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
+configProperty (Background bg) = "background" .= bg
+configProperty (CountTitle ttl) = "countTitle" .= ttl
+configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
+configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
+configProperty (NumberFormat fmt) = "numberFormat" .= fmt
+configProperty (Padding pad) = "padding" .= paddingSpec pad
+configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
+configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (Scale scs) = scaleConfig_ scs
+configProperty (TimeFormat fmt) = "timeFormat" .= fmt
+configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
 
 {-|
 
@@ -759,9 +937,14 @@ scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
 {-|
 
 View configuration property. These are used to configure the style of a single
-view within a visualization such as its size and default fill and stroke colors.
+view within a visualization (via 'ViewStyle') such as its size and default fill and stroke colors.
 For further details see the
 <https://vega.github.io/vega-lite/docs/spec.html#config Vega-Lite documentation>.
+
+In version @0.6.0.0@ the constructors that used to take an optional color,
+namely 'ViewFill' and 'ViewStroke', were split out, so that they
+now take a 'Color' argument and new constructors - 'ViewNoFill' and
+'ViewNoStroke' - were added to replace the @Nothing@ versions.
 
 In version @0.5.0.0@ the @ViewWidth@ and @ViewHeight@ constructors have
 been deprecated, and replaced by
@@ -813,10 +996,15 @@ data ViewConfig
       --   visualization has a discrete y field.
       --
       --   @since 0.5.0.0
-    | ViewFill (Maybe Color)
-      -- ^ The fill color.
+    | ViewFill Color
+      -- ^ The fill color. See also 'ViewNoFill'.
       --
-      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+      --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | ViewNoFill
+      -- ^ Do not use a fill. See also 'ViewFill'.
+      --
+      --   @since 0.6.0.0
     | ViewFillOpacity Opacity
       -- ^ The fill opacity.
     | ViewOpacity Opacity
@@ -834,10 +1022,15 @@ data ViewConfig
       --   'ScaleConfig'.
       --
       --   @since 0.5.0.0
-    | ViewStroke (Maybe Color)
-      -- ^ The stroke color.
+    | ViewStroke Color
+      -- ^ The stroke color. See also 'ViewNoStroke'.
       --
-      --   This was changed to use the @Color@ type alias in version @0.5.0.0@.
+      --   This was changed to use the @Color@ type alias in version @0.5.0.0@
+      --   and removed the @Maybe@ type in version @0.6.0.0@.
+    | ViewNoStroke
+      -- ^ Do not use a stroke color. See also 'ViewStroke'.
+      --
+      --   @since 0.6.0.0
     | ViewStrokeCap StrokeCap
       -- ^ The stroke cap for line-ending style.
       --
@@ -876,11 +1069,13 @@ viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
 viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
 viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
 viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
-viewConfigProperties (ViewFill ms) = ["fill" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewFill ms) = ["fill" .= fromColor ms]
+viewConfigProperties ViewNoFill = ["fill" .= A.Null]
 viewConfigProperties (ViewFillOpacity x) = ["fillOpacity" .= x]
 viewConfigProperties (ViewOpacity x) = ["opacity" .= x]
 viewConfigProperties (ViewStep x) = ["step" .= x]
-viewConfigProperties (ViewStroke ms) = ["stroke" .= maybe A.Null fromColor ms]
+viewConfigProperties (ViewStroke ms) = ["stroke" .= fromColor ms]
+viewConfigProperties ViewNoStroke = ["stroke" .= A.Null]
 viewConfigProperties (ViewStrokeCap sc) = ["strokeCap" .= strokeCapLabel sc]
 viewConfigProperties (ViewStrokeDash xs) = ["strokeDash" .= fromDS xs]
 viewConfigProperties (ViewStrokeDashOffset x) = ["strokeDashOffset" .= x]
@@ -1191,32 +1386,6 @@ axisConfigProperty (TitleX x) = "titleX" .= x
 axisConfigProperty (TitleY x) = "titleY" .= x
 axisConfigProperty (TranslateOffset x) = "translate" .= x
 
-{-|
-
-Configuration options for faceted views, used with 'Graphics.Vega.VegaLite.FacetStyle'.
-
-See the
-<https://vega.github.io/vega-lite/docs/facet.html#facet-configuration Vega-Lite facet config documentation>.
-
-@since 0.4.0.0
-
--}
-data FacetConfig
-    = FacetColumns Int
-    -- ^ The maximum number of columns to use in a faceted-flow layout.
-    --
-    --   Renamed from @FColumns@ in @0.6.0.0@
-    | FacetSpacing Double
-    -- ^ The spacing in pixels between sub-views in a faceted composition.
-    --
-    --   Renamed from 'Graphics.Vega.VegaLite.FSpacing' in @0.6.0.0@ as
-    --   this is now used with @FacetChannel@.
-
-
-facetConfigProperty :: FacetConfig -> LabelledSpec
-facetConfigProperty (FacetColumns n) = "columns" .= n
-facetConfigProperty (FacetSpacing x) = "spacing" .= x
-
 
 -- | Specifies how the title anchor is positioned relative to the frame.
 --
@@ -1378,21 +1547,31 @@ titleConfigSpec (TZIndex z) = "zindex" .= z
 
 {-|
 
-Configuration options for concatenated views, used with 'Graphics.Vega.VegaLite.ConcatStyle'.
+Configuration options for composition views, used with
+'ConcatStyle', 'FacetStyle', and 'RepeatStyle'.
 
-@since 0.4.0.0
+Prior to @0.6.0.0@ this information was made available in
+two types - @ConcatConfig@ and @FacetConfig@ - which had
+the same meaning.
+
+@since 0.6.0.0
 
 -}
-data ConcatConfig
-    = ConcatColumns Int
-      -- ^ The maximum number of columns to use in a concatenated flow layout.
-    | ConcatSpacing Double
-      -- ^ The spacing in pixels between sub-views in a concatenated view.
+data CompositionConfig
+    = CompColumns Int
+      -- ^ The number of columns to use. The default is to use a single
+      --   row (an infinite number of columns).
+      --
+      --   Prior to @0.6.0.0@ this was either @ConcatColumns@ or @FColumns@.
+    | CompSpacing Double
+      -- ^ The spacing in pixels between sub-views. The default is 20.
+      --
+      --   Prior to @0.6.0.0@ this was either @ConcatSpacing@ or @FSpacing@.
 
 
-concatConfigProperty :: ConcatConfig -> LabelledSpec
-concatConfigProperty (ConcatColumns n) = "columns" .= n
-concatConfigProperty (ConcatSpacing x) = "spacing" .= x
+compConfigProperty :: CompositionConfig -> LabelledSpec
+compConfigProperty (CompColumns n) = "columns" .= n
+compConfigProperty (CompSpacing x) = "spacing" .= x
 
 
 {-|

@@ -43,7 +43,7 @@ scale2 =
     let
         conf =
             configure
-                . configuration (Range [ RRamp "reds" ])
+                . configuration (RangeStyle [ RRamp "reds" ])
 
         cars =
             dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []

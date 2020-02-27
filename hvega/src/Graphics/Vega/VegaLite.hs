@@ -641,17 +641,11 @@ module Graphics.Vega.VegaLite
        , VL.APosition(..)
        , VL.FieldTitleProperty(..)
 
-         -- ** Facet Configuration Options
+         -- ** Composition Configuration Options
          --
-         -- $facetconfig
+         -- $compositionconfig
 
-       , VL.FacetConfig(..)
-
-         -- ** Concatenated View Configuration Options
-         --
-         -- $concatconfig
-
-       , VL.ConcatConfig(..)
+       , VL.CompositionConfig(..)
 
          -- * General Data types
          --
@@ -1040,13 +1034,13 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- See the
 -- [Vega-Lite view configuration documentation](https://vega.github.io/vega-lite/docs/spec.html#config).
 
--- $facetconfig
--- See the
--- [Vega-Lite facet configuration documentation](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration).
-
--- $concatconfig
--- See the
--- [Vega-Lite concat configuration documentation](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration).
+-- $compositionconfig
+-- See the Vega-Lite
+-- [concat](https://vega.github.io/vega-lite/docs/concat.html#concat-configuration),
+-- [facet](https://vega.github.io/vega-lite/docs/facet.html#facet-configuration),
+-- and
+-- [repeat](https://vega.github.io/vega-lite/docs/repeat.html#repeat-configuration)
+-- configuration documentation pages.
 
 -- $generaldatatypes
 -- In addition to more general data types like integers and string, the following types
@@ -1071,16 +1065,29 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __Breaking Change__
 --
--- The constructors for 'VL.FacetConfig' have been renamed from @FColumns@
--- and @FSpacing@ to 'VL.FacetColumns' and 'VL.FacetSpacing'. This is to
--- support the new 'VL.FSpacing' constructor for 'VL.FacetChannel'.
+-- The 'VL.ConcatStyle' and 'VL.FacetStyle' constructors for
+-- 'VL.ConfigurationProperty' now accept a common type,
+-- 'VL.CompositionConfig', rather than having separate
+-- @ConcatConfig@ and @FacetConfig@ types with the same meaning.
+-- So @ConcatColumns@ and @FColumns@ have been replaced by 'VL.CompColumns',
+-- and @CompSpacing@ and @FSpacing@ by 'VL.CompSpacing'.
+--
+-- The 'VL.ViewFill' and 'VL.ViewStroke' constructors of 'VL.ViewConfig'
+-- no longer take an optional 'VL.Color' argument. The @Nothing@
+-- case has been replaced by new constructors: 'VL.ViewNoFill'
+-- and 'VL.ViewNoStroke'.
+--
+-- The 'VL.VBFill' and 'VL.VBStroke' constructors of 'VL.ViewBackground'
+-- no longer take an optional 'VL.Color' argument. The @Nothing@
+-- case has been replaced by new constructors: 'VL.VBNoFill'
+-- and 'VL.VBNoStroke'.
 --
 -- __New constructors__:
 --
 -- 'VL.FacetChannel' has gained the following constructors:
 -- 'VL.FAlign', 'VL.FCenter', and 'VL.FSpacing'. The last one
--- has caused the renaming of the constructors for the 'VL.FacetConfig'
--- type.
+-- would have collided with the @FacetStyle@ option,
+-- but this has fortuitously been renamed to 'VL.CompSpacing'.
 --
 -- 'VL.MSymbol' has been added to 'VL.MarkChannel' which can be
 -- used to make the 'VL.shape' encoding conditional on a data
@@ -1098,6 +1105,26 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- Labels can now be vertically aligned to their baseline with the
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
+--
+-- Headers ('VL.HeaderProperty') have gained the following constructors:
+-- 'VL.HLabel', 'VL.HLabelExpr', 'VL.HLabelFontStyle', 'VL.HTitleFontStyle',
+-- and 'VL.HTitleLineHeight'.
+--
+--
+-- 'VL.ConfigurationProperty' has added new constructors:
+-- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
+-- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',
+-- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
+-- 'VL.RepeatStyle'.
+--
+-- The @Autosize@, @Background@, @CountTitle@, @FieldTitle@,
+-- @Legend@, @NumberFormat@, @Padding@, @Projection@, @Range@,
+-- @Scale@, @TimeFormat@, and @View@ constructors for
+-- 'VL.ConfigurationProperty' are now deprecated, and are replaced by
+-- 'VL.AutosizeStyle', 'VL.BackgroundStyle', 'VL.CountTitleStyle',
+-- 'VL.FieldTitleStyle', 'VL.LegendStyle', 'VL.NumberFormatStyle',
+-- 'VL.PaddingStyle', 'VL.ProjectionStyle', 'VL.RangeStyle',
+-- 'VL.ScaleStyle', 'VL.TimeFormatStyle', and 'VL.ViewStyle' respectively.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4
@@ -1123,7 +1150,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   previous versions it was transparent. If you
 --   need a transparent background then add the following configuration
 --   to the visualization:
---   @'VL.configuration' ('VL.Background' \"rgba(0,0,0,0)\")@.
+--   @'VL.configuration' ('VL.BackgroundStyle' \"rgba(0,0,0,0)\")@.
 --
 -- * Tooltips are now disabled by default. To enable, either use the
 --   'VL.tooltip' channel or by setting @'VL.MTooltip' 'VL.TTEncoding'@.
@@ -1221,8 +1248,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --   to @'VL.configuration' ('VL.View' ['VL.ViewStep' x])@.
 --
 -- * The @ShortTimeLabels@, @LeShortTimeLabels@, and @MShortTImeLabels@
---   constructors have been removed from `VL.AxisConfig`, `VL.LegendConfig`,
---   and `VL.MarkProperty` respectively.
+--   constructors have been removed from 'VL.AxisConfig', 'VL.LegendConfig',
+--   and 'VL.MarkProperty' respectively.
 --
 -- __New constructors__:
 --
