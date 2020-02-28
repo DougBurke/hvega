@@ -53,6 +53,9 @@ testSpecs = [ ("data1", data1)
             , ("filter2", filter2)
             , ("annotate1", annotate1)
             , ("null1", null1)
+            , ("domain1", domain1)
+            , ("domain2", domain2)
+            , ("domain3", domain3)
             -- , ("key1", key1)
             ]
 
@@ -666,6 +669,31 @@ null1 =
                  . dataRow [("x", Number 7), ("y", Number 20)]
                  $ []
              ]
+
+
+domainData :: Data
+domainData = dataFromColumns []
+             . dataColumn "x" (Numbers [ 1, 2, 3, 4 ])
+             . dataColumn "y" (Numbers [ 95, 97, 100, 105 ])
+             $ []
+
+
+domain :: [ScaleProperty] -> VegaLite
+domain yExtra =
+  let enc = encoding
+            . position X [PName "x", PmType Quantitative]
+            . position Y [PName "y", PmType Quantitative, PScale (SZero False : yExtra)]
+            $ []
+
+      mopts = [MPoint (PMMarker [])]
+
+  in toVegaLite [domainData, enc, mark Line mopts]
+
+
+domain1, domain2, domain3 :: VegaLite
+domain1 = domain []
+domain2 = domain [SDomain (DNumbers [90, 100])]
+domain3 = domain [SDomain (DUnionWith (DNumbers [90, 100]))]
 
 
 {-

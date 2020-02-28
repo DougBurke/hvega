@@ -49,8 +49,9 @@ be turned off with explicit `No` variants: `MNoBorders`, `MNoBox`,
 `MNoMedian`, `MNoRule`, and `MNoTicks`. These join the `MNoOutliers`
 constructor.
 
-The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
-diverging color scales.
+The `ScaleProperty` type has gained `SDomainMid`, useful for
+asymmetric diverging color scales. The `ScaleDomain` type has gained
+the `DUnionWith` option from Vega-Lite v4.3.
 
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
