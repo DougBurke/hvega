@@ -534,14 +534,6 @@ data MarkProperty
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
-      {- Not clear this adds anything with the current hvega design,
-         since the mark function adds this field, and other places that
-         MarkProperty can be used do not accept a type option
-    | MType Mark
-      -- ^ The mark type.
-      --
-      --   @since 0.5.0.0
-       -}
     | MWidth Double
       -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
       --   'MHeight'.
@@ -689,9 +681,6 @@ markProperty (MTimeUnitBand x) = "timeUnitBand" .= x
 markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
-{-
-markProperty (MType m) = "type" .= markLabel m
--}
 markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
