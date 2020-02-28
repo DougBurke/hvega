@@ -58,6 +58,10 @@ Conditional axis (`ConditionalAxisProperty`) has gained the following
 two constructors for features added in Vega-Lite v4.2:
 `CAxLabelPadding` and `CAxTickSize`.
 
+Cursor handling has been enhanced (to match Vega-Lite 4.1):
+`ViewCursor` has been added to `ViewConfig` and `SMCursor` to
+`SelectionMarkProperty`.
+
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
 `ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,

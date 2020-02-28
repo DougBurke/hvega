@@ -29,6 +29,8 @@ testSpecs = [ ("interaction1", interaction1)
             , ("bindlegend2", bindLegendDouble)
             , ("bindlegendboth", bindLegendBoth)
             , ("lookupSelection1", lookupSelection1)
+            , ("curpointer", curPointer)
+            , ("curhelp", curHelp)
             ]
 
 
@@ -250,12 +252,15 @@ bindLegendBoth =
 -- lookup into a selection
 -- based on https://vega.github.io/vega-lite/docs/lookup.html#lookup-selection
 --
-lookupSelection1 :: VegaLite
-lookupSelection1 =
-  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv"
+
+csvStocks :: Data
+csvStocks = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv"
                  [ CSV, Parse [("date", FoDate "")] ]
 
-      xaxis = position X [PName "date", PmType Temporal, PAxis []]
+
+lookupSelection1 :: VegaLite
+lookupSelection1 =
+  let xaxis = position X [PName "date", PmType Temporal, PAxis []]
 
       t0 = DateTime [DTYear 2005, DTMonthNum 1, DTDate 1]
       selPoint = selection
@@ -306,8 +311,42 @@ lookupSelection1 =
       layers = layer (map asSpec [pointSpec, lineSpec, ruleSpec])
 
   in toVegaLite
-     [ dvals
+     [ csvStocks
      , width 650
      , height 300
      , layers
      ]
+
+
+showCursor :: Cursor -> VegaLite
+showCursor cur =
+  let cfg = configure
+            . configuration (ViewStyle [ ViewCursor CText ])
+
+      trans = transform
+              . filter (FExpr "datum.symbol==='GOOG'")
+
+      sel = selection
+            . select "myBrush"
+                     Interval
+                     [ Encodings [ ChX ]
+                     , SelectionMark [ SMCursor cur ]
+                     ]
+
+      encLine = encoding
+                . position X [PName "date", PmType Temporal]
+                . position Y [PName "price", PmType Quantitative]
+
+  in toVegaLite [ width 400
+                , cfg []
+                , csvStocks
+                , trans []
+                , sel []
+                , encLine []
+                , mark Line []
+                ]
+
+
+curPointer, curHelp :: VegaLite
+curPointer = showCursor CPointer
+curHelp = showCursor CHelp

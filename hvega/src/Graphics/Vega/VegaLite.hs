@@ -1114,6 +1114,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- two constructors for features added in Vega-Lite v4.2:
 -- 'VL.CAxLabelPadding' and 'VL.CAxTickSize'.
 --
+-- Cursor handling has been enhanced (to match Vega-Lite 4.1):
+-- 'VL.ViewCursor' has been added to 'VL.ViewConfig' and 'VL.SMCursor' to
+-- 'VL.SelectionMarkProperty'.
+--
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',

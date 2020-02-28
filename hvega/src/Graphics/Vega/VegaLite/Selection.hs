@@ -49,10 +49,12 @@ import Graphics.Vega.VegaLite.Foundation
   , FieldName
   , Opacity
   , Channel
+  , Cursor
   , channelLabel
   , fromT
   , fromColor
   , fromDS
+  , cursorLabel
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
@@ -298,7 +300,12 @@ mark (a dragged rectangle). For details see the
 
 -}
 data SelectionMarkProperty
-    = SMFill Color
+    = SMCursor Cursor
+      -- ^ Cursor type to appear when pointer is over an interval selection mark
+      --   (dragged rectangular area).
+      --
+      --   @since 0.6.0.0
+    | SMFill Color
       -- ^ Fill color.
     | SMFillOpacity Opacity
       -- ^ Fill opacity.
@@ -315,6 +322,7 @@ data SelectionMarkProperty
 
 
 selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
+selectionMarkProperty (SMCursor c) = "cursor" .= cursorLabel c
 selectionMarkProperty (SMFill colour) = "fill" .= fromColor colour
 selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
 selectionMarkProperty (SMStroke colour) = "stroke" .= fromColor colour
