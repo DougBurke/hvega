@@ -34,40 +34,51 @@ testSpecs = [ ("default", defaultCfg)
             , ("paddingResize", paddingResizeCfg)
             , ("vbTest", vbTest)
             , ("axisCfg1", axisCfg1)
+            , ("fontCfg", fontCfg)
             , ("titleCfg1", titleCfg1)
             , ("titleCfg2", titleCfg2)
             , ("titleCfg3", titleCfg3)
             ]
 
+
+carData :: Data
+carData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+
+xHorse, yMPG :: BuildEncodingSpecs
+xHorse = position X [ PName "Horsepower", PmType Quantitative ]
+yMPG = position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+
+yCount :: [PositionChannel] -> BuildEncodingSpecs
+yCount opts = position Y ([ PAggregate Count, PmType Quantitative ] ++ opts)
+
+
+mCylinders, mOrigin :: [MarkChannel]
+mCylinders = [ MName "Cylinders", MmType Ordinal ]
+mOrigin = [ MName "Origin", MmType Nominal ]
+
+
 singleVis :: ([a] -> (VLProperty, VLSpec)) -> VegaLite
 singleVis config =
-    let
-        cars =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+  let scatterEnc =
+        encoding
+        . xHorse
+        . yMPG
+        . color mCylinders
+        . shape mOrigin
 
-        scatterEnc =
-            encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
-                . color [ MName "Cylinders", MmType Ordinal ]
-                . shape [ MName "Origin", MmType Nominal ]
-    in
-    toVegaLite [ title "Car Scatter" [], config [], cars, width 200, height 200, mark Point [ MSize 100 ], scatterEnc [] ]
+  in toVegaLite [ title "Car Scatter" [], config [], carData, width 200, height 200, mark Point [ MSize 100 ], scatterEnc [] ]
 
 
 {- TODO: padding causes spec to be invalid -}
 compositeVis :: ([a] -> (VLProperty, VLSpec)) -> VegaLite
 compositeVis config =
-    let
-        cars =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        scatterEnc =
+    let scatterEnc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
-                . color [ MName "Cylinders", MmType Ordinal ]
-                . shape [ MName "Origin", MmType Nominal ]
+                . xHorse
+                . yMPG
+                . color mCylinders
+                . shape mOrigin
 
         scatterSpec =
             asSpec [ title "Car Scatter" [], width 200, height 200
@@ -76,15 +87,15 @@ compositeVis config =
 
         barEnc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PAggregate Count, PmType Quantitative ]
-                . color [ MName "Origin", MmType Nominal ]
+                . xHorse
+                . yCount []
+                . color mOrigin
 
         streamEnc =
             encoding
                 . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
-                . position Y [ PAggregate Count, PmType Quantitative, PStack StCenter, PAxis [] ]
-                . color [ MName "Origin", MmType Nominal ]
+                . yCount [ PStack StCenter, PAxis [] ]
+                . color mOrigin
 
         barSpec =
             asSpec [ title "Car Histogram" [], width 200, height 200
@@ -100,33 +111,29 @@ compositeVis config =
             resolve
                 . resolution (RScale [ ( ChColor, Independent ), ( ChShape, Independent ) ])
     in
-    toVegaLite [ config [], cars, hConcat [ scatterSpec, barSpec, streamSpec ], res [] ]
+    toVegaLite [ config [], carData, hConcat [ scatterSpec, barSpec, streamSpec ], res [] ]
 
 
 vbTest :: VegaLite
 vbTest =
-    let
-        cars =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
-
-        scatterEnc =
+    let scatterEnc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
-                . color [ MName "Cylinders", MmType Ordinal ]
-                . shape [ MName "Origin", MmType Nominal ]
+                . xHorse
+                . yMPG
+                . color mCylinders
+                . shape mOrigin
 
         barEnc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PAggregate Count, PmType Quantitative ]
-                . color [ MName "Origin", MmType Nominal ]
+                . xHorse
+                . yCount []
+                . color mOrigin
 
         streamEnc =
             encoding
                 . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
-                . position Y [ PAggregate Count, PmType Quantitative, PStack StCenter, PAxis [] ]
-                . color [ MName "Origin", MmType Nominal ]
+                . yCount [ PStack StCenter, PAxis [] ]
+                . color mOrigin
 
         scatterSpec =
             asSpec
@@ -182,7 +189,7 @@ vbTest =
     toVegaLite
         [ cfg []
         , background "yellow"
-        , cars
+        , carData
         , hConcat [ scatterSpec, barSpec, streamSpec ]
         , res []
         ]
@@ -252,25 +259,27 @@ axisCfg1 =
        & singleVis
 
 
+fontCfg :: VegaLite
+fontCfg =
+    configure
+       . configuration (FontStyle "Comic Sans MS")
+       & singleVis
+
+
 titleOpts :: [PropertySpec]
 titleOpts =
-  [ dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" [],
-    width 200
+  [ carData
+  , width 200
   , height 200
   , mark Circle []
-  , encoding
-      . position X [ PName "Horsepower"
-                   , PmType Quantitative ]
-      . position Y [ PName "Miles_per_Gallon"
-                   , PmType Quantitative ]
-      $ []
+  , encoding . xHorse . yMPG $ []
   ]
 
 
 titleCfg1 :: VegaLite
 titleCfg1 =
   toVegaLite
-    ((title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ])
+    (title "Car\nScatter" [ TSubtitle "A subtitle\nalso over two lines" ]
      : titleOpts)
 
 
@@ -286,7 +295,7 @@ cfgOpts =
   , TSubtitlePadding 60
   , TLineHeight 20
   , TdX (-30)
-  , TdY (10)
+  , TdY 10
   ]
 
 subtitle :: TitleConfig
@@ -295,8 +304,7 @@ subtitle = TSubtitle "A subtitle\nalso over two lines"
 titleCfg2 :: VegaLite
 titleCfg2 =
   toVegaLite
-    ((title "Car\nScatter"
-      (subtitle : cfgOpts))
+    (title "Car\nScatter" (subtitle : cfgOpts)
       : titleOpts)
 
 

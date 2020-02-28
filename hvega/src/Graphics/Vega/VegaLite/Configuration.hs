@@ -256,6 +256,14 @@ data ConfigurationProperty
       --   This was renamed from @FieldTitle@ in @0.6.0.0@.
       --
       --   @since 0.6.0.0
+    | FontStyle T.Text
+      -- ^ The default font for all text marks, titles, and labels.
+      --
+      --   The naming scheme used here is somewhat unfortunate, as this
+      --   is for the name of the font (such as @\"serif\"@ or
+      --   @\"Comic Sans MS\"@), not the font-style.
+      --
+      --   @since 0.6.0.0
     | GeoshapeStyle [MarkProperty]
       -- ^ The default appearance of geoshape marks.
       --
@@ -437,6 +445,7 @@ configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
 configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
 configProperty (FieldTitleStyle ftp) = "fieldTitle" .= fieldTitleLabel ftp
+configProperty (FontStyle font) = "font" .= font
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
