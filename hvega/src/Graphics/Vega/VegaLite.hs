@@ -1100,6 +1100,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- constructor, which is used to draw rounded histogram bars, and
 -- 'VL.MTexts' for specifying multiple text values.
 --
+-- Error box and band properties (constructors in 'VL.MarkProperty') can now
+-- be turned off with explicit @No@ variants: 'VL.MNoBorders', 'VL.MNoBox',
+-- 'VL.MNoMedian', 'VL.MNoRule', and 'VL.MNoTicks'. These join the 'VL.MNoOutliers'
+-- constructor.
+--
 -- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
 -- for asymmetric diverging color scales.
 --

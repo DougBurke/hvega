@@ -1,0 +1,29 @@
+{
+    "config": {
+        "boxplot": {
+            "ticks": true
+        }
+    },
+    "mark": {
+        "rule": false,
+        "extent": 0.5,
+        "type": "boxplot"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/population.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "age",
+            "type": "ordinal"
+        },
+        "y": {
+            "field": "people",
+            "type": "quantitative",
+            "axis": {
+                "title": "Population"
+            }
+        }
+    }
+}

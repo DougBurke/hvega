@@ -44,6 +44,11 @@ The `MarkProperty` type has gained the `MCornerRadiusEnd` constructor,
 which is used to draw rounded histogram bars, and `MTexts` for
 specifying multiple text values.
 
+Error box and band properties (constructors in `MarkProperty`) can now
+be turned off with explicit `No` variants: `MNoBorders`, `MNoBox`,
+`MNoMedian`, `MNoRule`, and `MNoTicks`. These join the `MNoOutliers`
+constructor.
+
 The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
 diverging color scales.
 

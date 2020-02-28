@@ -1,6 +1,6 @@
 {
     "mark": {
-        "borders": {},
+        "borders": true,
         "extent": "iqr",
         "interpolate": "monotone",
         "type": "errorband"
