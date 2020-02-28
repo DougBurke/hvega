@@ -67,6 +67,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ZIndex
   , HeaderProperty
   , ViewBackground
+  , Cursor
   , fromColor
   , fromDS
   , splitOnNewline
@@ -86,6 +87,7 @@ import Graphics.Vega.VegaLite.Foundation
   , paddingSpec
   , autosizeProperty
   , viewBackgroundSpec
+  , cursorLabel
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
@@ -986,6 +988,10 @@ data ViewConfig
       --   The default is @0@.
       --
       --   @since 0.4.0.0
+    | ViewCursor Cursor
+      -- ^ The default cursor for single views.
+      --
+      --   @since 0.6.0.0
     | ViewDiscreteWidth Double
       -- ^ The default width of single views when the
       --   visualization has a discrete x field.
@@ -1067,6 +1073,7 @@ viewConfigProperties (ViewHeight x) = ["continuousHeight" .= x]
 viewConfigProperties (ViewContinuousWidth x) = ["continuousWidth" .= x]
 viewConfigProperties (ViewContinuousHeight x) = ["continuousHeight" .= x]
 viewConfigProperties (ViewCornerRadius x) = ["cornerRadius" .= x]
+viewConfigProperties (ViewCursor c) = ["cursor" .= cursorLabel c]
 viewConfigProperties (ViewDiscreteWidth x) = ["discreteWidth" .= x]
 viewConfigProperties (ViewDiscreteHeight x) = ["discreteHeight" .= x]
 viewConfigProperties (ViewFill ms) = ["fill" .= fromColor ms]
