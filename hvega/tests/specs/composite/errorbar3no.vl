@@ -7,7 +7,7 @@
         {
             "mark": {
                 "type": "errorbar",
-                "ticks": true
+                "ticks": false
             },
             "encoding": {
                 "color": {

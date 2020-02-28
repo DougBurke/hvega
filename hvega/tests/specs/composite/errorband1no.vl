@@ -1,7 +1,7 @@
 {
     "mark": {
-        "borders": true,
-        "extent": "stdev",
+        "borders": false,
+        "extent": "ci",
         "interpolate": "monotone",
         "type": "errorband"
     },
@@ -20,7 +20,7 @@
             "scale": {
                 "zero": false
             },
-            "title": "Miles per Gallon (1 stdev)",
+            "title": "Miles per Gallon (95% CI)",
             "type": "quantitative"
         }
     }

@@ -32,7 +32,7 @@
         {
             "mark": {
                 "type": "errorbar",
-                "ticks": {}
+                "ticks": true
             },
             "encoding": {
                 "yError2": {

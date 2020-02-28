@@ -1,6 +1,6 @@
 {
     "mark": {
-        "borders": true,
+        "borders": false,
         "extent": "stdev",
         "interpolate": "monotone",
         "type": "errorband"

@@ -75,8 +75,9 @@ import Graphics.Vega.VegaLite.Specification
   )
 
 
--- TODO: should this turn an empty list into true?
+-- As of version 0.6.0.0, an empty list is mapped to True
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
+mprops_ f [] = f .= True
 mprops_ f mps = f .= object (map markProperty mps)
 
 
@@ -203,9 +204,9 @@ Properties for customising the appearance of a mark. For details see the
 
 Not all properties are valid for each mark type.
 
-The Vega-Lite specification supports setting those properties that take
-@['MarkProperty']@ also to a boolean value. This is currently not
-supported in @hvega@.
+Some properties which take a list - such as 'MBox' - will
+create a @true@ value if the list is empty, and @false@ if the
+@\"No\"@ variant of the constructor is used (e.g. 'MNoBox').
 
 In @version 0.5.0.0@ the 'MRemoveInvalid' constructor was added, which
 replaces the @RemoveInvalid@ constructor of
@@ -242,13 +243,21 @@ data MarkProperty
       --   The ideal value for this is either @0@ (preferred by statisticians)
       --   or @1@ (the Vega-Lite default value, D3 example style).
     | MBorders [MarkProperty]
-      -- ^ Border properties for an 'ErrorBand' mark.
+      -- ^ Border properties for an 'ErrorBand' mark. See also 'MNoBorders'.
       --
       --   @since 0.4.0.0
+    | MNoBorders
+      -- ^ Do not draw a border for an 'ErrorBand' mark.
+      --
+      --   @since 0.6.0.0
     | MBox [MarkProperty]
-      -- ^ Box-symbol properties for a 'Boxplot' mark.
+      -- ^ Box-symbol properties for a 'Boxplot' mark. See also 'MNoBox'.
       --
       --   @since 0.4.0.0
+    | MNoBox
+      -- ^ Do not draw outliers with the 'Boxplot' mark.
+      --
+      --   @since 0.6.0.0
     | MClip Bool
       -- ^ Should a mark be clipped to the enclosing group's dimensions.
     | MColor Color
@@ -407,9 +416,13 @@ data MarkProperty
       --
       --   @since 0.5.0.0
     | MMedian [MarkProperty]
-      -- ^ Median-line properties for the 'Boxplot' mark.
+      -- ^ Median-line properties for the 'Boxplot' mark. See also 'MNoMedian'.
       --
       --   @since 0.4.0.0
+    | MNoMedian
+      -- ^ Do not draw the median of the 'Boxplot' mark.
+      --
+      --   @since 0.6.0.0
     | MOpacity Opacity
       -- ^ Overall opacity of a mark in the range 0 to 1.
     | MOrder Bool
@@ -421,7 +434,7 @@ data MarkProperty
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOutliers [MarkProperty]
-      -- ^ Outlier symbol properties for the 'Boxplot' mark.
+      -- ^ Outlier symbol properties for the 'Boxplot' mark. See also 'MNoOutliers'.
       --
       --   @since 0.4.0.0
     | MNoOutliers
@@ -445,9 +458,13 @@ data MarkProperty
       --
       --   @since 0.5.0.0
     | MRule [MarkProperty]
-      -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks.
+      -- ^ Rule (main line) properties for the 'ErrorBar' and 'Boxplot' marks. See also 'MNoRule'.
       --
       --   @since 0.4.0.0
+    | MNoRule
+      -- ^ Do not draw the rule for 'ErrorBar' and 'Boxplot' marks.
+      --
+      --   @since 0.6.0.0
     | MShape Symbol
       -- ^ Shape of a point mark.
     | MSize Double
@@ -513,9 +530,18 @@ data MarkProperty
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
-      -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark.
+      -- ^ Tick properties for the 'ErrorBar' or 'Boxplot' mark. See also 'MNoTicks'.
       --
       --   @since 0.4.0.0
+    | MNoTicks
+      -- ^ Do not draw ticks for 'ErrorBar' or 'Boxplot' marks.
+      --
+      --   The default behavior for ticks is for them to not be drawn, so @MNoTicks@
+      --   is only needed if the visualization contains something like:
+      --
+      --   @'Graphics.Vega.VegaLite.configure' ('Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.BoxplotStyle' ['MTicks' []] []))@
+      --
+      --   @since 0.6.0.0
     | MTimeUnitBand Double
       -- ^ The default relative band size for a time unit.
       --
@@ -534,14 +560,6 @@ data MarkProperty
       -- ^ The tooltip content for a mark.
       --
       --   @since 0.4.0.0
-      {- Not clear this adds anything with the current hvega design,
-         since the mark function adds this field, and other places that
-         MarkProperty can be used do not accept a type option
-    | MType Mark
-      -- ^ The mark type.
-      --
-      --   @since 0.5.0.0
-       -}
     | MWidth Double
       -- ^ Explicitly set the width of a mark (e.g. the bar width). See also
       --   'MHeight'.
@@ -608,9 +626,11 @@ markProperty (MBandSize x) = "bandSize" .= x
 markProperty (MBinSpacing x) = "binSpacing" .= x
 
 -- only available in ErrorBand[Config|Def], PartsMixins<ErrorBandPart>
+markProperty MNoBorders = "borders" .= False
 markProperty (MBorders mps) = mprops_ "borders" mps
 
 -- BoxPlot[Config|Deg], PartsMixins<BoxPlotPart>
+markProperty MNoBox = "box" .= False
 markProperty (MBox mps) = mprops_ "box" mps
 
 markProperty (MClip b) = "clip" .= b
@@ -647,6 +667,7 @@ markProperty (MLineBreak s) = "lineBreak" .= s
 markProperty (MLineHeight x) = "lineHeight" .= x
 
 -- BoxPlot[Config|Def] possibly others
+markProperty MNoMedian = "median" .= False
 markProperty (MMedian mps) = mprops_ "median" mps
 
 markProperty (MOpacity x) = "opacity" .= x
@@ -654,14 +675,14 @@ markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= orientationSpec orient
 
 -- what uses this?
-markProperty (MOutliers []) = "outliers" .= True  -- TODO: should mprops_ do this?
-markProperty (MOutliers mps) = mprops_ "outliers" mps
 markProperty MNoOutliers = "outliers" .= False
+markProperty (MOutliers mps) = mprops_ "outliers" mps
 
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MRadius x) = "radius" .= x
 
 -- what uses this?
+markProperty MNoRule = "rule" .= False
 markProperty (MRule mps) = mprops_ "rule" mps
 
 markProperty (MShape sym) = "shape" .= symbolLabel sym
@@ -683,15 +704,13 @@ markProperty (MTheta x) = "theta" .= x
 markProperty (MThickness x) = "thickness" .= x
 
 -- what uses this?
+markProperty MNoTicks = "ticks" .= False
 markProperty (MTicks mps) = mprops_ "ticks" mps
 
 markProperty (MTimeUnitBand x) = "timeUnitBand" .= x
 markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .= x
 markProperty (MTooltip TTNone) = "tooltip" .= A.Null
 markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
-{-
-markProperty (MType m) = "type" .= markLabel m
--}
 markProperty (MWidth x) = "width" .= x
 markProperty (MX x) = "x" .= x
 markProperty (MY x) = "y" .= x
