@@ -2280,7 +2280,7 @@ to use a double-click:
 config =
     'configure'
         . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.Axis' [ 'Graphics.Vega.VegaLite.DomainWidth' 1 ])
-        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.View' [ 'Graphics.Vega.VegaLite.ViewStroke' (Just "transparent") ])
+        . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.ViewStyle' [ 'Graphics.Vega.VegaLite.ViewStroke' "transparent" ])
         . 'Graphics.Vega.VegaLite.configuration' ('Graphics.Vega.VegaLite.SelectionStyle' [ ( 'Graphics.Vega.VegaLite.Single', [ 'Graphics.Vega.VegaLite.On' \"dblclick\" ] ) ])
 @
 -}
