@@ -1124,6 +1124,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.ViewCursor' has been added to 'VL.ViewConfig' and 'VL.SMCursor' to
 -- 'VL.SelectionMarkProperty'.
 --
+-- The legend configuration has been updated (to match Vega-Lite 4.0)
+-- with the addition of 'VL.LeSymbolLimit', 'VL.LeTickCount', 'VL.LeTitleLineHeight',
+-- and 'VL.LeUnselectedOpacity' constructors.
+--
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.FontStyle' (Vega-Lite 4.3),

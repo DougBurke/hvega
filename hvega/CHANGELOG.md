@@ -68,6 +68,10 @@ Cursor handling has been enhanced (to match Vega-Lite 4.1):
 `ViewCursor` has been added to `ViewConfig` and `SMCursor` to
 `SelectionMarkProperty`.
 
+The legend configuration has been updated (to match Vega-Lite 4.0)
+with the addition of `LeSymbolLimit`, `LeTickCount`, `LeTitleLineHeight`,
+and `LeUnselectedOpacity` constructors.
+
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
 `ErrorBarStyle`, `FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`,
