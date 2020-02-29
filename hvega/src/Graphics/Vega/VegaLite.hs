@@ -1056,7 +1056,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0600
--- The @0.6.0.0@ release updates @hvega@ to support version 4.2 of
+-- The @0.6.0.0@ release updates @hvega@ to support version 4.3 of
 -- the Vega-Lite schema.
 --
 -- __New functionality__
@@ -1106,7 +1106,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- constructor.
 --
 -- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
--- for asymmetric diverging color scales.
+-- for asymmetric diverging color scales. The 'VL.ScaleDomain' type has
+-- gained the 'VL.DUnionWith' option from Vega-Lite v4.3.
 --
 -- Labels can now be vertically aligned to their baseline with the
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.
@@ -1125,9 +1126,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
--- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.HeaderColumnStyle',
--- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle', 'VL.ImageStyle', and
--- 'VL.RepeatStyle'.
+-- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.FontStyle' (Vega-Lite 4.3),
+-- 'VL.HeaderColumnStyle', 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle',
+-- 'VL.ImageStyle', and 'VL.RepeatStyle'.
 --
 -- The @Autosize@, @Background@, @CountTitle@, @FieldTitle@,
 -- @Legend@, @NumberFormat@, @Padding@, @Projection@, @Range@,

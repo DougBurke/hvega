@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Scale
-Copyright   : (c) Douglas Burke, 2018-2019
+Copyright   : (c) Douglas Burke, 2018-2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -57,14 +57,29 @@ data ScaleDomain
       -- ^ Date-time values that define a scale domain.
     | DSelection T.Text
       -- ^ Scale domain based on a named interactive selection.
+    | DUnionWith ScaleDomain
+      -- ^ Combine the domain of the data with the provided domain.
+      --
+      --   The following example will use a range of at least 0 to 100,
+      --   but this will be increased if the data (either initially or
+      --   via any updates to the Vege-Lite visualization) exceeds this:
+      --
+      --   @'Graphics.Vega.VegaLite.PScale' ['Graphics.Vega.VegaLite.SDomain' (DUnionWith ('DNumbers' [0, 100]))]@
+      --
+      --   Note that 'DUnionWith' should not be nested, but this
+      --   is not enforced by @hvega@.
+      --
+      --   @since 0.6.0.0
     | Unaggregated
-    -- ^ Specify an unaggregated scale domain (type of data in scale).
+    -- ^ Indicate that a domain of aggregated data should be scaled to
+    --   the domain of the data prior to aggregation.
 
 scaleDomainSpec :: ScaleDomain -> VLSpec
 scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
 scaleDomainSpec (DDateTimes dts) = toJSON (map (object . map dateTimeProperty) dts)
 scaleDomainSpec (DStrings cats) = toJSON (map toJSON cats)
 scaleDomainSpec (DSelection selName) = object ["selection" .= selName]
+scaleDomainSpec (DUnionWith sd) = object ["unionWith" .= scaleDomainSpec sd]
 scaleDomainSpec Unaggregated = "unaggregated"
 
 

@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.6.0.0
 
-The Vega-Lite tests are now validated against version 4.2.0 of the
+The Vega-Lite tests are now validated against version 4.3 of the
 Vega-Lite schema.
 
 ### New functionality
@@ -49,8 +49,9 @@ be turned off with explicit `No` variants: `MNoBorders`, `MNoBox`,
 `MNoMedian`, `MNoRule`, and `MNoTicks`. These join the `MNoOutliers`
 constructor.
 
-The `ScaleProperty` type has gained `SDomainMid`, useful for asymmetric
-diverging color scales.
+The `ScaleProperty` type has gained `SDomainMid`, useful for
+asymmetric diverging color scales. The `ScaleDomain` type has gained
+the `DUnionWith` option from Vega-Lite v4.3.
 
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.
@@ -68,10 +69,9 @@ Cursor handling has been enhanced (to match Vega-Lite 4.1):
 `SelectionMarkProperty`.
 
 `ConfigurationProperty` has added new constructors:
-`AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`,
-`ErrorBandStyle`, `ErrorBarStyle`, `HeaderColumnStyle`,
-`HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and
-`RepeatStyle`.
+`AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
+`ErrorBarStyle`, `FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`,
+`HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and `RepeatStyle`.
 
 The `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
 `NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
