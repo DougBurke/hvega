@@ -154,3 +154,18 @@ data ScaleRange
     | RName T.Text
       -- ^ Name of a [pre-defined named scale range](https://vega.github.io/vega-lite/docs/scale.html#range-config)
       --   (e.g. \"symbol\" or \"diverging\").
+
+{-
+
+TODO:
+
+* ScaleRange
+
+RNumberLists [[Double]]
+
+This can be useful when defining custom dash styles for a
+'Graphics.Vega.VegaLite.strokeDash' channel encoding.
+
+* TickCount accepts number or TimeInterval but this is a subset of ScaleNice
+
+-}

@@ -24,34 +24,50 @@ testSpecs = [ ("legend1", legend1)
             , ("legend11d", legend11direct)
             , ("corners1", corners1)
             , ("corners2", corners2)
+            , ("limits1", limits 1)
+            , ("limits2", limits 2)
+            , ("limits3", limits 3)
             ]
+
+
+carsData :: Data
+carsData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+
+xHorse, yMPG :: BuildEncodingSpecs
+xHorse = position X [ PName "Horsepower", PmType Quantitative ]
+yMPG = position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+
+
+-- here we don't want [] to mean "no legend"
+noNull :: [LegendProperty] -> [MarkChannel]
+noNull [] = []
+noNull lps = [MLegend lps]
+
+origin, hp, weight :: [LegendProperty] -> [MarkChannel]
+origin lps = noNull lps ++ [ MName "Origin", MmType Nominal ]
+hp lps = noNull lps ++ [ MName "Horsepower", MmType Quantitative ]
+weight lps = noNull lps ++ [ MName "Weight_in_lbs", MmType Quantitative ]
+
 
 legendCore :: [LegendProperty] -> VegaLite
 legendCore legProps =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
+  let enc = encoding
+            . xHorse
+            . yMPG
+            . color (origin legProps)
+            . size (hp legProps)
+            . opacity (weight legProps)
 
-        enc =
-            encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
-                . color [ MName "Origin", MmType Nominal, MLegend legProps ]
-                . size [ MName "Horsepower", MmType Quantitative, MLegend legProps ]
-                . opacity [ MName "Weight_in_lbs", MmType Quantitative, MLegend legProps ]
-    in
-    toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
+  in toVegaLite [ width 300, height 300, carsData, enc [], mark Circle [] ]
+
 
 legendCoreCfg :: [LegendConfig] -> VegaLite
 legendCoreCfg cfg =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
-
-        enc =
+    let enc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+                . xHorse
+                . yMPG
                 . color [ MName "Origin", MmType Nominal ]
                 . size [ MName "Horsepower", MmType Quantitative ]
                 . opacity [ MName "Weight_in_lbs", MmType Quantitative ]
@@ -60,7 +76,7 @@ legendCoreCfg cfg =
         [ (configure . configuration (LegendStyle cfg)) []
         , width 300
         , height 300
-        , dataVals []
+        , carsData
         , enc []
         , mark Circle []
         ]
@@ -94,18 +110,14 @@ legend9 = legendCore [ LOrient LOTopLeft ]
 
 legend10 :: VegaLite
 legend10 =
-    let
-        dataVals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/cars.json"
-
-        enc =
+    let enc =
             encoding
-                . position X [ PName "Horsepower", PmType Quantitative ]
-                . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+                . xHorse
+                . yMPG
                 . color [ MName "Origin", MmType Nominal,
                           MLegend [ LOrient LONone, LeX 232, LeY 5 ] ]
     in
-    toVegaLite [ width 300, height 300, dataVals [], enc [], mark Circle [] ]
+    toVegaLite [ width 300, height 300, carsData, enc [], mark Circle [] ]
 
 -- change a number of items using the legend configure
 legend11 :: VegaLite
@@ -184,3 +196,32 @@ corners2 =
         , LLabelAlign AlignRight
         , LLabelOverlap OGreedy
         ]
+
+
+-- trying to combine symbollimit and unselectedopacity
+limits :: Int -> VegaLite
+limits n =
+  let enc = encoding
+            . xHorse
+            . yMPG
+            . shape (origin [])
+            . color (origin [])
+            . size [ MSelectionCondition (SelectionName "sel")
+                     [ MNumber 100 ]
+                     [ MNumber 20 ]
+                   ]
+
+      cfg = [ LeSymbolLimit n
+            , LeUnselectedOpacity 0.1 ]
+
+      selOpts = [ On "click"
+                , BindLegend (BLFieldEvent "Origin" "dblclick") ]
+
+  in toVegaLite [ width 300
+                , height 300
+                , configure (configuration (LegendStyle cfg) [])
+                , selection (select "sel" Multi selOpts [])
+                , carsData
+                , enc []
+                , mark Point [MFilled True]
+                ]

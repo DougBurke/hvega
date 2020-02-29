@@ -40,7 +40,6 @@ import qualified Data.Text as T
 
 import Data.Aeson ((.=), object)
 
-
 import Graphics.Vega.VegaLite.Core
   ( schemeProperty
   )
@@ -584,9 +583,15 @@ fieldTitleLabel Plain = "plain"
 
 {-|
 
-Legend configuration options, set with the 'Legend' constructor.
+Legend configuration options, set with the 'LegendStyle' constructor.
 For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
+
+In @0.6.0.0@ the following constructors were added (all from Vega-Lite 4.0):
+'LeSymbolLimit', 'LeTickCount', 'LeTitleLineHeight', and
+'LeUnselectedOpacity'.
+
+In @0.5.0.0@ the @LeShortTimeLabels@ constructor was removed (Vega-Lite 4.0).
 
 This data type has seen significant changes in the @0.4.0.0@ release:
 
@@ -599,8 +604,6 @@ This data type has seen significant changes in the @0.4.0.0@ release:
   example @Orient@ was changed to 'LeOrient');
 
 - and new constructors were added.
-
-In @0.5.0.0@ the @LeShortTimeLabels@ constructor was removed.
 
 -}
 
@@ -764,6 +767,11 @@ data LegendConfig
       -- ^ The color of the legend symbol.
       --
       --   @since 0.4.0.0
+    | LeSymbolLimit Int  -- it may be that negative entries allow you to say "drop last 2"
+      -- ^ The maximum number of allowed entries for a symbol legend. Any additional entries
+      --   will be dropped.
+      --
+      --   @since 0.6.0.0
     | LeSymbolOffset Double
       -- ^ The horizontal pixel offset for legend symbols.
       --
@@ -782,6 +790,10 @@ data LegendConfig
       -- ^ The width of the symbol's stroke.
     | LeSymbolType Symbol
       -- ^ The default shape type for legend symbols.
+    | LeTickCount Int
+      -- ^ The desired number of tick values for quantitative legends
+      --
+      --   @since0.6.0.0
     | LeTitle T.Text
       -- ^ The legend title.
       --
@@ -812,6 +824,10 @@ data LegendConfig
       -- ^ The font weight of the legend title.
     | LeTitleLimit Double
       -- ^ The maxmimum pixel width of the legend title.
+    | LeTitleLineHeight Double
+      -- ^ The line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.6.0.0
     | LeTitleOpacity Opacity
       -- ^ The opacity of the legend title.
       --
@@ -822,7 +838,12 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeTitlePadding Double
       -- ^ The padding, in pixels, between title and legend.
-
+    | LeUnselectedOpacity Opacity
+      -- ^ The opacity of unselected legend entries.
+      --
+      --   The default is 0.35.
+      --
+      --   @since 0.6.0.0
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
 legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
@@ -872,12 +893,14 @@ legendConfigProperty (LeSymbolDash xs) = "symbolDash" .= fromDS xs
 legendConfigProperty (LeSymbolDashOffset x) = "symbolDashOffset" .= x
 legendConfigProperty (LeSymbolDirection o) = "symbolDirection" .= orientationSpec o
 legendConfigProperty (LeSymbolFillColor s) = "symbolFillColor" .= fromColor s
+legendConfigProperty (LeSymbolLimit n) = "symbolLimit" .= n
 legendConfigProperty (LeSymbolOffset x) = "symbolOffset" .= x
 legendConfigProperty (LeSymbolOpacity x) = "symbolOpacity" .= x
 legendConfigProperty (LeSymbolSize x) = "symbolSize" .= x
 legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor s
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
+legendConfigProperty (LeTickCount n) = "tickCount" .= n
 legendConfigProperty (LeTitle s) = "title" .= s
 legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
@@ -889,9 +912,11 @@ legendConfigProperty (LeTitleFontSize x) = "titleFontSize" .= x
 legendConfigProperty (LeTitleFontStyle s) = "titleFontStyle" .= s
 legendConfigProperty (LeTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 legendConfigProperty (LeTitleLimit x) = "titleLimit" .= x
+legendConfigProperty (LeTitleLineHeight x) = "titleLineHeight" .= x
 legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
 legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
+legendConfigProperty (LeUnselectedOpacity x) = "unselectedOpacity" .= x
 
 
 {-|
