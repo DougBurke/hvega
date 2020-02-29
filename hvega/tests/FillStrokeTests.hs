@@ -10,7 +10,7 @@
 --
 module FillStrokeTests (testSpecs) where
 
--- import qualified Data.Text as T
+import qualified Data.Text as T
 
 import Data.Aeson (Value)
 import Data.Aeson.QQ.Simple (aesonQQ)
@@ -38,6 +38,9 @@ testSpecs = [ ("default", defChart)
             , ("gradientr3", gradientr3)
             , ("vrounded", vrounded)
             , ("hrounded", hrounded)
+            , ("strokedash1", strokeDash1)
+            -- , ("strokedash2", strokeDash2)
+            , ("strokedash3", strokeDash3)
             ]
 
 encChart :: ([a] -> [EncodingSpec]) -> VegaLite
@@ -259,3 +262,248 @@ vrounded = rounded X Y
 
 hrounded :: VegaLite
 hrounded = rounded Y X
+
+
+stockData :: Data
+stockData = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+
+xDate, yPrice :: BuildEncodingSpecs
+xDate = position X [ PName "date", PmType Temporal ]
+yPrice = position Y [ PName "price", PmType Quantitative ]
+
+strokeDashTest :: [MarkChannel] -> VegaLite
+strokeDashTest sOpts =
+  let enc = encoding
+            . xDate
+            . yPrice
+            . strokeDash ([ MName "symbol", MmType Nominal ] ++ sOpts)
+
+      lineOpts = [MStrokeWidth 1, MOpacity 0.6]
+
+  in toVegaLite [ width 350, stockData, enc [], mark Line lineOpts ]
+
+
+strokeDash1 :: VegaLite
+strokeDash1 = strokeDashTest []
+
+{-
+strokeDash2 :: VegaLite
+strokeDash2 = strokeDashTest [ MScale
+                           [ SDomain (DStrings [ "AAPL", "AMZN", "GOOG", "IBM", "MSFT" ])
+                           , SRange (RNumLists [ [ 1, 0 ], [ 3, 1 ], [ 2, 3 ], [ 4, 4 ], [ 5, 6 ] ])
+                           ]
+                         ]
+-}
+
+pName :: T.Text -> PositionChannel
+pName = PName
+
+mName :: T.Text -> MarkChannel
+mName = MName
+
+pQuant :: PositionChannel
+pQuant = PmType Quantitative
+
+mNominal, mOrdinal :: MarkChannel
+mNominal = MmType Nominal
+mOrdinal = MmType Ordinal
+
+
+strokeDash3 :: VegaLite
+strokeDash3 =
+  let dvals = dataFromColumns []
+              . toCol "x" [ 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ]
+              . toCol "y" [ 100, 100, 90, 90, 80, 80, 70, 70, 60, 60, 50, 50, 40, 40, 30, 30, 20, 20, 10, 10 ]
+              . toCol "cat" [ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10 ]
+
+      toCol l = dataColumn l . Numbers
+
+      encBase = encoding
+                . position X [ pName "x", pQuant ]
+                . position Y [ pName "y", pQuant ]
+
+      enc1 = encBase
+             . strokeDash [ mName "cat", mNominal ]
+
+      spec1 = asSpec [ title "Nominal" [], width 200, enc1 [], mark Line [] ]
+
+      enc2 = encBase
+             . strokeDash [ mName "cat", mOrdinal ]
+
+      spec2 = asSpec [ title "Ordinal" [], width 200, enc2 [], mark Line [] ]
+
+      res = resolve
+            . resolution (RScale [ ( ChStrokeDash, Independent ) ])
+
+      cfg = configure
+            . configuration (Axis [NoTitle, Grid False])
+            . configuration (LineStyle [MStrokeWidth 1, MColor "orange", MOpacity 0.6])
+
+  in toVegaLite [ dvals [], cfg [], res [], vlConcat [ spec1, spec2 ] ]
+
+
+{-
+
+d0 : List Float
+d0 =
+    [ 1, 0 ]
+
+
+d1 : List Float
+d1 =
+    [ 16, 4 ]
+
+
+d2 : List Float
+d2 =
+    [ 10, 4 ]
+
+
+d3 : List Float
+d3 =
+    [ 8, 4 ]
+
+
+d4 : List Float
+d4 =
+    [ 8, 4, 4, 4 ]
+
+
+d5 : List Float
+d5 =
+    [ 6, 4 ]
+
+
+d6 : List Float
+d6 =
+    [ 5, 4 ]
+
+
+d7 : List Float
+d7 =
+    [ 4, 6 ]
+
+
+d8 : List Float
+d8 =
+    [ 2, 4 ]
+
+
+d9 : List Float
+d9 =
+    [ 1, 3 ]
+
+
+strokeDash4 : Spec
+strokeDash4 =
+    let
+        data =
+            dataFromColumns []
+                << dataColumn "x" (nums [ 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1 ])
+                << dataColumn "y" (nums [ 100, 100, 90, 90, 80, 80, 70, 70, 60, 60, 50, 50, 40, 40, 30, 30, 20, 20, 10, 10 ])
+                << dataColumn "cat" (nums [ 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10 ])
+
+        encBase =
+            encoding
+                << position X [ pName "x", pQuant, pAxis [ axTitle "", axGrid False ] ]
+                << position Y [ pName "y", pQuant, pAxis [ axTitle "", axGrid False ] ]
+
+        enc1 =
+            encBase
+                << strokeDash
+                    [ mName "cat"
+                    , mNominal
+                    , mScale
+                        [ scDomain (doNums [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ])
+                        , scRange (raNumLists [ d0, d6, d8, d4, d9, d1, d5, d3, d7, d2 ])
+                        ]
+                    ]
+
+        spec1 =
+            asSpec [ title "Nominal" [], width 200, height 100, enc1 [], line [] ]
+
+        enc2 =
+            encBase
+                << strokeDash
+                    [ mName "cat"
+                    , mOrdinal
+                    , mScale
+                        [ scDomain (doNums [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ])
+                        , scRange (raNumLists [ d0, d1, d2, d3, d4, d5, d6, d7, d8, d9 ])
+                        ]
+                    ]
+
+        spec2 =
+            asSpec [ title "Ordinal" [], width 200, height 100, enc2 [], line [] ]
+
+        res =
+            resolve
+                << resolution (reScale [ ( chStrokeDash, reIndependent ) ])
+    in
+    toVegaLite [ data [], res [], concat [ spec1, spec2 ] ]
+
+
+scaledStrokeDash : Float -> Spec
+scaledStrokeDash dashScale =
+    let
+        scaleDash sc =
+            List.map (List.map ((*) sc))
+
+        data =
+            dataSequenceAs 0 100 0.1 "x0"
+
+        trans =
+            transform
+                << calculateAs "abs(sin(datum.x0+random()))" "y0"
+                << calculateAs "datum.x0 %10" "x"
+                << calculateAs "floor(datum.x0 / 10)" "cat"
+                << calculateAs "datum.y0 + datum.cat" "y"
+
+        enc =
+            encoding
+                << position X [ pName "x", pQuant, pAxis [ axGrid False ] ]
+                << position Y [ pName "y", pQuant, pAxis [ axGrid False ] ]
+                << strokeDash
+                    [ mName "cat"
+                    , mOrdinal
+                    , mScale
+                        [ scDomain (doNums [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 ])
+                        , scRange (raNumLists (scaleDash dashScale [ d0, d1, d2, d3, d4, d5, d6, d7, d8, d9 ]))
+                        ]
+                    ]
+    in
+    toVegaLite
+        [ title ("Dash scale " ++ String.fromFloat dashScale) []
+        , width 300
+        , height 300
+        , data
+        , trans []
+        , enc []
+        , line []
+        ]
+
+
+strokeDash5 : Spec
+strokeDash5 =
+    scaledStrokeDash 0.2
+
+
+strokeDash6 : Spec
+strokeDash6 =
+    scaledStrokeDash 0.5
+
+
+strokeDash7 : Spec
+strokeDash7 =
+    scaledStrokeDash 1
+
+
+strokeDash8 : Spec
+strokeDash8 =
+    scaledStrokeDash 2
+
+
+strokeDash9 : Spec
+strokeDash9 =
+    scaledStrokeDash 4
+-}

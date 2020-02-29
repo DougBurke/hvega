@@ -8,7 +8,8 @@ Vega-Lite schema.
 
 ### New functionality
 
-New function for use with `encoding`: `strokeDash`.
+New function for use with `encoding`: `strokeDash`. The `ChStrokeDash`
+constructor has been added to the `Channel` type.
 
 ### Breaking changes
 

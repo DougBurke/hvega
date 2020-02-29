@@ -1033,6 +1033,11 @@ ttContentLabel TTNone = "null"
 
 
 -- | Indicates a channel type to be used in a resolution specification.
+--
+--   Used with the 'Resolve' type and the
+--   'Graphics.Vega.VegaLite.BLChannel', 'Graphics.Vega.VegaLite.BLChannelEvent',
+--   'Graphics.Vega.VegaLite.ByChannel', and 'Graphics.Vega.VegaLite.Encodings'
+--   constructors.
 
 -- assuming this is based on schema 3.3.0 #/definitions/SingleDefUnitChannel
 
@@ -1058,15 +1063,17 @@ data Channel
       -- ^ @since 0.4.0.0
     | ChKey
       -- ^ @since 0.4.0.0
+    | ChOpacity
+    | ChShape
+    | ChSize
     | ChStroke
       -- ^ @since 0.3.0.0
+    | ChStrokeDash
+      -- ^ @since 0.6.0.0
     | ChStrokeOpacity
       -- ^ @since 0.4.0.0
     | ChStrokeWidth
       -- ^ @since 0.4.0.0
-    | ChOpacity
-    | ChShape
-    | ChSize
     | ChText
       -- ^ @since 0.4.0.0
     | ChTooltip
@@ -1084,17 +1091,18 @@ channelLabel ChLongitude2 = "longitude2"
 channelLabel ChLatitude2 = "latitude2"
 channelLabel ChColor = "color"
 channelLabel ChFill = "fill"
-channelLabel ChStroke = "stroke"
-channelLabel ChStrokeWidth = "strokeWidth"
-channelLabel ChShape = "shape"
-channelLabel ChSize = "size"
 channelLabel ChFillOpacity = "fillOpacity"
-channelLabel ChStrokeOpacity = "strokeOpacity"
-channelLabel ChOpacity = "opacity"
-channelLabel ChText = "text"
-channelLabel ChTooltip = "tooltip"
 channelLabel ChHref = "href"
 channelLabel ChKey = "key"
+channelLabel ChOpacity = "opacity"
+channelLabel ChShape = "shape"
+channelLabel ChSize = "size"
+channelLabel ChStroke = "stroke"
+channelLabel ChStrokeDash = "strokeDash"
+channelLabel ChStrokeWidth = "strokeWidth"
+channelLabel ChStrokeOpacity = "strokeOpacity"
+channelLabel ChText = "text"
+channelLabel ChTooltip = "tooltip"
 
 
 {-|

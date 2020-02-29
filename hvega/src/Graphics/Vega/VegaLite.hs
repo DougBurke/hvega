@@ -1061,7 +1061,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __New functionality__
 --
--- New function for use with 'VL.encoding': 'VL.strokeDash'.
+-- New function for use with 'VL.encoding': 'VL.strokeDash'. The 'VL.ChStrokeDash'
+-- constructor has been added to the 'VL.Channel' type.
 --
 -- __Breaking Change__
 --
