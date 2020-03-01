@@ -149,6 +149,11 @@ data ScaleRange
       --   a two-element array indicating minimum and maximum values, or an array with more than
       --   two entries for specifying a
       --   [piecewise scale](https://vega.github.io/vega-lite/docs/scale.html#piecewise).
+    | RNumberLists [[Double]]
+      -- ^ A scale range comprising of numeric lists, such as custom dash styles for
+      --   the 'Graphics.Vega.VegaLite.strokeDash' channel encoding.
+      --
+      --   @since 0.6.0.0
     | RStrings [T.Text]
       -- ^ Text scale range for discrete scales.
     | RName T.Text
@@ -158,13 +163,6 @@ data ScaleRange
 {-
 
 TODO:
-
-* ScaleRange
-
-RNumberLists [[Double]]
-
-This can be useful when defining custom dash styles for a
-'Graphics.Vega.VegaLite.strokeDash' channel encoding.
 
 * TickCount accepts number or TimeInterval but this is a subset of ScaleNice
 
