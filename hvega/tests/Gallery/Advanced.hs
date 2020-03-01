@@ -372,7 +372,7 @@ advanced8 =
                 . configuration (ViewStyle [ ViewNoStroke ])
                 . configuration (AxisX [ Domain False, LabelAngle 0, TickColor "#ccc" ])
                 . configuration
-                    (NamedStyles
+                    (MarkNamedStyles
                         [ ( "label", [ MBaseline AlignMiddle, MAlign AlignRight, MdX (-5), MTooltip TTNone ] )
                         , ( "tick", [ MOrient Horizontal, MTooltip TTNone ] )
                         ]

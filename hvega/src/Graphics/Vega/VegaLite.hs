@@ -134,6 +134,7 @@ module Graphics.Vega.VegaLite
        , VL.GradientStops
        , VL.Opacity
        , VL.SelectionLabel
+       , VL.StyleLabel
        , VL.VegaExpr
        , VL.ZIndex
        , VL.toHtml
@@ -1065,6 +1066,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- constructor has been added to the 'VL.Channel' type, and 'VL.RNumberLists'
 -- (Vega-Lite 4.4) to 'VL.ScaleRange'.
 --
+-- The `VL.StyleLabel` type alias has been added to help the documentation, but
+-- provides no extra type safety.
+--
 -- __Breaking Change__
 --
 -- The 'VL.ConcatStyle' and 'VL.FacetStyle' constructors for
@@ -1142,14 +1146,21 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.HeaderColumnStyle', 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle',
 -- 'VL.ImageStyle', and 'VL.RepeatStyle'.
 --
--- The @Autosize@, @Background@, @CountTitle@, @FieldTitle@,
--- @Legend@, @NumberFormat@, @Padding@, @Projection@, @Range@,
--- @Scale@, @TimeFormat@, and @View@ constructors for
--- 'VL.ConfigurationProperty' are now deprecated, and are replaced by
--- 'VL.AutosizeStyle', 'VL.BackgroundStyle', 'VL.CountTitleStyle',
--- 'VL.FieldTitleStyle', 'VL.LegendStyle', 'VL.NumberFormatStyle',
--- 'VL.PaddingStyle', 'VL.ProjectionStyle', 'VL.RangeStyle',
--- 'VL.ScaleStyle', 'VL.TimeFormatStyle', and 'VL.ViewStyle' respectively.
+-- __Deprecated symbols__:
+--
+-- 'VL.ConfigurationProperty' has seen a large number of deprecations,
+-- as a number of constructors have been renamed:
+--
+-- * @NamedStyle@ and @NamedStyles@ have been replaced by 'VL.MarkNamedStyles';
+--
+-- * @Autosize@, @Background@, @CountTitle@, @FieldTitle@,
+--   @Legend@, @NumberFormat@, @Padding@, @Projection@, @Range@,
+--   @Scale@, @TimeFormat@, and @View@
+--   constructors have been replaced by
+--   'VL.AutosizeStyle', 'VL.BackgroundStyle', 'VL.CountTitleStyle',
+--   'VL.FieldTitleStyle', 'VL.LegendStyle', 'VL.NumberFormatStyle',
+--   'VL.PaddingStyle', 'VL.ProjectionStyle', 'VL.RangeStyle',
+--   'VL.ScaleStyle', 'VL.TimeFormatStyle', and 'VL.ViewStyle' respectively.
 
 -- $update0500
 -- The @0.5.0.0@ release now creates specifications using version 4
@@ -1569,7 +1580,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.ConfigurationProperty' type, used with 'VL.configuration', has
 -- gained 'VL.ConcatStyle', 'VL.FacetStyle', 'VL.GeoshapeStyle', 'VL.HeaderStyle',
--- 'VL.NamedStyles', and 'VL.TrailStyle' constructors.
+-- @NamedStyles@ (renamed to 'VL.MarkNamedStyles' in 0.6.0.0),
+-- and 'VL.TrailStyle' constructors.
 --
 -- The 'VL.ConcatConfig' type was added for use with the 'VL.ConcatStyle',
 -- and the 'VL.FacetConfig' type for the 'VL.FacetStyle'

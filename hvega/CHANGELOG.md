@@ -12,6 +12,9 @@ New function for use with `encoding`: `strokeDash`. The `ChStrokeDash`
 constructor has been added to the `Channel` type, and `RNumberLists`
 (Vega-Lite 4.4) to `ScaleRange`.
 
+The `StyleLabel` type alias has been added to help the documentation,
+but provides no extra type safety.
+
 ### Breaking changes
 
 The `ConcatStyle` and `FacetStyle` constructors for
@@ -86,14 +89,20 @@ the next version.
 `ErrorBarStyle`, `FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`,
 `HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and `RepeatStyle`.
 
-The `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
-`NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
-`TimeFormat`, and `View` constructors for `ConfigurationProperty` are
-now deprecated, and are replaced by `AutosizeStyle`,
-`BackgroundStyle`, `CountTitleStyle`, `FieldTitleStyle`,
-`LegendStyle`, `NUmberFormatStyle`, `PaddingStyle`, `ProjectionStyle`,
-`RangeStyle`, `ScaleStyle`, `TimeFormatStyle`, `ViewStyle`
-respectively.
+### Deprecated symbols
+
+`ConfigurationProperty` has seen a large number of deprecations, as a
+number of constructors have been renamed:
+
+ - The `NamedStyle` and `NamedStyles` have been replaced by `MarkNamedStyles`;
+
+ - `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
+   `NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
+   `TimeFormat`, and `View` constructors have been replaced by
+   `AutosizeStyle`, `BackgroundStyle`, `CountTitleStyle`,
+   `FieldTitleStyle`, `LegendStyle`, `NUmberFormatStyle`,
+   `PaddingStyle`, `ProjectionStyle`, `RangeStyle`, `ScaleStyle`,
+   `TimeFormatStyle`, `ViewStyle` respectively.
 
 ## 0.5.0.0
 

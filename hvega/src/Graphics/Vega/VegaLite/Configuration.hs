@@ -46,6 +46,7 @@ import Graphics.Vega.VegaLite.Core
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
   , Color
+  , StyleLabel
   , CompositionAlignment
   , DashStyle
   , DashOffset
@@ -171,6 +172,10 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 {-# DEPRECATED Scale "Please change Scale to ScaleStyle" #-}
 {-# DEPRECATED TimeFormat "Please change TimeFormat to TimeFormatStyle" #-}
 {-# DEPRECATED View "Please change View to ViewStyle" #-}
+
+{-# DEPRECATED NamedStyle "Please change Legend to MarkNamedStyles" #-}
+{-# DEPRECATED NamedStyles "Please change Legend to MarkNamedStyles" #-}
+
 data ConfigurationProperty
     = AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
@@ -297,12 +302,11 @@ data ConfigurationProperty
       -- ^ The default appearance of line marks.
     | MarkStyle [MarkProperty]
       -- ^ The default mark appearance.
-    | NamedStyle T.Text [MarkProperty]
-      -- ^ The default appearance of a single named style.
-    | NamedStyles [(T.Text, [MarkProperty])]
-      -- ^ The default appearance of a list of named styles.
+    | MarkNamedStyles [(StyleLabel, [MarkProperty])]
+      -- ^  Assign a set of mark styles to a label. These labels can then be referred
+      --    to when configuring a mark, such as with 'TStyle'.
       --
-      --   @since 0.4.0.0
+      --   @since 0.6.0.0
     | NumberFormatStyle T.Text
       -- ^ The default number formatting for axis and text labels, using
       --   [D3's number format pattern](https://github.com/d3/d3-format#locale_format).
@@ -414,6 +418,12 @@ data ConfigurationProperty
     | View [ViewConfig]
       -- ^ As of version @0.6.0.0@ this is deprecated and 'ViewStyle' should be used
       --   instead.
+    | NamedStyle StyleLabel [MarkProperty]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'MarkNamedStyles' should be
+      --   used instead.
+    | NamedStyles [(StyleLabel, [MarkProperty])]
+      -- ^ As of version @0.6.0.0@ this is deprecated and 'MarkNamedStyles' should be
+      --   used instead.
 
 
 toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
@@ -433,7 +443,6 @@ configProperty (AxisX acs) = toAxis "axisX" acs
 configProperty (AxisY acs) = toAxis "axisY" acs
 configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
-configProperty (MarkStyle mps) = mprops_ "mark" mps
 configProperty (BackgroundStyle bg) = "background" .= bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
@@ -453,10 +462,13 @@ configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
-configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
-configProperty (NamedStyles styles) =
+
+configProperty (MarkStyle mps) = mprops_ "mark" mps
+configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
+configProperty (MarkNamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
+
 configProperty (NumberFormatStyle fmt) = "numberFormat" .= fmt
 configProperty (PaddingStyle pad) = "padding" .= paddingSpec pad
 configProperty (PointStyle mps) = mprops_ "point" mps
@@ -490,6 +502,11 @@ configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
 configProperty (TimeFormat fmt) = "timeFormat" .= fmt
 configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
+
+configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
+configProperty (NamedStyles styles) =
+  let toStyle = uncurry mprops_
+  in "style" .= object (map toStyle styles)
 
 {-|
 
@@ -1513,9 +1530,9 @@ data TitleConfig
       -- ^ Default offset, in pixels, of titles relative to the chart body.
     | TOrient Side
       -- ^ Default placement of titles relative to the chart body.
-    | TStyle [T.Text]
+    | TStyle [StyleLabel]
       -- ^ A list of named styles to apply. A named style can be specified
-      --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
+      --   via 'Graphics.Vega.VegaLite.MarkNamedStyles'. Later styles in the list will
       --   override earlier ones if there is a conflict in any of the
       --   properties.
       --
@@ -1580,7 +1597,7 @@ titleConfigSpec (TLimit x) = "limit" .= x
 titleConfigSpec (TLineHeight x) = "lineHeight" .= x
 titleConfigSpec (TOffset x) = "offset" .= x
 titleConfigSpec (TOrient sd) = "orient" .= sideLabel sd
-titleConfigSpec (TStyle [style]) = "style" .= style  -- not really needed
+titleConfigSpec (TStyle [style]) = "style" .= style  -- minor simplification
 titleConfigSpec (TStyle styles) = "style" .= styles
 titleConfigSpec (TSubtitle s) = "subtitle" .= splitOnNewline s
 titleConfigSpec (TSubtitleColor s) = "subtitleColor" .= fromColor s
