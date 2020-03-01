@@ -41,7 +41,7 @@ pName :: T.Text -> PositionChannel
 pName = PName
 
 
-simpleData :: [DataColumn] -> Data
+simpleData :: Data
 simpleData =
   let xvals = map fromIntegral xs
       xs = [1::Int .. 100]
@@ -49,9 +49,10 @@ simpleData =
        . dataColumn "x" (Numbers xvals)
        . dataColumn "catX" (Strings (map (T.pack . show) xs))
        . dataColumn "y" (Numbers xvals)
+       $ []
 
 
-temporalData :: [DataColumn] -> Data
+temporalData ::  Data
 temporalData =
   let dates = [ "2019-01-01 09:00:00"
               , "2019-01-02 09:00:00"
@@ -72,99 +73,47 @@ temporalData =
   in dataFromColumns []
      . dataColumn "date" (Strings dates)
      . dataColumn "y" (Numbers xs)
+     $ []
+
+xQuant, yQuant, catX, xDate :: [PositionChannel]
+xQuant = [pName "x", pQuant]
+yQuant = [pName "y", pQuant]
+catX = [pName "catX", pOrdinal]
+xDate = [pName "date", pTemporal]
 
 
-axis1 :: VegaLite
-axis1 =
-  let enc = encoding
-              . position X [ pName "x", pQuant ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
+axisBase :: Data -> [PositionChannel] -> [PositionChannel] -> VegaLite
+axisBase plotData xOpts yOpts =
+  let enc = encoding . position X xOpts . position Y yOpts
+
+  in toVegaLite [ plotData, enc [], mark Line [ MPoint (PMMarker []) ] ]
 
 
-axis2 :: VegaLite
-axis2 =
-  let enc = encoding
-              . position X [ pName "catX", pOrdinal ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis3 :: VegaLite
-axis3 =
-  let enc = encoding
-              . position X [ pName "date", pTemporal ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis4 :: VegaLite
+axis1, axis2, axis3, axis4, axis5, axis6, axis7, axis8 :: VegaLite
+axis1 = axisBase simpleData xQuant yQuant
+axis2 = axisBase simpleData catX yQuant
+axis3 = axisBase simpleData xDate yQuant
 axis4 =
-  let enc = encoding
-              . position X [ pName "x"
-                           , pQuant
-                           , PAxis [AxValues (Numbers [1, 25, 39, 90])]
-                           ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis5 :: VegaLite
+  let x = PAxis [AxValues (Numbers [1, 25, 39, 90])] : xQuant
+  in axisBase simpleData x yQuant
 axis5 =
-  let enc = encoding
-              . position X [ pName "catX"
-                           , pOrdinal
-                           , PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])]
-                           ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis6 :: VegaLite
+  let x = PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])] : catX
+  in axisBase simpleData x yQuant
 axis6 =
-  let enc = encoding
-              . position X [ pName "date"
-                           , pTemporal
-                           , PAxis [AxValues (DateTimes axDates)]
-                           ]
-              . position Y [ pName "y", pQuant ]
+  let x = PAxis [AxValues (DateTimes axDates)] : xDate
 
       axDates = [ [DTYear 2019, DTMonth Jan, DTDate 4 ]
                 , [DTYear 2019, DTMonth Jan, DTDate 8 ]
                 , [DTYear 2019, DTMonth Jan, DTDate 20 ]
                 ]
                 
-  in 
-    toVegaLite [ temporalData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis7 :: VegaLite
+  in axisBase temporalData x yQuant
 axis7 =
-  let enc = encoding
-              . position X [ pName "x"
-                           , pQuant
-                           , PAxis [AxLabelExpr "datum.value / 100"]
-                           ]
-              . position Y [ pName "y", pQuant ]
-  in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis8 :: VegaLite
+  let x = PAxis [AxLabelExpr "datum.value / 100"] : xQuant
+  in axisBase simpleData x yQuant
 axis8 =
-  let enc = encoding
-              . position X [ pName "catX"
-                           , pOrdinal
-                           , PAxis [AxLabelExpr "'number' + datum.label"]
-                           ]
-              . position Y [ pName "y", pQuant ]
-  in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
+  let x = PAxis [AxLabelExpr "'number' + datum.label"] : catX
+  in axisBase simpleData x yQuant
 
 
 overlap :: OverlapStrategy -> VegaLite
@@ -228,7 +177,7 @@ responsive prop =
             . position X [PName "x", PmType Quantitative]
             . position Y [PName "y", PmType Quantitative]
 
-  in toVegaLite [ prop, simpleData [], enc []
+  in toVegaLite [ prop, simpleData, enc []
                 , mark Line [MPoint (PMMarker [])] ]
 
 responsiveWidth, responsiveHeight :: VegaLite
