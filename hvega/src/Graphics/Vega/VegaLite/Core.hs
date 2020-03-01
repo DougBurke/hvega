@@ -778,6 +778,7 @@ scaleProperty (SPadding x) = "padding" .= x
 scaleProperty (SPaddingInner x) = "paddingInner" .= x
 scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
 scaleProperty (SRange (RNumbers xs)) = "range" .= xs
+scaleProperty (SRange (RNumberLists xss)) = "range" .= xss
 scaleProperty (SRange (RStrings ss)) = "range" .= ss
 scaleProperty (SRange (RName s)) = "range" .= s
 scaleProperty (SRound b) = "round" .= b

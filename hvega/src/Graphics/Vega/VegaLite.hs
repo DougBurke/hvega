@@ -1056,13 +1056,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0600
--- The @0.6.0.0@ release updates @hvega@ to support version 4.3 of
+-- The @0.6.0.0@ release updates @hvega@ to support version 4.4 of
 -- the Vega-Lite schema.
 --
 -- __New functionality__
 --
 -- New function for use with 'VL.encoding': 'VL.strokeDash'. The 'VL.ChStrokeDash'
--- constructor has been added to the 'VL.Channel' type.
+-- constructor has been added to the 'VL.Channel' type, and 'VL.RNumberLists'
+-- (Vega-Lite 4.4) to 'VL.ScaleRange'.
 --
 -- __Breaking Change__
 --

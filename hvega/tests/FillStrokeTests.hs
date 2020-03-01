@@ -39,7 +39,7 @@ testSpecs = [ ("default", defChart)
             , ("vrounded", vrounded)
             , ("hrounded", hrounded)
             , ("strokedash1", strokeDash1)
-            -- , ("strokedash2", strokeDash2)
+            , ("strokedash2", strokeDash2)
             , ("strokedash3", strokeDash3)
             ]
 
@@ -286,14 +286,12 @@ strokeDashTest sOpts =
 strokeDash1 :: VegaLite
 strokeDash1 = strokeDashTest []
 
-{-
 strokeDash2 :: VegaLite
 strokeDash2 = strokeDashTest [ MScale
                            [ SDomain (DStrings [ "AAPL", "AMZN", "GOOG", "IBM", "MSFT" ])
-                           , SRange (RNumLists [ [ 1, 0 ], [ 3, 1 ], [ 2, 3 ], [ 4, 4 ], [ 5, 6 ] ])
+                           , SRange (RNumberLists [ [ 1, 0 ], [ 3, 1 ], [ 2, 3 ], [ 4, 4 ], [ 5, 6 ] ])
                            ]
                          ]
--}
 
 pName :: T.Text -> PositionChannel
 pName = PName
