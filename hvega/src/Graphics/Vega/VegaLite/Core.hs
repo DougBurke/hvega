@@ -1306,6 +1306,10 @@ data AxisProperty
       -- ^ The maximum width of a label, in pixels.
       --
       --   @since 0.4.0.0
+    | AxLabelOffset Double
+      -- ^ The pixel offset for labels, in addition to 'AxTickOffset'.
+      --
+      --   @since 0.6.0.0
     | AxLabelOpacity Opacity
       -- ^ The opacity of the label.
       --
@@ -1370,6 +1374,8 @@ data AxisProperty
       --   @since 0.4.0.0
     | AxTickOffset Double
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
+      --
+      --   See also 'AxLabelOffset'.
       --
       --   @since 0.4.0.0
     | AxTickOpacity Opacity
@@ -1520,6 +1526,7 @@ axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
 axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
 axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisProperty (AxLabelLimit x) = "labelLimit" .= x
+axisProperty (AxLabelOffset x) = "labelOffset" .= x
 axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
 axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
 axisProperty (AxLabelPadding x) = "labelPadding" .= x

@@ -1130,6 +1130,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- with the addition of 'VL.LeSymbolLimit', 'VL.LeTickCount', 'VL.LeTitleLineHeight',
 -- and 'VL.LeUnselectedOpacity' constructors.
 --
+-- The axis configuration and property types ('VL.AxisConfig' and 'VL.AxisProperty')
+-- have gained the Vega-Lite 4.4 'VL.LabelOffset' and 'VL.AxLabelOffset' constructors.
+-- Note that version 4.4.0 of the Vega-Lite specification has these fields
+-- as strings but @hvega@ outputs numbers, as the specification was wrong
+-- and will be fixed in the next version.
+--
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
 -- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.FontStyle' (Vega-Lite 4.3),

@@ -1134,10 +1134,10 @@ for more details.
 
 This is used by 'ConfigurationProperty'.
 
+In @0.5.0.0@ the @ShortTimeLabels@ constructor was removed.
+
 The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 @TitleLimit@ constructor should be used instead.
-
-In @0.5.0.0@ the @ShortTimeLabels@ constructor was removed.
 
 -}
 data AxisConfig
@@ -1251,6 +1251,10 @@ data AxisConfig
       --   @since 0.4.0.0
     | LabelLimit Double
       -- ^ The maximum width of a label, in pixels.
+    | LabelOffset Double
+      -- ^ The pixel offset for labels, in addition to 'TickOffset'.
+      --
+      --   @since 0.6.0.0
     | LabelOpacity Opacity
       -- ^ The opacity of the label.
       --
@@ -1302,6 +1306,8 @@ data AxisConfig
       --   @since 0.4.0.0
     | TickOffset Double
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
+      --
+      --   See also 'LabelOffset'.
       --
       --   @since 0.4.0.0
     | TickOpacity Opacity
@@ -1390,6 +1396,7 @@ axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
 axisConfigProperty (LabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisConfigProperty (LabelLimit x) = "labelLimit" .= x
+axisConfigProperty (LabelOffset x) = "labelOffset" .= x
 axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat
 axisConfigProperty (LabelPadding pad) = "labelPadding" .= pad

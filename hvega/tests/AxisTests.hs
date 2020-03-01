@@ -13,13 +13,21 @@ import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("axis1", axis1)
+            , ("axis1c", axis1c)
             , ("axis2", axis2)
+            , ("axis2c", axis2c)
             , ("axis3", axis3)
+            , ("axis3c", axis3c)
             , ("axis4", axis4)
+            , ("axis4c", axis4c)
             , ("axis5", axis5)
+            , ("axis5c", axis5c)
             , ("axis6", axis6)
+            , ("axis6c", axis6c)
             , ("axis7", axis7)
+            , ("axis7c", axis7c)
             , ("axis8", axis8)
+            , ("axis8c", axis8c)
             , ("axisOverlapNone", axisOverlapNone)
             , ("axisOverlapParity", axisOverlapParity)
             , ("axisOverlapGreedy", axisOverlapGreedy)
@@ -82,23 +90,60 @@ catX = [pName "catX", pOrdinal]
 xDate = [pName "date", pTemporal]
 
 
-axisBase :: Data -> [PositionChannel] -> [PositionChannel] -> VegaLite
-axisBase plotData xOpts yOpts =
+axisBase :: Data -> [ConfigurationProperty] -> [PositionChannel] -> [PositionChannel] -> VegaLite
+axisBase plotData confOpts xOpts yOpts =
   let enc = encoding . position X xOpts . position Y yOpts
 
-  in toVegaLite [ plotData, enc [], mark Line [ MPoint (PMMarker []) ] ]
+      conf = case confOpts of
+               [] -> []
+               _ -> [configure (foldr configuration [] confOpts)]
+      vs = conf ++ [ plotData, enc [], mark Line [ MPoint (PMMarker []) ] ]
+
+  in toVegaLite vs
+
+plotCfg :: [ConfigurationProperty]
+plotCfg = [ AxisQuantitative [ DomainColor "orange"
+                             , GridColor "seagreen"
+                             , LabelFont "Comic Sans MS"
+                             , LabelOffset 10
+                             , TickOffset 10
+                             ]
+          , AxisTemporal [ DomainColor "brown"
+                         , DomainDash [4, 2]
+                         , Grid False
+                         , LabelColor "purple"
+                         ]
+          , PointStyle [ MStroke "black"
+                       , MStrokeOpacity 0.4
+                       , MStrokeWidth 1
+                       , MFill "yellow"
+                       ]
+          , LineStyle [ MStroke "gray"
+                      , MStrokeWidth 2
+                      ]
+          ]
 
 
-axis1, axis2, axis3, axis4, axis5, axis6, axis7, axis8 :: VegaLite
-axis1 = axisBase simpleData xQuant yQuant
-axis2 = axisBase simpleData catX yQuant
-axis3 = axisBase simpleData xDate yQuant
+axis1, axis1c, axis2, axis2c, axis3, axis3c, axis4, axis4c,
+  axis5, axis5c, axis6, axis6c, axis7, axis7c, axis8, axis8c :: VegaLite
+axis1 = axisBase simpleData [] xQuant yQuant
+axis1c = axisBase simpleData plotCfg xQuant yQuant
+axis2 = axisBase simpleData [] catX yQuant
+axis2c = axisBase simpleData plotCfg catX yQuant
+axis3 = axisBase simpleData [] xDate yQuant
+axis3c = axisBase simpleData plotCfg xDate yQuant
 axis4 =
   let x = PAxis [AxValues (Numbers [1, 25, 39, 90])] : xQuant
-  in axisBase simpleData x yQuant
+  in axisBase simpleData [] x yQuant
+axis4c =
+  let x = PAxis [AxValues (Numbers [1, 25, 39, 90])] : xQuant
+  in axisBase simpleData plotCfg x yQuant
 axis5 =
   let x = PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])] : catX
-  in axisBase simpleData x yQuant
+  in axisBase simpleData [] x yQuant
+axis5c =
+  let x = PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])] : catX
+  in axisBase simpleData plotCfg x yQuant
 axis6 =
   let x = PAxis [AxValues (DateTimes axDates)] : xDate
 
@@ -106,14 +151,29 @@ axis6 =
                 , [DTYear 2019, DTMonth Jan, DTDate 8 ]
                 , [DTYear 2019, DTMonth Jan, DTDate 20 ]
                 ]
-                
-  in axisBase temporalData x yQuant
+
+  in axisBase temporalData [] x yQuant
+axis6c =
+  let x = PAxis [AxValues (DateTimes axDates)] : xDate
+
+      axDates = [ [DTYear 2019, DTMonth Jan, DTDate 4 ]
+                , [DTYear 2019, DTMonth Jan, DTDate 8 ]
+                , [DTYear 2019, DTMonth Jan, DTDate 20 ]
+                ]
+
+  in axisBase temporalData plotCfg x yQuant
 axis7 =
   let x = PAxis [AxLabelExpr "datum.value / 100"] : xQuant
-  in axisBase simpleData x yQuant
+  in axisBase simpleData [] x yQuant
+axis7c =
+  let x = PAxis [AxLabelExpr "datum.value / 100"] : xQuant
+  in axisBase simpleData plotCfg x yQuant
 axis8 =
   let x = PAxis [AxLabelExpr "'number' + datum.label"] : catX
-  in axisBase simpleData x yQuant
+  in axisBase simpleData [] x yQuant
+axis8c =
+  let x = PAxis [AxLabelExpr "'number' + datum.label"] : catX
+  in axisBase simpleData plotCfg x yQuant
 
 
 overlap :: OverlapStrategy -> VegaLite

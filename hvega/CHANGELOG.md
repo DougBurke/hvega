@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.6.0.0
 
-The Vega-Lite tests are now validated against version 4.3 of the
+The Vega-Lite tests are now validated against version 4.4 of the
 Vega-Lite schema.
 
 ### New functionality
@@ -73,6 +73,13 @@ Cursor handling has been enhanced (to match Vega-Lite 4.1):
 The legend configuration has been updated (to match Vega-Lite 4.0)
 with the addition of `LeSymbolLimit`, `LeTickCount`, `LeTitleLineHeight`,
 and `LeUnselectedOpacity` constructors.
+
+The axis configuration and property types (`AxisConfig` and
+`AxisProperty`) have gained the Vega-Lite 4.4 `LabelOffset` and
+`AxLabelOffset` constructors.  Note that version 4.4.0 of the
+Vega-Lite specification has these fields as strings but `hvega`
+outputs numbers, as the specification was wrong and will be fixed in
+the next version.
 
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
