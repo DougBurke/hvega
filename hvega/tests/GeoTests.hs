@@ -478,7 +478,7 @@ mapComp3 =
     in
     toVegaLite
         [ noStroke
-        , hConcat [ rotatedSpec (-65), rotatedSpec 115, rotatedSpec (-65) ]
+        , hConcat [ rotatedSpec (-65), rotatedSpec 115, rotatedSpec 10 ]
         ]
 
 
