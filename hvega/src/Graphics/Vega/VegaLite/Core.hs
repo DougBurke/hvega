@@ -159,9 +159,10 @@ module Graphics.Vega.VegaLite.Core
        , configure
 
        -- not for external export
-       , schemeProperty
        , autosizeProperty
+       , axisProperty
        , paddingSpec
+       , schemeProperty
 
        )
     where
@@ -195,6 +196,7 @@ import Graphics.Vega.VegaLite.Foundation
   , DashOffset
   , FieldName
   , Opacity
+  , StyleLabel
   , VegaExpr
   , ZIndex
   , FontWeight
@@ -1306,6 +1308,10 @@ data AxisProperty
       -- ^ The maximum width of a label, in pixels.
       --
       --   @since 0.4.0.0
+    | AxLabelOffset Double
+      -- ^ The pixel offset for labels, in addition to 'AxTickOffset'.
+      --
+      --   @since 0.6.0.0
     | AxLabelOpacity Opacity
       -- ^ The opacity of the label.
       --
@@ -1333,6 +1339,11 @@ data AxisProperty
       -- ^ The orientation of the axis.
     | AxPosition Double
       -- ^ The anchor position of the axis in pixels.
+    | AxStyle [StyleLabel]
+      -- ^ The named styles - generated with 'Graphics.Vega.VegaLite.AxisNamedStyles' -
+      --   to apply to the axis.
+      --
+      --   @since 0.6.0.0
     | AxTicks Bool
       -- ^ Should tick marks be drawn on an axis?
     | AxTickBand BandAlign
@@ -1370,6 +1381,8 @@ data AxisProperty
       --   @since 0.4.0.0
     | AxTickOffset Double
       -- ^ The position offset, in pixels, to apply to ticks, labels, and grid lines.
+      --
+      --   See also 'AxLabelOffset'.
       --
       --   @since 0.4.0.0
     | AxTickOpacity Opacity
@@ -1478,6 +1491,9 @@ data AxisProperty
 
 
 axisProperty :: AxisProperty -> LabelledSpec
+axisProperty (AxStyle [s]) = "style" .= s
+axisProperty (AxStyle s) = "style" .= s
+
 axisProperty (AxBandPosition x) = "bandPosition" .= x
 axisProperty (AxDataCondition predicate cap) =
   let (ifAxProp, elseAxProp) = conditionalAxisProperty cap
@@ -1520,6 +1536,7 @@ axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
 axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
 axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisProperty (AxLabelLimit x) = "labelLimit" .= x
+axisProperty (AxLabelOffset x) = "labelOffset" .= x
 axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
 axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
 axisProperty (AxLabelPadding x) = "labelPadding" .= x

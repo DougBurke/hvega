@@ -56,7 +56,10 @@ label1 =
             asSpec [ mark Text [ MStyle [ "label" ] ], encoding (text [ TName "b", TmType Quantitative ] []) ]
 
         config =
-            configure . configuration (NamedStyle "label" [ MAlign AlignLeft, MBaseline AlignMiddle, MdX 3 ])
+            configure . configuration (MarkNamedStyles [( "label"
+                                                        , [ MAlign AlignLeft, MBaseline AlignMiddle, MdX 3 ])
+                                                       ])
+
     in
     toVegaLite [ des, dvals [], enc [], layer [ specBar, specText ], config [] ]
 
@@ -440,7 +443,7 @@ label9 =
 
       cfg = noStroke
             . configuration
-                    (NamedStyles
+                    (MarkNamedStyles
                         [ ( "arrow-label", [ MdY 12, MFontSize 9.5 ] )
                         , ( "arrow-label2", [ MdY 24, MFontSize 9.5 ] )
                         ]
@@ -728,7 +731,7 @@ voyager =
                     $ []
                   ]
 
-      styles = NamedStyles
+      styles = MarkNamedStyles
                    [ ("arrow-label", [MdY 12, MFontSize 9.5])
                    , ("arrow-label2", [MdY 24, MFontSize 9.5])
                    ]

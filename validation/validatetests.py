@@ -14,7 +14,7 @@ subdirectory in it).
 
 This requires access to the Python jsonschema package [1]_.
 
-Expected failures (from testing against the Vega-Lite 3.4.0 schema)
+Expected failures (i.e. "known" or "expected" differences)
 are noted but not reported; only "new" failures are reported.
 
 References:
@@ -91,6 +91,10 @@ colorFails = [
     'interp5.vl'
     ]
 
+# invalid labelOffset VL specification (string, not number) in VL4.4.0
+# - should go away soon
+labelOffsetFails = ['axis{}c.vl'.format(n) for n in range(1, 9)]
+
 def process(schema):
 
     nfound = 0
@@ -119,6 +123,11 @@ def process(schema):
                     allowed = deque(['encoding', 'fill'])
                 elif infile == 'stroke1.vl':
                     allowed = deque(['encoding', 'stroke'])
+
+            elif root == 'tests/specs/axis':
+                # Should be fixed in next release after 4.0.0
+                if infile in labelOffsetFails:
+                    allowed = deque(['config', 'axisQuantitative', 'labelOffset'])
 
             fullname = os.path.join(root, infile)
             js = read_json(fullname)

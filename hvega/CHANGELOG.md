@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.6.0.0
 
-The Vega-Lite tests are now validated against version 4.3 of the
+The Vega-Lite tests are now validated against version 4.4 of the
 Vega-Lite schema.
 
 ### New functionality
@@ -11,6 +11,14 @@ Vega-Lite schema.
 New function for use with `encoding`: `strokeDash`. The `ChStrokeDash`
 constructor has been added to the `Channel` type, and `RNumberLists`
 (Vega-Lite 4.4) to `ScaleRange`.
+
+Named styles have been added for axes as well as marks. As mentioned
+below, this involves deprecating the previous constructors for naming
+styles, as there are now separate configuration options:
+`AxisNamedStyles` and `MarkNamedStyles`. The `AStyle` and `AxStyle`
+options have been added to `AxisConfig` and `AxisProperty`
+respectively.  The `StyleLabel` type alias has been added to help the
+documentation, but provides no extra type safety.
 
 ### Breaking changes
 
@@ -74,19 +82,32 @@ The legend configuration has been updated (to match Vega-Lite 4.0)
 with the addition of `LeSymbolLimit`, `LeTickCount`, `LeTitleLineHeight`,
 and `LeUnselectedOpacity` constructors.
 
+The axis configuration and property types (`AxisConfig` and
+`AxisProperty`) have gained the Vega-Lite 4.4 `LabelOffset` and
+`AxLabelOffset` constructors.  Note that version 4.4.0 of the
+Vega-Lite specification has these fields as strings but `hvega`
+outputs numbers, as the specification was wrong and will be fixed in
+the next version.
+
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
 `ErrorBarStyle`, `FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`,
 `HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and `RepeatStyle`.
 
-The `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
-`NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
-`TimeFormat`, and `View` constructors for `ConfigurationProperty` are
-now deprecated, and are replaced by `AutosizeStyle`,
-`BackgroundStyle`, `CountTitleStyle`, `FieldTitleStyle`,
-`LegendStyle`, `NUmberFormatStyle`, `PaddingStyle`, `ProjectionStyle`,
-`RangeStyle`, `ScaleStyle`, `TimeFormatStyle`, `ViewStyle`
-respectively.
+### Deprecated symbols
+
+`ConfigurationProperty` has seen a large number of deprecations, as a
+number of constructors have been renamed:
+
+ - The `NamedStyle` and `NamedStyles` have been replaced by `MarkNamedStyles`;
+
+ - `Autosize`, `Background`, `CountTitle`, `FieldTitle`, `Legend`,
+   `NumberFormat`, `Padding`, `Projection`, `Range`, `Scale`,
+   `TimeFormat`, and `View` constructors have been replaced by
+   `AutosizeStyle`, `BackgroundStyle`, `CountTitleStyle`,
+   `FieldTitleStyle`, `LegendStyle`, `NUmberFormatStyle`,
+   `PaddingStyle`, `ProjectionStyle`, `RangeStyle`, `ScaleStyle`,
+   `TimeFormatStyle`, `ViewStyle` respectively.
 
 ## 0.5.0.0
 

@@ -50,6 +50,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Cursor
   , FontWeight
   , Opacity
+  , StyleLabel
   , Orientation
   , StrokeCap
   , StrokeJoin
@@ -508,9 +509,10 @@ data MarkProperty
       -- ^ Stroke opacity of a mark in the range 0 to 1.
     | MStrokeWidth Double
       -- ^ Stroke width of a mark in pixels.
-    | MStyle [T.Text]
+    | MStyle [StyleLabel]
       -- ^ Names of custom styles to apply to a mark. Each should refer to a named style
-      --   defined in a separate style configuration.
+      --   defined in a separate style configuration (using
+      --   'Graphics.Vega.VegaLite.MarkNamedStyles').
     | MTension Double
       -- ^ Interpolation tension used when interpolating line and area marks.
     | MText T.Text

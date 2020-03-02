@@ -13,19 +13,31 @@ import Prelude hiding (filter)
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("axis1", axis1)
+            , ("axis1c", axis1c)
             , ("axis2", axis2)
+            , ("axis2c", axis2c)
             , ("axis3", axis3)
+            , ("axis3c", axis3c)
             , ("axis4", axis4)
+            , ("axis4c", axis4c)
             , ("axis5", axis5)
+            , ("axis5c", axis5c)
             , ("axis6", axis6)
+            , ("axis6c", axis6c)
             , ("axis7", axis7)
+            , ("axis7c", axis7c)
             , ("axis8", axis8)
+            , ("axis8c", axis8c)
             , ("axisOverlapNone", axisOverlapNone)
             , ("axisOverlapParity", axisOverlapParity)
             , ("axisOverlapGreedy", axisOverlapGreedy)
             , ("zorder", zorder)
             , ("responsiveWidth", responsiveWidth)
             , ("responsiveHeight", responsiveHeight)
+            , ("axisstyleempty", axisStyleEmpty)
+            , ("axisstyleemptyx", axisStyleEmptyX)
+            , ("axisstylex", axisStyleX)
+            , ("axisstylexy", axisStyleXY)
             ]
 
 
@@ -41,7 +53,7 @@ pName :: T.Text -> PositionChannel
 pName = PName
 
 
-simpleData :: [DataColumn] -> Data
+simpleData :: Data
 simpleData =
   let xvals = map fromIntegral xs
       xs = [1::Int .. 100]
@@ -49,9 +61,10 @@ simpleData =
        . dataColumn "x" (Numbers xvals)
        . dataColumn "catX" (Strings (map (T.pack . show) xs))
        . dataColumn "y" (Numbers xvals)
+       $ []
 
 
-temporalData :: [DataColumn] -> Data
+temporalData ::  Data
 temporalData =
   let dates = [ "2019-01-01 09:00:00"
               , "2019-01-02 09:00:00"
@@ -72,99 +85,99 @@ temporalData =
   in dataFromColumns []
      . dataColumn "date" (Strings dates)
      . dataColumn "y" (Numbers xs)
+     $ []
+
+xQuant, yQuant, catX, xDate :: [PositionChannel]
+xQuant = [pName "x", pQuant]
+yQuant = [pName "y", pQuant]
+catX = [pName "catX", pOrdinal]
+xDate = [pName "date", pTemporal]
 
 
-axis1 :: VegaLite
-axis1 =
-  let enc = encoding
-              . position X [ pName "x", pQuant ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
+axisBase :: Data -> [ConfigurationProperty] -> [PositionChannel] -> [PositionChannel] -> VegaLite
+axisBase plotData confOpts xOpts yOpts =
+  let enc = encoding . position X xOpts . position Y yOpts
+
+      conf = case confOpts of
+               [] -> []
+               _ -> [configure (foldr configuration [] confOpts)]
+      vs = conf ++ [ plotData, enc [], mark Line [ MPoint (PMMarker []) ] ]
+
+  in toVegaLite vs
+
+plotCfg :: [ConfigurationProperty]
+plotCfg = [ AxisQuantitative [ DomainColor "orange"
+                             , GridColor "seagreen"
+                             , LabelFont "Comic Sans MS"
+                             , LabelOffset 10
+                             , TickOffset 10
+                             ]
+          , AxisTemporal [ DomainColor "brown"
+                         , DomainDash [4, 2]
+                         , Grid False
+                         , LabelColor "purple"
+                         ]
+          , PointStyle [ MStroke "black"
+                       , MStrokeOpacity 0.4
+                       , MStrokeWidth 1
+                       , MFill "yellow"
+                       ]
+          , LineStyle [ MStroke "gray"
+                      , MStrokeWidth 2
+                      ]
+          ]
 
 
-axis2 :: VegaLite
-axis2 =
-  let enc = encoding
-              . position X [ pName "catX", pOrdinal ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis3 :: VegaLite
-axis3 =
-  let enc = encoding
-              . position X [ pName "date", pTemporal ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis4 :: VegaLite
+axis1, axis1c, axis2, axis2c, axis3, axis3c, axis4, axis4c,
+  axis5, axis5c, axis6, axis6c, axis7, axis7c, axis8, axis8c :: VegaLite
+axis1 = axisBase simpleData [] xQuant yQuant
+axis1c = axisBase simpleData plotCfg xQuant yQuant
+axis2 = axisBase simpleData [] catX yQuant
+axis2c = axisBase simpleData plotCfg catX yQuant
+axis3 = axisBase simpleData [] xDate yQuant
+axis3c = axisBase simpleData plotCfg xDate yQuant
 axis4 =
-  let enc = encoding
-              . position X [ pName "x"
-                           , pQuant
-                           , PAxis [AxValues (Numbers [1, 25, 39, 90])]
-                           ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis5 :: VegaLite
+  let x = PAxis [AxValues (Numbers [1, 25, 39, 90])] : xQuant
+  in axisBase simpleData [] x yQuant
+axis4c =
+  let x = PAxis [AxValues (Numbers [1, 25, 39, 90])] : xQuant
+  in axisBase simpleData plotCfg x yQuant
 axis5 =
-  let enc = encoding
-              . position X [ pName "catX"
-                           , pOrdinal
-                           , PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])]
-                           ]
-              . position Y [ pName "y", pQuant ]
-    in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis6 :: VegaLite
+  let x = PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])] : catX
+  in axisBase simpleData [] x yQuant
+axis5c =
+  let x = PAxis [AxValues (Strings ["1", "25", "39", "dummy", "90"])] : catX
+  in axisBase simpleData plotCfg x yQuant
 axis6 =
-  let enc = encoding
-              . position X [ pName "date"
-                           , pTemporal
-                           , PAxis [AxValues (DateTimes axDates)]
-                           ]
-              . position Y [ pName "y", pQuant ]
+  let x = PAxis [AxValues (DateTimes axDates)] : xDate
 
       axDates = [ [DTYear 2019, DTMonth Jan, DTDate 4 ]
                 , [DTYear 2019, DTMonth Jan, DTDate 8 ]
                 , [DTYear 2019, DTMonth Jan, DTDate 20 ]
                 ]
-                
-  in 
-    toVegaLite [ temporalData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
 
+  in axisBase temporalData [] x yQuant
+axis6c =
+  let x = PAxis [AxValues (DateTimes axDates)] : xDate
 
-axis7 :: VegaLite
+      axDates = [ [DTYear 2019, DTMonth Jan, DTDate 4 ]
+                , [DTYear 2019, DTMonth Jan, DTDate 8 ]
+                , [DTYear 2019, DTMonth Jan, DTDate 20 ]
+                ]
+
+  in axisBase temporalData plotCfg x yQuant
 axis7 =
-  let enc = encoding
-              . position X [ pName "x"
-                           , pQuant
-                           , PAxis [AxLabelExpr "datum.value / 100"]
-                           ]
-              . position Y [ pName "y", pQuant ]
-  in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
-
-
-axis8 :: VegaLite
+  let x = PAxis [AxLabelExpr "datum.value / 100"] : xQuant
+  in axisBase simpleData [] x yQuant
+axis7c =
+  let x = PAxis [AxLabelExpr "datum.value / 100"] : xQuant
+  in axisBase simpleData plotCfg x yQuant
 axis8 =
-  let enc = encoding
-              . position X [ pName "catX"
-                           , pOrdinal
-                           , PAxis [AxLabelExpr "'number' + datum.label"]
-                           ]
-              . position Y [ pName "y", pQuant ]
-  in
-    toVegaLite [ simpleData [], enc [], mark Line [ MPoint (PMMarker []) ] ]
+  let x = PAxis [AxLabelExpr "'number' + datum.label"] : catX
+  in axisBase simpleData [] x yQuant
+axis8c =
+  let x = PAxis [AxLabelExpr "'number' + datum.label"] : catX
+  in axisBase simpleData plotCfg x yQuant
 
 
 overlap :: OverlapStrategy -> VegaLite
@@ -228,9 +241,87 @@ responsive prop =
             . position X [PName "x", PmType Quantitative]
             . position Y [PName "y", PmType Quantitative]
 
-  in toVegaLite [ prop, simpleData [], enc []
+  in toVegaLite [ prop, simpleData, enc []
                 , mark Line [MPoint (PMMarker [])] ]
 
 responsiveWidth, responsiveHeight :: VegaLite
 responsiveWidth = responsive widthOfContainer
 responsiveHeight = responsive heightOfContainer
+
+
+carData :: Data
+carData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+
+carEnc :: [AxisProperty] -> [AxisProperty] -> PropertySpec
+carEnc xOpts yOpts =
+  let toAxis n l o = position n ([ PName l, PmType Quantitative ]
+                                 ++ if null o
+                                    then []
+                                    else [PAxis o])
+
+  in encoding
+     . toAxis X "Horsepower" xOpts
+     . toAxis Y "Miles_per_Gallon" yOpts
+     . color [ MName "Origin", MmType Nominal, MLegend [] ]
+     $ []
+
+axisStyleEmpty :: VegaLite
+axisStyleEmpty =
+  let cfg = configure
+            . configuration (AxisNamedStyles [])
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [] []
+                , mark Point []
+                ]
+
+axisStyleEmptyX :: VegaLite
+axisStyleEmptyX =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [])])
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] []
+                , mark Point []
+                ]
+
+
+axisStyleX :: VegaLite
+axisStyleX =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [ AxDomainColor "orange"
+                                                          , AxGridColor "lightgreen"
+                                                          , AxLabelExpr xexpr ])])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] []
+                , mark Point []
+                ]
+
+
+axisStyleXY :: VegaLite
+axisStyleXY =
+  let cfg = configure
+            . configuration (AxisNamedStyles [ ("x-style", [ AxDomainColor "orange"
+                                                           , AxGridColor "lightgreen"
+                                                           , AxLabelExpr xexpr ])
+                                             , ("y-style", [ AxDomain False
+                                                           , AxGrid False
+                                                           , AxLabels False
+                                                           , AxTicks False
+                                                           , AxNoTitle ])
+                                             ])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] [AxStyle ["y-style"]]
+                , mark Point []
+                ]

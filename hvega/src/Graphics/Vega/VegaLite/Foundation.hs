@@ -23,6 +23,7 @@ module Graphics.Vega.VegaLite.Foundation
        , DashOffset
        , FieldName
        , Opacity
+       , StyleLabel
        , VegaExpr
        , ZIndex
 
@@ -251,6 +252,23 @@ fully opaque (does not show anything it is on top of).
 
 type Opacity = Double
 
+
+{-|
+
+Convenience type-annotation to indicate a name, or label, that represents
+a set of mark or axis styles. The styles are generated with
+'Graphics.Vega.VegaLite.AxisNamedStyles' and
+'Graphics.Vega.VegaLite.MarkNamedStyles',
+and used with constructs such as
+'Graphics.Vega.VegaLite.AStyle',
+'Graphics.Vega.VegaLite.AxStyle',
+'Graphics.Vega.VegaLite.MStyle', and
+'Graphics.Vega.VegaLite.TStyle'.
+
+@since 0.6.0.0
+-}
+
+type StyleLabel = T.Text
 
 {-|
 
@@ -1340,9 +1358,9 @@ now take a 'Color' argument and new constructors - 'VBNoFill' and
 -}
 
 data ViewBackground
-    = VBStyle [T.Text]
+    = VBStyle [StyleLabel]
     -- ^ A list of named styles to apply. A named style can be specified
-    --   via 'Graphics.Vega.VegaLite.NamedStyle' or 'Graphics.Vega.VegaLite.NamedStyles'. Later styles in the list will
+    --   via 'Graphics.Vega.VegaLite.MarkNamedStyles'. Later styles in the list will
     --   override earlier ones if there is a conflict in any of the mark
     --   properties.
     | VBCornerRadius Double

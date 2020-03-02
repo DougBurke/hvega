@@ -398,7 +398,9 @@ bar12 =
                    ]
 
         config =
-            configure . configuration (NamedStyle "label" [ MAlign AlignLeft, MBaseline AlignMiddle, MdX 3 ])
+            configure . configuration (MarkNamedStyles
+                                       [( "label"
+                                        , [ MAlign AlignLeft, MBaseline AlignMiddle, MdX 3 ])])
     in
     toVegaLite [ des, dvals [], enc [], layer [ specBar, specText ], config [] ]
 

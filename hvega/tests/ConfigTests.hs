@@ -165,7 +165,7 @@ vbTest =
         cfg =
             configure
                 . configuration
-                    (NamedStyles
+                    (MarkNamedStyles
                         [ ( "myStyle", [ MFill "red", MFillOpacity 0.1, MStrokeOpacity 1 ] )
                         , ( "mySecondStyle", [ MFill "black", MStroke "blue" ] )
                         ]
