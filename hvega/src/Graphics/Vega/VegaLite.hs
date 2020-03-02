@@ -1066,6 +1066,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- constructor has been added to the 'VL.Channel' type, and 'VL.RNumberLists'
 -- (Vega-Lite 4.4) to 'VL.ScaleRange'.
 --
+-- Named styles have been added for axes as well as marks. As mentioned below,
+-- this involves deprecating the previous constructors for naming styles,
+-- as there are now separate configuration options: 'VL.AxisNamedStyles'
+-- and 'VL.MarkNamedStyles'. The 'VL.AStyle' and 'VL.AxStyle' options have been
+-- added to 'VL.AxisConfig' and 'VL.AxisProperty' respectively.
 -- The `VL.StyleLabel` type alias has been added to help the documentation, but
 -- provides no extra type safety.
 --

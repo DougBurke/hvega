@@ -34,6 +34,10 @@ testSpecs = [ ("axis1", axis1)
             , ("zorder", zorder)
             , ("responsiveWidth", responsiveWidth)
             , ("responsiveHeight", responsiveHeight)
+            , ("axisstyleempty", axisStyleEmpty)
+            , ("axisstyleemptyx", axisStyleEmptyX)
+            , ("axisstylex", axisStyleX)
+            , ("axisstylexy", axisStyleXY)
             ]
 
 
@@ -243,3 +247,81 @@ responsive prop =
 responsiveWidth, responsiveHeight :: VegaLite
 responsiveWidth = responsive widthOfContainer
 responsiveHeight = responsive heightOfContainer
+
+
+carData :: Data
+carData = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+
+carEnc :: [AxisProperty] -> [AxisProperty] -> PropertySpec
+carEnc xOpts yOpts =
+  let toAxis n l o = position n ([ PName l, PmType Quantitative ]
+                                 ++ if null o
+                                    then []
+                                    else [PAxis o])
+
+  in encoding
+     . toAxis X "Horsepower" xOpts
+     . toAxis Y "Miles_per_Gallon" yOpts
+     . color [ MName "Origin", MmType Nominal, MLegend [] ]
+     $ []
+
+axisStyleEmpty :: VegaLite
+axisStyleEmpty =
+  let cfg = configure
+            . configuration (AxisNamedStyles [])
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [] []
+                , mark Point []
+                ]
+
+axisStyleEmptyX :: VegaLite
+axisStyleEmptyX =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [])])
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] []
+                , mark Point []
+                ]
+
+
+axisStyleX :: VegaLite
+axisStyleX =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [ AxDomainColor "orange"
+                                                          , AxGridColor "lightgreen"
+                                                          , AxLabelExpr xexpr ])])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] []
+                , mark Point []
+                ]
+
+
+axisStyleXY :: VegaLite
+axisStyleXY =
+  let cfg = configure
+            . configuration (AxisNamedStyles [ ("x-style", [ AxDomainColor "orange"
+                                                           , AxGridColor "lightgreen"
+                                                           , AxLabelExpr xexpr ])
+                                             , ("y-style", [ AxDomain False
+                                                           , AxGrid False
+                                                           , AxLabels False
+                                                           , AxTicks False
+                                                           , AxNoTitle ])
+                                             ])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [AxStyle ["x-style"]] [AxStyle ["y-style"]]
+                , mark Point []
+                ]

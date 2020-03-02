@@ -159,9 +159,10 @@ module Graphics.Vega.VegaLite.Core
        , configure
 
        -- not for external export
-       , schemeProperty
        , autosizeProperty
+       , axisProperty
        , paddingSpec
+       , schemeProperty
 
        )
     where
@@ -195,6 +196,7 @@ import Graphics.Vega.VegaLite.Foundation
   , DashOffset
   , FieldName
   , Opacity
+  , StyleLabel
   , VegaExpr
   , ZIndex
   , FontWeight
@@ -1337,6 +1339,11 @@ data AxisProperty
       -- ^ The orientation of the axis.
     | AxPosition Double
       -- ^ The anchor position of the axis in pixels.
+    | AxStyle [StyleLabel]
+      -- ^ The named styles - generated with 'Graphics.Vega.VegaLite.AxisNamedStyles' -
+      --   to apply to the axis.
+      --
+      --   @since 0.6.0.0
     | AxTicks Bool
       -- ^ Should tick marks be drawn on an axis?
     | AxTickBand BandAlign
@@ -1484,6 +1491,9 @@ data AxisProperty
 
 
 axisProperty :: AxisProperty -> LabelledSpec
+axisProperty (AxStyle [s]) = "style" .= s
+axisProperty (AxStyle s) = "style" .= s
+
 axisProperty (AxBandPosition x) = "bandPosition" .= x
 axisProperty (AxDataCondition predicate cap) =
   let (ifAxProp, elseAxProp) = conditionalAxisProperty cap

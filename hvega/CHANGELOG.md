@@ -12,8 +12,13 @@ New function for use with `encoding`: `strokeDash`. The `ChStrokeDash`
 constructor has been added to the `Channel` type, and `RNumberLists`
 (Vega-Lite 4.4) to `ScaleRange`.
 
-The `StyleLabel` type alias has been added to help the documentation,
-but provides no extra type safety.
+Named styles have been added for axes as well as marks. As mentioned
+below, this involves deprecating the previous constructors for naming
+styles, as there are now separate configuration options:
+`AxisNamedStyles` and `MarkNamedStyles`. The `AStyle` and `AxStyle`
+options have been added to `AxisConfig` and `AxisProperty`
+respectively.  The `StyleLabel` type alias has been added to help the
+documentation, but provides no extra type safety.
 
 ### Breaking changes
 

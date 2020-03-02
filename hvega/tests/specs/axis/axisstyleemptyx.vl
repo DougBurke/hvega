@@ -1,0 +1,30 @@
+{
+    "config": {
+        "style": {
+            "x-style": {}
+        }
+    },
+    "mark": "point",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "Origin",
+            "type": "nominal",
+            "legend": null
+        },
+        "x": {
+            "field": "Horsepower",
+            "type": "quantitative",
+            "axis": {
+                "style": "x-style"
+            }
+        },
+        "y": {
+            "field": "Miles_per_Gallon",
+            "type": "quantitative"
+        }
+    }
+}

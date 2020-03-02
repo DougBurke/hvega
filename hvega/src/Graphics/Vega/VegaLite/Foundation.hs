@@ -257,9 +257,12 @@ type Opacity = Double
 
 Convenience type-annotation to indicate a name, or label, that represents
 a set of mark or axis styles. The styles are generated with
-'Graphics.Vega.VegaLite.MarkNamedStyles'
+'Graphics.Vega.VegaLite.AxisNamedStyles' and
+'Graphics.Vega.VegaLite.MarkNamedStyles',
 and used with constructs such as
-'Graphics.Vega.VegaLite.MStyle' and
+'Graphics.Vega.VegaLite.AStyle',
+'Graphics.Vega.VegaLite.AxStyle',
+'Graphics.Vega.VegaLite.MStyle', and
 'Graphics.Vega.VegaLite.TStyle'.
 
 @since 0.6.0.0

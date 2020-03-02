@@ -41,7 +41,9 @@ import qualified Data.Text as T
 import Data.Aeson ((.=), object)
 
 import Graphics.Vega.VegaLite.Core
-  ( schemeProperty
+  ( AxisProperty
+  , axisProperty
+  , schemeProperty
   )
 import Graphics.Vega.VegaLite.Foundation
   ( Angle
@@ -207,6 +209,12 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | AxisTemporal [AxisConfig]
       -- ^ The default appearance of temporal axes.
+      --
+      --   @since 0.6.0.0
+    | AxisNamedStyles [(StyleLabel, [AxisProperty])]
+      -- ^  Assign a set of axis styles to a label. These labels can then be referred
+      --    to when configuring an axis with 'Graphics.Vega.VegaLite.AxStyle' and
+      --    'AStyle'.
       --
       --   @since 0.6.0.0
     | BackgroundStyle Color
@@ -429,6 +437,9 @@ data ConfigurationProperty
 toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
 toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
 
+aprops_ :: T.Text -> [AxisProperty] -> LabelledSpec
+aprops_ f mps = f .= object (map axisProperty mps)
+
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (AreaStyle mps) = mprops_ "area" mps
@@ -443,6 +454,12 @@ configProperty (AxisX acs) = toAxis "axisX" acs
 configProperty (AxisY acs) = toAxis "axisY" acs
 configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
+
+-- configProperty (AxisNamedStyles [(nme, mps)]) = "style" .= object [aprops_ nme mps]
+configProperty (AxisNamedStyles styles) =
+  let toStyle = uncurry aprops_
+  in "style" .= object (map toStyle styles)
+
 configProperty (BackgroundStyle bg) = "background" .= bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
@@ -464,7 +481,7 @@ configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty 
 configProperty (LineStyle mps) = mprops_ "line" mps
 
 configProperty (MarkStyle mps) = mprops_ "mark" mps
-configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
+-- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
 configProperty (MarkNamedStyles styles) =
   let toStyle = uncurry mprops_
   in "style" .= object (map toStyle styles)
@@ -1158,7 +1175,12 @@ The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 
 -}
 data AxisConfig
-    = BandPosition Double
+    = AStyle [StyleLabel]
+      -- ^ The named styles - generated with 'AxisNamedStyles' - to apply to the
+      --   axis or axes.
+      --
+      --   @since 0.6.0.0
+    | BandPosition Double
       -- ^ The default axis band position.
     | Domain Bool
       -- ^ Should the axis domain be displayed?
@@ -1384,6 +1406,9 @@ data AxisConfig
 
 
 axisConfigProperty :: AxisConfig -> LabelledSpec
+axisConfigProperty (AStyle [s]) = "style" .= s
+axisConfigProperty (AStyle s) = "style" .= s
+
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Domain b) = "domain" .= b
 axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
