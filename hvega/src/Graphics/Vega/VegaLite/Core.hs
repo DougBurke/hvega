@@ -1619,6 +1619,10 @@ data ConditionalAxisProperty
     -- ^ Axis label font style.
   | CAxLabelFontWeight FontWeight FontWeight
     -- ^ Axis label font weight.
+  | CAxLabelOffset Double Double
+    -- ^ Axis label offset.
+    --
+    --  @since 0.6.0.0
   | CAxLabelOpacity Opacity Opacity
     -- ^ Axis label opacity.
   | CAxLabelPadding Double Double
@@ -1654,6 +1658,7 @@ conditionalAxisProperty (CAxLabelFont t f) = (AxLabelFont t, AxLabelFont f)
 conditionalAxisProperty (CAxLabelFontSize t f) = (AxLabelFontSize t, AxLabelFontSize f)
 conditionalAxisProperty (CAxLabelFontStyle t f) = (AxLabelFontStyle t, AxLabelFontStyle f)
 conditionalAxisProperty (CAxLabelFontWeight t f) = (AxLabelFontWeight t, AxLabelFontWeight f)
+conditionalAxisProperty (CAxLabelOffset t f) = (AxLabelOffset t, AxLabelOffset f)
 conditionalAxisProperty (CAxLabelOpacity t f) = (AxLabelOpacity t, AxLabelOpacity f)
 conditionalAxisProperty (CAxLabelPadding t f) = (AxLabelPadding t, AxLabelPadding f)
 conditionalAxisProperty (CAxTickColor t f) = (AxTickColor t, AxTickColor f)
