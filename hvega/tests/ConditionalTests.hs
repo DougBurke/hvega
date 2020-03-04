@@ -16,6 +16,7 @@ testSpecs = [ ("markCondition1", markCondition1)
             , ("axisCondition1", axisCondition1)
             , ("axisCondition2", axisCondition2)
             , ("axisCondition3", axisCondition3)
+            , ("axisconditionlabeloffset", axisConditionLabelOffset)
             , ("axisDateCondition1", axisDateCondition1)
             , ("selectionCondition1", selectionCondition1)
             , ("selectionCondition2", selectionCondition2)
@@ -145,6 +146,11 @@ axisCondition3 =
            , AxDataCondition (Expr "datum.label =='4.0'") (CAxLabelFontWeight Bold W100)
            , AxDataCondition (Expr "datum.value >=9") (CAxLabelOpacity 0.3 0.8)
            ]
+
+-- Vega Lite 4.5.0 or later
+axisConditionLabelOffset :: VegaLite
+axisConditionLabelOffset =
+  axisTest [ AxDataCondition (Expr "datum.value <= 5") (CAxLabelOffset 10 5) ]
 
 
 -- add a basic test of date handling (so that I can check the example given in the

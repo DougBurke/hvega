@@ -1057,7 +1057,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0600
--- The @0.6.0.0@ release updates @hvega@ to support version 4.4 of
+-- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of
 -- the Vega-Lite schema.
 --
 -- __New functionality__
@@ -1128,8 +1128,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and 'VL.HTitleLineHeight'.
 --
 -- Conditional axis ('VL.ConditionalAxisProperty') has gained the following
--- two constructors for features added in Vega-Lite v4.2:
--- 'VL.CAxLabelPadding' and 'VL.CAxTickSize'.
+-- constructors for features added in Vega-Lite v4.2 and v4.5:
+-- 'VL.CAxLabelOffset', 'VL.CAxLabelPadding', and 'VL.CAxTickSize'.
 --
 -- Cursor handling has been enhanced (to match Vega-Lite 4.1):
 -- 'VL.ViewCursor' has been added to 'VL.ViewConfig' and 'VL.SMCursor' to
@@ -1142,8 +1142,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The axis configuration and property types ('VL.AxisConfig' and 'VL.AxisProperty')
 -- have gained the Vega-Lite 4.4 'VL.LabelOffset' and 'VL.AxLabelOffset' constructors.
 -- Note that version 4.4.0 of the Vega-Lite specification has these fields
--- as strings but @hvega@ outputs numbers, as the specification was wrong
--- and will be fixed in the next version.
+-- as strings but this is fixed in version 4.5.0.
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
 -- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',

@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.6.0.0
 
-The Vega-Lite tests are now validated against version 4.4 of the
+The Vega-Lite tests are now validated against version 4.5 of the
 Vega-Lite schema.
 
 ### New functionality
@@ -71,8 +71,8 @@ Headers (`HeaderProperty`) have gained the following constructors:
 and `HTitleLineHeight`.
 
 Conditional axis (`ConditionalAxisProperty`) has gained the following
-two constructors for features added in Vega-Lite v4.2:
-`CAxLabelPadding` and `CAxTickSize`.
+constructors for features added in Vega-Lite v4.2 and v4.5:
+`CAxLabelOffset`, `CAxLabelPadding`, and `CAxTickSize`.
 
 Cursor handling has been enhanced (to match Vega-Lite 4.1):
 `ViewCursor` has been added to `ViewConfig` and `SMCursor` to
@@ -85,9 +85,8 @@ and `LeUnselectedOpacity` constructors.
 The axis configuration and property types (`AxisConfig` and
 `AxisProperty`) have gained the Vega-Lite 4.4 `LabelOffset` and
 `AxLabelOffset` constructors.  Note that version 4.4.0 of the
-Vega-Lite specification has these fields as strings but `hvega`
-outputs numbers, as the specification was wrong and will be fixed in
-the next version.
+Vega-Lite specification has these fields as strings but this is fixed
+in version 4.5.0.
 
 `ConfigurationProperty` has added new constructors:
 `AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
