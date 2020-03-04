@@ -142,9 +142,10 @@ In @version 0.6.0.0@:
   respectively. The axis configuration options have not been updated
   to this system.
 
-- new constructors have been added: 'AxisQuantitative', 'AxisTemporal',
-  'BoxplotStyle', 'ErrorBandStyle', 'ErrorBarStyle', 'HeaderColumnStyle',
-  'HeaderFacetStyle', 'HeaderRowStyle', 'ImageStyle', and 'RepeatStyle'.
+- new constructors have been added: 'AxisDiscrete', 'AxisPoint',
+  'AxisQuantitative', 'AxisTemporal', 'BoxplotStyle', 'ErrorBandStyle',
+  'ErrorBarStyle', 'HeaderColumnStyle', 'HeaderFacetStyle', 'HeaderRowStyle',
+  'ImageStyle', and 'RepeatStyle'.
 
 - 'ConcatStyle' and 'FacetStyle' now take a common type, 'CompositionConfig',
   rather than @ConcatConfig@ and @FacetStyle@.
@@ -191,10 +192,24 @@ data ConfigurationProperty
       -- ^ The default appearance of axes.
     | AxisBand [AxisConfig]
       -- ^ The default appearance of axes with band scaling.
+      --
+      --   See also 'AxisDiscrete'.
     | AxisBottom [AxisConfig]
       -- ^ The default appearance of the bottom-side axes.
+    | AxisDiscrete [AxisConfig]
+      -- ^ The default appearance of axes with point or band scales.
+      --
+      --   See also 'AxisBand' and 'AxisPoint'.
+      --
+      --   @since 0.6.0.0
     | AxisLeft [AxisConfig]
       -- ^ The default appearance of the left-side axes.
+    | AxisPoint [AxisConfig]
+      -- ^ The default appearance of axes with point scales.
+      --
+      --   See also 'AxisDiscrete'.
+      --
+      --   @since 0.6.0.0
     | AxisQuantitative [AxisConfig]
       -- ^ The default appearance of quantitative axes.
       --
@@ -447,7 +462,9 @@ configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty 
 configProperty (Axis acs) = toAxis "axis" acs
 configProperty (AxisBand acs) = toAxis "axisBand" acs
 configProperty (AxisBottom acs) = toAxis "axisBottom" acs
+configProperty (AxisDiscrete acs) = toAxis "axisDiscrete" acs
 configProperty (AxisLeft acs) = toAxis "axisLeft" acs
+configProperty (AxisPoint acs) = toAxis "axisPoint" acs
 configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisRight acs) = toAxis "axisRight" acs
 configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs

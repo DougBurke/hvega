@@ -88,10 +88,11 @@ The axis configuration and property types (`AxisConfig` and
 Vega-Lite specification has these fields as strings but this is fixed
 in version 4.5.0.
 
-`ConfigurationProperty` has added new constructors:
-`AxisQuantitative`, `AxisTemporal`, `BoxplotStyle`, `ErrorBandStyle`,
-`ErrorBarStyle`, `FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`,
-`HeaderFacetStyle`, `HeaderRowStyle`, `ImageStyle`, and `RepeatStyle`.
+`ConfigurationProperty` has added new constructors: `AxisDiscrete` and
+`AxisPoint` from Vega-Lite 4.5, `AxisQuantitative` and `AxisTemporal`
+from Vega-Lite 4.4, `BoxplotStyle`, `ErrorBandStyle`, `ErrorBarStyle`,
+`FontStyle` (Vega-Lite 4.3), `HeaderColumnStyle`, `HeaderFacetStyle`,
+`HeaderRowStyle`, `ImageStyle`, and `RepeatStyle`.
 
 ### Deprecated symbols
 

@@ -1145,9 +1145,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- as strings but this is fixed in version 4.5.0.
 --
 -- 'VL.ConfigurationProperty' has added new constructors:
--- 'VL.AxisQuantitative', 'VL.AxisTemporal', 'VL.BoxplotStyle',
--- 'VL.ErrorBandStyle', 'VL.ErrorBarStyle', 'VL.FontStyle' (Vega-Lite 4.3),
--- 'VL.HeaderColumnStyle', 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle',
+-- 'VL.AxisDiscrete' and 'VL.AxisPoint' from Vega-Lite 4.5,
+-- 'VL.AxisQuantitative' and 'VL.AxisTemporal' from Vega-Lite 4.4,
+-- 'VL.BoxplotStyle', 'VL.ErrorBandStyle', 'VL.ErrorBarStyle',
+-- 'VL.FontStyle' (Vega-Lite 4.3), 'VL.HeaderColumnStyle',
+-- 'VL.HeaderFacetStyle', 'VL.HeaderRowStyle',
 -- 'VL.ImageStyle', and 'VL.RepeatStyle'.
 --
 -- __Deprecated symbols__:
