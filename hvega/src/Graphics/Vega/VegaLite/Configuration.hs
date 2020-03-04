@@ -195,22 +195,22 @@ data ConfigurationProperty
       -- ^ The default appearance of the bottom-side axes.
     | AxisLeft [AxisConfig]
       -- ^ The default appearance of the left-side axes.
+    | AxisQuantitative [AxisConfig]
+      -- ^ The default appearance of quantitative axes.
+      --
+      --   @since 0.6.0.0
     | AxisRight [AxisConfig]
       -- ^ The default appearance of the right-side axes.
+    | AxisTemporal [AxisConfig]
+      -- ^ The default appearance of temporal axes.
+      --
+      --   @since 0.6.0.0
     | AxisTop [AxisConfig]
       -- ^ The default appearance of the top-side axes.
     | AxisX [AxisConfig]
       -- ^ The default appearance of the X axes.
     | AxisY [AxisConfig]
       -- ^ The default appearance of the Y axes.
-    | AxisQuantitative [AxisConfig]
-      -- ^ The default appearance of quantitative axes.
-      --
-      --   @since 0.6.0.0
-    | AxisTemporal [AxisConfig]
-      -- ^ The default appearance of temporal axes.
-      --
-      --   @since 0.6.0.0
     | AxisNamedStyles [(StyleLabel, [AxisProperty])]
       -- ^  Assign a set of axis styles to a label. These labels can then be referred
       --    to when configuring an axis with 'Graphics.Vega.VegaLite.AxStyle' and
@@ -448,12 +448,12 @@ configProperty (Axis acs) = toAxis "axis" acs
 configProperty (AxisBand acs) = toAxis "axisBand" acs
 configProperty (AxisBottom acs) = toAxis "axisBottom" acs
 configProperty (AxisLeft acs) = toAxis "axisLeft" acs
+configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
 configProperty (AxisRight acs) = toAxis "axisRight" acs
+configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
 configProperty (AxisTop acs) = toAxis "axisTop" acs
 configProperty (AxisX acs) = toAxis "axisX" acs
 configProperty (AxisY acs) = toAxis "axisY" acs
-configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
-configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
 
 -- configProperty (AxisNamedStyles [(nme, mps)]) = "style" .= object [aprops_ nme mps]
 configProperty (AxisNamedStyles styles) =
