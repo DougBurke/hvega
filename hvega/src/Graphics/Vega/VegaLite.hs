@@ -1117,8 +1117,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- constructor.
 --
 -- The 'VL.ScaleProperty' type has gained 'VL.SDomainMid', useful
--- for asymmetric diverging color scales. The 'VL.ScaleDomain' type has
--- gained the 'VL.DUnionWith' option from Vega-Lite v4.3.
+-- for asymmetric diverging color scales, and 'VL.SReverse' from
+-- Vega-Lite v4.5. The 'VL.ScaleDomain' type has gained the
+-- 'VL.DUnionWith' option from Vega-Lite v4.3. The 'VL.ScaleConfig'
+-- type has gained 'VL.SCXReverse' from Vega-Lite v4.5.
 --
 -- Labels can now be vertically aligned to their baseline with the
 -- 'VL.AlignBaseline' constructor of the 'VL.VAlign' type.

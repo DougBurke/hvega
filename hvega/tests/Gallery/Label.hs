@@ -17,6 +17,7 @@ import Prelude hiding (filter, lookup, repeat)
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("label1", label1)
             , ("label2", label2)
+            , ("label2r", label2r)
             , ("label3", label3)
             , ("label4", label4)
             , ("label5", label5)
@@ -64,13 +65,9 @@ label1 =
     toVegaLite [ des, dvals [], enc [], layer [ specBar, specText ], config [] ]
 
 
-label2 :: VegaLite
-label2 =
-    let
-        des =
-            description "Layering text over 'heatmap'"
-
-        encPosition =
+label2Base :: [ScaleConfig] -> VegaLite
+label2Base opts =
+    let encPosition =
             encoding
                 . position X [ PName "Cylinders", PmType Ordinal ]
                 . position Y [ PName "Origin", PmType Ordinal ]
@@ -90,18 +87,24 @@ label2 =
         specText =
             asSpec [ mark Text [], encText [] ]
 
+        scOpts = [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ] ++ opts
         config =
             configure
-                . configuration (ScaleStyle [ SCBandPaddingInner 0, SCBandPaddingOuter 0 ])
+                . configuration (ScaleStyle scOpts)
                 . configuration (TextStyle [ MBaseline AlignMiddle ])
     in
     toVegaLite
-        [ des
+        [ description "Layering text over 'heatmap'"
         , dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
         , encPosition []
         , layer [ specRect, specText ]
         , config []
         ]
+
+
+label2, label2r :: VegaLite
+label2 = label2Base [SCXReverse False]
+label2r = label2Base [SCXReverse True]
 
 
 -- TODO: this has been re-worked in elm

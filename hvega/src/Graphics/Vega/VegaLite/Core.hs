@@ -743,6 +743,10 @@ data ScaleProperty
       -- ^ Outer padding to apply to a band scaling.
     | SRange ScaleRange
       -- ^ Range of a scaling. The type of range depends on the encoding channel.
+    | SReverse Bool
+      -- ^ Should the order of the scale range be reversed?
+      --
+      --   @since 0.6.0.0
     | SRound Bool
       -- ^ Are numeric values in a scaling are rounded to integers?
       --
@@ -783,6 +787,7 @@ scaleProperty (SRange (RNumbers xs)) = "range" .= xs
 scaleProperty (SRange (RNumberLists xss)) = "range" .= xss
 scaleProperty (SRange (RStrings ss)) = "range" .= ss
 scaleProperty (SRange (RName s)) = "range" .= s
+scaleProperty (SReverse b) = "reverse" .= b
 scaleProperty (SRound b) = "round" .= b
 scaleProperty (SScheme nme extent) = schemeProperty nme extent
 scaleProperty (SZero b) = "zero" .= b
