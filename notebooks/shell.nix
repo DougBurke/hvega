@@ -41,12 +41,20 @@ let
     packages = p: with p; [ hvega ihaskell-hvega aeson aeson-pretty Frames foldl formatting microlens ];
   };
 
+  # Frames 0.6.ish is currently marked as broken
+  iHaskellWork = jupyter.kernels.iHaskellWith {
+    name = "haskell";
+    haskellPackages = haskellPackages;
+    packages = p: with p; [ hvega ihaskell-hvega aeson aeson-pretty ];
+  };
+
   # For now exclude iPython
   #
   jupyterEnvironment =
     jupyter.jupyterlabWith {
       # kernels = [ iPython iHaskell ];
-      kernels = [ iHaskell ];
+      # kernels = [ iHaskell ];
+      kernels = [ iHaskellWork ];
     };
 in
   jupyterEnvironment.env
