@@ -60,8 +60,10 @@ be turned off with explicit `No` variants: `MNoBorders`, `MNoBox`,
 constructor.
 
 The `ScaleProperty` type has gained `SDomainMid`, useful for
-asymmetric diverging color scales. The `ScaleDomain` type has gained
-the `DUnionWith` option from Vega-Lite v4.3.
+asymmetric diverging color scales, and `SReverse` from Vega-Lite v4.5.
+The `ScaleDomain` type has gained the `DUnionWith` option from
+Vega-Lite v4.3. The `ScaleConfig` type has gained `SCXReverse`
+from Vega-Lite v4.5.
 
 Labels can now be vertically aligned to their baseline with the
 `AlignBaseline` constructor of the `VAlign` type.

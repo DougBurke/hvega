@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "width": 20,
-        "type": "bar"
-    },
+    "mark": "bar",
     "data": {
         "values": [
             {
@@ -28,11 +25,16 @@
             }
         ]
     },
-    "width": 300,
+    "width": 400,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "cat",
+            "scale": {
+                "paddingInner": 0.5,
+                "align": 1,
+                "reverse": true
+            },
             "type": "ordinal"
         },
         "y": {

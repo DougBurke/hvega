@@ -25,6 +25,11 @@ testSpecs = [ ("position1", position1)
             , ("position10", position10)
             , ("position11", position11)
             , ("position12", position12)
+            , ("position8r", position8r)
+            , ("position9r", position9r)
+            , ("position10r", position10r)
+            , ("position11r", position11r)
+            , ("position12r", position12r)
             ]
 
 
@@ -44,10 +49,11 @@ emptyData =
     dataFromColumns []
         . dataColumn "empty" (Numbers [0])
 
+-- make sure this is not symmetric in x
 someData =
     dataFromColumns []
         . dataColumn "cat" (Numbers [1, 2, 3, 4, 5])
-        . dataColumn "val" (Numbers [10, 20, 30, 20, 10])
+        . dataColumn "val" (Numbers [10, 20, 30, 15, 12])
         . dataColumn "empty" (Numbers [0])
 
 
@@ -102,19 +108,27 @@ position7 =
     toVegaLite [ height 300, someData [], enc [], bar [ MHeight 20 ] ]
 
 
-barAlign :: Double -> VegaLite
-barAlign x =
+bAlign :: [ScaleProperty] -> Double -> VegaLite
+bAlign sOpts x =
     let
         enc =
             encoding
                 . position X
                     [ pName "cat"
                     , pOrdinal
-                    , PScale [ SAlign x, SPaddingInner 0.5 ]
+                    , PScale ([ SAlign x, SPaddingInner 0.5 ] ++ sOpts)
                     ]
                 . position Y [ pName "val", pQuant ]
     in
     toVegaLite [ width 400, someData [], enc [], bar [] ]
+
+
+barAlign :: Double -> VegaLite
+barAlign = bAlign []
+
+
+barAlignR :: Double -> VegaLite
+barAlignR = bAlign [SReverse True]
 
 
 position8, position9, position10, position11, position12 :: VegaLite
@@ -123,3 +137,10 @@ position9 = barAlign 0.3
 position10 = barAlign 0.5
 position11 = barAlign 0.7
 position12 = barAlign 10    -- test clamping
+
+position8r, position9r, position10r, position11r, position12r :: VegaLite
+position8r = barAlignR (-10)  -- test clamping
+position9r = barAlignR 0.3
+position10r = barAlignR 0.5
+position11r = barAlignR 0.7
+position12r = barAlignR 10    -- test clamping

@@ -544,8 +544,8 @@ configProperty (NamedStyles styles) =
 
 {-|
 
-Scale configuration property. These are used to configure all scales.
-For more details see the
+Scale configuration property. These are used to configure all scales
+with 'ScaleStyle'. For more details see the
 <https://vega.github.io/vega-lite/docs/scale.html#scale-config Vega-Lite documentation>.
 
 Version @0.5.0.0@ removed the @SCRangeStep@ and @SCTextXRangeStep@
@@ -608,7 +608,10 @@ data ScaleConfig
       --   for snapping to the pixel grid.
     | SCUseUnaggregatedDomain Bool
       -- ^ Whether or not to use the source data range before aggregation.
-
+    | SCXReverse Bool
+      -- ^ Reverse the X scale (useful for right-to-left charts).
+      --
+      --   @since 0.6.0.0
 
 scaleConfig_ :: [ScaleConfig] -> LabelledSpec
 -- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
@@ -1019,6 +1022,7 @@ scaleConfigProperty (SCMinStrokeWidth x) = "minStrokeWidth" .= x
 scaleConfigProperty (SCPointPadding x) = "pointPadding" .= x
 scaleConfigProperty (SCRound b) = "round" .= b
 scaleConfigProperty (SCUseUnaggregatedDomain b) = "useUnaggregatedDomain" .= b
+scaleConfigProperty (SCXReverse b) = "xReverse" .= b
 
 
 {-|
