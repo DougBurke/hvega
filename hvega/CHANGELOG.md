@@ -6,6 +6,11 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.7 of the
 Vega-Lite schema.
 
+### New constructors
+
+The `Operation` type has gained the `Product` specifier from Vega-Lite
+4.6.0.
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the
