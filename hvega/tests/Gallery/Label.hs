@@ -776,9 +776,11 @@ baselines =
 
       -- plots are ordered left to right, top to bottom
       plots = vlConcat [ plot "top" AlignTop
+                       , plot "line-top" AlignLineTop
                        , plot "middle" AlignMiddle
                        , plot "baseline" AlignBaseline
                        , plot "bottom" AlignBottom
+                       , plot "line-bottom" AlignLineBottom
                        ]
 
   in toVegaLite [ dvals []

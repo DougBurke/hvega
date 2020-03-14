@@ -1070,6 +1070,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 4.6.0.
 --
 -- The 'VL.TextChannel' has gained 'VL.TStrings' to support multi-line labels.
+--
+-- The 'VL.VAlign' type has gained 'VL.AlignLineTop' and 'VL.AlignLineBottom'
+-- (Vega-Lite 4.6.0).
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of

@@ -580,18 +580,32 @@ data HAlign
 
 data VAlign
     = AlignTop
-      -- ^ The position refers to the top of the text.
+      -- ^ The position refers to the top of the text, calculated relative to
+      --   the font size. Also see 'AlignLineTop'.
     | AlignMiddle
       -- ^ The middle of the text.
     | AlignBottom
       -- ^ The position refers to the bottom of the text, including
-      --   descenders, like g.
+      --   descenders, like g. This is calculated relative to the
+      --   font size. Also see 'AlignLineBottom'.
     | AlignBaseline
       -- ^ The position refers to the baseline of the text (so it does
       --   not include descenders). This maps to the Vega-Lite
       --   @\"alphabetic\"@ value.
       --
       --   @since 0.6.0.0
+    | AlignLineTop
+      -- ^ Similar to 'AlignTop', but relative to the line height, not font size.
+      --
+      --   This was added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
+    | AlignLineBottom
+      -- ^ Similar to 'AlignBottom', but relative to the line height, not font size.
+      --
+      --   This was added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
 
 hAlignLabel :: HAlign -> T.Text
 hAlignLabel AlignLeft = "left"
@@ -603,6 +617,8 @@ vAlignLabel AlignTop = "top"
 vAlignLabel AlignMiddle = "middle"
 vAlignLabel AlignBottom = "bottom"
 vAlignLabel AlignBaseline = "alphabetic"
+vAlignLabel AlignLineTop = "line-top"
+vAlignLabel AlignLineBottom = "line-bottom"
 
 {-|
 

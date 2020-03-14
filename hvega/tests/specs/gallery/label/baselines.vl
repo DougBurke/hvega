@@ -68,6 +68,49 @@
         {
             "mark": {
                 "type": "text",
+                "baseline": "line-top"
+            },
+            "title": "line-top",
+            "encoding": {
+                "text": {
+                    "value": [
+                        "Xxgq",
+                        "qTpP"
+                    ]
+                },
+                "x": {
+                    "field": "x",
+                    "scale": {
+                        "domain": [
+                            -10,
+                            40
+                        ],
+                        "nice": false
+                    },
+                    "type": "quantitative",
+                    "axis": {
+                        "title": null
+                    }
+                },
+                "y": {
+                    "field": "y",
+                    "scale": {
+                        "domain": [
+                            -10,
+                            40
+                        ],
+                        "nice": false
+                    },
+                    "type": "quantitative",
+                    "axis": {
+                        "title": null
+                    }
+                }
+            }
+        },
+        {
+            "mark": {
+                "type": "text",
                 "baseline": "middle"
             },
             "title": "middle",
@@ -157,6 +200,49 @@
                 "baseline": "bottom"
             },
             "title": "bottom",
+            "encoding": {
+                "text": {
+                    "value": [
+                        "Xxgq",
+                        "qTpP"
+                    ]
+                },
+                "x": {
+                    "field": "x",
+                    "scale": {
+                        "domain": [
+                            -10,
+                            40
+                        ],
+                        "nice": false
+                    },
+                    "type": "quantitative",
+                    "axis": {
+                        "title": null
+                    }
+                },
+                "y": {
+                    "field": "y",
+                    "scale": {
+                        "domain": [
+                            -10,
+                            40
+                        ],
+                        "nice": false
+                    },
+                    "type": "quantitative",
+                    "axis": {
+                        "title": null
+                    }
+                }
+            }
+        },
+        {
+            "mark": {
+                "type": "text",
+                "baseline": "line-bottom"
+            },
+            "title": "line-bottom",
             "encoding": {
                 "text": {
                     "value": [
