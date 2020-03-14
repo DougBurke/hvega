@@ -755,24 +755,26 @@ voyager =
 baselines :: VegaLite
 baselines =
   let dvals = dataFromColumns []
-              . dataColumn "x" (Numbers [ 10, 20 ])
-              . dataColumn "y" (Numbers [ 10, 20 ])
+              . dataColumn "x" (Numbers [ 5, 30 ])
+              . dataColumn "y" (Numbers [ 5, 30 ])
 
       ax t n = position t [ PName n
                           , PmType Quantitative
                           , PScale [ SNice (IsNice False)
-                                   , SDomain (DNumbers [5, 25])
+                                   , SDomain (DNumbers [-10, 40])
                                    ]
-                          , PAxis [ AxNoTitle ]
+                          , PAxis [ AxNoTitle
+                                  ]
                           ]
 
       enc = encoding
             . ax X "x"
             . ax Y "y"
-            . text [ TString "Xxgq" ]
+            . text [ TStrings ["Xxgq", "qTpP"] ]
 
       plot l a = asSpec [ enc [], title l [], mark Text [ MBaseline a ] ]
 
+      -- plots are ordered left to right, top to bottom
       plots = vlConcat [ plot "top" AlignTop
                        , plot "middle" AlignMiddle
                        , plot "baseline" AlignBaseline
@@ -781,7 +783,10 @@ baselines =
 
   in toVegaLite [ dvals []
                 , configure
-                  . configuration (MarkStyle [ MFontSize 20 ])
+                  . configuration (MarkStyle [ MFontSize 20
+                                             , MFontStyle "italic"
+                                             , MLineHeight 30 ])
+                  . configuration (TitleStyle [ TFont "Comic Sans MS" ])
                   $ []
                 , columns 2
                 , plots

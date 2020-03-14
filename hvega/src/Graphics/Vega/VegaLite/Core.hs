@@ -2184,7 +2184,7 @@ data TextChannel
     | TTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a text channel.
     | TString T.Text
-      -- ^ A literal value for encoding a text property channel
+      -- ^ A literal value for encoding a text property channel. See also 'TStrings'.
       --
       --   This can be useful for a text annotation, such as:
       --
@@ -2196,6 +2196,10 @@ data TextChannel
       --   @
       --
       --   @since 0.5.0.0
+    | TStrings [T.Text]
+      -- ^ A multi-line value. See also 'TString'.
+      --
+      --   @since 0.7.0.0
 
 textChannelProperty :: TextChannel -> [LabelledSpec]
 textChannelProperty (TName s) = [field_  s]
@@ -2215,6 +2219,7 @@ textChannelProperty (TDataCondition tests elseClause) =
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
   selCond_ textChannelProperty selName ifClause elseClause
 textChannelProperty (TString s) = ["value" .= s]
+textChannelProperty (TStrings xs) = ["value" .= xs]
 
 
 -- | Properties of an ordering channel used for sorting data fields.

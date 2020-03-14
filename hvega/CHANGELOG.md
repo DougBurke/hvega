@@ -11,6 +11,8 @@ Vega-Lite schema.
 The `Operation` type has gained the `Product` specifier from Vega-Lite
 4.6.0.
 
+The `TextChannel` has gained `TStrings` to support multi-line labels.
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the

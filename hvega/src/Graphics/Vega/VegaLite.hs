@@ -1068,6 +1068,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.Operation' type has gained the 'VL.Product' specifier from Vega-Lite
 -- 4.6.0.
+--
+-- The 'VL.TextChannel' has gained 'VL.TStrings' to support multi-line labels.
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of
