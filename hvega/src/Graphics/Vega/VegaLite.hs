@@ -668,6 +668,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.7
+         --
+         -- $update0700
+
          -- ** Version 0.6
          --
          -- $update0600
@@ -1055,6 +1059,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0700
+-- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of
+-- the Vega-Lite schema.
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of

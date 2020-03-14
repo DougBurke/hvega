@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.7.0.0
+
+The Vega-Lite tests are now validated against version 4.7 of the
+Vega-Lite schema.
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the
