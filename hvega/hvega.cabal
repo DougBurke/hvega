@@ -181,6 +181,7 @@ test-suite test
                        ImageTests
                        InteractionTests
                        LegendTests
+                       MarkTests
                        NullTests
                        PositionTests
                        ProjectionTests

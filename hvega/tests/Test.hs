@@ -51,6 +51,7 @@ import qualified HyperlinkTests as HT
 import qualified ImageTests as ImT
 import qualified InteractionTests as IT
 import qualified LegendTests as LT
+import qualified MarkTests
 import qualified NullTests as NT
 import qualified PositionTests as PT
 import qualified ProjectionTests as PjT
@@ -124,6 +125,7 @@ baseTests = testGroup "base"
   , toTests "Image" "image" ImT.testSpecs
   , toTests "Interaction" "interaction" IT.testSpecs
   , toTests "Legend" "legend" LT.testSpecs
+  , toTests "Mark" "mark" MarkTests.testSpecs
   , toTests "Null" "null" NT.testSpecs
   , toTests "Position" "position" PT.testSpecs
   , toTests "Projection" "projection" PjT.testSpecs

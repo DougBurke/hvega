@@ -6,6 +6,12 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.7 of the
 Vega-Lite schema.
 
+### New functionality
+
+The `BlendMode` type has been added for controlling how marks blend
+with their background. This is used with the new `MBlend` constructor
+for marks.
+
 ### New constructors
 
 The `Operation` type has gained the `Product` specifier from Vega-Lite

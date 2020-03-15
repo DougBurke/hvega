@@ -342,6 +342,7 @@ module Graphics.Vega.VegaLite
        , VL.ColorGradient(..)
        , VL.GradientProperty(..)
        , VL.TextDirection(..)
+       , VL.BlendMode(..)
 
          -- ** Cursors
          --
@@ -1063,6 +1064,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of
 -- the Vega-Lite schema.
+--
+-- __New functionality__
+--
+-- The 'VL.BlendMode' type has been added for controlling how marks blend
+-- with their background. This is used with the new 'VL.MBlend' constructor
+-- for marks.
 --
 -- __New constructors__
 --
