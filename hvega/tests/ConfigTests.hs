@@ -6,10 +6,6 @@
 --  - Padding has been removed as the resulting spec does not validate
 --    against v3.3.0
 --
---  - the vbTest output is not valid since the spec description says that
---    style can be a string or array-of-strings, but the type is only
---    string.
---
 
 module ConfigTests (testSpecs) where
 
@@ -38,6 +34,7 @@ testSpecs = [ ("default", defaultCfg)
             , ("titleCfg1", titleCfg1)
             , ("titleCfg2", titleCfg2)
             , ("titleCfg3", titleCfg3)
+            , ("breaklinecfg", breakLineCfg)
             ]
 
 
@@ -318,3 +315,22 @@ titleCfg3 =
      ( [ cfg []
        , title "Car\nScatter" [ subtitle ]
        ] ++ titleOpts )
+
+
+breakLineCfg :: VegaLite
+breakLineCfg =
+  let dvals = dataFromColumns []
+               . dataColumn "x" (Numbers [5, 10, 15])
+               . dataColumn "y" (Numbers [10, 5, 30])
+               . dataColumn "l" (Strings ["xXx", "x x", "xxXxXxx"])
+
+      enc = encoding
+            . position X [PName "x", PmType Quantitative]
+            . position Y [PName "y", PmType Quantitative]
+            . text [TName "l", TmType Nominal]
+
+  in toVegaLite [ configure (configuration (LineBreakStyle "X") [])
+                , dvals []
+                , enc []
+                , mark Text []
+                ]

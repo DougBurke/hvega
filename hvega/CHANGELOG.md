@@ -16,6 +16,8 @@ The `TextChannel` has gained `TStrings` to support multi-line labels.
 The `VAlign` type has gained `AlignLineTop` and `AlignLineBottom`
 (Vega-Lite 4.6.0).
 
+`LineBreakStyle` has been added to `ConfigurationProperty`.
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the

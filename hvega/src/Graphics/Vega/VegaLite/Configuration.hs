@@ -323,6 +323,14 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | LineStyle [MarkProperty]
       -- ^ The default appearance of line marks.
+    | LineBreakStyle T.Text
+      -- ^ The delimiter, such as a newline character, upon which to break text
+      --   strings into multiple lines. This can be over-ridden by mark or style configuration
+      --   settings.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | MarkStyle [MarkProperty]
       -- ^ The default mark appearance.
     | MarkNamedStyles [(StyleLabel, [MarkProperty])]
@@ -496,6 +504,8 @@ configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
+
+configProperty (LineBreakStyle s) = "lineBreak" .= s
 
 configProperty (MarkStyle mps) = mprops_ "mark" mps
 -- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
