@@ -1751,7 +1751,7 @@ data BooleanOp
       --   'Data.Function.&').
       --
       --   @
-      --   'filter' ('FRange' "date" ('DateRange' ['Graphics.Vega.VegaLite.DTYear' 2010] ['Graphics.Vega.VegaLite.DTYear' 2017])
+      --   'filter' ('FRange' "date" ('NumberRange' 2010 2017)
       --           & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.Year')
       --           & 'FCompose'
       --           )
@@ -1933,14 +1933,13 @@ trFilterSpec _ (FCompose boolExpr) = booleanOpSpec boolExpr
 trFilterSpec mchan fi = object (markChannelProperty mchan <> filterProperty fi)
 
 
-{-|
+-- | A pair of filter range data values, used with 'FRange'.
 
-A pair of filter range data values. The first argument is the inclusive minimum
-vale to accept and the second the inclusive maximum.
--}
 data FilterRange
     = NumberRange Double Double
+      -- ^ Select between these two values (both limits are inclusive).
     | DateRange [DateTime] [DateTime]
+      -- ^ Select between these two dates (both limits are inclusive).
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
@@ -4135,7 +4134,7 @@ lookup key1 (_, spec) key2 lfields ols =
       jj :: A.ToJSON a => a -> Maybe A.Value
       jj = Just . toJSON
 
-      res = case lfields of               
+      res = case lfields of
              LuFields fs -> ( jj fs, Nothing, Nothing )
              LuFieldAs fas -> ( get1 fas, get2 fas, Nothing )
              LuAs s -> ( Nothing, jj s, Nothing )
