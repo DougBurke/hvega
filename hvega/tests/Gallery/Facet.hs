@@ -20,6 +20,7 @@ testSpecs = [ ("facet1", facet1)
             , ("facet5", facet5)
             , ("facet6", facet6)
             , ("facet7", facet7)
+            , ("trellisareaseattle", trellisAreaSeattle)
             ]
 
 
@@ -214,3 +215,52 @@ facet7 =
                 . configuration (ViewStyle [ ViewNoStroke ])
     in
     toVegaLite [ des, width 300, height 50, cfg [], res [], dvals [], mark Area [], enc [] ]
+
+
+-- https://vega.github.io/vega-lite/examples/trellis_area_seattle.html
+--
+trellisAreaSeattle :: VegaLite
+trellisAreaSeattle =
+  let desc = description "Average temps in Seattle, by hour"
+
+      ylabels = "hours(datum.value) == 0 ? 'Midnight' : hours(datum.value) == 12 ? 'Noon' : timeFormat(datum.value, '%I:%M %p')"
+
+      plot = asSpec [ width 800
+                    , height 25
+                    , viewBackground [VBNoStroke]
+                    , mark Area []
+                    , encoding
+                      . position X [ PName "date"
+                                   , PmType Temporal
+                                   , PTitle "Month"
+                                   , PAxis [AxFormat "%b"]
+                                   ]
+                      . position Y [ PName "temp"
+                                   , PmType Quantitative
+                                   , PScale [SZero False]
+                                   , PAxis [AxNoTitle, AxLabels False, AxTicks False]
+                                   ]
+                      $ []
+                    ]
+
+  in toVegaLite [ desc
+                , title "Seattle Annual Temperatures" []
+                , dataFromUrl "https://vega.github.io/vega-lite/data/seattle-temps.csv" []
+                , transform
+                  (calculateAs "(hours(datum.date) + 18) % 24" "order" [])
+                , spacing 1  -- NOTE: can not specify this is just for row
+                , configure (configuration (Axis [Grid False, Domain False]) [])
+                , facet [ RowBy [ FName "date"
+                                , FmType Nominal
+                                , FTimeUnit Hours
+                                , FSort [ByFieldOp "order" Max] -- don't want an operation
+                                , FHeader [ HLabelAngle 0
+                                          , HLabelPadding 2
+                                          , HTitlePadding (-4)
+                                          , HLabelAlign AlignLeft
+                                          , HLabelExpr ylabels
+                                          ]
+                                ]
+                        ]
+                , specification plot
+                ]
