@@ -1313,6 +1313,12 @@ data AxisProperty
       -- ^ The maximum width of a label, in pixels.
       --
       --   @since 0.4.0.0
+    | AxLabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line label text.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | AxLabelOffset Double
       -- ^ The pixel offset for labels, in addition to 'AxTickOffset'.
       --
@@ -1541,6 +1547,7 @@ axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
 axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
 axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisProperty (AxLabelLimit x) = "labelLimit" .= x
+axisProperty (AxLabelLineHeight x) = "labelLineHeight" .= x
 axisProperty (AxLabelOffset x) = "labelOffset" .= x
 axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
 axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s

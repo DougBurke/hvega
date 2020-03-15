@@ -1075,6 +1075,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- (Vega-Lite 4.6.0).
 --
 -- 'VL.LineBreakStyle' has been added to 'VL.ConfigurationProperty'.
+--
+-- The height of multi-line axis labels can now be set with the
+-- 'VL.LabelLineHeight' and 'VL.AxLabelLineHeight' properotes of the
+-- 'VL.AxisConfig' and 'VL.AxisProperty' types (Vega-Lite 4.6.0).
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of

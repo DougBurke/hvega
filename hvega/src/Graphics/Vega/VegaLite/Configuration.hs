@@ -120,7 +120,7 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   , PropertySpec
   )
-  
+
 
 {-|
 
@@ -1321,6 +1321,12 @@ data AxisConfig
       --   @since 0.4.0.0
     | LabelLimit Double
       -- ^ The maximum width of a label, in pixels.
+    | LabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line label text.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | LabelOffset Double
       -- ^ The pixel offset for labels, in addition to 'TickOffset'.
       --
@@ -1469,6 +1475,7 @@ axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
 axisConfigProperty (LabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisConfigProperty (LabelLimit x) = "labelLimit" .= x
+axisConfigProperty (LabelLineHeight x) = "labelLineHeight" .= x
 axisConfigProperty (LabelOffset x) = "labelOffset" .= x
 axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat

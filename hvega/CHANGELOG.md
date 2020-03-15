@@ -18,6 +18,10 @@ The `VAlign` type has gained `AlignLineTop` and `AlignLineBottom`
 
 `LineBreakStyle` has been added to `ConfigurationProperty`.
 
+The height of multi-line axis labels can now be set with the
+`LabelLineHeight` and `AxLabelLineHeight` properties of the
+`AxisConfig` and `AxisProperty` types (Vega-Lite 4.6.0).
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the

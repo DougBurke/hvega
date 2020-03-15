@@ -38,6 +38,8 @@ testSpecs = [ ("axis1", axis1)
             , ("axisstyleemptyx", axisStyleEmptyX)
             , ("axisstylex", axisStyleX)
             , ("axisstylexy", axisStyleXY)
+            , ("singleline", singleLine)
+            , ("multiline", multiLine)
             ]
 
 
@@ -324,4 +326,34 @@ axisStyleXY =
                 , carData
                 , carEnc [AxStyle ["x-style"]] [AxStyle ["y-style"]]
                 , mark Point []
+                ]
+
+
+singleLine :: VegaLite
+singleLine =
+  let xOpts = [ AxLabelExpr "datum.label + ' horses'" ]
+      yOpts = [ AxLabelExpr "datum.label+' mpg'" ]
+
+  in toVegaLite [ carData
+                , carEnc xOpts yOpts
+                , mark Point []
+                ]
+
+
+multiLine :: VegaLite
+multiLine =
+  let xOpts = [ AxLabelExpr "datum.label + ' horses'"
+              , AxLabelLineHeight 22
+              , AxLabelFontSize 11
+              ]
+      yOpts = [ AxLabelExpr "datum.label+' mpg'"
+              , AxLabelFontSize 22 ]
+
+  in toVegaLite [ carData
+                , carEnc xOpts yOpts
+                , mark Point []
+                , configure
+                  . configuration (LineBreakStyle " ")
+                  . configuration (Axis [LabelLineHeight 20])
+                  $ []
                 ]
