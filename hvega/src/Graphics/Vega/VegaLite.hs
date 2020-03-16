@@ -1097,6 +1097,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The height of multi-line axis labels can now be set with the
 -- 'VL.LabelLineHeight' and 'VL.AxLabelLineHeight' properotes of the
 -- 'VL.AxisConfig' and 'VL.AxisProperty' types (Vega-Lite 4.6.0).
+--
+-- Numeric filter ranges, specified with 'VL.FRange',
+-- can now be lower- or upper-limits -
+-- 'VL.NumberRangeLL' and 'VL.NumberRangeUL' respectively -
+-- added to the 'VL.FilterRange' type.
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of

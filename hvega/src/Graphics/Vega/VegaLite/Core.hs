@@ -1909,6 +1909,8 @@ filterProperty (FSelection selName) = ["selection" .= selName]
 filterProperty (FRange field vals) =
   let ans = case vals of
               NumberRange mn mx -> map toJSON [mn, mx]
+              NumberRangeLL mn -> [toJSON mn, A.Null]
+              NumberRangeUL mx -> [A.Null, toJSON mx]
               DateRange dMin dMax -> [process dMin, process dMax]
 
       process [] = A.Null
@@ -1945,8 +1947,23 @@ trFilterSpec mchan fi = object (markChannelProperty mchan <> filterProperty fi)
 data FilterRange
     = NumberRange Double Double
       -- ^ Select between these two values (both limits are inclusive).
+    | NumberRangeLL Double
+      -- ^ A lower limit (inclusive).
+      --
+      --   @since 0.7.0.0
+    | NumberRangeUL Double
+      -- ^ An upper limit (inclusive).
+      --
+      --   @since 0.7.0.0
     | DateRange [DateTime] [DateTime]
       -- ^ Select between these two dates (both limits are inclusive).
+      --
+      --   If a limit is the empty list then the filter is treated as
+      --   a limit only on the other value, so
+      --   @DateRange [] ['Graphics.Vega.VegaLite.DTYear' 2019]@
+      --   acts as an upper-limit on the date range. One of the two
+      --   limits __should__ be defined, but there is no enforcement
+      --   of this.
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.

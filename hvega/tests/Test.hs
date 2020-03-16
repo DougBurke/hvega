@@ -46,6 +46,7 @@ import qualified ConfigTests as ConfT
 import qualified DataTests as DT
 import qualified EncodingTests
 import qualified FillStrokeTests as FST
+import qualified FilterTests
 import qualified GeoTests as GT
 import qualified HyperlinkTests as HT
 import qualified ImageTests as ImT
@@ -120,6 +121,7 @@ baseTests = testGroup "base"
   , toTests "Data" "data" DT.testSpecs
   , toTests "Encoding" "encoding" EncodingTests.testSpecs
   , toTests "FillStroke" "fillstroke" FST.testSpecs
+  , toTests "Filter" "filter" FilterTests.testSpecs
   , toTests "Geo" "geo" GT.testSpecs
   , toTests "Hyperlink" "hyperlink" HT.testSpecs
   , toTests "Image" "image" ImT.testSpecs
