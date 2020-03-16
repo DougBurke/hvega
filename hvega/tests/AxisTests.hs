@@ -108,17 +108,17 @@ axisBase plotData confOpts xOpts yOpts =
   in toVegaLite vs
 
 plotCfg :: [ConfigurationProperty]
-plotCfg = [ AxisQuantitative [ DomainColor "orange"
-                             , GridColor "seagreen"
-                             , LabelFont "Comic Sans MS"
-                             , LabelOffset 10
-                             , TickOffset 10
-                             ]
-          , AxisTemporal [ DomainColor "brown"
-                         , DomainDash [4, 2]
-                         , Grid False
-                         , LabelColor "purple"
-                         ]
+plotCfg = [ AxisQuantitative AxBoth [ DomainColor "orange"
+                                    , GridColor "seagreen"
+                                    , LabelFont "Comic Sans MS"
+                                    , LabelOffset 10
+                                    , TickOffset 10
+                                    ]
+          , AxisTemporal AxBoth [ DomainColor "brown"
+                                , DomainDash [4, 2]
+                                , Grid False
+                                , LabelColor "purple"
+                                ]
           , PointStyle [ MStroke "black"
                        , MStrokeOpacity 0.4
                        , MStrokeWidth 1

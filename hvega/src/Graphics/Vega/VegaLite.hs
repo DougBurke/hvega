@@ -608,6 +608,7 @@ module Graphics.Vega.VegaLite
          -- $axisconfig
 
        , VL.AxisConfig(..)
+       , VL.AxisChoice(..)
 
          -- ** Legend Configuration Options
          --
@@ -1070,6 +1071,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.BlendMode' type has been added for controlling how marks blend
 -- with their background. This is used with the new 'VL.MBlend' constructor
 -- for marks.
+--
+-- __Breaking Change__
+--
+-- The axis style options for specific data- or mark- types
+-- ('VL.AxisBand', 'VL.AxisDiscrete', 'VL.AxisPoint',
+-- 'VL.AxisQuantitative', and 'VL.AxisTemporal') have been changed to
+-- accept an additional argument (the new 'VL.AxisChoice' type)
+-- which defines which axis (X, Y, or both) the configuration should be
+-- applied to. This is to support new axis configuration options added
+-- in Vega-Lite 4.7.0.
 --
 -- __New constructors__
 --

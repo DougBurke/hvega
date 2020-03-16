@@ -12,6 +12,15 @@ The `BlendMode` type has been added for controlling how marks blend
 with their background. This is used with the new `MBlend` constructor
 for marks.
 
+### Breaking Change
+
+The axis style options for specific data- or mark- types (`AxisBand`,
+`AxisDiscrete`, `AxisPoint`, `AxisQuantitative`, and `AxisTemporal`)
+have been changed to accept an additional argument (the new
+`AxisChoice` type) which defines which axis (X, Y, or both) the
+configuration should be applied to. This is to support new axis
+configuration options added in Vega-Lite 4.7.0.
+
 ### New constructors
 
 The `Operation` type has gained the `Product` specifier from Vega-Lite
