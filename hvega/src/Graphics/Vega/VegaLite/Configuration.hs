@@ -477,7 +477,7 @@ data ConfigurationProperty
 --
 --   @since 0.7.0.0
 data AxisChoice
-  = AxBoth
+  = AxXY
     -- ^ Apply the configuration to both axes.
     --
     --   This was the default behavior prior to @0.7.0.0@.
@@ -491,7 +491,7 @@ toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
 toAxis lbl acs = ("axis" <> lbl) .= object (map axisConfigProperty acs)
 
 toAxisChoice :: AxisChoice -> T.Text -> [AxisConfig] -> LabelledSpec
-toAxisChoice AxBoth lbl = toAxis lbl
+toAxisChoice AxXY lbl = toAxis lbl
 toAxisChoice AxX lbl = toAxis ("X" <> lbl)
 toAxisChoice AxY lbl = toAxis ("Y" <> lbl)
 
