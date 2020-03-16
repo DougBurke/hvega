@@ -37,6 +37,7 @@ testSpecs = [ ("axis1", axis1)
             , ("axisstyleempty", axisStyleEmpty)
             , ("axisstyleemptyx", axisStyleEmptyX)
             , ("axisstylex", axisStyleX)
+            , ("axisstylexastyle", axisStyleXAStyle)
             , ("axisstylexy", axisStyleXY)
             , ("singleline", singleLine)
             , ("multiline", multiLine)
@@ -303,6 +304,24 @@ axisStyleX =
   in toVegaLite [ cfg []
                 , carData
                 , carEnc [AxStyle ["x-style"]] []
+                , mark Point []
+                ]
+
+
+-- check AStyle; should give same look as axisStyleX
+axisStyleXAStyle :: VegaLite
+axisStyleXAStyle =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [ AxDomainColor "orange"
+                                                          , AxGridColor "lightgreen"
+                                                          , AxLabelExpr xexpr ])])
+            . configuration (AxisX [AStyle ["x-style"]])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [] []
                 , mark Point []
                 ]
 

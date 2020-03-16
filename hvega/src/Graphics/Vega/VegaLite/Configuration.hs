@@ -1245,6 +1245,9 @@ data AxisConfig
       -- ^ The named styles - generated with 'AxisNamedStyles' - to apply to the
       --   axis or axes.
       --
+      --   Added in Vega-Lite 4.7.0 (although accidentally supported in @hvega@
+      --   before this release).
+      --
       --   @since 0.6.0.0
     | BandPosition Double
       -- ^ The default axis band position.
