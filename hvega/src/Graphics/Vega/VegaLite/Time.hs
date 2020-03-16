@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -8,7 +7,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : CPP, OverloadedStrings
+Portability : OverloadedStrings
 
 Time-related types.
 
@@ -29,10 +28,6 @@ module Graphics.Vega.VegaLite.Time
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object)
-
-#if !(MIN_VERSION_base(4, 12, 0))
-import Data.Monoid ((<>))
-#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
