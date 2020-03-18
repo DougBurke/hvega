@@ -37,7 +37,10 @@ testSpecs = [ ("axis1", axis1)
             , ("axisstyleempty", axisStyleEmpty)
             , ("axisstyleemptyx", axisStyleEmptyX)
             , ("axisstylex", axisStyleX)
+            , ("axisstylexastyle", axisStyleXAStyle)
             , ("axisstylexy", axisStyleXY)
+            , ("singleline", singleLine)
+            , ("multiline", multiLine)
             ]
 
 
@@ -106,17 +109,17 @@ axisBase plotData confOpts xOpts yOpts =
   in toVegaLite vs
 
 plotCfg :: [ConfigurationProperty]
-plotCfg = [ AxisQuantitative [ DomainColor "orange"
-                             , GridColor "seagreen"
-                             , LabelFont "Comic Sans MS"
-                             , LabelOffset 10
-                             , TickOffset 10
-                             ]
-          , AxisTemporal [ DomainColor "brown"
-                         , DomainDash [4, 2]
-                         , Grid False
-                         , LabelColor "purple"
-                         ]
+plotCfg = [ AxisQuantitative AxXY [ DomainColor "orange"
+                                  , GridColor "seagreen"
+                                  , LabelFont "Comic Sans MS"
+                                  , LabelOffset 10
+                                  , TickOffset 10
+                                  ]
+          , AxisTemporal AxXY [ DomainColor "brown"
+                              , DomainDash [4, 2]
+                              , Grid False
+                              , LabelColor "purple"
+                              ]
           , PointStyle [ MStroke "black"
                        , MStrokeOpacity 0.4
                        , MStrokeWidth 1
@@ -305,6 +308,24 @@ axisStyleX =
                 ]
 
 
+-- check AStyle; should give same look as axisStyleX
+axisStyleXAStyle :: VegaLite
+axisStyleXAStyle =
+  let cfg = configure
+            . configuration (AxisNamedStyles [("x-style", [ AxDomainColor "orange"
+                                                          , AxGridColor "lightgreen"
+                                                          , AxLabelExpr xexpr ])])
+            . configuration (AxisX [AStyle ["x-style"]])
+
+      xexpr = "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
+
+  in toVegaLite [ cfg []
+                , carData
+                , carEnc [] []
+                , mark Point []
+                ]
+
+
 axisStyleXY :: VegaLite
 axisStyleXY =
   let cfg = configure
@@ -324,4 +345,34 @@ axisStyleXY =
                 , carData
                 , carEnc [AxStyle ["x-style"]] [AxStyle ["y-style"]]
                 , mark Point []
+                ]
+
+
+singleLine :: VegaLite
+singleLine =
+  let xOpts = [ AxLabelExpr "datum.label + ' horses'" ]
+      yOpts = [ AxLabelExpr "datum.label+' mpg'" ]
+
+  in toVegaLite [ carData
+                , carEnc xOpts yOpts
+                , mark Point []
+                ]
+
+
+multiLine :: VegaLite
+multiLine =
+  let xOpts = [ AxLabelExpr "datum.label + ' horses'"
+              , AxLabelLineHeight 22
+              , AxLabelFontSize 11
+              ]
+      yOpts = [ AxLabelExpr "datum.label+' mpg'"
+              , AxLabelFontSize 22 ]
+
+  in toVegaLite [ carData
+                , carEnc xOpts yOpts
+                , mark Point []
+                , configure
+                  . configuration (LineBreakStyle " ")
+                  . configuration (Axis [LabelLineHeight 20])
+                  $ []
                 ]

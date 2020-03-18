@@ -1,6 +1,46 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.7.0.0
+
+The Vega-Lite tests are now validated against version 4.7 of the
+Vega-Lite schema.
+
+### New functionality
+
+The `BlendMode` type has been added for controlling how marks blend
+with their background. This is used with the new `MBlend` constructor
+for marks.
+
+### Breaking Change
+
+The axis style options for specific data- or mark- types (`AxisBand`,
+`AxisDiscrete`, `AxisPoint`, `AxisQuantitative`, and `AxisTemporal`)
+have been changed to accept an additional argument (the new
+`AxisChoice` type) which defines which axis (X, Y, or both) the
+configuration should be applied to. This is to support new axis
+configuration options added in Vega-Lite 4.7.0.
+
+### New constructors
+
+The `Operation` type has gained the `Product` specifier from Vega-Lite
+4.6.0.
+
+The `TextChannel` has gained `TStrings` to support multi-line labels.
+
+The `VAlign` type has gained `AlignLineTop` and `AlignLineBottom`
+(Vega-Lite 4.6.0).
+
+`LineBreakStyle` has been added to `ConfigurationProperty`.
+
+The height of multi-line axis labels can now be set with the
+`LabelLineHeight` and `AxLabelLineHeight` properties of the
+`AxisConfig` and `AxisProperty` types (Vega-Lite 4.6.0).
+
+Numeric filter ranges, specified with `FRange`, can now be lower- or
+upper-limits - `NumberRange` and `NumberRange` respectively - added to
+the `FilterRange` type.
+
 ## 0.6.0.0
 
 The Vega-Lite tests are now validated against version 4.5 of the

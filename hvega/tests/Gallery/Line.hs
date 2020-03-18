@@ -11,6 +11,7 @@ module Gallery.Line (testSpecs) where
 import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, lookup, repeat)
+import Data.Function ((&))
 
 
 testSpecs :: [(String, VegaLite)]
@@ -26,72 +27,51 @@ testSpecs = [ ("line1", line1)
             , ("line10", line10)
             , ("line11", line11)
             , ("line12", line12)
+            , ("conditionalaxis", conditionalAxis)
             ]
+
+
+stockData :: Data
+stockData = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+
+goog :: [TransformSpec] -> PropertySpec
+goog = transform . filter (FExpr "datum.symbol === 'GOOG'")
+
+baseEnc :: [EncodingSpec] -> PropertySpec
+baseEnc = encoding
+          . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
+          . position Y [ PName "price", PmType Quantitative ]
 
 
 line1 :: VegaLite
 line1 =
-    let
-        des =
-            description "Google's stock price over time."
-
-        trans =
-            transform . filter (FExpr "datum.symbol === 'GOOG'")
-
-        enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
-    in
     toVegaLite
-        [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
-        , trans []
+        [ description "Google's stock price over time."
+        , stockData
+        , goog []
         , mark Line []
-        , enc []
+        , baseEnc []
         ]
 
 
 line2 :: VegaLite
 line2 =
-    let
-        des =
-            description "Google's stock price over time with point markers."
-
-        trans =
-            transform . filter (FExpr "datum.symbol === 'GOOG'")
-
-        enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
-    in
     toVegaLite
-        [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
-        , trans []
+        [ description "Google's stock price over time with point markers."
+        , stockData
+        , goog []
         , mark Line [ MColor "green", MPoint (PMMarker [ MColor "purple" ]) ]
-        , enc []
+        , baseEnc []
         ]
 
 
 line3 :: VegaLite
 line3 =
-    let
-        des =
-            description "Stock prices of 5 tech companies over time."
-
-        enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
-                . color [ MName "symbol", MmType Nominal ]
-    in
     toVegaLite
-        [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+        [ description "Stock prices of 5 tech companies over time."
+        , stockData
         , mark Line []
-        , enc []
+        , baseEnc (color [ MName "symbol", MmType Nominal ] [])
         ]
 
 
@@ -118,24 +98,12 @@ line4 =
 
 line5 :: VegaLite
 line5 =
-    let
-        des =
-            description "Google's stock price over time (quantized as a step-chart)."
-
-        trans =
-            transform . filter (FExpr "datum.symbol === 'GOOG'")
-
-        enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
-    in
     toVegaLite
-        [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
-        , trans []
+        [ description "Google's stock price over time (quantized as a step-chart)."
+        , stockData
+        , goog []
         , mark Line [ MInterpolate StepAfter ]
-        , enc []
+        , baseEnc []
         ]
 
 
@@ -145,20 +113,13 @@ line6 =
         des =
             description "Google's stock price over time (smoothed with monotonic interpolation)."
 
-        trans =
-            transform . filter (FExpr "datum.symbol === 'GOOG'")
-
-        enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
-        , trans []
+        , stockData
+        , goog []
         , mark Line [ MInterpolate Monotone ]
-        , enc []
+        , baseEnc []
         ]
 
 
@@ -189,15 +150,13 @@ line8 =
             description "Stock prices of five tech companies over time double encoding price with vertical position and line thickness."
 
         enc =
-            encoding
-                . position X [ PName "date", PmType Temporal, PAxis [ AxFormat "%Y" ] ]
-                . position Y [ PName "price", PmType Quantitative ]
-                . size [ MName "price", MmType Quantitative ]
-                . color [ MName "symbol", MmType Nominal ]
+            baseEnc
+              . size [ MName "price", MmType Quantitative ]
+              . color [ MName "symbol", MmType Nominal ]
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+        , stockData
         , mark Trail []
         , enc []
         ]
@@ -371,3 +330,49 @@ line12 =
             asSpec [ encCos [], mark Line [ MStroke "firebrick" ] ]
     in
     toVegaLite [ des, width 300, height 150, dvals, trans [], layer [ specSin, specCos ] ]
+
+
+-- From https://vega.github.io/vega-lite/examples/line_conditional_axis.html
+-- added in Vega-Lite 4.6.0
+--
+conditionalAxis :: VegaLite
+conditionalAxis =
+  let enc = encoding
+            . position Y [PName "price", PmType Quantitative]
+            . position X [PName "date", PmType Temporal, PAxis axOpts]
+
+      axOpts = [ AxTickCount 8
+               , AxLabelAlign AlignLeft
+               , AxLabelExpr expr
+               , AxLabelOffset 4
+               , AxLabelPadding (-24)
+               , AxTickSize 30
+               , AxDataCondition
+                   cond
+                   (CAxGridDash [] [2, 2])
+               , AxDataCondition
+                   cond
+                   (CAxTickDash [] [2, 2])
+               ]
+
+      expr = "[timeFormat(datum.value, '%b'), timeFormat(datum.value, '%m') == '01' ? timeFormat(datum.value, '%Y') : '']"
+
+      cond = FEqual "value" (Number 1)
+             & FilterOpTrans (MTimeUnit Month)
+
+      yearRange = FRange "date" (NumberRange 2006 2007)
+                  & FilterOpTrans (MTimeUnit Year)
+                  & FCompose
+
+  in toVegaLite [ description "Line chart with conditional axis ticks, labels, and grid."
+                , stockData
+                , goog
+                  . filter yearRange
+                  $ []
+                , width 400
+                , mark Line []
+                , enc []
+                , configure
+                  . configuration (Axis [DomainColor "#ddd", TickColor "#ddd"])
+                  $ []
+                ]

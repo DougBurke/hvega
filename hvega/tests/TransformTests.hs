@@ -35,6 +35,7 @@ testSpecs = [ ("checkordering", checkOrdering)
             , ("weatherbymonth", weatherByMonth)
             , ("weatherbytwomonths", weatherByTwoMonths)
             , ("distances", distances)
+            , ("aggregates", aggregates)
             , ("weathermaxbins", weatherMaxBins)
             , ("windowplot", windowPlot)
             , ("joinaggregateplot", joinAggregatePlot)
@@ -380,6 +381,30 @@ distances =
                          , PAggregate Sum ]
 
   in toVegaLite [ dvals [], enc [], mark Bar [] ]
+
+
+aggregates :: VegaLite
+aggregates =
+  let dvals = dataFromColumns []
+              . dataColumn "xs" (Strings ["A", "A", "B", "A", "B", "B", "C", "C"])
+              . dataColumn "ys" (Numbers [1, 2, 2, 2, 3, 2, 4, 8])
+
+      enc op = encoding (position Y [ PName "ys"
+                                    , PAxis [AxTitle "Y"]
+                                    , PmType Quantitative
+                                    , PAggregate op ] [])
+
+      lyr1 = asSpec [ enc Sum, mark Bar [MStroke "black"] ]
+      lyr2 = asSpec [ enc Product, mark Line [MColor "brown"] ]
+      lyr3 = asSpec [ enc Max, mark Point [MColor "orange"] ]
+      lyr4 = asSpec [ enc Distinct, mark Square [MColor "cyan"] ]
+
+      axOpts = PAxis [AxTitle "X", AxLabelAngle 0]
+
+  in toVegaLite [ dvals []
+                , encoding (position X [PName "xs", axOpts, PmType Ordinal] [])
+                , layer [lyr1, lyr2, lyr3, lyr4]
+                ]
 
 
 activityData :: Data

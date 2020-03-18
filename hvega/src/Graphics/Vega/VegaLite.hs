@@ -342,6 +342,7 @@ module Graphics.Vega.VegaLite
        , VL.ColorGradient(..)
        , VL.GradientProperty(..)
        , VL.TextDirection(..)
+       , VL.BlendMode(..)
 
          -- ** Cursors
          --
@@ -607,6 +608,7 @@ module Graphics.Vega.VegaLite
          -- $axisconfig
 
        , VL.AxisConfig(..)
+       , VL.AxisChoice(..)
 
          -- ** Legend Configuration Options
          --
@@ -667,6 +669,10 @@ module Graphics.Vega.VegaLite
          -- * Update notes
          --
          -- $update
+
+         -- ** Version 0.7
+         --
+         -- $update0700
 
          -- ** Version 0.6
          --
@@ -1055,6 +1061,47 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0700
+-- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of
+-- the Vega-Lite schema.
+--
+-- __New functionality__
+--
+-- The 'VL.BlendMode' type has been added for controlling how marks blend
+-- with their background. This is used with the new 'VL.MBlend' constructor
+-- for marks.
+--
+-- __Breaking Change__
+--
+-- The axis style options for specific data- or mark- types
+-- ('VL.AxisBand', 'VL.AxisDiscrete', 'VL.AxisPoint',
+-- 'VL.AxisQuantitative', and 'VL.AxisTemporal') have been changed to
+-- accept an additional argument (the new 'VL.AxisChoice' type)
+-- which defines which axis (X, Y, or both) the configuration should be
+-- applied to. This is to support new axis configuration options added
+-- in Vega-Lite 4.7.0.
+--
+-- __New constructors__
+--
+-- The 'VL.Operation' type has gained the 'VL.Product' specifier from Vega-Lite
+-- 4.6.0.
+--
+-- The 'VL.TextChannel' has gained 'VL.TStrings' to support multi-line labels.
+--
+-- The 'VL.VAlign' type has gained 'VL.AlignLineTop' and 'VL.AlignLineBottom'
+-- (Vega-Lite 4.6.0).
+--
+-- 'VL.LineBreakStyle' has been added to 'VL.ConfigurationProperty'.
+--
+-- The height of multi-line axis labels can now be set with the
+-- 'VL.LabelLineHeight' and 'VL.AxLabelLineHeight' properties of the
+-- 'VL.AxisConfig' and 'VL.AxisProperty' types (Vega-Lite 4.6.0).
+--
+-- Numeric filter ranges, specified with 'VL.FRange',
+-- can now be lower- or upper-limits -
+-- 'VL.NumberRangeLL' and 'VL.NumberRangeUL' respectively -
+-- added to the 'VL.FilterRange' type.
 
 -- $update0600
 -- The @0.6.0.0@ release updates @hvega@ to support version 4.5 of

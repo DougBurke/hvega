@@ -2365,7 +2365,8 @@ layeredDiversion =
 
 {-|
 
-In this example I display the same data as in 'starCount', but
+In this example (adapted from an example provided by Jo Wood)
+I display the same data as in 'starCount', but
 as two layers: the first is a histogram (using the 'Bar' mark),
 and the second displays the count value as a label with the
 'Text' mark.

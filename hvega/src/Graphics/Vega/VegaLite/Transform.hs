@@ -140,6 +140,12 @@ data Operation
       -- ^ Minimum field value to be used in an aggregation operation.
     | Missing
       -- ^ Count of @null@ or @undefined@ field value to be used in an aggregation operation.
+    | Product
+      -- ^ Product of field values to be used in an aggregate operation.
+      --
+      --   This was added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | Q1
       -- ^ Lower quartile boundary of field values to be used in an aggregation operation.
     | Q3
@@ -177,6 +183,7 @@ operationSpec Mean = "mean"
 operationSpec Median = "median"
 operationSpec Min = "min"
 operationSpec Missing = "missing"
+operationSpec Product = "product"
 operationSpec Q1 = "q1"
 operationSpec Q3 = "q3"
 operationSpec Stderr = "stderr"

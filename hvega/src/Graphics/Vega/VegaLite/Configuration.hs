@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -24,6 +25,7 @@ module Graphics.Vega.VegaLite.Configuration
        , ScaleConfig(..)
        , RangeConfig(..)
        , AxisConfig(..)
+       , AxisChoice(..)
        , LegendConfig(..)
        , TitleConfig(..)
 
@@ -39,6 +41,10 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object)
+
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 import Graphics.Vega.VegaLite.Core
   ( AxisProperty
@@ -120,15 +126,23 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   , PropertySpec
   )
-  
+
 
 {-|
 
 Type of configuration property to customise. See the
 <https://vega.github.io/vega-lite/docs/config.html Vega-Lite documentation>
-for details.
+for details. There are multiple ways to configure the properties
+of an axis, as discussed in the Vega-Lite
+<https://vega.github.io/vega-lite/docs/axis.html#config axis configuration>
+documentation.
 
 Used by 'configuration'.
+
+In @version 0.7.0.0@, the 'AxisBand' , 'AxisDiscrete', 'AxisPoint',
+'AxisQuantitative', and 'AxisTemporal' were changed to accept an
+additional argument ('AxisChoice'), to define which axis the configuration
+should be applied to.
 
 In @version 0.6.0.0@:
 
@@ -190,13 +204,13 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | Axis [AxisConfig]
       -- ^ The default appearance of axes.
-    | AxisBand [AxisConfig]
+    | AxisBand AxisChoice [AxisConfig]
       -- ^ The default appearance of axes with band scaling.
       --
       --   See also 'AxisDiscrete'.
     | AxisBottom [AxisConfig]
       -- ^ The default appearance of the bottom-side axes.
-    | AxisDiscrete [AxisConfig]
+    | AxisDiscrete AxisChoice [AxisConfig]
       -- ^ The default appearance of axes with point or band scales.
       --
       --   See also 'AxisBand' and 'AxisPoint'.
@@ -204,19 +218,19 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | AxisLeft [AxisConfig]
       -- ^ The default appearance of the left-side axes.
-    | AxisPoint [AxisConfig]
+    | AxisPoint AxisChoice [AxisConfig]
       -- ^ The default appearance of axes with point scales.
       --
       --   See also 'AxisDiscrete'.
       --
       --   @since 0.6.0.0
-    | AxisQuantitative [AxisConfig]
+    | AxisQuantitative AxisChoice [AxisConfig]
       -- ^ The default appearance of quantitative axes.
       --
       --   @since 0.6.0.0
     | AxisRight [AxisConfig]
       -- ^ The default appearance of the right-side axes.
-    | AxisTemporal [AxisConfig]
+    | AxisTemporal AxisChoice [AxisConfig]
       -- ^ The default appearance of temporal axes.
       --
       --   @since 0.6.0.0
@@ -323,6 +337,14 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | LineStyle [MarkProperty]
       -- ^ The default appearance of line marks.
+    | LineBreakStyle T.Text
+      -- ^ The delimiter, such as a newline character, upon which to break text
+      --   strings into multiple lines. This can be over-ridden by mark or style configuration
+      --   settings.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | MarkStyle [MarkProperty]
       -- ^ The default mark appearance.
     | MarkNamedStyles [(StyleLabel, [MarkProperty])]
@@ -449,8 +471,29 @@ data ConfigurationProperty
       --   used instead.
 
 
+-- | Which axis should the configuration be applied to?
+--
+--   Added in Vega-Lite 4.7.0.
+--
+--   @since 0.7.0.0
+data AxisChoice
+  = AxXY
+    -- ^ Apply the configuration to both axes.
+    --
+    --   This was the default behavior prior to @0.7.0.0@.
+  | AxX
+    -- ^ Select the X axis.
+  | AxY
+    -- ^ Select the Y axis.
+
+
 toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
-toAxis lbl acs = lbl .= object (map axisConfigProperty acs)
+toAxis lbl acs = ("axis" <> lbl) .= object (map axisConfigProperty acs)
+
+toAxisChoice :: AxisChoice -> T.Text -> [AxisConfig] -> LabelledSpec
+toAxisChoice AxXY lbl = toAxis lbl
+toAxisChoice AxX lbl = toAxis ("X" <> lbl)
+toAxisChoice AxY lbl = toAxis ("Y" <> lbl)
 
 aprops_ :: T.Text -> [AxisProperty] -> LabelledSpec
 aprops_ f mps = f .= object (map axisProperty mps)
@@ -459,18 +502,18 @@ aprops_ f mps = f .= object (map axisProperty mps)
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (AreaStyle mps) = mprops_ "area" mps
 configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Axis acs) = toAxis "axis" acs
-configProperty (AxisBand acs) = toAxis "axisBand" acs
-configProperty (AxisBottom acs) = toAxis "axisBottom" acs
-configProperty (AxisDiscrete acs) = toAxis "axisDiscrete" acs
-configProperty (AxisLeft acs) = toAxis "axisLeft" acs
-configProperty (AxisPoint acs) = toAxis "axisPoint" acs
-configProperty (AxisQuantitative acs) = toAxis "axisQuantitative" acs
-configProperty (AxisRight acs) = toAxis "axisRight" acs
-configProperty (AxisTemporal acs) = toAxis "axisTemporal" acs
-configProperty (AxisTop acs) = toAxis "axisTop" acs
-configProperty (AxisX acs) = toAxis "axisX" acs
-configProperty (AxisY acs) = toAxis "axisY" acs
+configProperty (Axis acs) = toAxis "" acs
+configProperty (AxisBand c acs) = toAxisChoice c "Band" acs
+configProperty (AxisBottom acs) = toAxis "Bottom" acs
+configProperty (AxisDiscrete c acs) = toAxisChoice c "Discrete" acs
+configProperty (AxisLeft acs) = toAxis "Left" acs
+configProperty (AxisPoint c acs) = toAxisChoice c "Point" acs
+configProperty (AxisQuantitative c acs) = toAxisChoice c "Quantitative" acs
+configProperty (AxisRight acs) = toAxis "Right" acs
+configProperty (AxisTemporal c acs) = toAxisChoice c "Temporal" acs
+configProperty (AxisTop acs) = toAxis "Top" acs
+configProperty (AxisX acs) = toAxis "X" acs
+configProperty (AxisY acs) = toAxis "Y" acs
 
 -- configProperty (AxisNamedStyles [(nme, mps)]) = "style" .= object [aprops_ nme mps]
 configProperty (AxisNamedStyles styles) =
@@ -496,6 +539,8 @@ configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
 configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
+
+configProperty (LineBreakStyle s) = "lineBreak" .= s
 
 configProperty (MarkStyle mps) = mprops_ "mark" mps
 -- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
@@ -1200,6 +1245,9 @@ data AxisConfig
       -- ^ The named styles - generated with 'AxisNamedStyles' - to apply to the
       --   axis or axes.
       --
+      --   Added in Vega-Lite 4.7.0 (although accidentally supported in @hvega@
+      --   before this release).
+      --
       --   @since 0.6.0.0
     | BandPosition Double
       -- ^ The default axis band position.
@@ -1311,6 +1359,12 @@ data AxisConfig
       --   @since 0.4.0.0
     | LabelLimit Double
       -- ^ The maximum width of a label, in pixels.
+    | LabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line label text.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | LabelOffset Double
       -- ^ The pixel offset for labels, in addition to 'TickOffset'.
       --
@@ -1459,6 +1513,7 @@ axisConfigProperty (LabelFontSize x) = "labelFontSize" .= x
 axisConfigProperty (LabelFontStyle s) = "labelFontStyle" .= s
 axisConfigProperty (LabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisConfigProperty (LabelLimit x) = "labelLimit" .= x
+axisConfigProperty (LabelLineHeight x) = "labelLineHeight" .= x
 axisConfigProperty (LabelOffset x) = "labelOffset" .= x
 axisConfigProperty (LabelOpacity x) = "labelOpacity" .= x
 axisConfigProperty (LabelOverlap strat) = "labelOverlap" .= overlapStrategyLabel strat

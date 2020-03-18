@@ -26,6 +26,7 @@ module Graphics.Vega.VegaLite.Mark
        , ColorGradient(..)
        , GradientProperty(..)
        , TextDirection(..)
+       , BlendMode(..)
 
          -- not for external export
        , mprops_
@@ -60,6 +61,7 @@ import Graphics.Vega.VegaLite.Foundation
   , VAlign
   , fromColor
   , fromDS
+  , fromT
   , cursorLabel
   , fontWeightSpec
   , orientationSpec
@@ -243,6 +245,12 @@ data MarkProperty
       --
       --   The ideal value for this is either @0@ (preferred by statisticians)
       --   or @1@ (the Vega-Lite default value, D3 example style).
+    | MBlend BlendMode
+      -- ^ How should the item be blended with its background?
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | MBorders [MarkProperty]
       -- ^ Border properties for an 'ErrorBand' mark. See also 'MNoBorders'.
       --
@@ -626,6 +634,10 @@ markProperty (MBaseline va) = "baseline" .= vAlignLabel va
 markProperty (MBandSize x) = "bandSize" .= x
 
 markProperty (MBinSpacing x) = "binSpacing" .= x
+
+-- only available in AreaConfig, BarConfig, LineConfig, MarkConfig,
+--                   MarkDef, OverlayMarkDef, RectConfig, TickConfig
+markProperty (MBlend bl) = "blend" .= blendModeSpec bl
 
 -- only available in ErrorBand[Config|Def], PartsMixins<ErrorBandPart>
 markProperty MNoBorders = "borders" .= False
@@ -1018,3 +1030,71 @@ data TextDirection
 textdirLabel :: TextDirection -> T.Text
 textdirLabel LTR = "ltr"
 textdirLabel RTL = "rtl"
+
+
+-- | The blend mode for drawing an item on its background.
+--
+--   This is based on CSS <https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode mix-blend-mode>
+--   and the default is 'BMNormal' (at least for SVG output).
+--
+--   Added in Vega-Lite 4.6.0.
+--
+--   It is currently unclear how this works with canvas outputs
+--   (see Vega-Lite <https://github.com/vega/vega-lite/pull/6033 #6033>
+--   and <https://github.com/vega/vega-lite/issues/6100 #6100>
+--   for more information).
+--
+--   @since 0.7.0.0
+
+data BlendMode
+  = BMNormal
+    -- ^ @normal@ mode (this maps to @null@ in Vega-Lite).
+  | BMMultiply
+    -- ^ @multiply@ mode.
+  | BMScreen
+    -- ^ @screen@ mode.
+  | BMOverlay
+    -- ^ @overlay@ mode.
+  | BMDarken
+    -- ^ @daren@ mode.
+  | BMLighten
+    -- ^ @lighten@ mode.
+  | BMColorDodge
+    -- ^ @color-dodge@ mode.
+  | BMColorBurn
+    -- ^ @color-burn@ mode.
+  | BMHardLight
+    -- ^ @hard-light@ mode.
+  | BMSoftLight
+    -- ^ @soft-light@ mode.
+  | BMDifference
+    -- ^ @difference@ mode.
+  | BMExclusion
+    -- ^ @exclusion@ mode.
+  | BMHue
+    -- ^ @hue@ mode.
+  | BMSaturation
+    -- ^ @saturation@ mode.
+  | BMColor
+    -- ^ @color@ mode.
+  | BMLuminosity
+    -- ^ @luminosity@ mode.
+
+
+blendModeSpec :: BlendMode -> VLSpec
+blendModeSpec BMNormal = A.Null
+blendModeSpec BMMultiply = fromT "multiply"
+blendModeSpec BMScreen = fromT "screen"
+blendModeSpec BMOverlay = fromT "overlay"
+blendModeSpec BMDarken = fromT "darken"
+blendModeSpec BMLighten = fromT "lighten"
+blendModeSpec BMColorDodge = fromT "color-dodge"
+blendModeSpec BMColorBurn = fromT "color-burn"
+blendModeSpec BMHardLight = fromT "hard-light"
+blendModeSpec BMSoftLight = fromT "soft-light"
+blendModeSpec BMDifference = fromT "difference"
+blendModeSpec BMExclusion = fromT "exclusion"
+blendModeSpec BMHue = fromT "hue"
+blendModeSpec BMSaturation = fromT "saturation"
+blendModeSpec BMColor = fromT "color"
+blendModeSpec BMLuminosity = fromT "luminosity"

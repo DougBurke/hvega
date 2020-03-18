@@ -1313,6 +1313,12 @@ data AxisProperty
       -- ^ The maximum width of a label, in pixels.
       --
       --   @since 0.4.0.0
+    | AxLabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line label text.
+      --
+      --   Added in Vega-Lite 4.6.0.
+      --
+      --   @since 0.7.0.0
     | AxLabelOffset Double
       -- ^ The pixel offset for labels, in addition to 'AxTickOffset'.
       --
@@ -1541,6 +1547,7 @@ axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
 axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
 axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
 axisProperty (AxLabelLimit x) = "labelLimit" .= x
+axisProperty (AxLabelLineHeight x) = "labelLineHeight" .= x
 axisProperty (AxLabelOffset x) = "labelOffset" .= x
 axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
 axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
@@ -1751,7 +1758,7 @@ data BooleanOp
       --   'Data.Function.&').
       --
       --   @
-      --   'filter' ('FRange' "date" ('DateRange' ['Graphics.Vega.VegaLite.DTYear' 2010] ['Graphics.Vega.VegaLite.DTYear' 2017])
+      --   'filter' ('FRange' "date" ('NumberRange' 2010 2017)
       --           & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.Year')
       --           & 'FCompose'
       --           )
@@ -1902,6 +1909,8 @@ filterProperty (FSelection selName) = ["selection" .= selName]
 filterProperty (FRange field vals) =
   let ans = case vals of
               NumberRange mn mx -> map toJSON [mn, mx]
+              NumberRangeLL mn -> [toJSON mn, A.Null]
+              NumberRangeUL mx -> [A.Null, toJSON mx]
               DateRange dMin dMax -> [process dMin, process dMax]
 
       process [] = A.Null
@@ -1933,14 +1942,28 @@ trFilterSpec _ (FCompose boolExpr) = booleanOpSpec boolExpr
 trFilterSpec mchan fi = object (markChannelProperty mchan <> filterProperty fi)
 
 
-{-|
+-- | A pair of filter range data values, used with 'FRange'.
 
-A pair of filter range data values. The first argument is the inclusive minimum
-vale to accept and the second the inclusive maximum.
--}
 data FilterRange
     = NumberRange Double Double
+      -- ^ Select between these two values (both limits are inclusive).
+    | NumberRangeLL Double
+      -- ^ A lower limit (inclusive).
+      --
+      --   @since 0.7.0.0
+    | NumberRangeUL Double
+      -- ^ An upper limit (inclusive).
+      --
+      --   @since 0.7.0.0
     | DateRange [DateTime] [DateTime]
+      -- ^ Select between these two dates (both limits are inclusive).
+      --
+      --   If a limit is the empty list then the filter is treated as
+      --   a limit only on the other value, so
+      --   @DateRange [] ['Graphics.Vega.VegaLite.DTYear' 2019]@
+      --   acts as an upper-limit on the date range. One of the two
+      --   limits __should__ be defined, but there is no enforcement
+      --   of this.
 
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
@@ -2184,7 +2207,7 @@ data TextChannel
     | TTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with a text channel.
     | TString T.Text
-      -- ^ A literal value for encoding a text property channel
+      -- ^ A literal value for encoding a text property channel. See also 'TStrings'.
       --
       --   This can be useful for a text annotation, such as:
       --
@@ -2196,6 +2219,10 @@ data TextChannel
       --   @
       --
       --   @since 0.5.0.0
+    | TStrings [T.Text]
+      -- ^ A multi-line value. See also 'TString'.
+      --
+      --   @since 0.7.0.0
 
 textChannelProperty :: TextChannel -> [LabelledSpec]
 textChannelProperty (TName s) = [field_  s]
@@ -2215,6 +2242,7 @@ textChannelProperty (TDataCondition tests elseClause) =
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
   selCond_ textChannelProperty selName ifClause elseClause
 textChannelProperty (TString s) = ["value" .= s]
+textChannelProperty (TStrings xs) = ["value" .= xs]
 
 
 -- | Properties of an ordering channel used for sorting data fields.
@@ -4130,7 +4158,7 @@ lookup key1 (_, spec) key2 lfields ols =
       jj :: A.ToJSON a => a -> Maybe A.Value
       jj = Just . toJSON
 
-      res = case lfields of               
+      res = case lfields of
              LuFields fs -> ( jj fs, Nothing, Nothing )
              LuFieldAs fas -> ( get1 fas, get2 fas, Nothing )
              LuAs s -> ( Nothing, jj s, Nothing )
