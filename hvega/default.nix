@@ -1,2 +1,2 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc882" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc883" }:
 nixpkgs.pkgs.haskell.packages.${compiler}.callPackage ./hvega.nix { }
