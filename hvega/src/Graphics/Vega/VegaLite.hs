@@ -1082,6 +1082,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- applied to. This is to support new axis configuration options added
 -- in Vega-Lite 4.7.0.
 --
+-- The @ChTooltip@ 'VL.Channel' constructor has been removed as support
+-- for this channel type was dropped in Vega-Lite 4.
+--
 -- __New constructors__
 --
 -- The 'VL.Operation' type has gained the 'VL.Product' specifier from Vega-Lite

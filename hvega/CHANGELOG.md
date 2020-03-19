@@ -21,6 +21,9 @@ have been changed to accept an additional argument (the new
 configuration should be applied to. This is to support new axis
 configuration options added in Vega-Lite 4.7.0.
 
+The `ChTooltip` `Channel` constructor has been removed as support
+for this channel type was dropped in Vega-Lite 4.
+
 ### New constructors
 
 The `Operation` type has gained the `Product` specifier from Vega-Lite

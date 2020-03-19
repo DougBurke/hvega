@@ -1072,6 +1072,9 @@ ttContentLabel TTNone = "null"
 --   'Graphics.Vega.VegaLite.BLChannel', 'Graphics.Vega.VegaLite.BLChannelEvent',
 --   'Graphics.Vega.VegaLite.ByChannel', and 'Graphics.Vega.VegaLite.Encodings'
 --   constructors.
+--
+--   Changed in @0.7.0.0@: the @ChTooltip@ channel was removed as it was
+--   dropped in Vega-Lite 4.0.
 
 -- assuming this is based on schema 3.3.0 #/definitions/SingleDefUnitChannel
 
@@ -1110,8 +1113,6 @@ data Channel
       -- ^ @since 0.4.0.0
     | ChText
       -- ^ @since 0.4.0.0
-    | ChTooltip
-      -- ^ @since 0.4.0.0
 
 
 channelLabel :: Channel -> T.Text
@@ -1136,7 +1137,6 @@ channelLabel ChStrokeDash = "strokeDash"
 channelLabel ChStrokeWidth = "strokeWidth"
 channelLabel ChStrokeOpacity = "strokeOpacity"
 channelLabel ChText = "text"
-channelLabel ChTooltip = "tooltip"
 
 
 {-|
