@@ -46,43 +46,178 @@ import Prelude hiding (filter, lookup, repeat)
 @
 
 In the following example, we'll assume the latter.
-
-Let's say we have the following plot declaration in a module:
-
-@
-\{\-\# language OverloadedStrings \#\-\}
-
-vl1 =
-  let desc = "A very exciting bar chart"
-
-      dat = 'VL.dataFromRows' ['VL.Parse' [("start", 'VL.FoDate' "%Y-%m-%d")]]
-            . 'VL.dataRow' [("start", 'VL.Str' "2011-03-25"), ("count", 'VL.Number' 23)]
-            . 'VL.dataRow' [("start", 'VL.Dtr' "2011-04-02"), ("count", 'VL.Number' 45)]
-            . 'VL.dataRow' [("start", 'VL.Str' "2011-04-12"), ("count", 'VL.Number' 3)]
-
-      barOpts = ['VL.MOpacity' 0.4, 'VL.MColor' "teal"]
-
-      enc = 'VL.encoding'
-            . 'VL.position' 'VL.X' ['VL.PName' "start", 'VL.PmType' 'VL.Temporal', 'VL.PAxis' ['VL.AxTitle' "Inception date"]]
-            . 'VL.position' 'VL.Y' ['VL.PName' "count", 'VL.PmType' 'VL.Quantitative']
-
-  in 'VL.toVegaLite' ['VL.description' desc, 'VL.background' "white"
-                , dat [], 'VL.mark' 'VL.Bar' barOpts, enc []]
-@
-
-We can inspect how the encoded JSON looks like in an GHCi session:
-
-@
-> 'A.encode' $ 'VL.fromVL' vl1
-> "{\"mark\":{\"color\":\"teal\",\"opacity\":0.4,\"type\":\"bar\"},\"data\":{\"values\":[{\"start\":\"2011-03-25\",\"count\":23},{\"start\":\"2011-04-02\",\"count\":45},{\"start\":\"2011-04-12\",\"count\":3}],\"format\":{\"parse\":{\"start\":\"date:'%Y-%m-%d'\"}}},\"$schema\":\"https:\/\/vega.github.io\/schema\/vega-lite\/v4.json\",\"encoding\":{\"x\":{\"field\":\"start\",\"type\":\"temporal\",\"axis\":{\"title\":\"Inception date\"}},\"y\":{\"field\":\"count\",\"type\":\"quantitative\"}},\"background\":\"white\",\"description\":\"A very exciting bar chart\"}"
-@
-
-The produced JSON can then be processed with vega-lite, which renders the following image:
+The aim is to create the following visualization:
 
 <<images/example.png>>
 
-which can also be
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEC2CGBOBrSAuMxIGMD2Abb8qUALgKay6QA0U2ADrJgJbECeRADAHQAsNkbOqSKQARgkgBfKuCgATWMVhFQECJABuFAK6kAzkQDastekh6l8YiIBMHAIz2AtBwDMTmwFZqUHNoB21mg2rtImahgWCEFQdo4uPC42PljYATE8nmGmEJGWMZBxzhyJ9sn8foFEoeEAujKmkABmBHAxGAzwesJoedEiCmQoAOQApACaTqPQU3LDUpKy2VAAJHqYABakcCIbxMR0eigA9McapADmsFwXLBvaolxM2MfrW3Bnl7BOuCykZ64uAArPTYfzUWSQUj+HByJj+C4qcKQAAeSJyUCaTFIuDkIiiVghGIErCEIjI0DoBAoRJykFgKKYBl6AhYuB6UAAkjDSHRiM9-GBBsJFqZlup2CysTi8WhUukUoIOZAAI7aWCBFiKJjnKRLBpQcSYRAXeBpfyyqAAdw2f1pkDk+kw8CYfIFIgAgmBzvBWGBSCjmPyEWBxPAwJt+gbUv4sYjeotJEA displayed in the Vega Editor>.
+However this is missing the interactive elements of the visualization, primarily
+selection and zooming in the top plot changes the axis ranges of the bottom two
+plots. This interactivity requires a Vega-Lite viewer such as
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhJUBLAG2gFNY8oATeaAVywDpKb6A5eFloEADAF0wAXmlgA5ADVZkAL4AaYhDI86DfJBbsuWeAHNEFdk1pgAPGAAsK9SVKR4yRvvgBPD6qgAxvBUAWxUrLSeBhycAFZMYAC0YABM9gCsAByZ9gCcnCIqxGLOgeiIlCaMoC5uAB4UHvg1LlDQFlS0AGLl0ADqtBQmABbQnoiYxlSQpbXhAEa0VD2I0ADKFABekfgAjPazJDAd3b0b24y7AGwaYMrEasRe0PDVkGyw03oG8AD0i3QqCZaGxkLREikRJDEiIAMyJXb5WLIcpOJ4ANwC5SCY3wRBcLVqw0GI1xYF26REhwgkGMsAA1m90AAHeABCzeRgiTjpfwwbzMnZQZnoCirGZQHidJiMVDBMGPVpQADuFCY0GGjCuIiptxpYM6AXaqOaeqO81goM1pqVtTFFjedUYBAhkP8ux1JSgnLxMJ5-hSPLEittNNoiCxTDFJiahEgTr5nJKZtq0AFQsgYp06OCkBTdzNIdq4cj0eq+cgWKomHLoZplCWMr02n4gki1Na-MF43QWDFuY7c1owMQTdI+bm8EWyzOWyF+0Hnfa0E6ni61B0MwnR2XnRW6znlxudYLoaLneQw3g3ea5Aojc8LdgAiEEq7GYmfcQufPtSdNrrO8H2+Hw-G3d9PAARzYJBl1YCh0XbcD4AaWMyF3DMABFQLAZAxQCawACkkBg2BvHJAMoUKe4z0XSAfXHE8gKoMdaVMcxLCQpjkCCVdbyYXt4DFZ0EX8WFg0XfVMDJfRaB48Mo0QKpJLadMoJg1YLHgxCtyYlDGjeDDPAAWXYiw2CsIoz0LW5z0JI5kEFAJa1tSBiSGUZLkpOi6UZW8WTZDkuX9VSb2FUVxT5KVaDHOUqAVOjVXVa0wG1XVQ0gEt0EUqoAIyqsazywCGxYx8N1bV8VJpNMwsgT9+2mKqoE6Ecx3spiFiWfdznnA5t1TE413Khgmuqk5usPPZjxPU861-C8rzCrR71K5thpfdtQo-XsGrRJj-0YmbmNYlhfF0o6eOCIUyAE4xhNvEqTtAt8DVoI0KBNKALStFR5qVCC9Gg2CtPaHSmvqAzbyM-BEDCKgaLmlT6JcpjHs8YwzHMyzwcuvjXFuoTEDeNG9AxjiLM2yBXvez7IG+y9fpx6SojkgjRzLcGaozIHNJeUGuKO-S0OOFchVhqh4e3BGlWlkh5srdAqA4FBLg7cg2VoMl2qOEnJXWttzv+4l4CsXRDoyzqqAAQQjYZCqgBTDdcy2AFE6mZM3IFkddeFgfBZDAABqMBoi4S2nf+y2AAUTZyxgIT6jqpy62cLimpHobAcWqCRy2raoIYib0WAPLGfM-q2nsv1zQs1ccwKlMuERbOKUpIAAEh44ljE8UZoGZZBcF+X5EJMeBOBMCxhjYeZOA+34u9oYwR+HeBEgLugR-sOIUSJtvM-smBaDqGSACFNaWYcQTBWRkDAMmsesIR3A+Jfw2gZB-CrcI6ASeZyKtlbeQawADyTtyCp3nJkB4bcrA8RLsyY0RcoAAAl0DKjAFeO+59ATAlBLQW+YALSl0QHJO+OYS4xX8PMdwMUwDlBDqweAYBv4RD-gAoBoCwAAAo+4DyHr8ZUQjODwHgOiFEnBMAmF+AASk4GAAAmugNguE7ZhASPKdAYBqzoHpGAVgmDoD90HsPaAqojH0E4FiLA-wL5UHmOgaA+jRyGOMQIyeGoZ5WN7L8YYFBmTMnpLQWxgIHHQHkQASSccqdw+iJZgA1NYBAwJ6GIFwugdkwR74xQoMwgxiTcIvFgE49AqBUhUU4HmZQQA the Vega Editor>.
+
+It is rather lengthy, as it includes
+data tranformation (sub-setting the data and creating a
+new column), automatic faceting (that is, creating separate plots
+for unique values of a data column), interactive elements
+(the ability to filter a plot by selecting a subset in
+another element), and some basic configuration and styling
+(primarily to change the text sizes). The
+"Graphics.Vega.Tutorials.VegaLite" tutorial should be
+reviewed to understand how the plot works!
+
+It's aim is to show the recent community measurements of the
+brightness of
+<https://en.wikipedia.org/wiki/Betelgeuse the star Betelgeuse>,
+which caused much interest in the Astronomical world at the
+start of 2020 as it became much fainter than normal
+(although it is massive enough to go supernova, it is not
+expected to happen for quite a while yet). The data shown
+is based on data collated by the
+<https://www.aavso.org/ AAVSO>, and converted to JSON format,
+with the primary columns of interest being \"@jd@\" (the
+date of the observation, in the
+<https://en.wikipedia.org/wiki/Julian_day Julian day> system),
+\"@magnitude@\" (the brightness of the star, reported
+as an
+<https://en.wikipedia.org/wiki/Apparent_magnitude apparent magnitude>),
+and \"@filterName\"@ (the filter through which the measurement was
+made). For display purposes we are only going to use the
+\"@Vis.@\" and \"@V@\" filters (the former is a by-eye estimate,
+which is less accurate but has the advantage of having been used
+for a long time, and the second is measured from a in image
+taken by a <https://en.wikipedia.org/wiki/Charge-coupled_device CCD detector>,
+which is more accurate and repeatable, but more costly to obtain),
+and the date field is going to be converted into the number of
+days since the start of 2020 (via a little bit of subtraction).
+For \"historical reasons\", the magnitude system used by Astronomers
+to measure how bright a system is reversed, so that larger magnitudes
+mean fainter systems. For this reason, the magnitude axis is reversed
+in this visualization, so that as Betelgeuse dims the values drop.
+
+@
+\{\-\# LANGUAGE OverloadedStrings \#\-\}
+
+betelgeuse =
+  let desc = \"How has Betelgeuse's brightness varied, based on data collated by AAVSO (https:\/\/www.aavso.org\/). \" ++
+             \"You should also look at https:\/\/twitter.com\/betelbot and https:\/\/github.com\/hippke\/betelbot. \" ++
+             \"It was all the rage on social media at the start of 2020.\"
+
+      titleStr = \"Betelegeuse's magnitude measurements, collated by AAVSO\"
+
+      -- height and width of individual plots (in pixels)
+      w = 'VL.width' 600
+      h = 'VL.height' 150
+
+      -- Define the properties used for the "position" channels. For this example
+      -- it makes sense to define as functions since they are used several times.
+      --
+      pos1Opts fld ttl = ['VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PAxis' ['VL.AxTitle' ttl]]
+      x1Opts = pos1Opts \"days\" \"Days since January 1, 2020\"
+      y1Opts = pos1Opts \"magnitude\" \"Magnitude\" ++ ['VL.PSort' ['VL.Descending'], y1Range]
+      y1Range = 'VL.PScale' ['VL.SDomain' ('VL.DNumbers' [-1, 3])]
+
+      -- The filter name is used as a facet, but also to define the
+      -- color and shape of the points.
+      --
+      filtOpts = ['VL.MName' \"filterName\", 'VL.MmType' 'VL.Nominal']
+      filtEnc = 'VL.color' ('VL.MLegend' ['VL.LTitle' \"Filter\", 'VL.LTitleFontSize' 16, 'VL.LLabelFontSize' 14] : filtOpts)
+                . 'VL.shape' filtOpts
+
+      -- In an attempt to make the V filter results visible, I have chosen
+      -- to use open symbols. It doesn't really work out well.
+      --
+      circle = 'VL.mark' 'VL.Point' ['VL.MOpacity' 0.5, 'VL.MFilled' False]
+
+      -- What is plotted in the "overview" plot?
+      --
+      encOverview = 'VL.encoding'
+                    . 'VL.position' 'VL.X' x1Opts
+                    . 'VL.position' 'VL.Y' y1Opts
+                    . filtEnc
+
+      -- Select roughly the last year's observations (roughly the length of
+      -- time that Betelgeuse is visible)
+      --
+      xlim = ('VL.Number' (-220), 'VL.Number' 100)
+      ylim = ('VL.Number' (-0.5), 'VL.Number' 2.5)
+      overview = 'VL.asSpec' [ w
+                        , h
+                        , encOverview []
+                        , 'VL.selection'
+                          . 'VL.select' selName 'VL.Interval' ['VL.Encodings' ['VL.ChX', 'VL.ChY']
+                                                    , 'VL.SInitInterval' (Just xlim) (Just ylim)
+                                                    ]
+                          $ []
+                        , circle
+                        ]
+
+      -- What is plotted in the "detail" plot?
+      --
+      selName = \"brush\"
+      pos2Opts fld = [ 'VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PAxis' ['VL.AxNoTitle']
+                     , 'VL.PScale' ['VL.SDomain' ('VL.DSelectionField' selName fld)] ]
+      x2Opts = pos2Opts \"days\"
+      y2Opts = pos2Opts \"magnitude\" ++ ['VL.PSort' ['VL.Descending']]
+
+      encDetail = 'VL.encoding'
+                  . 'VL.position' 'VL.X' x2Opts
+                  . 'VL.position' 'VL.Y' y2Opts
+                  . filtEnc
+
+      detail = 'VL.asSpec' [ w
+                      , h
+                      , encDetail []
+                      , circle
+                      ]
+
+      -- Control the labelling of the faceted plots. Here we move the
+      -- label so that it appears at the top-right corner of each plot
+      -- and remove the title.
+      --
+      headerOpts = [ 'VL.HLabelFontSize' 16
+                   , 'VL.HLabelAlign' 'VL.AlignRight'
+                   , 'VL.HLabelAnchor' 'VL.AEnd'
+                   , 'VL.HLabelPadding' (-24)
+                   , 'VL.HNoTitle'
+                   , 'VL.HLabelExpr' \"'Filter: ' + datum.label\"
+                   ]
+
+      -- The "detail" plot has multiple rows, one for each filter.
+      --
+      details = 'VL.asSpec' [ 'VL.columns' 1
+                       , 'VL.facetFlow' [ 'VL.FName' \"filterName\"
+                                   , 'VL.FmType' 'VL.Nominal'
+                                   , 'VL.FHeader' headerOpts
+                                   ]
+                       , 'VL.spacing' 10
+                       , 'VL.specification' detail
+                       ]
+
+  in 'VL.toVegaLite' [ 'VL.description' desc
+                , 'VL.title' titleStr ['VL.TFontSize' 18]
+                , 'VL.dataFromUrl' \"data/betelgeuse-2020-03-19.json\" []
+                , 'VL.transform'
+                  -- concentrate on the two filters with a reasonable number of points
+                  . 'VL.filter' ('VL.FExpr' \"datum.filterName[0] === \'V\'\")
+                  -- remove some \"outliers\"
+                  . 'VL.filter' ('VL.FExpr' \"datum.magnitude < 4\")
+                  -- subtract Jan 1 2020 (start of day, hence the .0 rather than .5)
+                  . 'VL.calculateAs' \"datum.jd - 2458849.0\" \"days\"
+                  $ []
+                , 'VL.vConcat' [overview, details]
+                , 'VL.configure'
+                  -- Change axis titles from bold- to normal-weight,
+                  -- and increase the size of the labels
+                  . 'VL.configuration' ('VL.Axis' ['VL.TitleFontWeight' 'VL.Normal', 'VL.TitleFontSize' 16, 'VL.LabelFontSize' 14])
+                  $ []
+                ]
+
+@
+
+The 'VL.fromVL' function will create the JSON representation of the visualization,
+which can then be passed to a Vega-Lite viewer (or a routine like 'VL.toHtmlFile'
+can be used to create a HTML file that will display the visualization using the
+<https://github.com/vega/vega-embed Vega-Embed> Javascript library).
 
 Output can be achieved in a Jupyter Lab session with the @vlShow@ function,
 provided by @ihaskell-vega@, or 'VL.toHtmlFile' can be used to write out a page of
