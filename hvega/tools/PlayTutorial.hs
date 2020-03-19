@@ -57,34 +57,110 @@ import System.Exit (exitFailure)
 import System.FilePath ((</>), FilePath)
 import System.IO (hPutStrLn, stderr)
 
+import Prelude hiding (filter)
+
 -- Could use TH to get at the tutorials, but for now hard code the names.
 
 -- The intro visualization used in the API documentation (not in
 -- the tutorial).
 --
-vl1 :: VegaLite
-vl1 =
-  let desc = "A very exciting bar chart"
+-- How does Betelgeuse vary with time?
+--
+betelgeuse :: VegaLite
+betelgeuse =
+  let desc = "How has Betelgeuse's brightness varied, based on data collated by AAVSO (https://www.aavso.org/). You should also look at https://twitter.com/betelbot and https://github.com/hippke/betelbot. It was all the rage on social media at the start of 2020."
 
-      dat = dataFromRows [Parse [("start", FoDate "%Y-%m-%d")]]
-            . dataRow [("start", Str "2011-03-25"), ("count", Number 23)]
-            . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
-            . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
+      titleStr = "Betelegeuse's magnitude measurements, collated by AAVSO"
 
-      barOpts = [MOpacity 0.4, MColor "teal"]
+      -- height and width of individual plots
+      w = width 600
+      h = height 150
 
-      enc = encoding
-            . position X [PName "start", PmType Temporal, PAxis [AxTitle "Inception date"]]
-            . position Y [PName "count", PmType Quantitative]
+      pos1Opts fld ttl = [PName fld, PmType Quantitative, PAxis [AxTitle ttl]]
+      x1Opts = pos1Opts "days" "Days since January 1, 2020"
+      y1Opts = pos1Opts "magnitude" "Magnitude" ++ [PSort [Descending], yRange]
+      yRange = PScale [SDomain (DNumbers [-1, 3])]
 
-  in toVegaLite [description desc, background "white"
-                , dat [], mark Bar barOpts, enc []]
+      filtOpts = [MName "filterName", MmType Nominal]
+      filtEnc = color (MLegend [ LTitle "Filter", LTitleFontSize 16, LLabelFontSize 14 ] : filtOpts)
+                . shape filtOpts
+
+      circle = mark Point [ MOpacity 0.5, MFilled False ]
+
+      encOverview = encoding
+                    . position X x1Opts
+                    . position Y y1Opts
+                    . filtEnc
+
+      selName = "brush"
+      pos2Opts fld = [PName fld, PmType Quantitative, PAxis [AxNoTitle],
+                     PScale [SDomain (DSelectionField selName fld)]]
+      x2Opts = pos2Opts "days"
+      y2Opts = pos2Opts "magnitude" ++ [PSort [Descending]]
+
+      encDetail = encoding
+                  . position X x2Opts
+                  . position Y y2Opts
+                  . filtEnc
+
+      xlim = (Number (-220), Number 100)
+      ylim = (Number (-0.5), Number 2.5)
+      overview = asSpec [ w
+                        , h
+                        , encOverview []
+                        , selection
+                          . select selName Interval [ Encodings [ChX, ChY]
+                                                    , SInitInterval (Just xlim) (Just ylim)
+                                                    ]
+                          $ []
+                        , circle
+                        ]
+
+      detailPlot = asSpec [ w
+                          , h
+                          , encDetail []
+                          , circle
+                          ]
+
+      headerOpts = [ HLabelFontSize 16
+                   , HLabelAlign AlignRight
+                   , HLabelAnchor AEnd
+                   , HLabelPadding (-24)
+                   , HNoTitle
+                   , HLabelExpr "'Filter: ' + datum.label"
+                   ]
+
+      details = asSpec [ columns 1
+                       , facetFlow [ FName "filterName"
+                                   , FmType Nominal
+                                   , FHeader headerOpts
+                                   ]
+                       , spacing 10
+                       , specification detailPlot
+                       ]
+
+  in toVegaLite [ description desc
+                , title titleStr [ TFontSize 18 ]
+                , dataFromUrl "data/betelgeuse-2020-03-19.json" []
+                , transform
+                  -- concentrate on the two filters with a reasonable number of points
+                  . filter (FExpr "datum.filterName[0] === 'V'")
+                  -- remove some "outliers"
+                  . filter (FExpr "datum.magnitude < 4")
+                  -- subtract Jan 1 2020 (start of day, hence the .0 rather than .5)
+                  . calculateAs "datum.jd - 2458849.0" "days"
+                  $ []
+                , vConcat [overview, details]
+                , configure
+                  . configuration (Axis [ TitleFontWeight Normal, TitleFontSize 16, LabelFontSize 14 ])
+                  $ []
+                ]
 
 
 -- Associate a name with each visualization
 --
 vl :: [(String, VegaLite)]
-vl = [ ("api-vl1", vl1)
+vl = [ ("api-betelgeuse", betelgeuse)
      , ("stripplot", VL.stripPlot)
      , ("stripplotwithbackground", VL.stripPlotWithBackground)
      , ("stripploty", VL.stripPlotY)

@@ -3444,7 +3444,7 @@ and dependent fields, respectively).
 
 @
 transLS = 'transform'
-          . 'regression' \"yraw\" \"xraw\" [ 'LsAs' \"xrg\" \"yrg\" ]
+          . 'regression' \"yraw\" \"xraw\" [ 'RgAs' \"xrg\" \"yrg\" ]
 
 encRaw = 'encoding'
          . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"xraw\", 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]

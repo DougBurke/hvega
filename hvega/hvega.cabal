@@ -245,3 +245,21 @@ executable    playtutorial
 
   default-language:    Haskell2010
   ghc-options:         -Wall
+
+  
+executable    getbetelgeuse
+  hs-source-dirs:      tools/
+  main-is:             GetBetelgeuse.hs
+
+  if flag(tools)
+    build-depends:     aeson
+                     , base
+                     , bytestring
+                     , http-conduit >= 2.3 && < 2.4
+                     , tagsoup >= 0.14 && < 0.15
+                     , text
+  else
+    buildable:         False
+
+  default-language:    Haskell2010
+  ghc-options:         -Wall

@@ -1,0 +1,78 @@
+{
+    "transform": [
+        {
+            "as": "y",
+            "calculate": "cos(datum.theta)"
+        }
+    ],
+    "data": {
+        "sequence": {
+            "as": "theta",
+            "start": 0,
+            "step": 0.1,
+            "stop": 6.28
+        }
+    },
+    "vconcat": [
+        {
+            "mark": "line",
+            "selection": {
+                "brush": {
+                    "init": {
+                        "x": [
+                            0.2,
+                            6
+                        ],
+                        "y": [
+                            -0.8,
+                            0.8
+                        ]
+                    },
+                    "encodings": [
+                        "x",
+                        "y"
+                    ],
+                    "type": "interval"
+                }
+            },
+            "encoding": {
+                "x": {
+                    "field": "theta",
+                    "type": "quantitative",
+                    "axis": null
+                },
+                "y": {
+                    "field": "y",
+                    "type": "quantitative",
+                    "axis": null
+                }
+            }
+        },
+        {
+            "mark": "circle",
+            "encoding": {
+                "x": {
+                    "field": "theta",
+                    "scale": {
+                        "domain": {
+                            "field": "theta",
+                            "selection": "brush"
+                        }
+                    },
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "y",
+                    "scale": {
+                        "domain": {
+                            "selection": "brush",
+                            "encoding": "y"
+                        }
+                    },
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+}

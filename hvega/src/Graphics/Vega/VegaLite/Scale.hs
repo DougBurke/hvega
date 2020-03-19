@@ -29,10 +29,14 @@ import Data.Aeson ((.=), object, toJSON)
 
 
 import Graphics.Vega.VegaLite.Foundation
-  ( fromT
+  ( Channel
+  , FieldName
+  , fromT
+  , channelLabel
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
+  , SelectionLabel
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
@@ -55,8 +59,25 @@ data ScaleDomain
       -- ^ String values that define a scale domain.
     | DDateTimes [[DateTime]]
       -- ^ Date-time values that define a scale domain.
-    | DSelection T.Text
+    | DSelection SelectionLabel
       -- ^ Scale domain based on a named interactive selection.
+      --   See also 'DSelectionField' and 'DSelectionChannel', which should
+      --   be used when a selection is
+      --   [projected](https://vega.github.io/vega-lite/docs/project.html)
+      --   over multiple fields or encodings.
+      --
+      --   In @0.7.0.0@ the argument type was changed to @SelectionLabel@
+      --   (which is a type synonym for @Text@).
+    | DSelectionField SelectionLabel FieldName
+      -- ^ Use the given selection /and/ associated field, when the selection
+      --   is projected over multiple fields or encodings.
+      --
+      --   @since 0.7.0.0
+    | DSelectionChannel SelectionLabel Channel
+      -- ^ Use the given selection /and/ associated encoding, when the selection
+      --   is projected over multiple fields or encodings.
+      --
+      --   @since 0.7.0.0
     | DUnionWith ScaleDomain
       -- ^ Combine the domain of the data with the provided domain.
       --
@@ -79,6 +100,10 @@ scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
 scaleDomainSpec (DDateTimes dts) = toJSON (map (object . map dateTimeProperty) dts)
 scaleDomainSpec (DStrings cats) = toJSON (map toJSON cats)
 scaleDomainSpec (DSelection selName) = object ["selection" .= selName]
+scaleDomainSpec (DSelectionField selName field) = object [ "selection" .= selName
+                                                         , "field" .= field ]
+scaleDomainSpec (DSelectionChannel selName ch) = object [ "selection" .= selName
+                                                        , "encoding" .= channelLabel ch ]
 scaleDomainSpec (DUnionWith sd) = object ["unionWith" .= scaleDomainSpec sd]
 scaleDomainSpec Unaggregated = "unaggregated"
 
