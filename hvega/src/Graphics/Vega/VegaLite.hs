@@ -1087,6 +1087,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __New constructors__
 --
+-- The 'VL.ScaleDomain' type has gained 'VL.DSelectionField' and 'VL.DSelectionChannel'
+-- constructors, which allow you to link a scale (e.g. an axis) to a selection that
+-- is projected over multiple fields or encodings.
+--
 -- The 'VL.Operation' type has gained the 'VL.Product' specifier from Vega-Lite
 -- 4.6.0.
 --

@@ -26,6 +26,11 @@ for this channel type was dropped in Vega-Lite 4.
 
 ### New constructors
 
+The `ScaleDomain` type has gained `DSelectionField` and
+`DSelectionChannel` constructors, which allow you to link a scale
+(e.g. an axis) to a selection that is projected over multiple fields
+or encodings.
+
 The `Operation` type has gained the `Product` specifier from Vega-Lite
 4.6.0.
 

@@ -19,6 +19,7 @@ testSpecs = [ ("multi1", multi1)
             , ("multi6", multi6)
             , ("multi7", multi7)
             , ("multi8", multi8)
+            , ("selectandzoom", selectAndZoom)
             ]
 
 
@@ -493,3 +494,40 @@ multi8 =
       spec2 = asSpec [ width 963, height 100, enc2 [], mark Bar [] ]
 
   in toVegaLite [ dvals, trans [], vConcat [ spec1, spec2 ] ]
+
+
+-- interval selection in one plot to zoom in in second plot.
+--
+selectAndZoom :: VegaLite
+selectAndZoom =
+  let plot1 = asSpec [ encoding
+                       . position X [ PName "theta", PmType Quantitative, PAxis [] ]
+                       . position Y [ PName "y", PmType Quantitative, PAxis [] ]
+                       $ []
+                     , mark Line []
+                     , selection
+                       . select "brush" Interval [ Encodings [ChX, ChY]
+                                                 , SInitInterval (Just xr) (Just yr)
+                                                 ]
+                       $ []
+                     ]
+
+      xr = (Number 0.2, Number 6)
+      yr = (Number (-0.8), Number 0.8)
+
+      xscale = [ SDomain (DSelectionField "brush" "theta") ]
+      yscale = [ SDomain (DSelectionChannel "brush" ChY) ]
+
+      plot2 = asSpec [ encoding
+                       . position X [ PName "theta", PmType Quantitative, PScale xscale ]
+                       . position Y [ PName "y", PmType Quantitative, PScale yscale ]
+                       $ []
+                     , mark Circle []
+                     ]
+
+  in toVegaLite [ dataSequenceAs 0 6.28 0.1 "theta"
+                , transform
+                  . calculateAs "cos(datum.theta)" "y"
+                  $ []
+                , vConcat [plot1, plot2]
+                ]
