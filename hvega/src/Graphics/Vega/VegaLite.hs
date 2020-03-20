@@ -13,10 +13,8 @@ written by Jo Wood of the giCentre at the City
 University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
-<https://vega.github.io/schema/vega-lite/v4.json JSON schema>.  The
-ihaskell-hvega module provides an easy way to embed Vega-Lite
-visualizations in an IHaskell notebook (using
-<https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
+<https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
+Version 0.7 of @hvega@ supports version 4.7 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -26,7 +24,11 @@ to the Elm module, but it is more a guide than an absolute
 requirement!
 
 Please see "Graphics.Vega.Tutorials.VegaLite" for an introduction
-to using @hvega@ to create visualizations.
+to using @hvega@ to create visualizations. The
+<http://hackage.haskell.org/package/ihaskell-hvega ihaskell-hvega>
+package provides an easy way to embed Vega-Lite
+visualizations in an IHaskell notebook (using
+<https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
 == Example
 
