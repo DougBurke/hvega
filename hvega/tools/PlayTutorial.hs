@@ -141,7 +141,7 @@ betelgeuse =
 
   in toVegaLite [ description desc
                 , title titleStr [ TFontSize 18 ]
-                , dataFromUrl "data/betelgeuse-2020-03-19.json" []
+                , dataFromUrl "https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/data/betelgeuse-2020-03-19.json" []
                 , transform
                   -- concentrate on the two filters with a reasonable number of points
                   . filter (FExpr "datum.filterName[0] === 'V'")
