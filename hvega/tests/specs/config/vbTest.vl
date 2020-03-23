@@ -107,6 +107,9 @@
         },
         "view": {
             "fill": "#feb"
+        },
+        "legend": {
+            "title": null
         }
     },
     "data": {

@@ -300,7 +300,7 @@ import Graphics.Vega.VegaLite
 --
 -- [@Scale@]: Descriptions of the way encoded marks represent the data. Example settings: 'SDomain', 'SPadding', and 'SInterpolate'.
 --
--- [@Guides@]: Supplementary visual elements that support interpreting the visualization. Example setings: 'AxDomain' (for position encodings) and 'LeTitle' (for legend color, size, and shape encodings).
+-- [@Guides@]: Supplementary visual elements that support interpreting the visualization. Example setings: 'AxDomain' (for position encodings) and 'LeTitleColor' (for legend color, size, and shape encodings).
 --
 -- In common with other languages that build upon a grammar of graphics
 -- such as D3 and Vega, this grammar allows fine grain control of

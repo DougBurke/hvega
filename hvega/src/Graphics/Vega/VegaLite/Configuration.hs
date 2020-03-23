@@ -686,6 +686,10 @@ Legend configuration options, set with the 'LegendStyle' constructor.
 For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
+In @0.8.0.0@ the @LeTitle@ constructor was removed as there is no way
+to set the default text for a legend title in Vega-Lite ('LeNoTitle'
+remains as this is used to turn off legend titles).
+
 In @0.6.0.0@ the following constructors were added (all from Vega-Lite 4.0):
 'LeSymbolLimit', 'LeTickCount', 'LeTitleLineHeight', and
 'LeUnselectedOpacity'.
@@ -900,12 +904,8 @@ data LegendConfig
       -- ^ The desired number of tick values for quantitative legends
       --
       --   @since0.6.0.0
-    | LeTitle T.Text
-      -- ^ The legend title.
-      --
-      --   @since 0.4.0.0
     | LeNoTitle
-      -- ^ Draw no title for the legend.
+      -- ^ Do not add a title for the legend.
       --
       --   @since 0.4.0.0
     | LeTitleAlign HAlign
@@ -1008,7 +1008,6 @@ legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor 
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
 legendConfigProperty (LeTickCount n) = "tickCount" .= n
-legendConfigProperty (LeTitle s) = "title" .= s
 legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc

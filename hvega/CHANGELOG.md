@@ -11,6 +11,10 @@ Vega-Lite schema.
 The `HTitleFontWeight` constructor (a member of `HeaderProperty`)
 now takes a `FontWeight` argument rather than `Text`.
 
+The `LeTitle` constructor from `LegendConfig` was removed as it
+is not supported in Vega-Lite (`LeNoTitle` remains, as it is used
+to remove legend titles from a visualization).
+
 ### New constructors
 
 The `HeaderProperty` type has gained the following constructors

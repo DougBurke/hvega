@@ -1212,6 +1212,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.HTitleFontWeight' constructor (a member of 'VL.HeaderProperty')
 -- now takes a 'VL.FontWeight' argument rather than @Text@.
 --
+-- The @LeTitle@ constructor from 'VL.LegendConfig' was removed as it
+-- is not supported in Vega-Lite ('VL.LeNoTitle' remains, as it is used
+-- to remove legend titles from a visualization).
+--
 -- __New constructors__
 --
 -- The 'VL.HeaderProperty' type has gained the following constructors

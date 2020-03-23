@@ -168,6 +168,7 @@ vbTest =
                         ]
                     )
                 . configuration (ViewStyle [ ViewBackgroundStyle [ VBFill "#feb" ] ])
+                . configuration (LegendStyle [ LeNoTitle ])
 
         streamSpec =
             asSpec
