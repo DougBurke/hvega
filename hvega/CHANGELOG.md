@@ -1,6 +1,21 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.8.0.0
+
+The Vega-Lite tests are now validated against version 4.8 of the
+Vega-Lite schema.
+
+### Breaking Changes
+
+The `HTitleFontWeight` constructor (a member of `HeaderProperty`)
+now takes a `FontWeight` argument rather than `Text`.
+
+### New constructors
+
+The `HeaderProperty` type has gained the following constructors:
+`HLabelBaseline`, `HLabelFontWeight`, and `HLabelLineHeight`.
+
 ## 0.7.0.1
 
 Minor documentation fixes (typos and fixing links).

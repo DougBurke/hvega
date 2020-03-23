@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.7 of @hvega@ supports version 4.7 of the Vega-Lite specification.
+Version 0.8 of @hvega@ supports version 4.8 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -807,6 +807,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.8
+         --
+         -- $update0800
+
          -- ** Version 0.7
          --
          -- $update0700
@@ -1198,6 +1202,20 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0800
+-- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
+-- the Vega-Lite schema.
+--
+-- __Breaking Changes__
+--
+-- The 'VL.HTitleFontWeight' constructor (a member of 'VL.HeaderProperty')
+-- now takes a 'VL.FontWeight' argument rather than @Text@.
+--
+-- __New constructors__
+--
+-- The 'VL.HeaderProperty' type has gained the following constructors:
+-- 'VL.HLabelBaseline', 'VL.HLabelFontWeight', and 'VL.HLabelLineHeight'.
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of

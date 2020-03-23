@@ -78,8 +78,12 @@ columns3 = genderChart [] [ HTitleFontSize 20, HLabelFontSize 15 ]
 columns4 =
     genderChart
         [ HTitleFontSize 20
-        , HLabelFontSize 15
+        , HTitleFontWeight Normal
         , HTitlePadding (-27)
+        , HLabelBaseline AlignLineBottom
+        , HLabelFontSize 15
+        , HLabelFontWeight Bold
+        , HLabelLineHeight 14 -- not used here, but set it anyway
         , HLabelPadding 40
         ]
         []

@@ -1492,6 +1492,13 @@ data HeaderProperty
       --   and -90 for row headers.
       --
       --   @since 0.4.0.0
+    | HLabelBaseline VAlign
+      -- ^ The vertical text baseline for header labels. The default is
+      --   'AlignBaseline'.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelColor Color
       -- ^ The color of the labels.
       --
@@ -1515,10 +1522,23 @@ data HeaderProperty
       -- ^ The font style for the labels.
       --
       --   @since 0.6.0.0
+    | HLabelFontWeight FontWeight
+      -- ^ The font weight for the header label.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelLimit Double
       -- ^ The maximum length of each label.
       --
       -- @since 0.4.0.0
+    | HLabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line header labels, or
+      --   title text with baselines of 'AlignLineTop' or 'AlignLineBottom'.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelOrient Side
       -- ^ The position of the label relative to its sub-plot.
       --
@@ -1565,16 +1585,19 @@ data HeaderProperty
       -- ^ The font style for the title.
       --
       --   @since 0.6.0.0
-    | HTitleFontWeight T.Text
+    | HTitleFontWeight FontWeight
       -- ^ The font weight for the title.
       --
-      -- @since 0.4.0.0
+      --   The argument changed from 'T.Text' in @0.8.0.0@.
+      --
+      --   @since 0.4.0.0
     | HTitleLimit Double
       -- ^ The maximum length of the title.
       --
       -- @since 0.4.0.0
     | HTitleLineHeight Double
-      -- ^ The line height, in pixels, for multi-line title text.
+      -- ^ The line height, in pixels, for multi-line header title text, or
+      --   title text with baselines of 'AlignLineTop' or 'AlignLineBottom'.
       --
       --   @since 0.6.0.0
     | HTitleOrient Side
@@ -1597,12 +1620,15 @@ headerProperty (HLabel b) = "labels" .= b
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
+headerProperty (HLabelBaseline va) = "labelBaseline" .= vAlignLabel va
 headerProperty (HLabelColor s) = "labelColor" .= fromColor s
 headerProperty (HLabelExpr s) = "labelExpr" .= s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
 headerProperty (HLabelFontStyle s) = "labelFontStyle" .= s
+headerProperty (HLabelFontWeight w) = "labelFontWeight" .= fontWeightSpec w
 headerProperty (HLabelLimit x) = "labelLimit" .= x
+headerProperty (HLabelLineHeight x) = "labelLineHeight" .= x
 headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
 headerProperty (HLabelPadding x) = "labelPadding" .= x
 headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
@@ -1611,7 +1637,7 @@ headerProperty (HTitleAngle x) = "titleAngle" .= x
 headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
 headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
-headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
+headerProperty (HTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x
 headerProperty (HTitleFontStyle s) = "titleFontStyle" .= s
 headerProperty (HTitleLimit x) = "titleLimit" .= x
