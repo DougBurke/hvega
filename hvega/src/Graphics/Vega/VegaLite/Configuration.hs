@@ -811,8 +811,10 @@ data LegendConfig
       --   chosen overlap strategy).
       --
       --   @since 0.4.0.0
-    | LeLayout [LegendLayout]
+    | LeLayout [LegendLayout]  -- TODO: schema for this is odd; check it is meaningful
       -- ^ Layout parameters for the legend orient group.
+      --
+      --   It is not clear if this is used in Vega Lite 4.2 or later.
       --
       --   @since 0.4.0.0
      | LeLeX Double
