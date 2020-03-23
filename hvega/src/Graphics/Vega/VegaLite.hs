@@ -1225,7 +1225,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.AxisConfig' type has gained the 'VL.Disable' constructor from
 -- Vega-Lite 4.8.
 --
--- The 'VL.LegendConfig' type has gained the 'VL.LeDirection' constructor.
+-- The 'VL.LegendConfig' type has gained the 'VL.LeDirection' and
+-- (from Vega-Lite 4.8) 'VL.LeDisable' constructors.
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of

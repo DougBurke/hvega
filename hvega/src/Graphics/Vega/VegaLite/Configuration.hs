@@ -732,6 +732,12 @@ data LegendConfig
       -- ^ The direction for the legend.
       --
       --   @since 0.8.0.0
+    | LeDisable Bool
+      -- ^ Disable the legend by default?
+      --
+      --   Added in Vega-Lite 4.8.
+      --
+      --   @since 0.8.0.0
     | LeFillColor Color
       -- ^ The background fill color for the full legend.
     | LeGradientDirection Orientation
@@ -957,6 +963,7 @@ legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
 legendConfigProperty (LeDirection o) = "direction" .= orientationSpec o
+legendConfigProperty (LeDisable b) = "disable" .= b
 legendConfigProperty (LeFillColor s) = "fillColor" .= fromColor s
 legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
