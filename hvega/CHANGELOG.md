@@ -16,6 +16,8 @@ now takes a `FontWeight` argument rather than `Text`.
 The `HeaderProperty` type has gained the following constructors:
 `HLabelBaseline`, `HLabelFontWeight`, and `HLabelLineHeight`.
 
+The `AxisConfig` type has gained the `Disable` constructor.
+
 ## 0.7.0.1
 
 Minor documentation fixes (typos and fixing links).

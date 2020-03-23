@@ -1256,6 +1256,12 @@ data AxisConfig
       --   @since 0.6.0.0
     | BandPosition Double
       -- ^ The default axis band position.
+    | Disable Bool
+      -- ^ Disable the axis?
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --  @since 0.8.0.0
     | Domain Bool
       -- ^ Should the axis domain be displayed?
     | DomainColor Color
@@ -1490,6 +1496,7 @@ axisConfigProperty (AStyle [s]) = "style" .= s
 axisConfigProperty (AStyle s) = "style" .= s
 
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
+axisConfigProperty (Disable b) = "disable" .= b
 axisConfigProperty (Domain b) = "domain" .= b
 axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
 axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds

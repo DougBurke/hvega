@@ -18,6 +18,9 @@
         },
         "facet": {
             "spacing": 80
+        },
+        "axis": {
+            "disable": true
         }
     },
     "data": {
