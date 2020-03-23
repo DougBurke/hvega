@@ -13,10 +13,14 @@ now takes a `FontWeight` argument rather than `Text`.
 
 ### New constructors
 
-The `HeaderProperty` type has gained the following constructors:
-`HLabelBaseline`, `HLabelFontWeight`, and `HLabelLineHeight`.
+The `HeaderProperty` type has gained the following constructors
+from Vega-Lite 4.8: `HLabelBaseline`, `HLabelFontWeight`, and
+`HLabelLineHeight`.
 
-The `AxisConfig` type has gained the `Disable` constructor.
+The `AxisConfig` type has gained the `Disable` constructor from
+Vega-Lite 4.8.
+
+The `LegendConfig` type has gained the `LeDirection` constructor.
 
 ## 0.7.0.1
 

@@ -1214,10 +1214,14 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- __New constructors__
 --
--- The 'VL.HeaderProperty' type has gained the following constructors:
--- 'VL.HLabelBaseline', 'VL.HLabelFontWeight', and 'VL.HLabelLineHeight'.
+-- The 'VL.HeaderProperty' type has gained the following constructors
+-- from Vega-Lite 4.8: 'VL.HLabelBaseline', 'VL.HLabelFontWeight', and
+-- 'VL.HLabelLineHeight'
 --
--- The 'VL.AxisConfig' type has gained the 'VL.Disable' constructor.
+-- The 'VL.AxisConfig' type has gained the 'VL.Disable' constructor from
+-- Vega-Lite 4.8.
+--
+-- The 'VL.LegendConfig' type has gained the 'VL.LeDirection' constructor.
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of

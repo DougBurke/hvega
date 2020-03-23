@@ -472,7 +472,8 @@ anchorLabel AEnd = "end"
 
 The orientation of an item. This is used with:
 'Graphics.Vega.VegaLite.BLeLDirection', 'Graphics.Vega.VegaLite.LDirection',
-'Graphics.Vega.VegaLite.LeGradientDirection', 'Graphics.Vega.VegaLite.LeLDirection', 'Graphics.Vega.VegaLite.LeSymbolDirection',
+'Graphics.Vega.VegaLite.LeDirection', 'Graphics.Vega.VegaLite.LeGradientDirection',
+'Graphics.Vega.VegaLite.LeLDirection', 'Graphics.Vega.VegaLite.LeSymbolDirection',
 and 'Graphics.Vega.VegaLite.MOrient'.
 
 In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.

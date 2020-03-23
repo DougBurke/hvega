@@ -724,6 +724,10 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeCornerRadius Double
       -- ^ The corner radius for the full legend.
+    | LeDirection Orientation
+      -- ^ The direction for the legend.
+      --
+      --   @since 0.8.0.0
     | LeFillColor Color
       -- ^ The background fill color for the full legend.
     | LeGradientDirection Orientation
@@ -829,7 +833,8 @@ data LegendConfig
       -- ^ The offset in pixels between the legend and the data rectangle
       --   and axes.
     | LeOrient LegendOrientation
-      -- ^ The orientation of the legend.
+      -- ^ The orientation of the legend, which determines how the legend is positioned
+      --   within the scene.
     | LePadding Double
       -- ^ The padding between the border and content of the legend group.
     | LeRowPadding Double
@@ -951,6 +956,7 @@ legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
+legendConfigProperty (LeDirection o) = "direction" .= orientationSpec o
 legendConfigProperty (LeFillColor s) = "fillColor" .= fromColor s
 legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
