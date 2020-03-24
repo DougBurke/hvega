@@ -5,4 +5,4 @@ packages:
 
 extra-deps: []
 
-resolver: lts-15.0
+resolver: lts-15.5
