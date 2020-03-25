@@ -18,6 +18,18 @@ testSpecs = [ ("columns1", columns1)
             , ("columns2", columns2)
             , ("columns3", columns3)
             , ("columns4", columns4)
+            , ("lorientrighthdr", lorientRightHdr)
+            , ("lorientrightcnf", lorientRightCnf)
+            , ("torientrighthdr", torientRightHdr)
+            , ("torientrightcnf", torientRightCnf)
+            , ("orientrighthdr", orientRightHdr)
+            , ("orientrightcnf", orientRightCnf)
+            , ("lorientbottomhdr", lorientBottomHdr)
+            , ("lorientbottomcnf", lorientBottomCnf)
+            , ("torientbottomhdr", torientBottomHdr)
+            , ("torientbottomcnf", torientBottomCnf)
+            , ("orientbottomhdr", orientBottomHdr)
+            , ("orientbottomcnf", orientBottomCnf)
             , ("groupyage", groupByAge)
             , ("grid1", grid1)
             , ("grid2", grid2)
@@ -87,6 +99,32 @@ columns4 =
         , HLabelPadding 40
         ]
         []
+
+
+lorientRightHdr, lorientRightCnf :: VegaLite
+lorientRightHdr = genderChart [ HLabelOrient SRight ] []
+lorientRightCnf = genderChart [] [ HLabelOrient SRight ]
+
+torientRightHdr, torientRightCnf :: VegaLite
+torientRightHdr = genderChart [ HTitleOrient SRight ] []
+torientRightCnf = genderChart [] [ HTitleOrient SRight ]
+
+orientRightHdr, orientRightCnf :: VegaLite
+orientRightHdr = genderChart [ HOrient SRight ] []
+orientRightCnf = genderChart [] [ HOrient SRight ]
+
+lorientBottomHdr, lorientBottomCnf :: VegaLite
+lorientBottomHdr = genderChart [ HLabelOrient SBottom ] []
+lorientBottomCnf = genderChart [] [ HLabelOrient SBottom ]
+
+torientBottomHdr, torientBottomCnf :: VegaLite
+torientBottomHdr = genderChart [ HTitleOrient SBottom ] []
+torientBottomCnf = genderChart [] [ HTitleOrient SBottom ]
+
+orientBottomHdr, orientBottomCnf :: VegaLite
+orientBottomHdr = genderChart [ HOrient SBottom ] []
+orientBottomCnf = genderChart [] [ HOrient SBottom ]
+
 
 
 groupByAge :: VegaLite

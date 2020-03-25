@@ -17,9 +17,9 @@ to remove legend titles from a visualization).
 
 ### New constructors
 
-The `HeaderProperty` type has gained the following constructors
-from Vega-Lite 4.8: `HLabelBaseline`, `HLabelFontWeight`, and
-`HLabelLineHeight`.
+The `HeaderProperty` type has gained the following constructors from
+Vega-Lite 4.8: `HLabelBaseline`, `HLabelFontWeight`,
+`HLabelLineHeight`, and `HOrient`.
 
 The `AxisConfig` type has gained the `Disable` constructor from
 Vega-Lite 4.8.

@@ -1541,13 +1541,20 @@ data HeaderProperty
       --
       --   @since 0.8.0.0
     | HLabelOrient Side
-      -- ^ The position of the label relative to its sub-plot.
+      -- ^ The position of the label relative to its sub-plot. See also
+      --   'HOrient'.
       --
       -- @since 0.4.0.0
     | HLabelPadding Double
       -- ^ The spacing in pixels between the label and its sub-plot.
       --
       -- @since 0.4.0.0
+    | HOrient Side
+      -- ^ A shortcut for setting both 'HLabelOrient' and 'HTitleOrient'.
+      --
+      --   Since Vega-Lite 4.8.
+      --
+      --   @since 0.8.0.0
     | HTitle T.Text
       -- ^ The title for the facets.
     | HNoTitle
@@ -1602,7 +1609,7 @@ data HeaderProperty
       --
       --   @since 0.6.0.0
     | HTitleOrient Side
-      -- ^ The position of the title relative to the sub-plots.
+      -- ^ The position of the title relative to the sub-plots. See also 'HOrient'.
       --
       -- @since 0.4.0.0
     | HTitlePadding Double
@@ -1632,6 +1639,7 @@ headerProperty (HLabelLimit x) = "labelLimit" .= x
 headerProperty (HLabelLineHeight x) = "labelLineHeight" .= x
 headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
 headerProperty (HLabelPadding x) = "labelPadding" .= x
+headerProperty (HOrient orient) = "orient" .= sideLabel orient
 headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
 headerProperty (HTitleAngle x) = "titleAngle" .= x
