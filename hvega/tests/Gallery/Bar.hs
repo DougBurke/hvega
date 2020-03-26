@@ -35,6 +35,7 @@ testSpecs = [ ("bar1", bar1)
             , ("signedpopulation", signedPopulation)
             , ("labeloverlay", labelOverlay)
             , ("wilkinsondotplot", wilkinsonDotPlot)
+            , ("barnegative", barNegative)
             ]
 
 
@@ -716,3 +717,35 @@ wilkinsonDotPlot =
         , enc []
         , mark Circle [ MOpacity 1 ]
         ]
+
+
+-- From https://vega.github.io/vega-lite/examples/bar_negative.html
+barNegative :: VegaLite
+barNegative =
+  let desc = "A bar chart with negative values. We can hide the axis domain line, and instead use a conditional grid color to draw a zero baseline."
+
+      barData = dataFromColumns []
+                . dataColumn "a" (Strings ["A", "B", "C", "D", "E", "F", "G", "H", "I"])
+                . dataColumn "b" (Numbers [-28, 55, -33, 91, 81, 53, -19, 87, 52])
+                $ []
+
+  in toVegaLite [ description desc
+                , barData
+                , mark Bar []
+                , encoding
+                  . position X [ PName "a"
+                               , PmType Ordinal
+                               , PAxis [ AxDomain False
+                                       , AxTicks False
+                                       , AxLabelAngle 0
+                                       , AxLabelPadding 4 ]
+                               ]
+                  . position Y [ PName "b"
+                               , PmType Quantitative
+                               , PAxis [ AxDataCondition
+                                         (Expr "datum.value === 0")
+                                         (CAxGridColor "black" "#ddd")
+                                       ]
+                               ]
+                  $ []
+                ]
