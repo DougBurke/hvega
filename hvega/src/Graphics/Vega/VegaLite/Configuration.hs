@@ -263,10 +263,16 @@ data ConfigurationProperty
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
     | ConcatStyle [CompositionConfig]
-      -- ^ The default appearance of concatenated layouts.
+      -- ^ The default appearance for all concatenation and repeat view
+      --   composition operators ('Graphics.Vega.VegaLite.vlConcat',
+      --   'Graphics.Vega.VegaLite.hConcat', 'Graphics.Vega.VegaLite.vConcat',
+      --   and 'Graphics.Vega.VegaLite.repeat`).
       --
       --   In @0.6.0.0@ this was changed from accepting @ConcatConfig@ to
       --   'CompositionConfig'.
+      --
+      --   Vega-Lite 4.8 changed this field to also control repeat-view
+      --   operators (which previously had used @RepeatStyle@).
       --
       --   @since 0.4.0.0
     | CountTitleStyle T.Text
@@ -384,8 +390,13 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
-    | RepeatStyle [CompositionConfig]
+    | RepeatStyle [CompositionConfig]  -- TODO: remove
       -- ^ The default appearance for the 'Graphics.Vega.VegaLite.repeat` operator.
+      --
+      --   Support for this setting was removed in Vega-Lite 4.8. This
+      --   constructor is currently still supported, but will be removed
+      --   in a future release. The 'ConcatStyle' option should be
+      --   used instead.
       --
       --   @since 0.6.0.0
     | RuleStyle [MarkProperty]

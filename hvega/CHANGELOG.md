@@ -6,6 +6,12 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.8 of the
 Vega-Lite schema.
 
+The `RepeatStyle` constructor for `ConfigurationProperty` should not
+be used, as its functionality has been moved to `ConcatStyle` in
+Vega-Lite 4.8. This constructor will be removed at some point in the
+future but is still available (as support for Vega-Lite 4.8 is
+limited).
+
 ### Breaking Changes
 
 The `HTitleFontWeight` constructor (a member of `HeaderProperty`)

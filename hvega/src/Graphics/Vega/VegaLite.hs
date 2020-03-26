@@ -1207,6 +1207,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
 -- the Vega-Lite schema.
 --
+-- The 'VL.RepeatStyle' constructor for 'VL.ConfigurationProperty' should not
+-- be used, as its functionality has been moved to 'VL.ConcatStyle' in
+-- Vega-Lite 4.8. This constructor will be removed at some point in the
+-- future but is still available (as support for Vega-Lite 4.8 is
+-- limited).
+--
 -- __Breaking Changes__
 --
 -- The 'VL.HTitleFontWeight' constructor (a member of 'VL.HeaderProperty')
