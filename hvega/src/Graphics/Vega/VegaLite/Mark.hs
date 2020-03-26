@@ -1032,7 +1032,7 @@ textdirLabel LTR = "ltr"
 textdirLabel RTL = "rtl"
 
 
--- | The blend mode for drawing an item on its background.
+-- | The blend mode for drawing an item on its background. This is used with 'MBlend'.
 --
 --   This is based on CSS <https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode mix-blend-mode>
 --   and the default is 'BMNormal' (at least for SVG output).
@@ -1056,7 +1056,7 @@ data BlendMode
   | BMOverlay
     -- ^ @overlay@ mode.
   | BMDarken
-    -- ^ @daren@ mode.
+    -- ^ @darken@ mode.
   | BMLighten
     -- ^ @lighten@ mode.
   | BMColorDodge
