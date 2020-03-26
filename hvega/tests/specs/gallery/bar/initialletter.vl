@@ -1,0 +1,48 @@
+{
+    "height": 300,
+    "mark": {
+        "cornerRadius": 10,
+        "strokeWidth": 4,
+        "color": {
+            "stops": [
+                {
+                    "color": "orange",
+                    "offset": 0
+                },
+                {
+                    "color": "cyan",
+                    "offset": 1
+                }
+            ],
+            "gradient": "linear"
+        },
+        "blend": "difference",
+        "stroke": "yellow",
+        "tooltip": {
+            "content": "data"
+        },
+        "type": "bar"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "date",
+            "timeUnit": "month",
+            "type": "temporal",
+            "axis": {
+                "labelExpr": "datum.label[0]",
+                "labelAlign": "left"
+            }
+        },
+        "y": {
+            "field": "precipitation",
+            "aggregate": "mean",
+            "type": "quantitative"
+        }
+    },
+    "description": "Using `labelExpr` to show only initial letters of month names."
+}
