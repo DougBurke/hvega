@@ -1226,7 +1226,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Vega-Lite 4.8.
 --
 -- The 'VL.LegendConfig' type has gained the 'VL.LeDirection' and
--- (from Vega-Lite 4.8) 'VL.LeDisable' constructors.
+-- (from Vega-Lite 4.8) 'VL.LeDisable' constructors. The 'VL.LegendProperty'
+-- type has gained 'VL.LLabelExpr', 'VL.LSymbolLimit', and
+-- 'VL.LTitleLineHeight' constructors.
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of

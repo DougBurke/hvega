@@ -24,8 +24,10 @@ Vega-Lite 4.8: `HLabelBaseline`, `HLabelFontWeight`,
 The `AxisConfig` type has gained the `Disable` constructor from
 Vega-Lite 4.8.
 
-The `LegendConfig` type has gained the `LeDirection` and
-(from Vega-Lite 4.8) `LeDisable` constructors.
+The `LegendConfig` type has gained the `LeDirection` and (from
+Vega-Lite 4.8) `LeDisable` constructors. The `LegendProperty` type has
+gained `LLabelExpr`, `LSymbolLimit`, and `LTitleLineHeight`
+constructors.
 
 ## 0.7.0.1
 

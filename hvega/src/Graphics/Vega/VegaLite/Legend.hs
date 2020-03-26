@@ -48,6 +48,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Side
   , Symbol
   , VAlign
+  , VegaExpr
   , ZIndex
   , anchorLabel
   , boundsSpec
@@ -223,6 +224,8 @@ The @LEntryPadding@ constructor was removed in @0.4.0.0@.
 
 -}
 
+-- based on schema #/definitions/Legend
+
 data LegendProperty
     = LClipHeight Double
       -- ^ The height, in pixels, to clip symbol legend entries.
@@ -295,7 +298,16 @@ data LegendProperty
     | LLabelBaseline VAlign
       -- ^ @since 0.4.0.0
     | LLabelColor Color
-      -- ^ @since 0.4.0.0
+      -- ^ The color of the legend label.
+      --
+      --   @since 0.4.0.0
+    | LLabelExpr VegaExpr
+      -- ^ Customize the legend label. The default text and value can be accessed
+      --   with the @datum.label@ and @datum.value@ expressions.
+      --
+      --   @LLabelExpr \"\'\<\' + datum.label + \'\>\'\"@
+      --
+      --   @since 0.8.0.0
     | LLabelFont T.Text
       -- ^ @since 0.4.0.0
     | LLabelFontSize Double
@@ -344,6 +356,11 @@ data LegendProperty
       -- ^ The fill color of the legend symbol.
       --
       --   @since 0.4.0.0
+    | LSymbolLimit Int  -- TODO: use a Natural?
+      -- ^ The maximum numbed of entries to show in the legend. Additional entries
+      --   are dropped.
+      --
+      --   @since 0.8.0.0
     | LSymbolOffset Double
       -- ^ The horizontal pixel offset for legend symbols.
       --
@@ -398,6 +415,10 @@ data LegendProperty
       -- ^ The maximum allowed pixel width of the legend title.
       --
       --   @since 0.4.0.0
+    | LTitleLineHeight Double
+      -- ^ The line height, in pixels, for multi-line title text.
+      --
+      --   @since 0.8.0.0
     | LTitleOpacity Opacity
       -- ^ Opacity of the legend title.
       --
@@ -444,6 +465,7 @@ legendProperty (LGridAlign ga) = "gridAlign" .= compositionAlignmentSpec ga
 legendProperty (LLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 legendProperty (LLabelBaseline va) = "labelBaseline" .= vAlignLabel va
 legendProperty (LLabelColor s) = "labelColor" .= fromColor s
+legendProperty (LLabelExpr s) = "labelExpr" .= s
 legendProperty (LLabelFont s) = "labelFont" .= s
 legendProperty (LLabelFontSize x) = "labelFontSize" .= x
 legendProperty (LLabelFontStyle s) = "labelFontStyle" .= s
@@ -463,6 +485,7 @@ legendProperty (LStrokeColor s) = "strokeColor" .= fromColor s
 legendProperty (LSymbolDash ds) = "symbolDash" .= fromDS ds
 legendProperty (LSymbolDashOffset x) = "symbolDashOffset" .= x
 legendProperty (LSymbolFillColor s) = "symbolFillColor" .= fromColor s
+legendProperty (LSymbolLimit x) = "symbolLimit" .= x
 legendProperty (LSymbolOffset x) = "symbolOffset" .= x
 legendProperty (LSymbolOpacity x) = "symbolOpacity" .= x
 legendProperty (LSymbolSize x) = "symbolSize" .= x
@@ -482,6 +505,7 @@ legendProperty (LTitleFontSize x) = "titleFontSize" .= x
 legendProperty (LTitleFontStyle s) = "titleFontStyle" .= s
 legendProperty (LTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 legendProperty (LTitleLimit x) = "titleLimit" .= x
+legendProperty (LTitleLineHeight x) = "titleLineHeight" .= x
 legendProperty (LTitleOpacity x) = "titleOpacity" .= x
 legendProperty (LTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendProperty (LTitlePadding x) = "titlePadding" .= x

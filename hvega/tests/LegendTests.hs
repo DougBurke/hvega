@@ -192,10 +192,12 @@ corners2 =
         , LLabelOpacity 0.6
         , LLabelFontSize 20
         , LLabelColor "fireBrick"
+        , LLabelExpr "'<' + datum.label + '>'"
         , LLabelFontWeight W600
         , LLabelBaseline AlignTop
         , LLabelAlign AlignRight
         , LLabelOverlap OGreedy
+        , LSymbolLimit 5
         ]
 
 
