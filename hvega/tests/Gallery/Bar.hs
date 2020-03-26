@@ -35,6 +35,7 @@ testSpecs = [ ("bar1", bar1)
             , ("signedpopulation", signedPopulation)
             , ("labeloverlay", labelOverlay)
             , ("wilkinsondotplot", wilkinsonDotPlot)
+            , ("initialletter", initialLetter)
             , ("barnegative", barNegative)
             ]
 
@@ -54,6 +55,10 @@ pQuant = PmType Quantitative
 noStroke :: [ConfigureSpec] -> PropertySpec
 noStroke = configure
            . configuration (ViewStyle [ ViewNoStroke ])
+
+
+seattleWeather :: Data
+seattleWeather = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
 
 
 -- bar1 in GalleryBar.elm
@@ -191,7 +196,7 @@ bar5 =
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+        , seattleWeather
         , mark Bar []
         , enc []
         ]
@@ -719,7 +724,44 @@ wilkinsonDotPlot =
         ]
 
 
+-- From https://vega.github.io/vega-lite/examples/bar_month_temporal_initial.html
+-- but teaked to add a few bar properties.
+--
+initialLetter :: VegaLite
+initialLetter =
+  let desc = "Using `labelExpr` to show only initial letters of month names."
+
+  in toVegaLite [ description desc
+                , width 400
+                , height 300
+                , seattleWeather
+                , mark Bar [ MBlend BMDifference
+                           , MColorGradient GrLinear
+                             [ (0, "orange"), (1, "cyan") ]
+                             []
+                           , MCornerRadius 10
+                           , MStroke "yellow"
+                           , MStrokeWidth 4
+                           , MTooltip TTData
+                           ]
+                , encoding
+                  . position X [ PName "date"
+                               , PmType Temporal
+                               , PTimeUnit Month
+                               , PAxis [ AxLabelAlign AlignLeft
+                                       , AxLabelExpr "datum.label[0]"
+                                       ]
+                               ]
+                  . position Y [ PName "precipitation"
+                               , PmType Quantitative
+                               , PAggregate Mean
+                               ]
+                  $ []
+                ]
+
+
 -- From https://vega.github.io/vega-lite/examples/bar_negative.html
+--
 barNegative :: VegaLite
 barNegative =
   let desc = "A bar chart with negative values. We can hide the axis domain line, and instead use a conditional grid color to draw a zero baseline."
