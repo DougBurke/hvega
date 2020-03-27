@@ -1025,6 +1025,9 @@ legendConfigProperty (LeUnselectedOpacity x) = "unselectedOpacity" .= x
 Properties for customising the colors of a range. The parameter should be a
 named color scheme such as @\"accent\"@ or @\"purpleorange-11\"@. For details see the
 <https://vega.github.io/vega/docs/schemes/#scheme-properties Vega-Lite documentation>.
+
+Used by 'RangeStyle'.
+
 -}
 data RangeConfig
     = RCategory T.Text
