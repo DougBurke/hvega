@@ -168,7 +168,7 @@ In @version 0.5.0.0@:
 
 - the @RemoveInvalid@ constructor was removed, as
 the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
-'Graphics.Vega.VegaLite.MarkProperty' type should be used instead
+'MarkProperty' type should be used instead
 (so @'configuration' (RemoveInvalid b)@ changes to
 @'configuration' ('Graphics.Vega.VegaLite.MarkStyle' ['Graphics.Vega.VegaLite.MRemoveInvalid' b])@.
 
@@ -811,8 +811,10 @@ data LegendConfig
       --   chosen overlap strategy).
       --
       --   @since 0.4.0.0
-    | LeLayout [LegendLayout]
+    | LeLayout [LegendLayout]  -- TODO: schema for this is odd; check it is meaningful
       -- ^ Layout parameters for the legend orient group.
+      --
+      --   It is not clear if this is used in Vega Lite 4.2 or later.
       --
       --   @since 0.4.0.0
      | LeLeX Double
@@ -1023,6 +1025,9 @@ legendConfigProperty (LeUnselectedOpacity x) = "unselectedOpacity" .= x
 Properties for customising the colors of a range. The parameter should be a
 named color scheme such as @\"accent\"@ or @\"purpleorange-11\"@. For details see the
 <https://vega.github.io/vega/docs/schemes/#scheme-properties Vega-Lite documentation>.
+
+Used by 'RangeStyle'.
+
 -}
 data RangeConfig
     = RCategory T.Text

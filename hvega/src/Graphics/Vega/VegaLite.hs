@@ -1201,7 +1201,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of
--- the Vega-Lite schema.
+-- the Vega-Lite schema. The @0.7.0.1@ update fixes several minor
+-- documentation issues.
 --
 -- __New functionality__
 --
