@@ -168,7 +168,7 @@ In @version 0.5.0.0@:
 
 - the @RemoveInvalid@ constructor was removed, as
 the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
-'Graphics.Vega.VegaLite.MarkProperty' type should be used instead
+'MarkProperty' type should be used instead
 (so @'configuration' (RemoveInvalid b)@ changes to
 @'configuration' ('Graphics.Vega.VegaLite.MarkStyle' ['Graphics.Vega.VegaLite.MRemoveInvalid' b])@.
 

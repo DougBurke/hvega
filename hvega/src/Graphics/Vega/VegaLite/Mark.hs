@@ -212,11 +212,13 @@ create a @true@ value if the list is empty, and @false@ if the
 @\"No\"@ variant of the constructor is used (e.g. 'MNoBox').
 
 In @version 0.5.0.0@ the 'MRemoveInvalid' constructor was added, which
-replaces the @RemoveInvalid@ constructor of
-'Graphics.Vega.VegaLite.ConfigurationProperty', and the
+replaces the @RemoveInvalid@ constructor of @ConfigurationProperty@, and the
 @MShortTimeLabels@ constuctor was removed.
 
 -}
+
+-- DOC NOTE: using 'Graphics.Vega.VegaLite.ConfigurationProperty' doesn't create
+-- the correct link, so changed to @ConfigurationProperty@.
 
 -- based on schema
 --     #/definitions/MarkConfig
