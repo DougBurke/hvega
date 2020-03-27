@@ -1037,20 +1037,17 @@ textdirLabel RTL = "rtl"
 -- | The blend mode for drawing an item on its background. This is used with 'MBlend'.
 --
 --   This is based on CSS <https://developer.mozilla.org/en-US/docs/Web/CSS/mix-blend-mode mix-blend-mode>
---   and the default is 'BMNormal' (at least for SVG output).
+--   and the default is 'BMNormal'.
 --
 --   Added in Vega-Lite 4.6.0.
---
---   It is currently unclear how this works with canvas outputs
---   (see Vega-Lite <https://github.com/vega/vega-lite/pull/6033 #6033>
---   and <https://github.com/vega/vega-lite/issues/6100 #6100>
---   for more information).
 --
 --   @since 0.7.0.0
 
 data BlendMode
   = BMNormal
-    -- ^ @normal@ mode (this maps to @null@ in Vega-Lite).
+    -- ^ The default behavior for Vega-Lite, which is the @\"normal\"@ CSS mix-blend-mode
+    --   for SVG output and @\"source-over\"@ for Canvas output (this constructor
+    --   creates a @null@ value in the JON output).
   | BMMultiply
     -- ^ @multiply@ mode.
   | BMScreen
