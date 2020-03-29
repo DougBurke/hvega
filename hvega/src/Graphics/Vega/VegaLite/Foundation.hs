@@ -682,46 +682,58 @@ strokeJoinLabel JRound = "round"
 strokeJoinLabel JBevel = "bevel"
 
 
--- | Used to indicate the type of scale transformation to apply.
---
---   The @ScBinLinear@ connstructor was removed in @0.8.0.0@ because
---   it was not used by Vega-Lite.
---
---   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
---   'ScLinear' should be used instead.
+{-|
+Used to indicate the type of scale transformation to apply.
+The <https://vega.github.io/vega-lite/docs/scale.html#type Vega-Lite scale documentation>
+defines which of these are for  continuous or discrete distributions,
+and what the defaults are for the combination of data type and
+encoding channel.
+
+The 'Scale' type is used with the 'Graphics.Vega.VegaLite.SType'
+constructor to set up the scaling properties of an encoding.
+Examples:
+
+@
+'Graphics.Vega.VegaLite.PScale' [ 'Graphics.Vega.VegaLite.SType' ScTime ]
+'Graphics.Vega.VegaLite.color' [ 'Graphics.Vega.VegaLite.MName' \"Acceleration\"
+      , 'Graphics.Vega.VegaLite.MmType' 'Quantitative'
+      , 'Graphics.Vega.VegaLite.MScale' [ 'Graphics.Vega.VegaLite.SType' ScLog, 'Graphics.Vega.VegaLite.SRange' ('Graphics.Vega.VegaLite.RStrings' [\"yellow\", \"red\"]) ]
+      ]
+@
+
+The @ScBinLinear@ constructor was removed in @0.8.0.0@ because
+it was not used by Vega-Lite.
+
+The @0.4.0.0@ release removed the @ScSequential@ constructor, as
+'ScLinear' should be used instead.
+
+-}
 
 -- #/definitions/ScaleType
 
 data Scale
     = ScLinear
       -- ^ A linear scale.
+    | ScLog
+      -- ^ A log scale. Defaults to log of base 10, but can be customised with
+      --   'Graphics.Vega.VegaLite.SBase'.
     | ScPow
       -- ^ A power scale. The exponent to use for scaling is specified with
       --   'Graphics.Vega.VegaLite.SExponent'.
     | ScSqrt
       -- ^ A square-root scale.
-    | ScLog
-      -- ^ A log scale. Defaults to log of base 10, but can be customised with
-      --   'Graphics.Vega.VegaLite.SBase'.
     | ScSymLog
       -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
       --   scale. Similar to a log scale but supports zero and negative values. The slope
       --   of the function at zero can be set with 'Graphics.Vega.VegaLite.SConstant'.
       --
       --   @since 0.4.0.0
+    -- | ScIdentity  added in Vega-Lite 4.4, no documentation
+    -- | ScSequential  added in Vega-Lite 4.4, no documentation, not clear if any different from linear
     | ScTime
       -- ^ A temporal scale.
     | ScUtc
       -- ^ A temporal scale, in UTC.
-    | ScOrdinal
-      -- ^ An ordinal scale.
-    | ScBand
-      -- ^ A band scale.
-    | ScPoint
-      -- ^ A point scale.
-    | ScBinOrdinal
-      -- ^ An ordinal band scale.
-
     | ScQuantile
       -- ^ A quantile scale.
       --
@@ -734,23 +746,31 @@ data Scale
       -- ^ A threshold scale.
       --
       --   @since 0.4.0.0
+    | ScBinOrdinal
+      -- ^ An ordinal band scale.
+    | ScOrdinal
+      -- ^ An ordinal scale.
+    | ScPoint
+      -- ^ A point scale.
+    | ScBand
+      -- ^ A band scale.
 
 
 scaleLabel :: Scale -> T.Text
 scaleLabel ScLinear = "linear"
+scaleLabel ScLog = "log"
 scaleLabel ScPow = "pow"
 scaleLabel ScSqrt = "sqrt"
-scaleLabel ScLog = "log"
 scaleLabel ScSymLog = "symlog"
 scaleLabel ScTime = "time"
 scaleLabel ScUtc = "utc"
-scaleLabel ScOrdinal = "ordinal"
-scaleLabel ScBand = "band"
-scaleLabel ScPoint = "point"
-scaleLabel ScBinOrdinal = "bin-ordinal"
 scaleLabel ScQuantile = "quantile"
 scaleLabel ScQuantize = "quantize"
 scaleLabel ScThreshold = "threshold"
+scaleLabel ScBinOrdinal = "bin-ordinal"
+scaleLabel ScOrdinal = "ordinal"
+scaleLabel ScPoint = "point"
+scaleLabel ScBand = "band"
 
 
 -- | How should the field be sorted when performing a window transform.
