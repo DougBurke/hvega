@@ -748,10 +748,10 @@ data ScaleProperty
       --
       --   @since 0.6.0.0
     | SRound Bool
-      -- ^ Are numeric values in a scaling are rounded to integers?
+      -- ^ Are numeric values in a scaling rounded to integers?
       --
       --   The default is @False@.
-    | SScheme T.Text [Double]
+    | SScheme T.Text [Double]   -- TODO: review this; what is #/definitions/SchemeParams?
       -- ^  Color scheme used by a color scaling. The first parameter is the
       --    name of the scheme (e.g. \"viridis\") and the second an optional
       --    specification, which can contain 1, 2, or 3 numbers:
@@ -759,6 +759,10 @@ data ScaleProperty
       --      - the number of colors to use (list of one number);
       --      - the extent of the color range to use (list of two numbers between 0 and 1);
       --      - the number of colors and extent (three numbers, first is the number of colors).
+      --
+      --    For the full list of supported schemes, please refer to the
+      --    <https://vega.github.io/vega/docs/schemes/#reference Vega Scheme>
+      --    reference.
       --
       --    The number of colors was broken prior to @0.4.0.0@ and the option to
       --    define both the count and extent was added in @0.4.0.0@.
