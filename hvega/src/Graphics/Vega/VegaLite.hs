@@ -1222,6 +1222,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- is not supported in Vega-Lite ('VL.LeNoTitle' remains, as it is used
 -- to remove legend titles from a visualization).
 --
+-- @ScBinLinear@ was removed from 'VL.Scale' as it is
+-- not used by Vega-Lite.
+--
 -- __New constructors__
 --
 -- The 'VL.HeaderProperty' type has gained the following constructors

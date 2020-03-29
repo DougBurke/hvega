@@ -684,8 +684,13 @@ strokeJoinLabel JBevel = "bevel"
 
 -- | Used to indicate the type of scale transformation to apply.
 --
+--   The @ScBinLinear@ connstructor was removed in @0.8.0.0@ because
+--   it was not used by Vega-Lite.
+--
 --   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
 --   'ScLinear' should be used instead.
+
+-- #/definitions/ScaleType
 
 data Scale
     = ScLinear
@@ -714,10 +719,9 @@ data Scale
       -- ^ A band scale.
     | ScPoint
       -- ^ A point scale.
-    | ScBinLinear
-      -- ^ A linear band scale.
     | ScBinOrdinal
       -- ^ An ordinal band scale.
+
     | ScQuantile
       -- ^ A quantile scale.
       --
@@ -743,7 +747,6 @@ scaleLabel ScUtc = "utc"
 scaleLabel ScOrdinal = "ordinal"
 scaleLabel ScBand = "band"
 scaleLabel ScPoint = "point"
-scaleLabel ScBinLinear = "bin-linear"
 scaleLabel ScBinOrdinal = "bin-ordinal"
 scaleLabel ScQuantile = "quantile"
 scaleLabel ScQuantize = "quantize"
