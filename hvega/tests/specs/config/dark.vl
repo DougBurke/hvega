@@ -90,6 +90,7 @@
         "legend": {
             "gradientStrokeColor": "yellow",
             "fillColor": "#333",
+            "direction": "horizontal",
             "labelColor": "white",
             "titleFont": "Roboto",
             "symbolFillColor": "red",

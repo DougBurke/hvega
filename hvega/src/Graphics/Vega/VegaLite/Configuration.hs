@@ -263,10 +263,16 @@ data ConfigurationProperty
     | CircleStyle [MarkProperty]
       -- ^ The default appearance of circle marks.
     | ConcatStyle [CompositionConfig]
-      -- ^ The default appearance of concatenated layouts.
+      -- ^ The default appearance for all concatenation and repeat view
+      --   composition operators ('Graphics.Vega.VegaLite.vlConcat',
+      --   'Graphics.Vega.VegaLite.hConcat', 'Graphics.Vega.VegaLite.vConcat',
+      --   and 'Graphics.Vega.VegaLite.repeat`).
       --
       --   In @0.6.0.0@ this was changed from accepting @ConcatConfig@ to
       --   'CompositionConfig'.
+      --
+      --   Vega-Lite 4.8 changed this field to also control repeat-view
+      --   operators (which previously had used @RepeatStyle@).
       --
       --   @since 0.4.0.0
     | CountTitleStyle T.Text
@@ -384,8 +390,13 @@ data ConfigurationProperty
       --   @since 0.6.0.0
     | RectStyle [MarkProperty]
       -- ^ The default appearance of rectangle marks.
-    | RepeatStyle [CompositionConfig]
+    | RepeatStyle [CompositionConfig]  -- TODO: remove
       -- ^ The default appearance for the 'Graphics.Vega.VegaLite.repeat` operator.
+      --
+      --   Support for this setting was removed in Vega-Lite 4.8. This
+      --   constructor is currently still supported, but will be removed
+      --   in a future release. The 'ConcatStyle' option should be
+      --   used instead.
       --
       --   @since 0.6.0.0
     | RuleStyle [MarkProperty]
@@ -686,6 +697,10 @@ Legend configuration options, set with the 'LegendStyle' constructor.
 For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
+In @0.8.0.0@ the @LeTitle@ constructor was removed as there is no way
+to set the default text for a legend title in Vega-Lite ('LeNoTitle'
+remains as this is used to turn off legend titles).
+
 In @0.6.0.0@ the following constructors were added (all from Vega-Lite 4.0):
 'LeSymbolLimit', 'LeTickCount', 'LeTitleLineHeight', and
 'LeUnselectedOpacity'.
@@ -724,6 +739,16 @@ data LegendConfig
       --   @since 0.4.0.0
     | LeCornerRadius Double
       -- ^ The corner radius for the full legend.
+    | LeDirection Orientation
+      -- ^ The direction for the legend.
+      --
+      --   @since 0.8.0.0
+    | LeDisable Bool
+      -- ^ Disable the legend by default?
+      --
+      --   Added in Vega-Lite 4.8.
+      --
+      --   @since 0.8.0.0
     | LeFillColor Color
       -- ^ The background fill color for the full legend.
     | LeGradientDirection Orientation
@@ -829,7 +854,8 @@ data LegendConfig
       -- ^ The offset in pixels between the legend and the data rectangle
       --   and axes.
     | LeOrient LegendOrientation
-      -- ^ The orientation of the legend.
+      -- ^ The orientation of the legend, which determines how the legend is positioned
+      --   within the scene.
     | LePadding Double
       -- ^ The padding between the border and content of the legend group.
     | LeRowPadding Double
@@ -895,12 +921,8 @@ data LegendConfig
       -- ^ The desired number of tick values for quantitative legends
       --
       --   @since0.6.0.0
-    | LeTitle T.Text
-      -- ^ The legend title.
-      --
-      --   @since 0.4.0.0
     | LeNoTitle
-      -- ^ Draw no title for the legend.
+      -- ^ Do not add a title for the legend.
       --
       --   @since 0.4.0.0
     | LeTitleAlign HAlign
@@ -951,6 +973,8 @@ legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
 legendConfigProperty (LeCornerRadius x) = "cornerRadius" .= x
+legendConfigProperty (LeDirection o) = "direction" .= orientationSpec o
+legendConfigProperty (LeDisable b) = "disable" .= b
 legendConfigProperty (LeFillColor s) = "fillColor" .= fromColor s
 legendConfigProperty (LeGradientDirection o) = "gradientDirection" .= orientationSpec o
 legendConfigProperty (LeGradientHorizontalMaxLength x) = "gradientHorizontalMaxLength" .= x
@@ -1002,7 +1026,6 @@ legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor 
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
 legendConfigProperty (LeTickCount n) = "tickCount" .= n
-legendConfigProperty (LeTitle s) = "title" .= s
 legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
@@ -1256,6 +1279,12 @@ data AxisConfig
       --   @since 0.6.0.0
     | BandPosition Double
       -- ^ The default axis band position.
+    | Disable Bool
+      -- ^ Disable the axis?
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --  @since 0.8.0.0
     | Domain Bool
       -- ^ Should the axis domain be displayed?
     | DomainColor Color
@@ -1490,6 +1519,7 @@ axisConfigProperty (AStyle [s]) = "style" .= s
 axisConfigProperty (AStyle s) = "style" .= s
 
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
+axisConfigProperty (Disable b) = "disable" .= b
 axisConfigProperty (Domain b) = "domain" .= b
 axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
 axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds

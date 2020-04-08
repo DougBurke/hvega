@@ -472,7 +472,8 @@ anchorLabel AEnd = "end"
 
 The orientation of an item. This is used with:
 'Graphics.Vega.VegaLite.BLeLDirection', 'Graphics.Vega.VegaLite.LDirection',
-'Graphics.Vega.VegaLite.LeGradientDirection', 'Graphics.Vega.VegaLite.LeLDirection', 'Graphics.Vega.VegaLite.LeSymbolDirection',
+'Graphics.Vega.VegaLite.LeDirection', 'Graphics.Vega.VegaLite.LeGradientDirection',
+'Graphics.Vega.VegaLite.LeLDirection', 'Graphics.Vega.VegaLite.LeSymbolDirection',
 and 'Graphics.Vega.VegaLite.MOrient'.
 
 In @0.4.0.0@ this was renamed from @MarkOrientation@ to 'Orientation'.
@@ -681,42 +682,58 @@ strokeJoinLabel JRound = "round"
 strokeJoinLabel JBevel = "bevel"
 
 
--- | Used to indicate the type of scale transformation to apply.
---
---   The @0.4.0.0@ release removed the @ScSequential@ constructor, as
---   'ScLinear' should be used instead.
+{-|
+Used to indicate the type of scale transformation to apply.
+The <https://vega.github.io/vega-lite/docs/scale.html#type Vega-Lite scale documentation>
+defines which of these are for  continuous or discrete distributions,
+and what the defaults are for the combination of data type and
+encoding channel.
+
+The 'Scale' type is used with the 'Graphics.Vega.VegaLite.SType'
+constructor to set up the scaling properties of an encoding.
+Examples:
+
+@
+'Graphics.Vega.VegaLite.PScale' [ 'Graphics.Vega.VegaLite.SType' ScTime ]
+'Graphics.Vega.VegaLite.color' [ 'Graphics.Vega.VegaLite.MName' \"Acceleration\"
+      , 'Graphics.Vega.VegaLite.MmType' 'Quantitative'
+      , 'Graphics.Vega.VegaLite.MScale' [ 'Graphics.Vega.VegaLite.SType' ScLog, 'Graphics.Vega.VegaLite.SRange' ('Graphics.Vega.VegaLite.RStrings' [\"yellow\", \"red\"]) ]
+      ]
+@
+
+The @ScBinLinear@ constructor was removed in @0.8.0.0@ because
+it was not used by Vega-Lite.
+
+The @0.4.0.0@ release removed the @ScSequential@ constructor, as
+'ScLinear' should be used instead.
+
+-}
+
+-- #/definitions/ScaleType
 
 data Scale
     = ScLinear
       -- ^ A linear scale.
+    | ScLog
+      -- ^ A log scale. Defaults to log of base 10, but can be customised with
+      --   'Graphics.Vega.VegaLite.SBase'.
     | ScPow
       -- ^ A power scale. The exponent to use for scaling is specified with
       --   'Graphics.Vega.VegaLite.SExponent'.
     | ScSqrt
       -- ^ A square-root scale.
-    | ScLog
-      -- ^ A log scale. Defaults to log of base 10, but can be customised with
-      --   'Graphics.Vega.VegaLite.SBase'.
     | ScSymLog
       -- ^ A [symmetrical log (PDF link)](https://www.researchgate.net/profile/John_Webber4/publication/233967063_A_bi-symmetric_log_transformation_for_wide-range_data/links/0fcfd50d791c85082e000000.pdf)
       --   scale. Similar to a log scale but supports zero and negative values. The slope
       --   of the function at zero can be set with 'Graphics.Vega.VegaLite.SConstant'.
       --
       --   @since 0.4.0.0
+    -- | ScIdentity  added in Vega-Lite 4.4, no documentation
+    -- | ScSequential  added in Vega-Lite 4.4, no documentation, not clear if any different from linear
     | ScTime
       -- ^ A temporal scale.
     | ScUtc
       -- ^ A temporal scale, in UTC.
-    | ScOrdinal
-      -- ^ An ordinal scale.
-    | ScBand
-      -- ^ A band scale.
-    | ScPoint
-      -- ^ A point scale.
-    | ScBinLinear
-      -- ^ A linear band scale.
-    | ScBinOrdinal
-      -- ^ An ordinal band scale.
     | ScQuantile
       -- ^ A quantile scale.
       --
@@ -729,24 +746,31 @@ data Scale
       -- ^ A threshold scale.
       --
       --   @since 0.4.0.0
+    | ScBinOrdinal
+      -- ^ An ordinal band scale.
+    | ScOrdinal
+      -- ^ An ordinal scale.
+    | ScPoint
+      -- ^ A point scale.
+    | ScBand
+      -- ^ A band scale.
 
 
 scaleLabel :: Scale -> T.Text
 scaleLabel ScLinear = "linear"
+scaleLabel ScLog = "log"
 scaleLabel ScPow = "pow"
 scaleLabel ScSqrt = "sqrt"
-scaleLabel ScLog = "log"
 scaleLabel ScSymLog = "symlog"
 scaleLabel ScTime = "time"
 scaleLabel ScUtc = "utc"
-scaleLabel ScOrdinal = "ordinal"
-scaleLabel ScBand = "band"
-scaleLabel ScPoint = "point"
-scaleLabel ScBinLinear = "bin-linear"
-scaleLabel ScBinOrdinal = "bin-ordinal"
 scaleLabel ScQuantile = "quantile"
 scaleLabel ScQuantize = "quantize"
 scaleLabel ScThreshold = "threshold"
+scaleLabel ScBinOrdinal = "bin-ordinal"
+scaleLabel ScOrdinal = "ordinal"
+scaleLabel ScPoint = "point"
+scaleLabel ScBand = "band"
 
 
 -- | How should the field be sorted when performing a window transform.
@@ -1492,6 +1516,13 @@ data HeaderProperty
       --   and -90 for row headers.
       --
       --   @since 0.4.0.0
+    | HLabelBaseline VAlign
+      -- ^ The vertical text baseline for header labels. The default is
+      --   'AlignBaseline'.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelColor Color
       -- ^ The color of the labels.
       --
@@ -1515,18 +1546,38 @@ data HeaderProperty
       -- ^ The font style for the labels.
       --
       --   @since 0.6.0.0
+    | HLabelFontWeight FontWeight
+      -- ^ The font weight for the header label.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelLimit Double
       -- ^ The maximum length of each label.
       --
       -- @since 0.4.0.0
+    | HLabelLineHeight Double
+      -- ^ The line height, in pixels, for multi-line header labels, or
+      --   title text with baselines of 'AlignLineTop' or 'AlignLineBottom'.
+      --
+      --   Added in Vega-Lite 4.8.0.
+      --
+      --   @since 0.8.0.0
     | HLabelOrient Side
-      -- ^ The position of the label relative to its sub-plot.
+      -- ^ The position of the label relative to its sub-plot. See also
+      --   'HOrient'.
       --
       -- @since 0.4.0.0
     | HLabelPadding Double
       -- ^ The spacing in pixels between the label and its sub-plot.
       --
       -- @since 0.4.0.0
+    | HOrient Side
+      -- ^ A shortcut for setting both 'HLabelOrient' and 'HTitleOrient'.
+      --
+      --   Since Vega-Lite 4.8.
+      --
+      --   @since 0.8.0.0
     | HTitle T.Text
       -- ^ The title for the facets.
     | HNoTitle
@@ -1565,20 +1616,23 @@ data HeaderProperty
       -- ^ The font style for the title.
       --
       --   @since 0.6.0.0
-    | HTitleFontWeight T.Text
+    | HTitleFontWeight FontWeight
       -- ^ The font weight for the title.
       --
-      -- @since 0.4.0.0
+      --   The argument changed from 'T.Text' in @0.8.0.0@.
+      --
+      --   @since 0.4.0.0
     | HTitleLimit Double
       -- ^ The maximum length of the title.
       --
       -- @since 0.4.0.0
     | HTitleLineHeight Double
-      -- ^ The line height, in pixels, for multi-line title text.
+      -- ^ The line height, in pixels, for multi-line header title text, or
+      --   title text with baselines of 'AlignLineTop' or 'AlignLineBottom'.
       --
       --   @since 0.6.0.0
     | HTitleOrient Side
-      -- ^ The position of the title relative to the sub-plots.
+      -- ^ The position of the title relative to the sub-plots. See also 'HOrient'.
       --
       -- @since 0.4.0.0
     | HTitlePadding Double
@@ -1597,21 +1651,25 @@ headerProperty (HLabel b) = "labels" .= b
 headerProperty (HLabelAlign ha) = "labelAlign" .= hAlignLabel ha
 headerProperty (HLabelAnchor a) = "labelAnchor" .= anchorLabel a
 headerProperty (HLabelAngle x) = "labelAngle" .= x
+headerProperty (HLabelBaseline va) = "labelBaseline" .= vAlignLabel va
 headerProperty (HLabelColor s) = "labelColor" .= fromColor s
 headerProperty (HLabelExpr s) = "labelExpr" .= s
 headerProperty (HLabelFont s) = "labelFont" .= s
 headerProperty (HLabelFontSize x) = "labelFontSize" .= x
 headerProperty (HLabelFontStyle s) = "labelFontStyle" .= s
+headerProperty (HLabelFontWeight w) = "labelFontWeight" .= fontWeightSpec w
 headerProperty (HLabelLimit x) = "labelLimit" .= x
+headerProperty (HLabelLineHeight x) = "labelLineHeight" .= x
 headerProperty (HLabelOrient orient) = "labelOrient" .= sideLabel orient
 headerProperty (HLabelPadding x) = "labelPadding" .= x
+headerProperty (HOrient orient) = "orient" .= sideLabel orient
 headerProperty (HTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 headerProperty (HTitleAnchor a) = "titleAnchor" .= anchorLabel a
 headerProperty (HTitleAngle x) = "titleAngle" .= x
 headerProperty (HTitleBaseline va) = "titleBaseline" .= vAlignLabel va
 headerProperty (HTitleColor s) = "titleColor" .= fromColor s
 headerProperty (HTitleFont s) = "titleFont" .= s
-headerProperty (HTitleFontWeight s) = "titleFontWeight" .= s
+headerProperty (HTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
 headerProperty (HTitleFontSize x) = "titleFontSize" .= x
 headerProperty (HTitleFontStyle s) = "titleFontStyle" .= s
 headerProperty (HTitleLimit x) = "titleLimit" .= x

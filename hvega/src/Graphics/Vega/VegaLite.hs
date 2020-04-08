@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.7 of @hvega@ supports version 4.7 of the Vega-Lite specification.
+Version 0.8 of @hvega@ supports version 4.8 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -807,6 +807,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.8
+         --
+         -- $update0800
+
          -- ** Version 0.7
          --
          -- $update0700
@@ -1198,6 +1202,42 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0800
+-- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
+-- the Vega-Lite schema.
+--
+-- The 'VL.RepeatStyle' constructor for 'VL.ConfigurationProperty' should not
+-- be used, as its functionality has been moved to 'VL.ConcatStyle' in
+-- Vega-Lite 4.8. This constructor will be removed at some point in the
+-- future but is still available (as support for Vega-Lite 4.8 is
+-- limited).
+--
+-- __Breaking Changes__
+--
+-- The 'VL.HTitleFontWeight' constructor (a member of 'VL.HeaderProperty')
+-- now takes a 'VL.FontWeight' argument rather than @Text@.
+--
+-- The @LeTitle@ constructor from 'VL.LegendConfig' was removed as it
+-- is not supported in Vega-Lite ('VL.LeNoTitle' remains, as it is used
+-- to remove legend titles from a visualization).
+--
+-- @ScBinLinear@ was removed from 'VL.Scale' as it is
+-- not used by Vega-Lite.
+--
+-- __New constructors__
+--
+-- The 'VL.HeaderProperty' type has gained the following constructors
+-- from Vega-Lite 4.8: 'VL.HLabelBaseline', 'VL.HLabelFontWeight',
+-- 'VL.HLabelLineHeight', and 'VL.HOrient'.
+--
+-- The 'VL.AxisConfig' type has gained the 'VL.Disable' constructor from
+-- Vega-Lite 4.8.
+--
+-- The 'VL.LegendConfig' type has gained the 'VL.LeDirection' and
+-- (from Vega-Lite 4.8) 'VL.LeDisable' constructors. The 'VL.LegendProperty'
+-- type has gained 'VL.LLabelExpr', 'VL.LSymbolLimit', and
+-- 'VL.LTitleLineHeight' constructors.
 
 -- $update0700
 -- The @0.7.0.0@ release updates @hvega@ to support version 4.7 of

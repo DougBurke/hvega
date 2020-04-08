@@ -1,6 +1,42 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.8.0.0
+
+The Vega-Lite tests are now validated against version 4.8 of the
+Vega-Lite schema.
+
+The `RepeatStyle` constructor for `ConfigurationProperty` should not
+be used, as its functionality has been moved to `ConcatStyle` in
+Vega-Lite 4.8. This constructor will be removed at some point in the
+future but is still available (as support for Vega-Lite 4.8 is
+limited).
+
+### Breaking Changes
+
+The `HTitleFontWeight` constructor (a member of `HeaderProperty`)
+now takes a `FontWeight` argument rather than `Text`.
+
+The `LeTitle` constructor from `LegendConfig` was removed as it is not
+supported in Vega-Lite (`LeNoTitle` remains, as it is used to remove
+legend titles from a visualization).
+
+`ScBinLinear` was removed from `Scale` as it is not used by Vega-Lite.
+
+### New constructors
+
+The `HeaderProperty` type has gained the following constructors from
+Vega-Lite 4.8: `HLabelBaseline`, `HLabelFontWeight`,
+`HLabelLineHeight`, and `HOrient`.
+
+The `AxisConfig` type has gained the `Disable` constructor from
+Vega-Lite 4.8.
+
+The `LegendConfig` type has gained the `LeDirection` and (from
+Vega-Lite 4.8) `LeDisable` constructors. The `LegendProperty` type has
+gained `LLabelExpr`, `LSymbolLimit`, and `LTitleLineHeight`
+constructors.
+
 ## 0.7.0.1
 
 Minor documentation fixes (typos and fixing links).

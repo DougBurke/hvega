@@ -9,7 +9,9 @@
         }
     ],
     "config": {
-        "header": {}
+        "header": {
+            "orient": "right"
+        }
     },
     "mark": "bar",
     "data": {
@@ -36,16 +38,7 @@
         },
         "column": {
             "field": "gender",
-            "header": {
-                "titleFontWeight": "normal",
-                "titlePadding": -27,
-                "labelLineHeight": 14,
-                "labelPadding": 40,
-                "labelFontWeight": "bold",
-                "labelBaseline": "line-bottom",
-                "labelFontSize": 15,
-                "titleFontSize": 20
-            },
+            "header": {},
             "type": "nominal",
             "spacing": 0
         },

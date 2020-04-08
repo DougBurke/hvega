@@ -27,6 +27,7 @@ testSpecs = [ ("legend1", legend1)
             , ("limits1", limits 1)
             , ("limits2", limits 2)
             , ("limits3", limits 3)
+            , ("disablelegend", disableLegend)
             ]
 
 
@@ -191,10 +192,12 @@ corners2 =
         , LLabelOpacity 0.6
         , LLabelFontSize 20
         , LLabelColor "fireBrick"
+        , LLabelExpr "'<' + datum.label + '>'"
         , LLabelFontWeight W600
         , LLabelBaseline AlignTop
         , LLabelAlign AlignRight
         , LLabelOverlap OGreedy
+        , LSymbolLimit 5
         ]
 
 
@@ -225,3 +228,13 @@ limits n =
                 , enc []
                 , mark Point [MFilled True]
                 ]
+
+
+-- Vega-Lite 4.8
+--
+-- At the time of writing (V-L 4.8.1 has just neen released), the JS display libs
+-- don't do anything with this setting. I assume this is a bug or they haven't been
+-- updated yet.
+--
+disableLegend :: VegaLite
+disableLegend = legendCoreCfg [ LeDisable True ]

@@ -18,6 +18,18 @@ testSpecs = [ ("columns1", columns1)
             , ("columns2", columns2)
             , ("columns3", columns3)
             , ("columns4", columns4)
+            , ("lorientrighthdr", lorientRightHdr)
+            , ("lorientrightcnf", lorientRightCnf)
+            , ("torientrighthdr", torientRightHdr)
+            , ("torientrightcnf", torientRightCnf)
+            , ("orientrighthdr", orientRightHdr)
+            , ("orientrightcnf", orientRightCnf)
+            , ("lorientbottomhdr", lorientBottomHdr)
+            , ("lorientbottomcnf", lorientBottomCnf)
+            , ("torientbottomhdr", torientBottomHdr)
+            , ("torientbottomcnf", torientBottomCnf)
+            , ("orientbottomhdr", orientBottomHdr)
+            , ("orientbottomcnf", orientBottomCnf)
             , ("groupyage", groupByAge)
             , ("grid1", grid1)
             , ("grid2", grid2)
@@ -78,11 +90,41 @@ columns3 = genderChart [] [ HTitleFontSize 20, HLabelFontSize 15 ]
 columns4 =
     genderChart
         [ HTitleFontSize 20
-        , HLabelFontSize 15
+        , HTitleFontWeight Normal
         , HTitlePadding (-27)
+        , HLabelBaseline AlignLineBottom
+        , HLabelFontSize 15
+        , HLabelFontWeight Bold
+        , HLabelLineHeight 14 -- not used here, but set it anyway
         , HLabelPadding 40
         ]
         []
+
+
+lorientRightHdr, lorientRightCnf :: VegaLite
+lorientRightHdr = genderChart [ HLabelOrient SRight ] []
+lorientRightCnf = genderChart [] [ HLabelOrient SRight ]
+
+torientRightHdr, torientRightCnf :: VegaLite
+torientRightHdr = genderChart [ HTitleOrient SRight ] []
+torientRightCnf = genderChart [] [ HTitleOrient SRight ]
+
+orientRightHdr, orientRightCnf :: VegaLite
+orientRightHdr = genderChart [ HOrient SRight ] []
+orientRightCnf = genderChart [] [ HOrient SRight ]
+
+lorientBottomHdr, lorientBottomCnf :: VegaLite
+lorientBottomHdr = genderChart [ HLabelOrient SBottom ] []
+lorientBottomCnf = genderChart [] [ HLabelOrient SBottom ]
+
+torientBottomHdr, torientBottomCnf :: VegaLite
+torientBottomHdr = genderChart [ HTitleOrient SBottom ] []
+torientBottomCnf = genderChart [] [ HTitleOrient SBottom ]
+
+orientBottomHdr, orientBottomCnf :: VegaLite
+orientBottomHdr = genderChart [ HOrient SBottom ] []
+orientBottomCnf = genderChart [] [ HOrient SBottom ]
+
 
 
 groupByAge :: VegaLite
@@ -158,6 +200,7 @@ dataVals =
 
 encByCatVal :: [EncodingSpec] -> PropertySpec
 encByCatVal = encoding
+              -- see note about removing 'PAxis []' in gridConfig
               . position X [ PName "cat", PmType Ordinal, PAxis [] ]
               . position Y [ PName "val", PmType Quantitative, PAxis [] ]
               . color [ MName "cat", MmType Nominal, MLegend [] ]
@@ -179,7 +222,10 @@ gridConfig fopts =
                              , ViewFillOpacity 0.2
                              , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)
-
+  -- I had thought that disabling the axis would be the same as setting
+  -- PAxis [] for both axes, but it doesn't behave that way with
+  -- Vega Lite 4.8.1 (or I mis-understand this)
+  . configuration (Axis [Disable True])
 
 grid1 :: VegaLite
 grid1 =

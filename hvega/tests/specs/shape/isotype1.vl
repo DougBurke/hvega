@@ -13,6 +13,9 @@
     "config": {
         "view": {
             "stroke": null
+        },
+        "axis": {
+            "disable": true
         }
     },
     "mark": {
