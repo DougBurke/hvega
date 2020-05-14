@@ -3,7 +3,7 @@
 
 {-|
 Module      : IHaskell.Display.Hvega
-Copyright   : (c) Douglas Burke 2018, 2019
+Copyright   : (c) Douglas Burke 2018, 2019, 2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -61,11 +61,15 @@ import Data.Monoid ((<>))
 import Graphics.Vega.VegaLite (VegaLite, fromVL)
 
 import IHaskell.Display (IHaskellDisplay(..), Display(..)
-                        , javascript, vegalite)
+                        , javascript, custom)
 
 
 -- ^ View a Vega-Lite visualization in a Jupyter *notebook*. Use 'vlShow'
 --   instead if you are using Jupyter *lab*.
+--
+--   This is limited to supporting Vega-Lite version 2. It should be
+--   possible to support newer versions, I just have no time to do
+--   so.
 --
 --   There is currently no way to pass
 --   <https://github.com/vega/vega-embed#options options>
@@ -157,4 +161,5 @@ vlShow = VLL
 --
 instance IHaskellDisplay VegaLiteLab where
   display (VLL vl) = let js = LT.unpack (encodeToLazyText (fromVL vl))
-                     in pure (Display [vegalite js])
+                         vegalite = "application/vnd.vegalite.v4+json"
+                     in pure (Display [custom vegalite js])
