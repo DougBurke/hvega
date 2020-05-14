@@ -1,9 +1,19 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.3.0.0
+
+Move to ihaskell 0.10.1 as a minimum. This should mean that the support
+for JupyterLab (i.e. with vlShow) now uses the latest version of
+VegaLite.
+
+## 0.2.2.0, 0.2.3.0, 0.2.4.0
+
+I forget what I did here, probably just updates to the hvega module.
+
 ## 0.2.1.0
 
-THe module now exports the `VegaLiteLab` type (provided by Alexey
+The module now exports the `VegaLiteLab` type (provided by Alexey
 Kuleshevich (lehins). This type is used to support display in Jupyter
 Lab as well as notebooks, and is a somewhat experimental feature.
 
