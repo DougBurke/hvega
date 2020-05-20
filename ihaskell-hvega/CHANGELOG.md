@@ -1,9 +1,13 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.2.2.0 - 0.2.5.0
+
+Bump the maximum version of hvega.
+
 ## 0.2.1.0
 
-THe module now exports the `VegaLiteLab` type (provided by Alexey
+The module now exports the `VegaLiteLab` type (provided by Alexey
 Kuleshevich (lehins). This type is used to support display in Jupyter
 Lab as well as notebooks, and is a somewhat experimental feature.
 
