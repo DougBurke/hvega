@@ -19,6 +19,7 @@ testSpecs = [ ("scale1", scale1)
             , ("scale9", scale9)
             , ("diverging1", diverging1)
             , ("diverging2", diverging2)
+            , ("axisrange", axisrange)
             ]
 
 scale1 :: VegaLite
@@ -162,7 +163,7 @@ rData scaleOpts =
       enc = encoding
             . size [ MName "r"
                    , MmType Quantitative
-                   , MScale (SRange (RNumbers [ 0, 80000 ]) : scaleOpts)
+                   , MScale (SRange (RPair 0 80000) : scaleOpts)
                    , MLegend []
                    ]
 
@@ -208,3 +209,22 @@ diverging2 = toVegaLite [ divergingData
                         , divergingEnc [ SDomainMid 0 ]
                         , mark Bar []
                         ]
+
+
+axisrange :: VegaLite
+axisrange =
+  let cars = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+      ax axis vals = [ PName axis, PmType Quantitative, PScale [SRange vals] ]
+      xrange = RWidth 50
+      yrange = RHeight 60
+      enc = encoding
+            . position X (ax "Horsepower" xrange)
+            . position Y (ax "Miles_per_Gallon" yrange)
+            . size [ MName "Acceleration", MmType Quantitative, MBin [] ]
+            . opacity [ MName "Acceleration", MmType Quantitative, MBin [] ]
+            
+  in toVegaLite [ cars
+                , enc []
+                , mark Point [ MFilled True, MStroke "white", MStrokeWidth 0.4 ]
+                ]

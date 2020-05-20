@@ -1,6 +1,12 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.9.0.0
+
+Add support for width and height to scale's range, with the `RHeight` and
+`RWidth` constructors. The `RPair` constructor has been added as an
+experimental means for specifying just the minimum and maximum values.
+
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the

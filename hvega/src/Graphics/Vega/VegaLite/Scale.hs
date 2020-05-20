@@ -169,11 +169,26 @@ for band and point scales.
 -}
 
 data ScaleRange
-    = RNumbers [Double]
+    = RPair Double Double
+      -- ^ The minimum and maximum values.
+      --
+      --   @since 0.9.0.0
+    | RHeight Double
+      -- ^ Specify the width as a number and height as the string @"height"@.
+      --
+      --   @since 0.9.0.0
+    | RWidth Double
+      -- ^ Specify the height as a number and width as the string @"width"@.
+      --
+      --   @since 0.9.0.0
+    | RNumbers [Double]
       -- ^ For [continuous scales](https://vega.github.io/vega-lite/docs/scale.html#continuous),
       --   a two-element array indicating minimum and maximum values, or an array with more than
       --   two entries for specifying a
       --   [piecewise scale](https://vega.github.io/vega-lite/docs/scale.html#piecewise).
+      --
+      --   Support for the two-element version may be removed (ie this left only
+      --   for piecewise scales).
     | RNumberLists [[Double]]
       -- ^ A scale range comprising of numeric lists, such as custom dash styles for
       --   the 'Graphics.Vega.VegaLite.strokeDash' channel encoding.
