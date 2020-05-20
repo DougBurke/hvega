@@ -154,80 +154,26 @@ scale5 =
     toVegaLite [ dataVals [], enc [], mark Circle [] ]
 
 
-scale6 :: VegaLite
-scale6 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
+rData :: [ScaleProperty] -> VegaLite
+rData scaleOpts =
+  let dataVals = dataFromColumns []
+                 . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
 
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]) ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
+      enc = encoding
+            . size [ MName "r"
+                   , MmType Quantitative
+                   , MScale (SRange (RNumbers [ 0, 80000 ]) : scaleOpts)
+                   , MLegend []
+                   ]
+
+  in toVegaLite [ dataVals [], mark Point [], enc [] ]
 
 
-scale7 :: VegaLite
-scale7 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScPow, SExponent 2 ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
-
-
-scale8 :: VegaLite
-scale8 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScPow, SExponent 1.2 ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
-
-
-scale9 :: VegaLite
-scale9 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                .  size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScLog, SBase (exp 1) ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
+scale6, scale7, scale8, scale9 :: VegaLite
+scale6 = rData []
+scale7 = rData [SType ScPow, SExponent 2]
+scale8 = rData [SType ScPow, SExponent 1.2]
+scale9 = rData [SType ScLog, SBase (exp 1)]
 
 
 divergingData :: Data
