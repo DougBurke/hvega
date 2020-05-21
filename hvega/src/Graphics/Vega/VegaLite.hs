@@ -807,6 +807,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.9
+         --
+         -- $update0900
+
          -- ** Version 0.8
          --
          -- $update0800
@@ -1202,6 +1206,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0900
+-- The `VL.ScaleRange` type has now gained three new versions:
+-- (experimental) `VL.RPair` for defining the axis range,
+-- and `VL.RHeight` and `VL.RWidth` for specifying the height 
+-- or width as a signal.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of

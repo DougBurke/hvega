@@ -19,6 +19,7 @@ testSpecs = [ ("scale1", scale1)
             , ("scale9", scale9)
             , ("diverging1", diverging1)
             , ("diverging2", diverging2)
+            , ("axisrange", axisrange)
             ]
 
 scale1 :: VegaLite
@@ -154,80 +155,26 @@ scale5 =
     toVegaLite [ dataVals [], enc [], mark Circle [] ]
 
 
-scale6 :: VegaLite
-scale6 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
+rData :: [ScaleProperty] -> VegaLite
+rData scaleOpts =
+  let dataVals = dataFromColumns []
+                 . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
 
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]) ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
+      enc = encoding
+            . size [ MName "r"
+                   , MmType Quantitative
+                   , MScale (SRange (RPair 0 80000) : scaleOpts)
+                   , MLegend []
+                   ]
+
+  in toVegaLite [ dataVals [], mark Point [], enc [] ]
 
 
-scale7 :: VegaLite
-scale7 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScPow, SExponent 2 ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
-
-
-scale8 :: VegaLite
-scale8 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                . size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScPow, SExponent 1.2 ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
-
-
-scale9 :: VegaLite
-scale9 =
-    let
-        dataVals =
-            dataFromColumns []
-                . dataColumn "r" (Numbers [ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 ])
-
-        enc =
-            encoding
-                .  size
-                    [ MName "r"
-                    , MmType Quantitative
-                    , MScale [ SRange (RNumbers [ 0, 80000 ]), SType ScLog, SBase (exp 1) ]
-                    , MLegend []
-                    ]
-    in
-    toVegaLite [ dataVals [], mark Point [], enc [] ]
+scale6, scale7, scale8, scale9 :: VegaLite
+scale6 = rData []
+scale7 = rData [SType ScPow, SExponent 2]
+scale8 = rData [SType ScPow, SExponent 1.2]
+scale9 = rData [SType ScLog, SBase (exp 1)]
 
 
 divergingData :: Data
@@ -262,3 +209,22 @@ diverging2 = toVegaLite [ divergingData
                         , divergingEnc [ SDomainMid 0 ]
                         , mark Bar []
                         ]
+
+
+axisrange :: VegaLite
+axisrange =
+  let cars = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+
+      ax axis vals = [ PName axis, PmType Quantitative, PScale [SRange vals] ]
+      xrange = RWidth 50
+      yrange = RHeight 60
+      enc = encoding
+            . position X (ax "Horsepower" xrange)
+            . position Y (ax "Miles_per_Gallon" yrange)
+            . size [ MName "Acceleration", MmType Quantitative, MBin [] ]
+            . opacity [ MName "Acceleration", MmType Quantitative, MBin [] ]
+            
+  in toVegaLite [ cars
+                , enc []
+                , mark Point [ MFilled True, MStroke "white", MStrokeWidth 0.4 ]
+                ]

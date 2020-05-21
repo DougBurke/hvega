@@ -772,6 +772,7 @@ data ScaleProperty
       --   Not all scales support @SZero@ and the default depends on the type of
       --   channel.
 
+
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
 scaleProperty (SAlign c) = "align" .= clamped 0 1 c
@@ -787,6 +788,9 @@ scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
 scaleProperty (SPadding x) = "padding" .= x
 scaleProperty (SPaddingInner x) = "paddingInner" .= x
 scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
+scaleProperty (SRange (RPair lo hi)) = "range" .= [lo, hi]
+scaleProperty (SRange (RHeight w)) = "range" .= [fromT "height", toJSON w]
+scaleProperty (SRange (RWidth h)) = "range" .= [toJSON h, fromT "width"]
 scaleProperty (SRange (RNumbers xs)) = "range" .= xs
 scaleProperty (SRange (RNumberLists xss)) = "range" .= xss
 scaleProperty (SRange (RStrings ss)) = "range" .= ss
