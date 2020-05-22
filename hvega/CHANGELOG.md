@@ -14,6 +14,8 @@ Support for arcs has been added: the `Arc` type has been added to `Mark`;
 `MRadius2`, `MRadiusOffset`, `MRadius2Offset`, and `MTheta2` added to 
 `MarkProperty`.
 
+The `angle` encoding channel has been added for text and point marks.
+
 Add support for width and height to scale's range, with the `RHeight` and
 `RWidth` constructors. The `RPair` constructor has been added as an
 experimental means for specifying just the minimum and maximum values.

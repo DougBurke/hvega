@@ -46,6 +46,7 @@ testSpecs = [ ("defNominal", scatter1)
             , ("rounded6", rounded6)
             , ("symbols1", symbols1)
             , ("symbols2", symbols2)
+            , ("windvector", windvector)
             ]
 
 
@@ -394,3 +395,31 @@ symbols2 =
                          ]
                ]
         )
+
+
+windvector :: VegaLite
+windvector =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/windvectors.csv" []
+
+      enc = encoding
+            . position X [PName "longitude", PmType Ordinal, PAxis []]
+            . position Y [PName "latitude", PmType Ordinal, PAxis []]
+            . color [ MName "dir"
+                    , MmType Quantitative
+                    , MScale [SDomain (DNumbers [0, 360]), SScheme "rainbow" []]
+                    , MLegend []
+                    ]
+            . angle [ MName "dir"
+                    , MmType Quantitative
+                    , MScale [SDomain (DNumbers [0, 360]), SRange (RPair 180 540)]
+                    ]
+            . size [MName "speed", MmType Quantitative]
+
+  in toVegaLite [ dvals
+                , mark Point [MShape SymWedge]
+                , enc []
+                , configure
+                  . configuration (ViewStyle [ ViewFill "black"
+                                             , ViewStep 10 ])
+                  $ []
+                ]
