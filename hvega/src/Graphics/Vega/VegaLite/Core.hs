@@ -80,6 +80,7 @@ module Graphics.Vega.VegaLite.Core
        , AxisProperty(..)
        , ConditionalAxisProperty(..)
 
+       , angle
        , color
        , fill
        , fillOpacity
@@ -3663,6 +3664,20 @@ calculateAs ::
 calculateAs expr label ols =
   let fields = [ "calculate" .= expr, "as" .= label ]
   in TS (object fields) : ols
+
+
+{-|
+
+Encode an angle (orientation) channel, which allows for data-driven
+rotation of text and point marks.
+
+@since 0.9.0.0
+-}
+angle ::
+  [MarkChannel]
+  -- ^ The color-encoding options.
+  -> BuildEncodingSpecs
+angle markProps ols = mchan_ "angle" markProps : ols
 
 
 {-|

@@ -539,6 +539,7 @@ module Graphics.Vega.VegaLite
          --
          -- $markprops
 
+       , VL.angle
        , VL.color
        , VL.fill
        , VL.fillOpacity
@@ -1218,6 +1219,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- added to 'VL.Position'; and 'VL.MInnerRadius', 'VL.MOuterRadius',
 -- 'VL.MStartAngle', 'VL.MEndAngle', 'VL.MRadius2', 'VL.MRadiusOffset',
 -- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
+--
+-- The 'VL.angle' encoding channel has been added for text and point marks.
 -- 
 -- The 'VL.ScaleRange' type has now gained three new versions:
 -- (experimental) 'VL.RPair' for defining the axis range,
