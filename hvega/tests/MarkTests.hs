@@ -20,7 +20,12 @@ import Text.Printf (printf)
 import Graphics.Vega.VegaLite
 
 testSpecs :: [(String, VegaLite)]
-testSpecs = [("blendmode", blendMode)]
+testSpecs = [ ("blendmode", blendMode)
+            , ("pieChart", pieChart)
+            , ("pieChartWithLabels", pieChartWithLabels)
+            , ("donutChart", donutChart)
+            , ("radialChart", radialChart)
+            ]
 
 
 -- How does blend-mode work (added in Vega-Lite 4.6.0)?
@@ -127,4 +132,98 @@ blendMode =
                 , blendData
                 , columns 4
                 , vlConcat layers
+                ]
+
+
+pieChart :: VegaLite
+pieChart =
+  let desc = description "A simple pie chart with embedded data."
+      dvals = dataFromColumns []
+              . dataColumn "category" (Numbers [1, 2, 3, 4, 5, 6])
+              . dataColumn "value" (Numbers [4, 6, 10, 3, 7, 8])
+              $ []
+      
+  in toVegaLite [ desc
+                , dvals
+                , mark Arc []
+                , encoding
+                  . position Theta [PName "value", PmType Quantitative]
+                  . color [MName "category", MmType Nominal]
+                  $ []
+                , viewBackground [VBNoStroke]
+                ]
+
+
+pieChartWithLabels :: VegaLite
+pieChartWithLabels =
+  let desc = description "A simple pie chart with labels."
+      dvals = dataFromColumns []
+              . dataColumn "category" (Strings ["a", "b", "c", "d", "e", "f"])
+              . dataColumn "value" (Numbers [4, 6, 10, 3, 7, 8])
+              $ []
+
+      plot = [mark Arc [MOuterRadius 80]]
+      label = [ mark Text [MRadius 90]
+              , encoding (text [TName "category", TmType Nominal] [])
+              ]
+
+  in toVegaLite [ desc
+                , dvals
+                , encoding
+                  -- can not get stack: true, but should be the same
+                  . position Theta [PName "value", PmType Quantitative, PStack StZero]
+                  . color [MName "category", MmType Nominal, MLegend []]
+                  $ []
+                , layer [asSpec plot, asSpec label]
+                , viewBackground [VBNoStroke]
+                ]
+
+
+donutChart :: VegaLite
+donutChart =
+  let desc = description "A simple donut chart with embedded data."
+      dvals = dataFromColumns []
+              . dataColumn "category" (Numbers [1, 2, 3, 4, 5, 6])
+              . dataColumn "value" (Numbers [4, 6, 10, 3, 7, 8])
+              $ []
+      
+  in toVegaLite [ desc
+                , dvals
+                , mark Arc [MInnerRadius 50]
+                , encoding
+                  . position Theta [PName "value", PmType Quantitative]
+                  . color [MName "category", MmType Nominal]
+                  $ []
+                , viewBackground [VBNoStroke]
+                ]
+
+
+radialChart :: VegaLite
+radialChart =
+  let desc = description "A simple radial chart with embedded data."
+      dvals = dataFromColumns []
+              . dataColumn "data" (Numbers [12, 23, 47, 6, 52, 19])
+              $ []
+
+      plot = [mark Arc [MInnerRadius 20, MStroke "#fff"]]
+      label = [ mark Text [MRadiusOffset 10]
+              , encoding (text [TName "data", TmType Quantitative] [])
+              ]
+
+  in toVegaLite [ desc
+                , dvals
+                , encoding
+                  -- can not get stack: true, but should be the same
+                  . position Theta [PName "data", PmType Quantitative, PStack StZero]
+                  . position R [ PName "data"
+                               , PmType Quantitative
+                               , PScale [ SType ScSqrt
+                                        , SZero True
+                                        , SRange (RPair 20 100)
+                                        ]
+                               ]
+                  . color [MName "data", MmType Nominal, MLegend []]
+                  $ []
+                , layer [asSpec plot, asSpec label]
+                , viewBackground [VBNoStroke]
                 ]

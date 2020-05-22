@@ -1208,9 +1208,20 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The `VL.ScaleRange` type has now gained three new versions:
--- (experimental) `VL.RPair` for defining the axis range,
--- and `VL.RHeight` and `VL.RWidth` for specifying the height 
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.9 of
+-- the Vega-Lite schema.
+--
+-- __New constructors__
+--
+-- Support for arcs has been added: the 'VL.Arc' type has been added to
+-- 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have been
+-- added to 'VL.Position'; and 'VL.MInnerRadius', 'VL.MOuterRadius',
+-- 'VL.MStartAngle', 'VL.MEndAngle', 'VL.MRadius2', 'VL.MRadiusOffset',
+-- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
+-- 
+-- The 'VL.ScaleRange' type has now gained three new versions:
+-- (experimental) 'VL.RPair' for defining the axis range,
+-- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
 -- or width as a signal.
 
 -- $update0800
@@ -1313,7 +1324,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- as there are now separate configuration options: 'VL.AxisNamedStyles'
 -- and 'VL.MarkNamedStyles'. The 'VL.AStyle' and 'VL.AxStyle' options have been
 -- added to 'VL.AxisConfig' and 'VL.AxisProperty' respectively.
--- The `VL.StyleLabel` type alias has been added to help the documentation, but
+-- The 'VL.StyleLabel' type alias has been added to help the documentation, but
 -- provides no extra type safety.
 --
 -- __Breaking Change__

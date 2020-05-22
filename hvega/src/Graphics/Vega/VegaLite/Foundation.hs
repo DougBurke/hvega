@@ -519,6 +519,22 @@ data Position
     | Y2
     -- ^ The secondary coordinate for ranged 'Graphics.Vega.VegaLite.Area', 'Graphics.Vega.VegaLite.Bar', 'Graphics.Vega.VegaLite.Rect', and 'Graphics.Vega.VegaLite.Rule'
     --    marks.
+    | Theta
+      -- ^ The start angle of an arc.
+      --
+      --   @since 0.9.0.0
+    | Theta2
+      -- ^ The end angle of an arc.
+      --
+      --   @since 0.9.0.0
+    | R
+      -- ^ The outer radius of an arc.
+      --
+      --   @since 0.9.0.0
+    | R2
+      -- ^ The inner radius of an arc.
+      --
+      --   @since 0.9.0.0
     | XError
       -- ^ Indicates that the 'X' channel represents the mid-point and
       --   the 'XError' channel gives the offset. If 'XError2' is not
@@ -558,6 +574,10 @@ positionLabel X = "x"
 positionLabel Y = "y"
 positionLabel X2 = "x2"
 positionLabel Y2 = "y2"
+positionLabel Theta = "theta"
+positionLabel Theta2 = "theta2"
+positionLabel R = "radius"
+positionLabel R2 = "radius2"
 positionLabel XError     = "xError"
 positionLabel YError     = "yError"
 positionLabel XError2    = "xError2"
