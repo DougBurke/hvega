@@ -91,7 +91,11 @@ mprops_ f mps = f .= object (map markProperty mps)
 --   properties apply to all marks.
 --
 data Mark
-    = Area
+    = Arc
+      -- ^ An arc mark.
+      --
+      --   @since 0.9.0.0
+    | Area
       -- ^ An [area mark](https://vega.github.io/vega-lite/docs/area.html)
       --   for representing a series of data elements, such as in a stacked
       --   area chart or streamgraph.
@@ -182,6 +186,7 @@ data Mark
 
 
 markLabel :: Mark -> T.Text
+markLabel Arc = "arc"
 markLabel Area = "area"
 markLabel Bar = "bar"
 markLabel Boxplot = "boxplot"
@@ -353,6 +358,10 @@ data MarkProperty
       --   The default is @\"…\"@.
       --
       --   @since 0.5.0.0
+    | MEndAngle Double
+      -- ^ The end angle, in radians, for arc marks.
+      --
+      --   @since 0.9.0.0
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
       --   'ErrorBand' marks.
@@ -399,6 +408,10 @@ data MarkProperty
       --   hyperlink.
       --
       --   @since 0.4.0.0
+    | MInnerRadius Double
+      -- ^ The inner radius, in pixels, of arc marks.
+      --
+      --   @since 0.9.0.0
     | MInterpolate MarkInterpolation
       -- ^ Interpolation method used by line and area marks.
     | MLimit Double
@@ -444,6 +457,10 @@ data MarkProperty
       --   @since 0.4.0.0
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
+    | MOuterRadius Double
+      -- ^ The outer radius, in pixels, of arc marks.
+      --
+      --   @since 0.9.0.0
     | MOutliers [MarkProperty]
       -- ^ Outlier symbol properties for the 'Boxplot' mark. See also 'MNoOutliers'.
       --
@@ -457,7 +474,20 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MRadius Double
-      -- ^ Polar coordinate radial offset of a text mark from its origin.
+      -- ^ Polar coordinate radial offset of a text mark, in pixels, from its origin.
+      --   For an arc mark this defines the outer radius, in pixels.
+    | MRadius2 Double
+      -- ^ The inner radius, in pixels, of an arc mark.
+      --
+      --   @since 0.9.0.0
+    | MRadiusOffset Double
+      -- ^ The offset for 'MRadius'.
+      --
+      --   @since 0.9.0.0
+    | MRadius2Offset Double
+      -- ^ The offset for 'MRadius2'.
+      --
+      --   @since 0.9.0.0
     | MRemoveInvalid Bool
       -- ^ The default handling of invalid (@null@ and @NaN@) values. If @True@,
       --   invalid values are skipped or filtered out when represented as marks,
@@ -480,6 +510,10 @@ data MarkProperty
       -- ^ Shape of a point mark.
     | MSize Double
       -- ^ Size of a mark.
+    | MStartAngle Double
+      -- ^ The start angle, in radians, for arc marks.
+      --
+      --   @since 0.9.0.0
     | MStroke Color
       -- ^ Default stroke color of a mark.
       --
@@ -538,7 +572,12 @@ data MarkProperty
     | MTheta Double
       -- ^ Polar coordinate angle (clockwise from north in radians)
       --   of a text mark from the origin (determined by its
-      --   x and y properties).
+      --   x and y properties). For arc marks, the arc length in radians
+      --   if theta2 is not specified, otherwise the start arc angle.
+    | MTheta2 Double
+      -- ^ The end angle or arc marks, in radians,
+      --
+      --   @since 0.9.0.0
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
@@ -662,6 +701,7 @@ markProperty (MDir td) = "dir" .= textdirLabel td
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
 markProperty (MEllipsis s) = "ellipsis" .= s
+markProperty (MEndAngle r) = "endAngle" .= r
 
 -- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
@@ -675,6 +715,7 @@ markProperty (MFontStyle fSty) = "fontStyle" .= fSty
 markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
 markProperty (MHeight x) = "height" .= x
 markProperty (MHRef s) = "href" .= s
+markProperty (MInnerRadius r) = "innerRadius" .= r
 markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
 markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
 markProperty (MLimit x) = "limit" .= x
@@ -690,12 +731,17 @@ markProperty (MOpacity x) = "opacity" .= x
 markProperty (MOrder b) = "order" .= b
 markProperty (MOrient orient) = "orient" .= orientationSpec orient
 
+markProperty (MOuterRadius r) = "outerRadius" .= r
+
 -- what uses this?
 markProperty MNoOutliers = "outliers" .= False
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MRadius x) = "radius" .= x
+markProperty (MRadius2 x) = "radius2" .= x
+markProperty (MRadiusOffset x) = "radiusOffset" .= x
+markProperty (MRadius2Offset x) = "radius2Offset" .= x
 
 -- what uses this?
 markProperty MNoRule = "rule" .= False
@@ -703,6 +749,7 @@ markProperty (MRule mps) = mprops_ "rule" mps
 
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
+markProperty (MStartAngle r) = "startAngle" .= r
 markProperty (MStroke t) = "stroke" .= fromColor t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
@@ -717,6 +764,7 @@ markProperty (MTension x) = "tension" .= x
 markProperty (MText t) = "text" .= t
 markProperty (MTexts ts) = "text" .= ts
 markProperty (MTheta x) = "theta" .= x
+markProperty (MTheta2 x) = "theta2" .= x
 markProperty (MThickness x) = "thickness" .= x
 
 -- what uses this?

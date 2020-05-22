@@ -1,0 +1,74 @@
+{
+    "data": {
+        "values": [
+            {
+                "data": 12
+            },
+            {
+                "data": 23
+            },
+            {
+                "data": 47
+            },
+            {
+                "data": 6
+            },
+            {
+                "data": 52
+            },
+            {
+                "data": 19
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "view": {
+        "stroke": null
+    },
+    "layer": [
+        {
+            "mark": {
+                "stroke": "#fff",
+                "type": "arc",
+                "innerRadius": 20
+            }
+        },
+        {
+            "mark": {
+                "radiusOffset": 10,
+                "type": "text"
+            },
+            "encoding": {
+                "text": {
+                    "field": "data",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "theta": {
+            "field": "data",
+            "type": "quantitative",
+            "stack": "zero"
+        },
+        "color": {
+            "field": "data",
+            "type": "nominal",
+            "legend": null
+        },
+        "radius": {
+            "field": "data",
+            "scale": {
+                "range": [
+                    20,
+                    100
+                ],
+                "zero": true,
+                "type": "sqrt"
+            },
+            "type": "quantitative"
+        }
+    },
+    "description": "A simple radial chart with embedded data."
+}

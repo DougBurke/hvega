@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.8 of @hvega@ supports version 4.8 of the Vega-Lite specification.
+Version 0.9 of @hvega@ supports version 4.9 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -1208,9 +1208,20 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The `VL.ScaleRange` type has now gained three new versions:
--- (experimental) `VL.RPair` for defining the axis range,
--- and `VL.RHeight` and `VL.RWidth` for specifying the height 
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.9 of
+-- the Vega-Lite schema.
+--
+-- __New constructors__
+--
+-- Support for arcs has been added: the 'VL.Arc' type has been added to
+-- 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have been
+-- added to 'VL.Position'; and 'VL.MInnerRadius', 'VL.MOuterRadius',
+-- 'VL.MStartAngle', 'VL.MEndAngle', 'VL.MRadius2', 'VL.MRadiusOffset',
+-- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
+-- 
+-- The 'VL.ScaleRange' type has now gained three new versions:
+-- (experimental) 'VL.RPair' for defining the axis range,
+-- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
 -- or width as a signal.
 
 -- $update0800
@@ -1313,7 +1324,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- as there are now separate configuration options: 'VL.AxisNamedStyles'
 -- and 'VL.MarkNamedStyles'. The 'VL.AStyle' and 'VL.AxStyle' options have been
 -- added to 'VL.AxisConfig' and 'VL.AxisProperty' respectively.
--- The `VL.StyleLabel` type alias has been added to help the documentation, but
+-- The 'VL.StyleLabel' type alias has been added to help the documentation, but
 -- provides no extra type safety.
 --
 -- __Breaking Change__

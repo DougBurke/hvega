@@ -3,6 +3,17 @@ For the latest version of this document, please see
 
 ## 0.9.0.0
 
+The Vega-Lite tests are now validated against version 4.9 of the
+Vega-Lite schema.
+
+### New Constructors
+
+Support for arcs has been added: the `Arc` type has been added to `Mark`;
+`Theta`, `Theta2`, `R`, and `R2` have been added to `Position`; and
+`MInnerRadius`, `MOuterRadius`, `MStartAngle`, `MEndAngle`,
+`MRadius2`, `MRadiusOffset`, `MRadius2Offset`, and `MTheta2` added to 
+`MarkProperty`.
+
 Add support for width and height to scale's range, with the `RHeight` and
 `RWidth` constructors. The `RPair` constructor has been added as an
 experimental means for specifying just the minimum and maximum values.
