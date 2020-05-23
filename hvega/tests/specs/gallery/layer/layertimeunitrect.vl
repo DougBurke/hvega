@@ -1,0 +1,55 @@
+{
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "layer": [
+        {
+            "mark": "bar",
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+            },
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "timeUnit": "month",
+                    "title": "month",
+                    "type": "temporal",
+                    "axis": {
+                        "labelExpr": "datum.label[0]",
+                        "labelAlign": "left"
+                    }
+                },
+                "y": {
+                    "field": "precipitation",
+                    "aggregate": "mean",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "color": "grey",
+                "opacity": 0.5,
+                "type": "rect"
+            },
+            "data": {
+                "values": [
+                    {
+                        "date_end": "July 15, 2010",
+                        "date": "May 1, 2010"
+                    }
+                ]
+            },
+            "encoding": {
+                "x2": {
+                    "field": "date_end",
+                    "timeUnit": "month"
+                },
+                "x": {
+                    "field": "date",
+                    "timeUnit": "month",
+                    "type": "temporal"
+                }
+            }
+        }
+    ],
+    "description": "Drawing rect bin from the beginning of May to end of July"
+}

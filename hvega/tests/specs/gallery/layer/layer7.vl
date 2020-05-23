@@ -16,7 +16,7 @@
     ],
     "height": 300,
     "data": {
-        "url": "data/seattle-weather.csv"
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
     "width": 400,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",

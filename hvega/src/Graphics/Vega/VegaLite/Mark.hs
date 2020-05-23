@@ -409,7 +409,8 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MInnerRadius Double
-      -- ^ The inner radius, in pixels, of arc marks.
+      -- ^ The inner radius, in pixels, of arc marks. It is an alias for
+      --    'MRadius2'.
       --
       --   @since 0.9.0.0
     | MInterpolate MarkInterpolation
@@ -458,7 +459,7 @@ data MarkProperty
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOuterRadius Double
-      -- ^ The outer radius, in pixels, of arc marks.
+      -- ^ The outer radius, in pixels, of arc marks. It is an alias for 'MRadius'.
       --
       --   @since 0.9.0.0
     | MOutliers [MarkProperty]

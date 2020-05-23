@@ -22,7 +22,13 @@ testSpecs = [ ("layer1", layer1)
             , ("layer5", layer5)
             , ("layer6", layer6)
             , ("layer7", layer7)
+            , ("layertimeunitrect", layerTimeunitRect)
             ]
+
+
+seattleData :: Data
+seattleData = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+
 
 layer1 :: VegaLite
 layer1 =
@@ -237,7 +243,7 @@ layer4 =
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+        , seattleData
         , encTime []
         , layer [ specBar, specLine ]
         , res []
@@ -393,7 +399,47 @@ layer7 =
      [ description desc
      , height 300
      , width 400
-     , dataFromUrl "data/seattle-weather.csv" []
+     , seattleData
      , transform (wtrans [])
      , layer layers
      ]
+
+
+-- examples/specs/layer_timeunit_rect.vl.json
+layerTimeunitRect :: VegaLite
+layerTimeunitRect =
+  let desc = "Drawing rect bin from the beginning of May to end of July"
+
+      xAxis = [ PTimeUnit Month
+              , PName "date"
+              , PmType Temporal
+              ]
+
+      lyr1 = [ seattleData
+             , mark Bar []
+             , encoding
+               . position X (xAxis ++
+                            [ PTitle "month"
+                            , PAxis [ AxLabelAlign AlignLeft
+                                    , AxLabelExpr "datum.label[0]"
+                                    ]
+                            ]
+                            )
+               . position Y [PAggregate Mean, PName "precipitation", PmType Quantitative]
+               $ []
+             ]
+
+      lyr2 = [ dataFromColumns []
+               . dataColumn "date" (Strings ["May 1, 2010"])
+               . dataColumn "date_end" (Strings ["July 15, 2010"])
+               $ []
+             , mark Rect [MOpacity 0.5, MColor "grey"]
+             , encoding
+               . position X xAxis
+               . position X2 [PTimeUnit Month, PName "date_end"]
+               $ []
+             ]
+  
+  in toVegaLite [ description desc
+                , layer [asSpec lyr1, asSpec lyr2]
+                ]
