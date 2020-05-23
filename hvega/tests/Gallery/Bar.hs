@@ -37,6 +37,7 @@ testSpecs = [ ("bar1", bar1)
             , ("wilkinsondotplot", wilkinsonDotPlot)
             , ("initialletter", initialLetter)
             , ("barnegative", barNegative)
+            , ("baraxisspacesaving", barAxisSpaceSaving)
             ]
 
 
@@ -790,4 +791,40 @@ barNegative =
                                        ]
                                ]
                   $ []
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/bar_axis_space_saving.html
+barAxisSpaceSaving :: VegaLite
+barAxisSpaceSaving =
+  let desc = "Bar Chart with a spacing-saving y-axis"
+
+      enc = encoding
+            . position X [PAggregate Count, PmType Quantitative, PAxis [AxGrid False]]
+            . position Y [ PName "Origin"
+                         , PmType Nominal
+                         , PScale [SPadding 0]
+                         , PBand 0.5
+                         , PAxis yAx
+                         ]
+
+      yAx = [ AxBandPosition 0
+            , AxGrid True
+            , AxDomain False
+            , AxTicks False
+            , AxLabelAlign AlignLeft
+            , AxLabelBaseline AlignMiddle
+            , AxLabelPadding (-5)
+            , AxLabelOffset (-15)
+            , AxTitleX 5
+            , AxTitleY (-5)
+            , AxTitleAngle 0
+            , AxTitleAlign AlignLeft
+            ]
+
+  in toVegaLite [ description desc
+                , dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
+                , heightStep 50
+                , mark Bar [MYOffset 5, MCornerRadiusEnd 2]
+                , enc []
                 ]
