@@ -28,6 +28,7 @@ testSpecs = [ ("line1", line1)
             , ("line11", line11)
             , ("line12", line12)
             , ("conditionalaxis", conditionalAxis)
+            , ("linecolorhalo", lineColorHalo)
             ]
 
 
@@ -375,4 +376,34 @@ conditionalAxis =
                 , configure
                   . configuration (Axis [DomainColor "#ddd", TickColor "#ddd"])
                   $ []
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/line_color_halo.html
+lineColorHalo :: VegaLite
+lineColorHalo =
+  let desc = "Multi-series Line Chart with Halo. Use pivot and repeat-layer as a workaround to facet groups of lines and their halo strokes. See https://github.com/vega/vega-lite/issues/6192 for more discussion."
+
+      plot = [layer [asSpec plot1, asSpec plot2]]
+
+      encBase = encoding
+                . position X [PName "date", PmType Temporal]
+                . position Y [PRepeat Layer, PmType Quantitative, PTitle "price"]
+                
+      plot1 = [ mark Line [MStroke "white", MStrokeWidth 4]
+              , encBase []
+              ]
+      plot2 = [ mark Line []
+              , encBase
+                . stroke [MRepeatDatum Layer, MmType Nominal]
+                $ []
+              ]
+
+  in toVegaLite [ description desc
+                , stockData
+                , transform
+                  . pivot "symbol" "price" [PiGroupBy ["date"]]
+                  $ []
+                , repeat [LayerFields ["AAPL", "AMZN", "GOOG", "IBM", "MSFT"]]
+                , specification (asSpec plot)
                 ]
