@@ -539,6 +539,12 @@ data MarkChannel
     | MPath T.Text
       -- ^ SVG path string used when encoding with a mark property channel. Useful
       --   for providing custom shapes.
+    | MDatum DataValue
+      -- ^ Name of a literal data item used for encoding with a mark property channel.
+      --   Unlike 'MNumber', 'MString', and 'MBoolean', datum literals represent values in
+      --   data space.
+      --
+      --   @since 0.9.0.0
     | MNumber Double
       -- ^ Literal numeric value when encoding with a mark property channel.
     | MString T.Text
@@ -578,6 +584,7 @@ markChannelProperty (MDataCondition tests elseClause) =
 markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]
 markChannelProperty (MAggregate op) = [aggregate_ op]
 markChannelProperty (MPath s) = ["value" .= s]
+markChannelProperty (MDatum d) = ["datum" .= dataValueSpec d]
 markChannelProperty (MNumber x) = ["value" .= x]
 markChannelProperty (MString s) = ["value" .= s]
 markChannelProperty (MBoolean b) = ["value" .= b]
@@ -913,10 +920,18 @@ data PositionChannel
       -- @
       --
       --   @since 0.4.0.0
+    | PDatum DataValue
+      -- ^ Set a position to an arbitrary data value. Useful for placing items at a
+      --   specific point in the data space. To place in data screen space use
+      --   'PNumber'.
+      --
+      --   @since 0.9.0.0
     | PNumber Double
       -- ^ Set a position to an arbitrary value. Useful for placing items at the top of
       --   a plot area (@PNumber 0@) or a fixed number of pixels from the top.
       --   See also 'PHeight' and 'PWidth'.
+      --
+      --   Use 'PDatum' to place an item using a data coordinate.
       --
       --   @since 0.4.0.0
     | PRepeat Arrangement
@@ -1063,6 +1078,7 @@ positionChannelProperty (PStack so) = stackOffset so
 positionChannelProperty (PRepeat arr) = "field" .= object [repeat_ arr]
 positionChannelProperty PHeight = value_ "height"
 positionChannelProperty PWidth = value_ "width"
+positionChannelProperty (PDatum d) = "datum" .= dataValueSpec d
 positionChannelProperty (PNumber x) = "value" .= x
 positionChannelProperty (PImpute ips) = impute_ ips
 positionChannelProperty (PBand x) = "band" .= x

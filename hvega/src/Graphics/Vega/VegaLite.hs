@@ -1221,7 +1221,15 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
--- 
+--
+-- Layers have been added to 'VL.Arrangement' ('VL.Layer') and to
+-- 'VL.RepeatFields' ('VL.LayerFields').
+--
+-- The 'VL.MRepeatDatum' constructor has been added to 'VL.MarkChannel'.
+-- The 'VL.MDatum' and 'VL.PDatum' constructors have been added to specify
+-- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
+-- respectively).
+--
 -- The 'VL.ScaleRange' type has now gained three new versions:
 -- (experimental) 'VL.RPair' for defining the axis range,
 -- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
