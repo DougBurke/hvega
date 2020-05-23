@@ -36,6 +36,7 @@ testSpecs = [ ("columns1", columns1)
             , ("grid3", grid3)
             , ("grid4", grid4)
             , ("grid5", grid5)
+            , ("repeatinglayers", repeatinglayers)
             ]
 
 
@@ -311,3 +312,23 @@ grid5 =
   in carGrid Row opts
 
 
+repeatinglayers :: VegaLite
+repeatinglayers =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      plot = [ mark Line []
+             , encoding
+               . position X [PName "IMDB_Rating", PmType Quantitative, PBin []]
+               . position Y [ PRepeat Layer
+                            , PmType Quantitative
+                            , PAggregate Mean
+                            , PTitle "Mean of US and Worldwide Gross"
+                            ]
+               . color [MRepeatDatum Layer, MmType Nominal]
+               $ []
+             ]
+
+  in toVegaLite [ dvals
+                , repeat [LayerFields ["US_Gross", "Worldwide_Gross"]]
+                , specification (asSpec plot)
+                ]
