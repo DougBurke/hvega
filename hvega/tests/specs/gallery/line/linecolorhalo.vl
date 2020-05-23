@@ -1,0 +1,71 @@
+{
+    "transform": [
+        {
+            "groupby": [
+                "date"
+            ],
+            "value": "price",
+            "pivot": "symbol"
+        }
+    ],
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "repeat": {
+        "layer": [
+            "AAPL",
+            "AMZN",
+            "GOOG",
+            "IBM",
+            "MSFT"
+        ]
+    },
+    "spec": {
+        "layer": [
+            {
+                "mark": {
+                    "strokeWidth": 4,
+                    "stroke": "white",
+                    "type": "line"
+                },
+                "encoding": {
+                    "x": {
+                        "field": "date",
+                        "type": "temporal"
+                    },
+                    "y": {
+                        "field": {
+                            "repeat": "layer"
+                        },
+                        "title": "price",
+                        "type": "quantitative"
+                    }
+                }
+            },
+            {
+                "mark": "line",
+                "encoding": {
+                    "stroke": {
+                        "type": "nominal",
+                        "datum": {
+                            "repeat": "layer"
+                        }
+                    },
+                    "x": {
+                        "field": "date",
+                        "type": "temporal"
+                    },
+                    "y": {
+                        "field": {
+                            "repeat": "layer"
+                        },
+                        "title": "price",
+                        "type": "quantitative"
+                    }
+                }
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Multi-series Line Chart with Halo. Use pivot and repeat-layer as a workaround to facet groups of lines and their halo strokes. See https://github.com/vega/vega-lite/issues/6192 for more discussion."
+}

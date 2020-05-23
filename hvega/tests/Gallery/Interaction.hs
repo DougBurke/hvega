@@ -27,6 +27,7 @@ testSpecs = [ ("interaction1", interaction1)
             , ("interaction11b", interaction11b)
             , ("interaction11c", interaction11c)
             , ("interaction11d", interaction11d)
+            , ("interactivelinehover", interactiveLineHover)
             ]
 
 
@@ -482,3 +483,66 @@ interaction11a = initInterval Nothing Nothing
 interaction11b = initInterval (Just xInit) Nothing
 interaction11c = initInterval Nothing (Just yInit)
 interaction11d = initInterval (Just xInit) (Just yInit)
+
+
+-- https://vega.github.io/vega-lite/examples/interactive_line_hover.html
+interactiveLineHover :: VegaLite
+interactiveLineHover =
+  let desc = "Multi-series line chart with labels and interactive highlight on hover.  We also set the selection's initial value to provide a better screenshot"
+
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+
+      baseEnc = encoding
+                . color [ MSelectionCondition (SelectionName "hover")
+                          [MName "symbol", MmType Nominal, MLegend []]
+                          [MString "grey"]
+                        ]
+                . opacity [ MSelectionCondition (SelectionName "hover")
+                            [MNumber 1]
+                            [MNumber 0.2]
+                          ]
+
+      lyr1 = [ encoding
+               . position X [PName "date", PmType Temporal, PTitle "date"]
+               . position Y [PName "price", PmType Quantitative, PTitle "price"]
+               $ []
+             , layer [asSpec lyr11, asSpec lyr12]
+             ]
+
+      lyr11 = [ description "transparent layer to make it easier to trigger selection"
+              , selection
+                . select "hover" Single [ On "mouseover"
+                                        , Empty
+                                        , Fields ["symbol"]
+                                        , SInit [("symbol", Str "AAPL")]
+                                        ]
+                $ []
+              , mark Line [MStrokeWidth 8, MStroke "transparent"]
+              ]
+      lyr12 = [mark Line []]
+
+      lyr2 = [ encoding
+               . position X [PName "date", PmType Temporal, PAggregate Max]
+               . position Y [PName "price", PmType Quantitative, PAggregate (ArgMax (Just "date"))]
+               $ []
+             , layer [asSpec lyr21, asSpec lyr22]
+             ]
+
+      lyr21 = [mark Circle []]
+      lyr22 = [ mark Text [MAlign AlignLeft, MdX 4]
+              , encoding
+                . text [TName "symbol", TmType Nominal]
+                $ []
+              ]
+
+  in toVegaLite [ description desc
+                , dvals
+                , transform
+                  . filter (FExpr "datum.symbol!=='IBM'")
+                  $ []
+                , baseEnc []
+                , layer (map asSpec [lyr1, lyr2])
+                , configure
+                  . configuration (ViewStyle [ViewNoStroke])
+                  $ []
+                ]

@@ -35,6 +35,7 @@ testSpecs = [ ("default", defaultCfg)
             , ("titleCfg2", titleCfg2)
             , ("titleCfg3", titleCfg3)
             , ("breaklinecfg", breakLineCfg)
+            , ("headerlabels", headerlabels)
             ]
 
 
@@ -337,3 +338,26 @@ breakLineCfg =
                 , enc []
                 , mark Text []
                 ]
+
+
+headerlabels :: VegaLite
+headerlabels =
+  let conf = configure
+             . configuration (HeaderStyle [HLabel False])
+             $ []
+
+      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/population.json" []
+
+      trans = transform
+              . filter (FExpr "datum.year === 2000")
+              . calculateAs "datum.sex === 2 ? 'Female' : 'Male'" "gender"
+              $ []
+
+      enc = encoding
+            . position X [PName "age", PmType Ordinal]
+            . position Y [PName "people", PmType Quantitative, PAggregate Sum]
+            . column [FName "gender", FmType Nominal]
+            . color [MName "gender", MmType Nominal]
+            $ []
+
+  in toVegaLite [conf, dvals, trans, enc, mark Bar []]

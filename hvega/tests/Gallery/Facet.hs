@@ -21,6 +21,7 @@ testSpecs = [ ("facet1", facet1)
             , ("facet6", facet6)
             , ("facet7", facet7)
             , ("trellisareaseattle", trellisAreaSeattle)
+            , ("facetgridbar", facetGridBar)
             ]
 
 
@@ -263,4 +264,66 @@ trellisAreaSeattle =
                                 ]
                         ]
                 , specification plot
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/facet_grid_bar.html
+facetGridBar :: VegaLite
+facetGridBar =
+  let dvals = dataFromColumns []
+              . dataColumn "a" (Strings xa)
+              . dataColumn "b" (Strings xb)
+              . dataColumn "c" (Strings xc)
+              . dataColumn "p" (Strings xp)
+              $ []
+
+      xa = [ "a1", "a1", "a1", "a1", "a1", "a1", "a1", "a1", "a1"
+           , "a2", "a2", "a2", "a2", "a2", "a2", "a2", "a2", "a2"
+           , "a3", "a3", "a3", "a3", "a3", "a3", "a3", "a3", "a3"
+           ]
+      xb = [ "b1", "b1", "b1", "b2", "b2", "b2", "b3", "b3", "b3"
+           , "b1", "b1", "b1", "b2", "b2", "b2", "b3", "b3", "b3"
+           , "b1", "b1", "b1", "b2", "b2", "b2", "b3", "b3", "b3"
+           ]
+      xc = [ "x", "y", "z", "x", "y", "z", "x", "y", "z"
+           , "x", "y", "z", "x", "y", "z", "x", "y", "z"
+           , "x", "y", "z", "x", "y", "z", "x", "y", "z"
+           ]
+      xp = [ "0.14", "0.60", "0.03", "0.80", "0.38", "0.55", "0.11", "0.58", "0.79"
+           , "0.83", "0.87", "0.67", "0.97", "0.84", "0.90", "0.74", "0.64", "0.19"
+           , "0.57", "0.35", "0.49", "0.91", "0.38", "0.91", "0.99", "0.80", "0.37"
+           ]
+        
+      enc = encoding
+            . position X [ PName "p"
+                         , PmType Quantitative
+                         , PAxis [AxFormat "%"]
+                         , PNoTitle
+                         ]
+            . position Y [ PName "c"
+                         , PmType Nominal
+                         , PAxis []
+                         ]
+            . color [ MName "c"
+                    , MmType Nominal
+                    , MLegend [LOrient LOBottom, LTitleOrient SLeft]
+                    , MTitle "settings"
+                    ]
+            . row [ FName "a"
+                  , FmType Nominal
+                  , FTitle "Factor A"
+                  , FHeader [HLabelAngle 0]
+                  ]
+            . column [ FName "b"
+                     , FmType Nominal
+                     , FTitle "Factor B"
+                     ]
+
+  in toVegaLite [ description "A simple grid of bar charts to compare performance data."
+                , dvals
+                , width 60
+                , heightStep 8
+                , spacing 5
+                , mark Bar []
+                , enc []
                 ]

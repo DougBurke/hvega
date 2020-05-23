@@ -1,0 +1,111 @@
+{
+    "transform": [
+        {
+            "filter": "datum.symbol!=='IBM'"
+        }
+    ],
+    "config": {
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "layer": [
+        {
+            "layer": [
+                {
+                    "mark": {
+                        "strokeWidth": 8,
+                        "stroke": "transparent",
+                        "type": "line"
+                    },
+                    "selection": {
+                        "hover": {
+                            "init": {
+                                "symbol": "AAPL"
+                            },
+                            "empty": "none",
+                            "type": "single",
+                            "on": "mouseover",
+                            "fields": [
+                                "symbol"
+                            ]
+                        }
+                    },
+                    "description": "transparent layer to make it easier to trigger selection"
+                },
+                {
+                    "mark": "line"
+                }
+            ],
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "title": "date",
+                    "type": "temporal"
+                },
+                "y": {
+                    "field": "price",
+                    "title": "price",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "layer": [
+                {
+                    "mark": "circle"
+                },
+                {
+                    "mark": {
+                        "dx": 4,
+                        "align": "left",
+                        "type": "text"
+                    },
+                    "encoding": {
+                        "text": {
+                            "field": "symbol",
+                            "type": "nominal"
+                        }
+                    }
+                }
+            ],
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "aggregate": "max",
+                    "type": "temporal"
+                },
+                "y": {
+                    "field": "price",
+                    "aggregate": {
+                        "argmax": "date"
+                    },
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "color": {
+            "value": "grey",
+            "condition": {
+                "field": "symbol",
+                "selection": "hover",
+                "type": "nominal",
+                "legend": null
+            }
+        },
+        "opacity": {
+            "value": 0.2,
+            "condition": {
+                "value": 1,
+                "selection": "hover"
+            }
+        }
+    },
+    "description": "Multi-series line chart with labels and interactive highlight on hover.  We also set the selection's initial value to provide a better screenshot"
+}
