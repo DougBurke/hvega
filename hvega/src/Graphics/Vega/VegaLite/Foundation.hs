@@ -443,12 +443,17 @@ data Arrangement
       -- ^ Flow arrangement (aka \"repeat\").
       --
       --   @since 0.4.0.0
+    | Layer
+      -- ^ Layer arrangement in a repeat view.
+      --
+      --   @since 0.9.0.0
 
 
 arrangementLabel :: Arrangement -> T.Text
 arrangementLabel Column = "column"
 arrangementLabel Row = "row"
 arrangementLabel Flow = "repeat"  -- NOTE: not "flow"!
+arrangementLabel Layer = "layer"
 
 
 -- | Indicates the anchor position for text.
@@ -1347,11 +1352,13 @@ or @'Graphics.Vega.VegaLite.PRepeat' 'Graphics.Vega.VegaLite.Row'@.
 data RepeatFields
     = RowFields [FieldName]
     | ColumnFields [FieldName]
-
+    | LayerFields [FieldName]
+      -- ^ @since 0.9.0.0
 
 repeatFieldsProperty :: RepeatFields -> LabelledSpec
 repeatFieldsProperty (RowFields fs) = "row" .= fs
 repeatFieldsProperty (ColumnFields fs) = "column" .= fs
+repeatFieldsProperty (LayerFields fs) = "layer" .= fs
 
 
 {-|

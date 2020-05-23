@@ -12,6 +12,9 @@ import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, repeat)
 
+import Data.Aeson (Value(Object))
+import Data.HashMap.Strict (empty)
+
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("columns1", columns1)
@@ -36,6 +39,8 @@ testSpecs = [ ("columns1", columns1)
             , ("grid3", grid3)
             , ("grid4", grid4)
             , ("grid5", grid5)
+            , ("repeatinglayers", repeatinglayers)
+            , ("highlightvalue", highlightvalue)
             ]
 
 
@@ -311,3 +316,47 @@ grid5 =
   in carGrid Row opts
 
 
+repeatinglayers :: VegaLite
+repeatinglayers =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
+      plot = [ mark Line []
+             , encoding
+               . position X [PName "IMDB_Rating", PmType Quantitative, PBin []]
+               . position Y [ PRepeat Layer
+                            , PmType Quantitative
+                            , PAggregate Mean
+                            , PTitle "Mean of US and Worldwide Gross"
+                            ]
+               . color [MRepeatDatum Layer, MmType Nominal]
+               $ []
+             ]
+
+  in toVegaLite [ dvals
+                , repeat [LayerFields ["US_Gross", "Worldwide_Gross"]]
+                , specification (asSpec plot)
+                ]
+
+
+highlightvalue :: VegaLite
+highlightvalue =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+      dummy = dataFromJson emptyData []
+      emptyData = Object empty
+
+      plot1 = [ dvals
+              , mark Line []
+              , encoding
+                . position X [PName "date", PmType Temporal]
+                . position Y [PName "price", PmType Quantitative]
+                . color [MName "symbol", MmType Nominal]
+                $ []
+              ]
+
+      plot2 = [ dummy
+              , mark Rule [MStrokeDash [2, 2], MSize 2]
+              , encoding (position Y [PDatum (Number 300)] [])
+              ]
+
+  in toVegaLite [ layer [asSpec plot1, asSpec plot2]
+                ]
