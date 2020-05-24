@@ -259,7 +259,8 @@ data LegendProperty
     | LFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
       --   legend values. To distinguish between formatting as numeric values
-      --   and data/time values, additionally use 'LFormatAsNum' or 'LFormatAsTemporal'.
+      --   and data/time values, additionally use 'LFormatAsNum', 'LFormatAsTemporal',
+      --   or 'LFormatAsCustom'.
     | LFormatAsNum
       -- ^ Legends should be formatted as numbers. Use a
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
@@ -272,6 +273,11 @@ data LegendProperty
       --   with 'LFormat'.
       --
       -- @since 0.4.0.0
+    | LFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'LFormat'.
+      --
+      --   @since 0.9.0.0
     | LGradientLength Double
       -- ^ The length in pixels of the primary axis of the color gradient.
       --
@@ -471,6 +477,7 @@ legendProperty (LFillColor s) = "fillColor" .= fromColor s
 legendProperty (LFormat s) = "format" .= s
 legendProperty LFormatAsNum = "formatType" .= fromT "number"
 legendProperty LFormatAsTemporal = "formatType" .= fromT "time"
+legendProperty (LFormatAsCustom c) = "formatType" .= c
 legendProperty (LGradientLength x) = "gradientLength" .= x
 legendProperty (LGradientOpacity x) = "gradientOpacity" .= x
 legendProperty (LGradientStrokeColor s) = "gradientStrokeColor" .= fromColor s

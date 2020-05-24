@@ -1244,7 +1244,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- 'VL.AxisProperty' has gained 'VL.AxFormatAsCustom'. 'VL.AxisConfig' has
 -- gained 'VL.Format', 'VL.FormatAsNum', 'VL.FormatAsTemporal', and
--- 'VL.FormatAsCustom'.
+-- 'VL.FormatAsCustom'. 'VL.LegendProperty' has gained 'VL.LFormatAsCustom'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of

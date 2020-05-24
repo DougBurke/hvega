@@ -1224,18 +1224,18 @@ data AxisProperty
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
       --   with 'AxFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | AxFormatAsTemporal
       -- ^ Facet headers should be formatted as dates or times. Use a
       --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
       --   with 'AxFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | AxFormatAsCustom T.Text
       -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
       --   for use with with 'AxFormat'.
       --
-      -- @since 0.9.0.0
+      --   @since 0.9.0.0
     | AxGrid Bool
       -- ^ Should an axis grid be displayed?
     | AxGridColor Color
