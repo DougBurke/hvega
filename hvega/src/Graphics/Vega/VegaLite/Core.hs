@@ -3693,7 +3693,7 @@ calculateAs expr label ols =
 {-|
 
 Encode an angle (orientation) channel, which allows for data-driven
-rotation of text and point marks.
+rotation of text, point, and square marks.
 
 @since 0.9.0.0
 -}

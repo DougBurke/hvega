@@ -238,7 +238,7 @@ data MarkProperty
     = MAlign HAlign
       -- ^ Horizontal alignment of a text mark.
     | MAngle Angle
-      -- ^ Rotation angle of a text mark.
+      -- ^ Rotation angle of a text, point, or square marks.
     | MAspect Bool
       -- ^ Should the aspect ratio of an 'Image' mark be preserved?
       --
