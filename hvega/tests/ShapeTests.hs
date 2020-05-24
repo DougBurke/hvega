@@ -258,11 +258,7 @@ personGrid =
     let
         config =
             configure
-                . configuration (ViewStyle [ ViewNoStroke ])
-                -- I expected this to mean I could remove PAxis [] fro
-                -- the encoding, but it doesn't see to work in Vega-Lite 4.8.1
-                -- (or I mis-understand this).
-                --
+                . configuration (ViewStyle [ViewNoStroke])
                 . configuration (Axis [Disable True])
 
         dataVals =
@@ -281,9 +277,8 @@ personGrid =
         mpath = M.lookup "person" isotypes
         enc =
             encoding
-                -- see note in config about PAxis
-                . position X [ PName "col", PmType Ordinal, PAxis []]
-                . position Y [ PName "row", PmType Ordinal, PAxis []]
+                . position X [ PName "col", PmType Ordinal]
+                . position Y [ PName "row", PmType Ordinal]
                 . shape [ MPath (fromMaybe "circle" mpath) ]
                 . color
                     [ MSelectionCondition (SelectionName "highlight")

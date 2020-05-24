@@ -205,9 +205,8 @@ dataVals =
 
 encByCatVal :: [EncodingSpec] -> PropertySpec
 encByCatVal = encoding
-              -- see note about removing 'PAxis []' in gridConfig
-              . position X [ PName "cat", PmType Ordinal, PAxis [] ]
-              . position Y [ PName "val", PmType Quantitative, PAxis [] ]
+              . position X [ PName "cat", PmType Ordinal ]
+              . position Y [ PName "val", PmType Quantitative ]
               . color [ MName "cat", MmType Nominal, MLegend [] ]
 
 specByCatVal :: VLSpec
@@ -227,9 +226,6 @@ gridConfig fopts =
                              , ViewFillOpacity 0.2
                              , ViewContinuousHeight 120 ])
   . configuration (FacetStyle fopts)
-  -- I had thought that disabling the axis would be the same as setting
-  -- PAxis [] for both axes, but it doesn't behave that way with
-  -- Vega Lite 4.8.1 (or I mis-understand this)
   . configuration (Axis [Disable True])
 
 grid1 :: VegaLite

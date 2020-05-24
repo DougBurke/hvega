@@ -394,13 +394,11 @@
             },
             "x": {
                 "field": "cat",
-                "type": "ordinal",
-                "axis": null
+                "type": "ordinal"
             },
             "y": {
                 "field": "val",
-                "type": "quantitative",
-                "axis": null
+                "type": "quantitative"
             }
         }
     },
