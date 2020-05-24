@@ -36,7 +36,7 @@ experimental means for specifying just the minimum and maximum values.
 `AxisProperty` has gained `AxFormatAsCustom`. `AxisConfig` has gained
 `Format`, `FormatAsNum`, `FormatAsTemporal`, and `FormatAsCustom`.
 `LegendProperty` has gained `LFormatAsCustom`. `HeaderProperty` has
-gained `HFormatAsCustom`.
+gained `HFormatAsCustom`. `TextChannel` has gained `TFormatAsCustom`.
 
 ## 0.8.0.0
 

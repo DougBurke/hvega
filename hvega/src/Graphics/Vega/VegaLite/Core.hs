@@ -2235,13 +2235,18 @@ data TextChannel
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
       --   with 'TFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | TFormatAsTemporal
       -- ^ The text marks should be formatted as dates or times. Use a
       --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
       --   with 'TFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
+    | TFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'TFormat'.
+      --
+      --   @since 0.9.0.0
     | TmType Measurement
       -- ^ Level of measurement when encoding with a text channel.
     | TRepeat Arrangement
@@ -2288,6 +2293,7 @@ textChannelProperty TBinned = [binned_]
 textChannelProperty (TFormat fmt) = ["format" .= fmt]
 textChannelProperty TFormatAsNum = ["formatType" .= fromT "number"]
 textChannelProperty TFormatAsTemporal = ["formatType" .= fromT "time"]
+textChannelProperty (TFormatAsCustom c) = ["formatType" .= c]
 textChannelProperty (TmType measure) = [mtype_ measure]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
 textChannelProperty (TTitle s) = ["title" .= splitOnNewline s]
