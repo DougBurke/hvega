@@ -1242,9 +1242,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
 -- or width as a signal.
 --
--- 'VL.AxisProperty' has gained 'VL.AxFormatAsCustom'. 'VL.AxisConfig' has
--- gained 'VL.Format', 'VL.FormatAsNum', 'VL.FormatAsTemporal', and
--- 'VL.FormatAsCustom'. 'VL.LegendProperty' has gained 'VL.LFormatAsCustom'.
+-- 'VL.AxisProperty' has gained 'VL.AxFormatAsCustom'. 'VL.AxisConfig'
+-- has gained 'VL.Format', 'VL.FormatAsNum', 'VL.FormatAsTemporal',
+-- and 'VL.FormatAsCustom'. 'VL.LegendProperty' has gained
+-- 'VL.LFormatAsCustom'.  'VL.HeaderProperty' has gained
+-- 'VL.HFormatAsCustom'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
