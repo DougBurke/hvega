@@ -566,9 +566,12 @@ data MarkProperty
       -- ^ Polar coordinate angle (clockwise from north in radians)
       --   of a text mark from the origin (determined by its
       --   x and y properties). For arc marks, the arc length in radians
-      --   if theta2 is not specified, otherwise the start arc angle.
+      --   if theta2 is not specified, otherwise the start arc angle,
+      --   where a value of 0 refers to \"up\" or \"north\", and increases
+      --   clockwise).
     | MTheta2 Double
-      -- ^ The end angle or arc marks, in radians,
+      -- ^ The end angle of arc marks, in radians. A value of 0 indicated
+      --   \"up\" or \"north", and increases clockwise.
       --
       --   @since 0.9.0.0
     | MThickness Double
