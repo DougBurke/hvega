@@ -24,6 +24,11 @@ The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
 position in data space (`MarkChannel` and `PositionChannel`
 respectively).
 
+Improved support for tick scales: `TickCount` and `TickCountTime` have
+been added to `AxisConfig`, `AxTickCountTime` has been added to
+`AxisProperty`, `LTickCountTime` has been added to `LegendProperty`,
+and `LeTickCountTime` has been added to `LegendConfig`.
+
 Add support for width and height to scale's range, with the `RHeight` and
 `RWidth` constructors. The `RPair` constructor has been added as an
 experimental means for specifying just the minimum and maximum values.

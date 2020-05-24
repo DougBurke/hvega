@@ -1231,6 +1231,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
 -- respectively).
 --
+-- Improved support for tick scales: 'VL.TickCount' and
+-- 'VL.TickCountTime' have been added to 'VL.AxisConfig',
+-- 'VL.AxTickCountTime' has been added to 'VL.AxisProperty',
+-- 'VL.LTickCountTime' has been added to 'VL.LegendProperty', and
+-- 'VL.LeTickCountTime' has been added to 'VL.LegendConfig'.
+--
 -- The 'VL.ScaleRange' type has now gained three new versions:
 -- (experimental) 'VL.RPair' for defining the axis range,
 -- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
