@@ -1213,7 +1213,12 @@ data AxisProperty
     | AxFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
       --   axis values. To distinguish between formatting as numeric values
-      --   and data/time values, additionally use 'AxFormatAsNum' or 'AxFormatAsTemporal'.
+      --   and data/time values, additionally use 'AxFormatAsNum', 'AxFormatAsTemporal',
+      --   or 'AxFormatAsCustom'.
+      --
+      --   When used with a [custom formatType](https://vega.github.io/vega-lite/docs/config.html#custom-format-type),
+      --   this value will be passed as \"format\" alongside \"datum.value\" to the
+      --   registered function.
     | AxFormatAsNum
       -- ^ Facet headers should be formatted as numbers. Use a
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
@@ -1226,6 +1231,11 @@ data AxisProperty
       --   with 'AxFormat'.
       --
       -- @since 0.4.0.0
+    | AxFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'AxFormat'.
+      --
+      -- @since 0.9.0.0
     | AxGrid Bool
       -- ^ Should an axis grid be displayed?
     | AxGridColor Color
@@ -1567,6 +1577,7 @@ axisProperty (AxDomainWidth x) = "domainWidth" .= x
 axisProperty (AxFormat fmt) = "format" .= fmt
 axisProperty AxFormatAsNum = "formatType" .= fromT "number"
 axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
+axisProperty (AxFormatAsCustom c) = "formatType" .= c
 axisProperty (AxGrid b) = "grid" .= b
 axisProperty (AxGridColor s) = "gridColor" .= fromColor s
 axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds

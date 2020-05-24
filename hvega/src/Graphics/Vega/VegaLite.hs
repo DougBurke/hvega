@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.9 of @hvega@ supports version 4.10 of the Vega-Lite specification.
+Version 0.9 of @hvega@ supports version 4.11 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -1209,7 +1209,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The @0.9.0.0@ release updates @hvega@ to support version 4.10 of
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.11 of
 -- the Vega-Lite schema.
 --
 -- __New constructors__
@@ -1241,6 +1241,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- (experimental) 'VL.RPair' for defining the axis range,
 -- and 'VL.RHeight' and 'VL.RWidth' for specifying the height 
 -- or width as a signal.
+--
+-- 'VL.AxisProperty' has gained 'VL.AxFormatAsCustom'. 'VL.AxisConfig' has
+-- gained 'VL.Format', 'VL.FormatAsNum', 'VL.FormatAsTemporal', and
+-- 'VL.FormatAsCustom'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
