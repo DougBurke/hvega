@@ -466,6 +466,10 @@ data MarkProperty
       -- ^ Do not draw outliers with the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
+    | MPadAngle Double
+      -- ^ The angular padding apploed to sides of the arc, in radians.
+      --
+      --   @since 0.9.0.0
     | MPoint PointMarker
       -- ^ Appearance of a point marker joining the vertices of a line or area mark.
       --
@@ -731,6 +735,8 @@ markProperty (MOuterRadius r) = "outerRadius" .= r
 -- what uses this?
 markProperty MNoOutliers = "outliers" .= False
 markProperty (MOutliers mps) = mprops_ "outliers" mps
+
+markProperty (MPadAngle x) = "padAngle" .= x
 
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MRadius x) = "radius" .= x
