@@ -76,6 +76,7 @@ import Graphics.Vega.VegaLite.Foundation
   , HeaderProperty
   , ViewBackground
   , Cursor
+  , fromT
   , fromColor
   , fromDS
   , splitOnNewline
@@ -285,6 +286,12 @@ data ConfigurationProperty
       --   This was renamed from @CountTitle@ in @0.6.0.0@.
       --
       --   @since 0.6.0.0
+    | CustomFormatStyle Bool
+      -- ^ Allow the \"formatType\" property for text marks and guides to accept a custom
+      --   formatter function registered as a
+      --   [Vega Expression](https://vega.github.io/vega-lite/docs/compile.html#format-type).
+      --
+      --   @since 0.9.0.0
     | ErrorBandStyle [MarkProperty]
       -- ^ The default appearance for error bands.
       --
@@ -540,6 +547,7 @@ configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
 configProperty (CountTitleStyle ttl) = "countTitle" .= ttl
+configProperty (CustomFormatStyle b) = "customFormatTypes" .= b
 configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
 configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
@@ -1320,6 +1328,34 @@ data AxisConfig
       --   @since 0.4.0.0
     | DomainWidth Double
       -- ^ The width of the axis domain.
+    | Format T.Text
+      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
+      --   axis values. To distinguish between formatting as numeric values
+      --   and data/time values, additionally use 'FormatAsNum', 'FormatAsTemporal',
+      --   or 'FormatAsCustom'.
+      --
+      --   When used with a [custom formatType](https://vega.github.io/vega-lite/docs/config.html#custom-format-type),
+      --   this value will be passed as \"format\" alongside \"datum.value\" to the
+      --   registered function.
+      --
+      --   @since 0.9.0.0
+    | FormatAsNum
+      -- ^ Facet headers should be formatted as numbers. Use a
+      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
+      --   with 'Format'.
+      --
+      --   @since 0.9.0.0
+    | FormatAsTemporal
+      -- ^ Facet headers should be formatted as dates or times. Use a
+      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
+      --   with 'Format'.
+      --
+      --   @since 0.9.0.0
+    | FormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'Format'.
+      --
+      --   @since 0.9.0.0
     | Grid Bool
       -- ^ Should an axis grid be displayed?
     | GridColor Color
@@ -1561,6 +1597,12 @@ axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
 axisConfigProperty (DomainOpacity x) = "domainOpacity" .= x
 axisConfigProperty (DomainWidth w) = "domainWidth" .= w
+
+axisConfigProperty (Format fmt) = "format" .= fmt
+axisConfigProperty FormatAsNum = "formatNum" .= fromT "number"
+axisConfigProperty FormatAsTemporal = "formatNum" .= fromT "type"
+axisConfigProperty (FormatAsCustom c) = "formatType" .= c
+
 axisConfigProperty (Grid b) = "grid" .= b
 axisConfigProperty (GridColor c) = "gridColor" .= fromColor c
 axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds

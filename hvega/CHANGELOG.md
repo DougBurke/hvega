@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.9.0.0
 
-The Vega-Lite tests are now validated against version 4.10 of the
+The Vega-Lite tests are now validated against version 4.11 of the
 Vega-Lite schema.
 
 ### New Constructors
@@ -32,6 +32,13 @@ and `LeTickCountTime` has been added to `LegendConfig`.
 Add support for width and height to scale's range, with the `RHeight` and
 `RWidth` constructors. The `RPair` constructor has been added as an
 experimental means for specifying just the minimum and maximum values.
+
+`AxisProperty` has gained `AxFormatAsCustom`. `AxisConfig` has gained
+`Format`, `FormatAsNum`, `FormatAsTemporal`, and `FormatAsCustom`.
+`LegendProperty` has gained `LFormatAsCustom`. `HeaderProperty` has
+gained `HFormatAsCustom`. `TextChannel` has gained `TFormatAsCustom`.
+The `ConfigurationProperty` type has a new option to configure support
+for custom format types (`CustomFormatStyle`).
 
 ## 0.8.0.0
 

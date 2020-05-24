@@ -1213,19 +1213,29 @@ data AxisProperty
     | AxFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
       --   axis values. To distinguish between formatting as numeric values
-      --   and data/time values, additionally use 'AxFormatAsNum' or 'AxFormatAsTemporal'.
+      --   and data/time values, additionally use 'AxFormatAsNum', 'AxFormatAsTemporal',
+      --   or 'AxFormatAsCustom'.
+      --
+      --   When used with a [custom formatType](https://vega.github.io/vega-lite/docs/config.html#custom-format-type),
+      --   this value will be passed as \"format\" alongside \"datum.value\" to the
+      --   registered function.
     | AxFormatAsNum
       -- ^ Facet headers should be formatted as numbers. Use a
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
       --   with 'AxFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | AxFormatAsTemporal
       -- ^ Facet headers should be formatted as dates or times. Use a
       --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
       --   with 'AxFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
+    | AxFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'AxFormat'.
+      --
+      --   @since 0.9.0.0
     | AxGrid Bool
       -- ^ Should an axis grid be displayed?
     | AxGridColor Color
@@ -1567,6 +1577,7 @@ axisProperty (AxDomainWidth x) = "domainWidth" .= x
 axisProperty (AxFormat fmt) = "format" .= fmt
 axisProperty AxFormatAsNum = "formatType" .= fromT "number"
 axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
+axisProperty (AxFormatAsCustom c) = "formatType" .= c
 axisProperty (AxGrid b) = "grid" .= b
 axisProperty (AxGridColor s) = "gridColor" .= fromColor s
 axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds
@@ -2224,13 +2235,18 @@ data TextChannel
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
       --   with 'TFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | TFormatAsTemporal
       -- ^ The text marks should be formatted as dates or times. Use a
       --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
       --   with 'TFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
+    | TFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'TFormat'.
+      --
+      --   @since 0.9.0.0
     | TmType Measurement
       -- ^ Level of measurement when encoding with a text channel.
     | TRepeat Arrangement
@@ -2277,6 +2293,7 @@ textChannelProperty TBinned = [binned_]
 textChannelProperty (TFormat fmt) = ["format" .= fmt]
 textChannelProperty TFormatAsNum = ["formatType" .= fromT "number"]
 textChannelProperty TFormatAsTemporal = ["formatType" .= fromT "time"]
+textChannelProperty (TFormatAsCustom c) = ["formatType" .= c]
 textChannelProperty (TmType measure) = [mtype_ measure]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
 textChannelProperty (TTitle s) = ["title" .= splitOnNewline s]

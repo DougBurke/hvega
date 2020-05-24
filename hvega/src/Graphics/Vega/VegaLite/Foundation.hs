@@ -1513,19 +1513,25 @@ data HeaderProperty
     = HFormat T.Text
       -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html) for
       --   facet header (title) values. To distinguish between formatting as numeric values
-      --   and data/time values, additionally use 'HFormatAsNum' or 'HFormatAsTemporal'.
+      --   and data/time values, additionally use 'HFormatAsNum', 'HFormatAsTemporal',
+      --   and 'HFormatAsCustom'.
     | HFormatAsNum
       -- ^ Facet headers should be formatted as numbers. Use a
       --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
       --   with 'HFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
     | HFormatAsTemporal
       -- ^ Facet headers should be formatted as dates or times. Use a
       --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
       --   with 'HFormat'.
       --
-      -- @since 0.4.0.0
+      --   @since 0.4.0.0
+    | HFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'HFormat'.
+      --
+      --   @since 0.9.0.0
     | HLabel Bool
       -- ^ Should labels be included as part of the header. The default is @True@.
       --
@@ -1672,6 +1678,7 @@ headerProperty :: HeaderProperty -> LabelledSpec
 headerProperty (HFormat fmt) = "format" .= fmt
 headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"
+headerProperty (HFormatAsCustom c) = "formatType" .= c
 headerProperty (HTitle ttl) = "title" .= splitOnNewline ttl
 headerProperty HNoTitle = "title" .= A.Null
 headerProperty (HLabel b) = "labels" .= b
