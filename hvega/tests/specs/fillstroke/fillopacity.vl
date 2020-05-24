@@ -1,0 +1,33 @@
+{
+    "mark": "bar",
+    "data": {
+        "values": [
+            {
+                "a": "A",
+                "b": 10
+            },
+            {
+                "a": "B",
+                "b": 20
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "a",
+            "type": "ordinal",
+            "axis": {
+                "labelAngle": 0
+            }
+        },
+        "fillOpacity": {
+            "field": "b",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "b",
+            "type": "quantitative"
+        }
+    }
+}

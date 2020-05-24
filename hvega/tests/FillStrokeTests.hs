@@ -52,6 +52,7 @@ testSpecs = [ ("default", defChart)
             , ("strokedash7", strokeDash7)
             , ("strokedash8", strokeDash8)
             , ("strokedash9", strokeDash9)
+            , ("fillopacity", fillopacity)
             ]
 
 encChart :: ([a] -> [EncodingSpec]) -> VegaLite
@@ -412,3 +413,22 @@ strokeDash6 = scaledStrokeDash 0.5
 strokeDash7 = scaledStrokeDash 1
 strokeDash8 = scaledStrokeDash 2
 strokeDash9 = scaledStrokeDash 4
+
+
+-- found in a bug report and thought would be a good test
+fillopacity :: VegaLite
+fillopacity =
+  let dvals = dataFromColumns []
+              . dataColumn "a" (Strings ["A", "B"])
+              . dataColumn "b" (Numbers [10, 20])
+              $ []
+
+      enc = encoding
+            . position X [PName "a", PmType Ordinal, PAxis [AxLabelAngle 0]]
+            . position Y [PName "b", PmType Quantitative]
+            . fillOpacity [MName "b", MmType Quantitative]
+
+  in toVegaLite [ dvals
+                , mark Bar []
+                , enc []
+                ]
