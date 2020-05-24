@@ -358,10 +358,6 @@ data MarkProperty
       --   The default is @\"…\"@.
       --
       --   @since 0.5.0.0
-    | MEndAngle Double
-      -- ^ The end angle, in radians, for arc marks.
-      --
-      --   @since 0.9.0.0
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
       --   'ErrorBand' marks.
@@ -511,10 +507,6 @@ data MarkProperty
       -- ^ Shape of a point mark.
     | MSize Double
       -- ^ Size of a mark.
-    | MStartAngle Double
-      -- ^ The start angle, in radians, for arc marks.
-      --
-      --   @since 0.9.0.0
     | MStroke Color
       -- ^ Default stroke color of a mark.
       --
@@ -702,7 +694,6 @@ markProperty (MDir td) = "dir" .= textdirLabel td
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
 markProperty (MEllipsis s) = "ellipsis" .= s
-markProperty (MEndAngle r) = "endAngle" .= r
 
 -- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
@@ -750,7 +741,6 @@ markProperty (MRule mps) = mprops_ "rule" mps
 
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
-markProperty (MStartAngle r) = "startAngle" .= r
 markProperty (MStroke t) = "stroke" .= fromColor t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs

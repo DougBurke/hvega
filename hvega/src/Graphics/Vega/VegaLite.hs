@@ -1209,7 +1209,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The @0.9.0.0@ release updates @hvega@ to support version 4.9 of
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.10 of
 -- the Vega-Lite schema.
 --
 -- __New constructors__
@@ -1217,8 +1217,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Support for arcs has been added: the 'VL.Arc' type has been added to
 -- 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have been
 -- added to 'VL.Position'; and 'VL.MInnerRadius', 'VL.MOuterRadius',
--- 'VL.MStartAngle', 'VL.MEndAngle', 'VL.MRadius2', 'VL.MRadiusOffset',
--- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
+-- 'VL.MRadius2', 'VL.MRadiusOffset', 'VL.MRadius2Offset', and 'VL.MTheta2'
+-- added to 'VL.MarkProperty'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
