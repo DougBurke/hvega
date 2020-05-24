@@ -66,6 +66,10 @@ import Graphics.Vega.VegaLite.Foundation
   , fromDS
   , splitOnNewline
   )
+import Graphics.Vega.VegaLite.Scale
+  ( ScaleNice
+  , scaleNiceSpec
+  )
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 import Graphics.Vega.VegaLite.Time
   ( DateTime
@@ -385,6 +389,17 @@ data LegendProperty
       -- ^ @since 0.4.0.0
     | LTickCount Double
       -- ^ The desired number of tick values for quantitative legends.
+      --
+      --   The 'LTickCountTime' option can instead be used for \"time\" or
+      --   \"utc\" scales.
+    | LTickCountTime ScaleNice
+      -- ^ A specialised version of 'LTickCount' for \"time\" and \"utc\"
+      --   time scales.
+      --
+      --   The 'Graphics.Vega.VegaLite.IsNice' and 'Graphics.Vega.VegaLte.NTickCount'
+      --   options should not be used as they generate invalid VegaLite.
+      --
+      --   @since 0.9.0.0
     | LTickMinStep Double
       -- ^ The minimum desired step between legend ticks, in terms of the scale
       --   domain values.
@@ -493,6 +508,7 @@ legendProperty (LSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor s
 legendProperty (LSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendProperty (LSymbolType sym) = "symbolType" .= symbolLabel sym
 legendProperty (LTickCount x) = "tickCount" .= x
+legendProperty (LTickCountTime sn) = "tickCount" .= scaleNiceSpec sn
 legendProperty (LTickMinStep x) = "tickMinStep" .= x
 legendProperty (LTitle s) = "title" .= splitOnNewline s
 legendProperty LNoTitle = "title" .= A.Null

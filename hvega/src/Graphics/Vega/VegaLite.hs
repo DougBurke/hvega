@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.9 of @hvega@ supports version 4.9 of the Vega-Lite specification.
+Version 0.9 of @hvega@ supports version 4.10 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -1209,16 +1209,17 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The @0.9.0.0@ release updates @hvega@ to support version 4.9 of
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.10 of
 -- the Vega-Lite schema.
 --
 -- __New constructors__
 --
--- Support for arcs has been added: the 'VL.Arc' type has been added to
--- 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have been
--- added to 'VL.Position'; and 'VL.MInnerRadius', 'VL.MOuterRadius',
--- 'VL.MStartAngle', 'VL.MEndAngle', 'VL.MRadius2', 'VL.MRadiusOffset',
--- 'VL.MRadius2Offset', and 'VL.MTheta2' added to 'VL.MarkProperty'.
+-- Support for arcs has been added: the 'VL.Arc' type has been added
+-- to 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have
+-- been added to 'VL.Position'; and 'VL.MInnerRadius',
+-- 'VL.MOuterRadius', 'VL.MPadAngle', 'VL.MRadius2',
+-- 'VL.MRadiusOffset', 'VL.MRadius2Offset', and 'VL.MTheta2' added to
+-- 'VL.MarkProperty'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
@@ -1229,6 +1230,12 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.MDatum' and 'VL.PDatum' constructors have been added to specify
 -- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
 -- respectively).
+--
+-- Improved support for tick scales: 'VL.TickCount' and
+-- 'VL.TickCountTime' have been added to 'VL.AxisConfig',
+-- 'VL.AxTickCountTime' has been added to 'VL.AxisProperty',
+-- 'VL.LTickCountTime' has been added to 'VL.LegendProperty', and
+-- 'VL.LeTickCountTime' has been added to 'VL.LegendConfig'.
 --
 -- The 'VL.ScaleRange' type has now gained three new versions:
 -- (experimental) 'VL.RPair' for defining the axis range,

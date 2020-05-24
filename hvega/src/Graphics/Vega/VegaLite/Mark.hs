@@ -238,7 +238,7 @@ data MarkProperty
     = MAlign HAlign
       -- ^ Horizontal alignment of a text mark.
     | MAngle Angle
-      -- ^ Rotation angle of a text mark.
+      -- ^ Rotation angle of a text, point, or square marks.
     | MAspect Bool
       -- ^ Should the aspect ratio of an 'Image' mark be preserved?
       --
@@ -358,10 +358,6 @@ data MarkProperty
       --   The default is @\"…\"@.
       --
       --   @since 0.5.0.0
-    | MEndAngle Double
-      -- ^ The end angle, in radians, for arc marks.
-      --
-      --   @since 0.9.0.0
     | MExtent MarkErrorExtent
       -- ^ Extent of whiskers used with 'Boxplot', 'ErrorBar', and
       --   'ErrorBand' marks.
@@ -409,7 +405,8 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MInnerRadius Double
-      -- ^ The inner radius, in pixels, of arc marks.
+      -- ^ The inner radius, in pixels, of arc marks. It is an alias for
+      --    'MRadius2'.
       --
       --   @since 0.9.0.0
     | MInterpolate MarkInterpolation
@@ -458,7 +455,7 @@ data MarkProperty
     | MOrient Orientation
       -- ^ Orientation of a non-stacked bar, tick, area or line mark.
     | MOuterRadius Double
-      -- ^ The outer radius, in pixels, of arc marks.
+      -- ^ The outer radius, in pixels, of arc marks. It is an alias for 'MRadius'.
       --
       --   @since 0.9.0.0
     | MOutliers [MarkProperty]
@@ -469,6 +466,10 @@ data MarkProperty
       -- ^ Do not draw outliers with the 'Boxplot' mark.
       --
       --   @since 0.4.0.0
+    | MPadAngle Double
+      -- ^ The angular padding apploed to sides of the arc, in radians.
+      --
+      --   @since 0.9.0.0
     | MPoint PointMarker
       -- ^ Appearance of a point marker joining the vertices of a line or area mark.
       --
@@ -510,10 +511,6 @@ data MarkProperty
       -- ^ Shape of a point mark.
     | MSize Double
       -- ^ Size of a mark.
-    | MStartAngle Double
-      -- ^ The start angle, in radians, for arc marks.
-      --
-      --   @since 0.9.0.0
     | MStroke Color
       -- ^ Default stroke color of a mark.
       --
@@ -573,9 +570,12 @@ data MarkProperty
       -- ^ Polar coordinate angle (clockwise from north in radians)
       --   of a text mark from the origin (determined by its
       --   x and y properties). For arc marks, the arc length in radians
-      --   if theta2 is not specified, otherwise the start arc angle.
+      --   if theta2 is not specified, otherwise the start arc angle,
+      --   where a value of 0 refers to \"up\" or \"north\", and increases
+      --   clockwise).
     | MTheta2 Double
-      -- ^ The end angle or arc marks, in radians,
+      -- ^ The end angle of arc marks, in radians. A value of 0 indicated
+      --   \"up\" or \"north", and increases clockwise.
       --
       --   @since 0.9.0.0
     | MThickness Double
@@ -701,7 +701,6 @@ markProperty (MDir td) = "dir" .= textdirLabel td
 markProperty (MdX dx) = "dx" .= dx
 markProperty (MdY dy) = "dy" .= dy
 markProperty (MEllipsis s) = "ellipsis" .= s
-markProperty (MEndAngle r) = "endAngle" .= r
 
 -- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
@@ -737,6 +736,8 @@ markProperty (MOuterRadius r) = "outerRadius" .= r
 markProperty MNoOutliers = "outliers" .= False
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 
+markProperty (MPadAngle x) = "padAngle" .= x
+
 markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
 markProperty (MRadius x) = "radius" .= x
 markProperty (MRadius2 x) = "radius2" .= x
@@ -749,7 +750,6 @@ markProperty (MRule mps) = mprops_ "rule" mps
 
 markProperty (MShape sym) = "shape" .= symbolLabel sym
 markProperty (MSize x) = "size" .= x
-markProperty (MStartAngle r) = "startAngle" .= r
 markProperty (MStroke t) = "stroke" .= fromColor t
 markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
 markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs

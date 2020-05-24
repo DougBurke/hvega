@@ -1405,6 +1405,17 @@ data AxisProperty
       --   This is a hint to the system, and the actual number used will be
       --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
       --   underlying scale's range.
+      --
+      --   The 'AxTickCountTime' option can instead be used for \"time\" or
+      --   \"utc\" scales.
+    | AxTickCountTime ScaleNice
+      -- ^ A specialised version of 'AxTickCount' for \"time\" and \"utc\"
+      --   time scales.
+      --
+      --   The 'Graphics.Vega.VegaLite.IsNice' and 'Graphics.Vega.VegaLte.NTickCount'
+      --   options should not be used as they generate invalid VegaLite.
+      --
+      --   @since 0.9.0.0
     | AxTickDash DashStyle
       -- ^ The dash pattern of the ticks.
       --
@@ -1595,6 +1606,7 @@ axisProperty (AxTicks b) = "ticks" .= b
 axisProperty (AxTickBand bnd) = "tickBand" .= bandAlignLabel bnd
 axisProperty (AxTickColor s) = "tickColor" .= fromColor s
 axisProperty (AxTickCount n) = "tickCount" .= n
+axisProperty (AxTickCountTime sn) = "tickCount" .= scaleNiceSpec sn
 axisProperty (AxTickDash ds) = "tickDash" .= fromDS ds
 axisProperty (AxTickDashOffset x) = "tickDashOffset" .= x
 axisProperty (AxTickExtra b) = "tickExtra" .= b
@@ -3693,7 +3705,7 @@ calculateAs expr label ols =
 {-|
 
 Encode an angle (orientation) channel, which allows for data-driven
-rotation of text and point marks.
+rotation of text, point, and square marks.
 
 @since 0.9.0.0
 -}

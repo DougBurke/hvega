@@ -111,7 +111,10 @@ import Graphics.Vega.VegaLite.Mark
   ( MarkProperty
   , mprops_
   )
-
+import Graphics.Vega.VegaLite.Scale
+  ( ScaleNice
+  , scaleNiceSpec
+  )
 import Graphics.Vega.VegaLite.Selection
   ( Selection
   , SelectionProperty
@@ -697,6 +700,8 @@ Legend configuration options, set with the 'LegendStyle' constructor.
 For more detail see the
 <https://vega.github.io/vega-lite/docs/legend.html#config Vega-Lite documentation>.
 
+In @0.9.0.0@ the 'LeTickCountTime' constructor was added.
+
 In @0.8.0.0@ the @LeTitle@ constructor was removed as there is no way
 to set the default text for a legend title in Vega-Lite ('LeNoTitle'
 remains as this is used to turn off legend titles).
@@ -918,9 +923,20 @@ data LegendConfig
     | LeSymbolType Symbol
       -- ^ The default shape type for legend symbols.
     | LeTickCount Int
-      -- ^ The desired number of tick values for quantitative legends
+      -- ^ The desired number of tick values for quantitative legends.
       --
-      --   @since0.6.0.0
+      --   The 'LeTickCountTime' option can instead be used for \"time\"
+      --   or \"utc\" scales.
+      --
+      --   @since 0.6.0.0
+    | LeTickCountTime ScaleNice
+      -- ^ A specialised version of 'LeTickCount' for \"time\" and \"utc\"
+      --   time scales.
+      --
+      --   The 'Graphics.Vega.VegaLite.IsNice' and 'Graphics.Vega.VegaLte.NTickCount'
+      --   options should not be used as they generate invalid VegaLite.
+      --
+      --   @since 0.9.0.0
     | LeNoTitle
       -- ^ Do not add a title for the legend.
       --
@@ -1026,6 +1042,7 @@ legendConfigProperty (LeSymbolStrokeColor s) = "symbolStrokeColor" .= fromColor 
 legendConfigProperty (LeSymbolStrokeWidth x) = "symbolStrokeWidth" .= x
 legendConfigProperty (LeSymbolType s) = "symbolType" .= symbolLabel s
 legendConfigProperty (LeTickCount n) = "tickCount" .= n
+legendConfigProperty (LeTickCountTime sn) = "tickCount" .= scaleNiceSpec sn
 legendConfigProperty LeNoTitle = "title" .= A.Null
 legendConfigProperty (LeTitleAlign ha) = "titleAlign" .= hAlignLabel ha
 legendConfigProperty (LeTitleAnchor anc) = "titleAnchor" .= anchorLabel anc
@@ -1441,6 +1458,24 @@ data AxisConfig
       --   @since 0.5.0.0
     | TickColor Color
       -- ^ The color of the ticks.
+    | TickCount Int
+      -- ^ The desired number of ticks for axes visualizing quantitative scales.
+      --   This is a hint to the system, and the actual number used will be
+      --   adjusted to be \"nice\" (multiples of 2, 5, or 10) and lie within the
+      --   underlying scale's range.
+      --
+      --   The 'TickCountTime' option can instead be used for \"time\" or
+      --   \"utc\" scales.
+      --
+      --   @since 0.9.0.0
+    | TickCountTime ScaleNice
+      -- ^ A specialised version of 'TickCount' for \"time\" and \"utc\"
+      --   time scales.
+      --
+      --   The 'Graphics.Vega.VegaLite.IsNice' and 'Graphics.Vega.VegaLte.NTickCount'
+      --   options should not be used as they generate invalid VegaLite.
+      --
+      --   @since 0.9.0.0
     | TickDash DashStyle
       -- ^ The dash pattern of the ticks.
     | TickDashOffset DashOffset
@@ -1560,6 +1595,8 @@ axisConfigProperty (MinExtent n) = "minExtent" .= n
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (TickBand band) = "tickBand" .= bandAlignLabel band
 axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
+axisConfigProperty (TickCount n) = "tickCount" .= n
+axisConfigProperty (TickCountTime sn) = "tickCount" .= scaleNiceSpec sn
 axisConfigProperty (TickDash ds) = "tickDash" .= fromDS ds
 axisConfigProperty (TickDashOffset x) = "tickDashOffset" .= x
 axisConfigProperty (TickExtra b) = "tickExtra" .= b

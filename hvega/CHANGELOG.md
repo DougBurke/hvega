@@ -3,15 +3,15 @@ For the latest version of this document, please see
 
 ## 0.9.0.0
 
-The Vega-Lite tests are now validated against version 4.9 of the
+The Vega-Lite tests are now validated against version 4.10 of the
 Vega-Lite schema.
 
 ### New Constructors
 
-Support for arcs has been added: the `Arc` type has been added to `Mark`;
-`Theta`, `Theta2`, `R`, and `R2` have been added to `Position`; and
-`MInnerRadius`, `MOuterRadius`, `MStartAngle`, `MEndAngle`,
-`MRadius2`, `MRadiusOffset`, `MRadius2Offset`, and `MTheta2` added to 
+Support for arcs has been added: the `Arc` type has been added to
+`Mark`; `Theta`, `Theta2`, `R`, and `R2` have been added to
+`Position`; and `MInnerRadius`, `MOuterRadius`, `MPadAngle`,
+`MRadius2`, `MRadiusOffset`, `MRadius2Offset`, and `MTheta2` added to
 `MarkProperty`.
 
 The `angle` encoding channel has been added for text and point marks.
@@ -23,6 +23,11 @@ The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
 `MDatum` and `PDatum` constructors have been added to specify a
 position in data space (`MarkChannel` and `PositionChannel`
 respectively).
+
+Improved support for tick scales: `TickCount` and `TickCountTime` have
+been added to `AxisConfig`, `AxTickCountTime` has been added to
+`AxisProperty`, `LTickCountTime` has been added to `LegendProperty`,
+and `LeTickCountTime` has been added to `LegendConfig`.
 
 Add support for width and height to scale's range, with the `RHeight` and
 `RWidth` constructors. The `RPair` constructor has been added as an
