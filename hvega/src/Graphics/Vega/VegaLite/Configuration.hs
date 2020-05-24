@@ -286,6 +286,12 @@ data ConfigurationProperty
       --   This was renamed from @CountTitle@ in @0.6.0.0@.
       --
       --   @since 0.6.0.0
+    | CustomFormatStyle Bool
+      -- ^ Allow the \"formatType\" property for text marks and guides to accept a custom
+      --   formatter function registered as a
+      --   [Vega Expression](https://vega.github.io/vega-lite/docs/compile.html#format-type).
+      --
+      --   @since 0.9.0.0
     | ErrorBandStyle [MarkProperty]
       -- ^ The default appearance for error bands.
       --
@@ -541,6 +547,7 @@ configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
 configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
 configProperty (CountTitleStyle ttl) = "countTitle" .= ttl
+configProperty (CustomFormatStyle b) = "customFormatTypes" .= b
 configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
 configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)

@@ -37,6 +37,8 @@ experimental means for specifying just the minimum and maximum values.
 `Format`, `FormatAsNum`, `FormatAsTemporal`, and `FormatAsCustom`.
 `LegendProperty` has gained `LFormatAsCustom`. `HeaderProperty` has
 gained `HFormatAsCustom`. `TextChannel` has gained `TFormatAsCustom`.
+The `ConfigurationProperty` type has a new option to configure support
+for custom format types (`CustomFormatStyle`).
 
 ## 0.8.0.0
 

@@ -1247,7 +1247,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- and 'VL.FormatAsCustom'. 'VL.LegendProperty' has gained
 -- 'VL.LFormatAsCustom'.  'VL.HeaderProperty' has gained
 -- 'VL.HFormatAsCustom'. 'VL.TextChannel' has gained
--- 'VL.TFormatAsCustom'.
+-- 'VL.TFormatAsCustom'. The 'VL.ConfigurationProperty' type has a new
+-- option to configure support for custom format types
+-- ('VL.CustomFormatStyle').
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
