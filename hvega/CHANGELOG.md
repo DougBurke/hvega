@@ -24,6 +24,10 @@ The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
 position in data space (`MarkChannel` and `PositionChannel`
 respectively).
 
+The `MarkProperty` now has support for labelling the X (or X2)
+coordinate as the "width" of the plot and Y (or Y2) as the "height" of
+the plot. See `MXWidth`, `MX2Width`, `MYHeight`, and `MY2Height`.
+
 Improved support for tick scales: `TickCount` and `TickCountTime` have
 been added to `AxisConfig`, `AxTickCountTime` has been added to
 `AxisProperty`, `LTickCountTime` has been added to `LegendProperty`,

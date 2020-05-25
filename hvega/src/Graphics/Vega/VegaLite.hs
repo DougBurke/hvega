@@ -1231,6 +1231,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
 -- respectively).
 --
+-- The 'VL.MarkProperty' now has support for labelling the X (or X2)
+-- coordinate as the \"width\" of the plot and Y (or Y2)
+-- as the \"height\" of the plot. See 'VL.MXWidth', 'VL.MX2Width',
+-- 'VL.MYHeight', and 'VL.MY2Height'.
+--
 -- Improved support for tick scales: 'VL.TickCount' and
 -- 'VL.TickCountTime' have been added to 'VL.AxisConfig',
 -- 'VL.AxTickCountTime' has been added to 'VL.AxisProperty',

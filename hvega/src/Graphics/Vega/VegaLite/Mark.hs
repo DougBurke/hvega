@@ -617,12 +617,12 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MX Double
-      -- ^ X position of a mark.
+      -- ^ X position of a mark. See also 'MXWidth'.
       --
       --   @since 0.4.0.0
     | MX2 Double
       -- ^ X2 position of a mark. This is the secondary position for
-      --   lines and area marks).
+      --   lines and area marks). See also 'MX2Width'.
       --
       --   @since 0.4.0.0
     | MXOffset Double
@@ -634,12 +634,12 @@ data MarkProperty
       --
       --   @since 0.4.0.0
     | MY Double
-      -- ^ Y position of a mark.
+      -- ^ Y position of a mark. See also 'MYHeight'.
       --
       --   @since 0.4.0.0
     | MY2 Double
       -- ^ Y2 position of a mark. This is the secondary position for
-      --   lines and area marks).
+      --   lines and area marks). See also 'MY2Height'.
       --
       --   @since 0.4.0.0
     | MYOffset Double
@@ -650,6 +650,22 @@ data MarkProperty
       -- ^ Y2 position offset of a mark.
       --
       --   @since 0.4.0.0
+    | MXWidth
+      -- ^ Specify the X coordinate as the \"width\" of the plot.
+      --
+      --   @since 0.9.0.0
+    | MX2Width
+      -- ^ Specify the X2 coordinate as the \"width\" of the plot.
+      --
+      --   @since 0.9.0.0
+    | MYHeight
+      -- ^ Specify the Y coordinate as the \"height\" of the plot.
+      --
+      --   @since 0.9.0.0
+    | MY2Height
+      -- ^ Specify the Y2 coordinate as the \"height\" of the plot.
+      --
+      --   @since 0.9.0.0
 
 
 markProperty :: MarkProperty -> LabelledSpec
@@ -784,6 +800,11 @@ markProperty (MXOffset x) = "xOffset" .= x
 markProperty (MYOffset x) = "yOffset" .= x
 markProperty (MX2Offset x) = "x2Offset" .= x
 markProperty (MY2Offset x) = "y2Offset" .= x
+
+markProperty MXWidth = "x" .= fromT "width"
+markProperty MX2Width = "x2" .= fromT "width"
+markProperty MYHeight = "y" .= fromT "height"
+markProperty MY2Height = "y2" .= fromT "height"
 
 -- unlike elm, need to sort the stops list since we don't have a
 -- smart constructor (although it's not obvious this is actually needed,
