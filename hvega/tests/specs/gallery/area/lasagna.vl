@@ -1,0 +1,66 @@
+{
+    "transform": [
+        {
+            "filter": "datum.symbol !== 'GOOG'"
+        }
+    ],
+    "height": 100,
+    "mark": "rect",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "width": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "price",
+            "aggregate": "sum",
+            "title": "Price",
+            "type": "quantitative"
+        },
+        "x": {
+            "field": "date",
+            "timeUnit": "yearmonthdate",
+            "title": "Time",
+            "type": "ordinal",
+            "axis": {
+                "labelAngle": 0,
+                "labelOverlap": false,
+                "format": "%Y",
+                "labelColor": {
+                    "value": null,
+                    "condition": {
+                        "value": "black",
+                        "test": {
+                            "equal": {
+                                "date": 1,
+                                "month": 1
+                            },
+                            "field": "value",
+                            "timeUnit": "monthdate"
+                        }
+                    }
+                },
+                "tickColor": {
+                    "value": null,
+                    "condition": {
+                        "value": "black",
+                        "test": {
+                            "equal": {
+                                "date": 1,
+                                "month": 1
+                            },
+                            "field": "value",
+                            "timeUnit": "monthdate"
+                        }
+                    }
+                }
+            }
+        },
+        "y": {
+            "field": "symbol",
+            "title": null,
+            "type": "nominal"
+        }
+    }
+}

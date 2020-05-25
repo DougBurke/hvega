@@ -75,6 +75,7 @@ import qualified Gallery.Dist as GD
 import qualified Gallery.Error as GE
 import qualified Gallery.Facet as GF
 import qualified Gallery.Geo as GG
+import qualified Gallery.Histogram as GalleryHistogram
 import qualified Gallery.Interaction as GI
 import qualified Gallery.Label as GLBL
 import qualified Gallery.Layer as GLYR
@@ -152,6 +153,7 @@ galleryTests = testGroup "Gallery"
   , toGTests "Error" "error" GE.testSpecs
   , toGTests "Facet" "facet" GF.testSpecs
   , toGTests "Geo" "geo" GG.testSpecs
+  , toGTests "Histogram" "histogram" GalleryHistogram.testSpecs
   , toGTests "Interaction" "interaction" GI.testSpecs
   , toGTests "Label" "label" GLBL.testSpecs
   , toGTests "Layer" "layer" GLYR.testSpecs

@@ -9,6 +9,8 @@ module Gallery.Area (testSpecs) where
 import Graphics.Vega.VegaLite
 
 import Prelude hiding (filter, lookup)
+import Data.Function ((&))
+
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("area1", area1)
@@ -18,7 +20,13 @@ testSpecs = [ ("area1", area1)
             , ("area5", area5)
             , ("area6", area6)
             , ("area7", area7)
+            , ("lasagna", lasagna)
             ]
+
+
+stockData :: Data
+stockData = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+
 
 area1 :: VegaLite
 area1 =
@@ -57,7 +65,7 @@ area2 =
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+        , stockData
         , trans []
         , mark Area [ MPoint (PMMarker []), MLine (LMMarker []) ]
         , enc []
@@ -261,3 +269,50 @@ area7 =
         , trans []
         , vConcat [ spec1, asSpec [ layer [ spec2, spec3 ] ] ]
         ]
+
+
+-- https://vega.github.io/vega-lite/examples/rect_lasagna.html
+lasagna :: VegaLite
+lasagna =
+  let trans = transform
+              . filter (FExpr "datum.symbol !== 'GOOG'")
+              $ []
+
+      xAxis = [ AxFormat "%Y"
+              , AxLabelAngle 0
+              , AxLabelOverlap ONone
+              , AxDataCondition
+                xCondition
+                (CAxLabelColor "black" "")
+              , AxDataCondition
+                xCondition
+                (CAxTickColor "black" "")
+              ]
+
+      xCondition = FEqual "value" (DateTime [DTMonthNum 1, DTDate 1])
+                   & FilterOpTrans (MTimeUnit MonthDate)
+                   
+      enc = encoding
+            . position X [ PTimeUnit YearMonthDate
+                         , PName "date"
+                         , PmType Ordinal
+                         , PTitle "Time"
+                         , PAxis xAxis
+                         ]
+            .position Y [ PName "symbol"
+                        , PmType Nominal
+                        , PNoTitle
+                        ]
+            . color [ MAggregate Sum
+                    , MName "price"
+                    , MmType Quantitative
+                    , MTitle "Price"
+                    ]
+
+  in toVegaLite [ trans
+                , width 300
+                , height 100
+                , stockData
+                , mark Rect []
+                , enc []
+                ]
