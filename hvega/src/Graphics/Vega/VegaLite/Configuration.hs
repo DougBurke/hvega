@@ -198,7 +198,11 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 {-# DEPRECATED NamedStyles "Please change Legend to MarkNamedStyles" #-}
 
 data ConfigurationProperty
-    = AreaStyle [MarkProperty]
+    = ArcStyle [MarkProperty]
+      -- ^ The default appearance of arc marks.
+      --
+      --   @since 0.9.0.0
+    | AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
     | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
@@ -248,6 +252,13 @@ data ConfigurationProperty
       -- ^  Assign a set of axis styles to a label. These labels can then be referred
       --    to when configuring an axis with 'Graphics.Vega.VegaLite.AxStyle' and
       --    'AStyle'.
+      --
+      --   To customize the style for guides (axes, headers, and legends), Vega-Lite
+      --   includes the following built-in style names:
+      --
+      --    - \"guide-label\": style for axis, legend, and header labels
+      --    - \"guide-title\": style for axis, legend, and header titles
+      --    - \"group-label\": styles for chart titles
       --
       --   @since 0.6.0.0
     | BackgroundStyle Color
@@ -521,6 +532,7 @@ aprops_ f mps = f .= object (map axisProperty mps)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
+configProperty (ArcStyle mps) = mprops_ "arc" mps
 configProperty (AreaStyle mps) = mprops_ "area" mps
 configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
