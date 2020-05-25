@@ -1218,8 +1218,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- to 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have
 -- been added to 'VL.Position'; and 'VL.MInnerRadius',
 -- 'VL.MOuterRadius', 'VL.MPadAngle', 'VL.MRadius2',
--- 'VL.MRadiusOffset', 'VL.MRadius2Offset', and 'VL.MTheta2' added to
--- 'VL.MarkProperty'.
+-- 'VL.MRadiusOffset', 'VL.MRadius2Offset', 'VL.MTheta2',
+-- 'VL.MThetaOffset', and 'VL.MTheta2Offset' added to 'VL.MarkProperty'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --

@@ -578,6 +578,14 @@ data MarkProperty
       --   \"up\" or \"north", and increases clockwise.
       --
       --   @since 0.9.0.0
+    | MThetaOffset Double
+      -- ^ Offset for 'MTheta'.
+      --
+      --   @since 0.9.0.0
+    | MTheta2Offset Double
+      -- ^ Offset for 'MTheta2'.
+      --
+      --   @since 0.9.0.0
     | MThickness Double
       -- ^ Thickness of a tick mark.
     | MTicks [MarkProperty]
@@ -781,6 +789,8 @@ markProperty (MText t) = "text" .= t
 markProperty (MTexts ts) = "text" .= ts
 markProperty (MTheta x) = "theta" .= x
 markProperty (MTheta2 x) = "theta2" .= x
+markProperty (MThetaOffset x) = "thetaOffset" .= x
+markProperty (MTheta2Offset x) = "theta2Offset" .= x
 markProperty (MThickness x) = "thickness" .= x
 
 -- what uses this?
