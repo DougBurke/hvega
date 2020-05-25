@@ -1225,6 +1225,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
+-- The 'VL.Channel' type has gained 'VL.ChAngle', 'VL.ChTheta', 'VL.ChTheta2',
+-- 'VL.ChRadius', 'VL.ChRadius2', and 'VL.ChURL'.
+--
 -- Layers have been added to 'VL.Arrangement' ('VL.Layer') and to
 -- 'VL.RepeatFields' ('VL.LayerFields').
 --

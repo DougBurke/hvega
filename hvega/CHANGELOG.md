@@ -17,6 +17,9 @@ Support for arcs has been added: the `Arc` type has been added to
 
 The `angle` encoding channel has been added for text and point marks.
 
+The `Channel` type has gained `ChAngle`, `ChTheta`, `ChTheta2`,
+`ChRadius`, `ChRadius`', and `ChURL`.
+
 Layers have been added to `Arrangement` (`Layer`) and to `RepeatFields`
 (`LayerFields`).
 

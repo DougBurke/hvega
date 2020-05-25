@@ -1140,6 +1140,16 @@ data Channel
       -- ^ @since 0.4.0.0
     | ChLatitude2
       -- ^ @since 0.4.0.0
+    | ChAngle
+      -- ^ @since 0.9.0.0
+    | ChTheta
+      -- ^ @since 0.9.0.0
+    | ChTheta2
+      -- ^ @since 0.9.0.0
+    | ChRadius
+      -- ^ @since 0.9.0.0
+    | ChRadius2
+      -- ^ @since 0.9.0.0
     | ChColor
     | ChFill
       -- ^ @since 0.3.0.0
@@ -1162,7 +1172,8 @@ data Channel
       -- ^ @since 0.4.0.0
     | ChText
       -- ^ @since 0.4.0.0
-
+    | ChURL
+      -- ^ @since 0.9.0.0
 
 channelLabel :: Channel -> T.Text
 channelLabel ChX = "x"
@@ -1170,9 +1181,14 @@ channelLabel ChY = "y"
 channelLabel ChX2 = "x2"
 channelLabel ChY2 = "y2"
 channelLabel ChLongitude = "longitude"
-channelLabel ChLatitude = "latitude"
 channelLabel ChLongitude2 = "longitude2"
+channelLabel ChLatitude = "latitude"
 channelLabel ChLatitude2 = "latitude2"
+channelLabel ChAngle = "angle"
+channelLabel ChTheta = "theta"
+channelLabel ChTheta2 = "theta2"
+channelLabel ChRadius = "radius"
+channelLabel ChRadius2 = "radius2"
 channelLabel ChColor = "color"
 channelLabel ChFill = "fill"
 channelLabel ChFillOpacity = "fillOpacity"
@@ -1183,10 +1199,10 @@ channelLabel ChShape = "shape"
 channelLabel ChSize = "size"
 channelLabel ChStroke = "stroke"
 channelLabel ChStrokeDash = "strokeDash"
-channelLabel ChStrokeWidth = "strokeWidth"
 channelLabel ChStrokeOpacity = "strokeOpacity"
+channelLabel ChStrokeWidth = "strokeWidth"
 channelLabel ChText = "text"
-
+channelLabel ChURL = "url"
 
 {-|
 
