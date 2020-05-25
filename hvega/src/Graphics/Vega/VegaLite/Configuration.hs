@@ -198,7 +198,11 @@ the new 'Graphics.Vega.VegaLite.MRemoveInvalid' constructor for the
 {-# DEPRECATED NamedStyles "Please change Legend to MarkNamedStyles" #-}
 
 data ConfigurationProperty
-    = AreaStyle [MarkProperty]
+    = ArcStyle [MarkProperty]
+      -- ^ The default appearance of arc marks.
+      --
+      --   @since 0.9.0.0
+    | AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
     | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
@@ -521,6 +525,7 @@ aprops_ f mps = f .= object (map axisProperty mps)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
+configProperty (ArcStyle mps) = mprops_ "arc" mps
 configProperty (AreaStyle mps) = mprops_ "area" mps
 configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
