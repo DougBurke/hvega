@@ -1,0 +1,76 @@
+{
+    "config": {
+        "countTitle": "Count",
+        "axisY": {
+            "minExtent": 40
+        },
+        "axisX": {
+            "titleLimit": 150
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "vconcat": [
+        {
+            "repeat": {
+                "column": [
+                    "Rotten_Tomatoes_Rating",
+                    "IMDB_Rating"
+                ]
+            },
+            "spec": {
+                "height": 50,
+                "mark": "bar",
+                "width": 150,
+                "encoding": {
+                    "x": {
+                        "field": {
+                            "repeat": "column"
+                        },
+                        "bin": {
+                            "maxbins": 20
+                        },
+                        "type": "quantitative"
+                    },
+                    "y": {
+                        "aggregate": "count",
+                        "type": "quantitative"
+                    }
+                }
+            },
+            "title": "Ratings"
+        },
+        {
+            "repeat": {
+                "column": [
+                    "US_Gross",
+                    "Worldwide_Gross"
+                ]
+            },
+            "spec": {
+                "height": 50,
+                "mark": "bar",
+                "width": 150,
+                "encoding": {
+                    "x": {
+                        "field": {
+                            "repeat": "column"
+                        },
+                        "bin": {
+                            "maxbins": 20
+                        },
+                        "type": "quantitative"
+                    },
+                    "y": {
+                        "aggregate": "count",
+                        "type": "quantitative"
+                    }
+                }
+            },
+            "title": "Gross"
+        }
+    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Nested concatenation aligned by setting axis minExtent"
+}

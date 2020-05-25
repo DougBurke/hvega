@@ -16,7 +16,12 @@ testSpecs = [ ("repeat1", repeat1)
             , ("repeat3", repeat3)
             , ("repeat4", repeat4)
             , ("repeat5", repeat5)
+            , ("nested_concat_align", nestedConcatAlign)
             ]
+
+
+movieData :: Data
+movieData = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
 
 
 repeat1 :: VegaLite
@@ -227,6 +232,46 @@ repeat5 =
         , spacing 15
         , bounds Flush
         , config []
-        , dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+        , movieData
         , vConcat [ spec1, spec2 ]
         ]
+
+
+--https://vega.github.io/vega-lite/examples/nested_concat_align.html
+nestedConcatAlign :: VegaLite
+nestedConcatAlign =
+  let desc = "Nested concatenation aligned by setting axis minExtent"
+
+      plot1 = [ title "Ratings" []
+              , repeat [ColumnFields ["Rotten_Tomatoes_Rating", "IMDB_Rating"]]
+              , specification (asSpec spec)
+              ]
+              
+      plot2 = [ title "Gross" []
+              , repeat [ColumnFields ["US_Gross", "Worldwide_Gross"]]
+              , specification (asSpec spec)
+              ]
+
+      spec = [ width 150
+             , height 50
+             , mark Bar []
+             , encoding
+               . position X [ PRepeat Column
+                            , PBin [MaxBins 20]
+                            , PmType Quantitative
+                            ]
+               . position Y [ PAggregate Count
+                            , PmType Quantitative
+                            ]
+               $ []
+             ]
+
+  in toVegaLite [ description desc
+                , movieData
+                , vConcat [asSpec plot1, asSpec plot2]
+                , configure
+                  . configuration (CountTitleStyle "Count")
+                  . configuration (AxisX [TitleLimit 150])
+                  . configuration (AxisY [MinExtent 40])
+                  $ []
+                ]
