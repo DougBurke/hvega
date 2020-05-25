@@ -253,6 +253,13 @@ data ConfigurationProperty
       --    to when configuring an axis with 'Graphics.Vega.VegaLite.AxStyle' and
       --    'AStyle'.
       --
+      --   To customize the style for guides (axes, headers, and legends), Vega-Lite
+      --   includes the following built-in style names:
+      --
+      --    - \"guide-label\": style for axis, legend, and header labels
+      --    - \"guide-title\": style for axis, legend, and header titles
+      --    - \"group-label\": styles for chart titles
+      --
       --   @since 0.6.0.0
     | BackgroundStyle Color
       -- ^ The default background color of visualizations.
