@@ -11,8 +11,8 @@ Vega-Lite schema.
 Support for arcs has been added: the `Arc` type has been added to
 `Mark`; `Theta`, `Theta2`, `R`, and `R2` have been added to
 `Position`; and `MInnerRadius`, `MOuterRadius`, `MPadAngle`,
-`MRadius2`, `MRadiusOffset`, `MRadius2Offset`, and `MTheta2` added to
-`MarkProperty`.
+`MRadius2`, `MRadiusOffset`, `MRadius2Offset`, `MTheta2`,
+`MThetaOffset`, and `MTheta2Offset` added to `MarkProperty`.
 
 The `angle` encoding channel has been added for text and point marks.
 
@@ -23,6 +23,10 @@ The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
 `MDatum` and `PDatum` constructors have been added to specify a
 position in data space (`MarkChannel` and `PositionChannel`
 respectively).
+
+The `MarkProperty` now has support for labelling the X (or X2)
+coordinate as the "width" of the plot and Y (or Y2) as the "height" of
+the plot. See `MXWidth`, `MX2Width`, `MYHeight`, and `MY2Height`.
 
 Improved support for tick scales: `TickCount` and `TickCountTime` have
 been added to `AxisConfig`, `AxTickCountTime` has been added to

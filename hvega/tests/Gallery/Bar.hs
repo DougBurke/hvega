@@ -38,6 +38,7 @@ testSpecs = [ ("bar1", bar1)
             , ("initialletter", initialLetter)
             , ("barnegative", barNegative)
             , ("baraxisspacesaving", barAxisSpaceSaving)
+            , ("layer_bar_labels_grey", layerBarLabelsGrey)
             ]
 
 
@@ -61,6 +62,9 @@ noStroke = configure
 seattleWeather :: Data
 seattleWeather = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
 
+movieData :: Data
+movieData = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+
 
 -- bar1 in GalleryBar.elm
 bar1 :: VegaLite
@@ -81,6 +85,7 @@ bar1 =
     in
     toVegaLite [ des, dvals [], mark Bar [], enc [] ]
 
+
 -- bar4 in GalleryBar.elm
 bar2 :: VegaLite
 bar2 =
@@ -95,7 +100,7 @@ bar2 =
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
+        , movieData
         , mark Bar [ MBinSpacing 0 ]
         , enc []
         ]
@@ -635,8 +640,6 @@ labelOverlay :: VegaLite
 labelOverlay =
   let des = description "Bar chart with label overlay"
 
-      dvals = dataFromUrl "https://vega.github.io/vega-lite/data/movies.json" []
-
       trans = transform
               . calculateAs "isValid(datum.Major_Genre)? datum.Major_Genre : 'unclassified'" "genre"
 
@@ -687,7 +690,7 @@ labelOverlay =
         [ des
         , width 200
         , heightStep 16
-        , dvals
+        , movieData
         , trans []
         , enc []
         , layer [ specBar, specText ]
@@ -827,4 +830,36 @@ barAxisSpaceSaving =
                 , heightStep 50
                 , mark Bar [MYOffset 5, MCornerRadiusEnd 2]
                 , enc []
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/layer_bar_labels_grey.html
+layerBarLabelsGrey :: VegaLite
+layerBarLabelsGrey =
+  let baseEnc = encoding
+                . position Y [PName "Major_Genre", PmType Nominal, PAxis []]
+
+      plot1 = [ mark Bar [MColor "#ddd"]
+              , encoding
+                . position X [ PAggregate Mean
+                             , PName "IMDB_Rating"
+                             , PmType Quantitative
+                             , PScale [SDomain (DNumbers [0, 10])]
+                             , PTitle "Mean IMDB Ratings"
+                             ]
+                $ []
+              ]
+
+      plot2 = [ mark Text [MAlign AlignLeft, MX 5]
+              , encoding
+                . text [TName "Major_Genre", TmType Nominal]
+                . detail [DAggregate Count, DmType Quantitative]
+                $ []
+              ]
+
+  in toVegaLite [ width 200
+                , heightStep 16
+                , movieData
+                , baseEnc []
+                , layer [asSpec plot1, asSpec plot2]
                 ]

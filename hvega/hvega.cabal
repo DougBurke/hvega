@@ -50,6 +50,7 @@ extra-source-files:  README.md
                      tests/specs/gallery/error/*.vl
                      tests/specs/gallery/facet/*.vl
                      tests/specs/gallery/geo/*.vl
+                     tests/specs/gallery/histogram/*.vl
                      tests/specs/gallery/interaction/*.vl
                      tests/specs/gallery/label/*.vl
                      tests/specs/gallery/layer/*.vl
@@ -203,6 +204,7 @@ test-suite test
                        Gallery.Error
                        Gallery.Facet
                        Gallery.Geo
+                       Gallery.Histogram
                        Gallery.Interaction
                        Gallery.Label
                        Gallery.Layer

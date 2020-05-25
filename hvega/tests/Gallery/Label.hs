@@ -7,8 +7,9 @@
 --
 module Gallery.Label (testSpecs) where
 
-import Data.Aeson (Value)
+import Data.Aeson (Value(Object))
 import Data.Aeson.QQ.Simple (aesonQQ)
+import Data.HashMap.Strict (empty)
 
 import Graphics.Vega.VegaLite
 
@@ -184,68 +185,83 @@ label3 =
         ]
 
 
+-- https://vega.github.io/vega-lite/examples/layer_bar_annotations.html
 label4 :: VegaLite
 label4 =
-    let
-        des =
-            description "Bar chart that highlights values beyond a threshold. The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html"
+  let des = description "The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html"
 
-        dvals =
-            dataFromColumns []
-                . dataColumn "Day" (Numbers (map fromIntegral [1::Int .. 15]))
-                . dataColumn "Value" (Numbers [ 54.8, 112.1, 63.6, 37.6, 79.7, 137.9, 120.1, 103.3, 394.8, 199.5, 72.3, 51.1, 112.0, 174.5, 130.5 ])
+      dvals = dataFromColumns []
+              . dataColumn "Day" (Numbers (map fromIntegral [1::Int .. 15]))
+              . dataColumn "Value" (Numbers [54.8, 112.1, 63.6, 37.6, 79.7, 137.9, 120.1, 103.3, 394.8, 199.5, 72.3, 51.1, 112.0, 174.5, 130.5])
 
-        encBar =
-            encoding
-                . position X [ PName "Day", PmType Ordinal, PAxis [ AxLabelAngle 0 ] ]
-                . position Y [ PName "Value", PmType Quantitative ]
+      encBar = encoding
+               . position X [PName "Day", PmType Ordinal, PAxis [AxLabelAngle 0]]
+               . position Y [PName "Value", PmType Quantitative]
 
-        specBar =
-            asSpec [ mark Bar [], encBar [] ]
+      specBar = asSpec [mark Bar [], encBar []]
 
-        trans =
-            transform
-                . filter (FExpr "datum.Value >= 300")
-                . calculateAs "300" "baseline"
+      trans = transform
+              . filter (FExpr "datum.Value >= 300")
+              . calculateAs "300" "baseline"
 
-        encUpperBar =
-            encoding
-                . position X [ PName "Day", PmType Ordinal, PAxis [ AxLabelAngle 0 ] ]
-                . position Y [ PName "baseline", PmType Quantitative ]
-                . position Y2 [ PName "Value" ]
-                . color [ MString "#e45755" ]
+      encUpperBar = encoding
+                    . position X [PName "Day", PmType Ordinal]
+                    . position Y [PName "baseline", PmType Quantitative, PTitle "PM2.5 Value"]
+                    . position Y2 [PName "Value"]
+                    . color [MString "#e45755"]
 
-        specUpperBar =
-            asSpec [ trans [], mark Bar [], encUpperBar [] ]
+      specUpperBar = asSpec [trans [], mark Bar [], encUpperBar []]
 
-        layer0 =
-            asSpec [ dvals [], layer [ specBar, specUpperBar ] ]
+      layer0 = asSpec [dvals [], layer [specBar, specUpperBar]]
 
-        thresholdData =
-            dataFromRows []
-                . dataRow [ ( "ThresholdValue", Number 300 ), ( "Threshold", Str "hazardous" ) ]
+      thresholdData = dataFromJson (Object empty) []
 
-        specRule =
-            asSpec [ mark Rule [], encRule [] ]
+      specRule = asSpec [mark Rule []]
 
-        encRule =
-            encoding
-                . position Y [ PName "ThresholdValue", PmType Quantitative ]
+      encRule = encoding
+                . position Y [PDatum (Number 300)]
 
-        specText =
-            asSpec [ mark Text [ MAlign AlignRight, MdX (-2), MdY (-4) ], encText [] ]
+      specText = asSpec [mark Text [ MAlign AlignRight
+                                   , MBaseline AlignBottom
+                                   , MdX (-2)
+                                   , MdY (-2)
+                                   , MXWidth
+                                   , MText "hazardous"
+                                   ]
+                        ]
 
-        encText =
-            encoding
-                . position X [ PWidth ]
-                . position Y [ PName "ThresholdValue", PmType Quantitative, PAxis [ AxTitle "PM2.5 Value" ] ]
-                . text [ TName "Threshold", TmType Ordinal ]
+      layer1 = asSpec [thresholdData, encRule [], layer [specRule, specText]]
 
-        layer1 =
-            asSpec [ thresholdData [], layer [ specRule, specText ] ]
-    in
-    toVegaLite [ des, layer [ layer0, layer1 ] ]
+  in toVegaLite [ des, layer [ layer0, layer1 ] ]
 
+
+{-
+{
+  "description": ,
+    ]}, {
+      "data": {
+         "values": [{}]
+      },
+      "encoding": {
+        "y": {"datum": 300}
+      },
+      "layer": [{
+        "mark": "rule"
+      }, {
+        "mark": {
+          "type": "text",
+          "align": "right",
+          "baseline": "bottom",
+          "dx": -2,
+          "dy": -2,
+          "x": "width",
+          "text": "hazardous"
+        }
+      }]
+    }
+  ]
+}
+-}
 
 label5 :: VegaLite
 label5 =

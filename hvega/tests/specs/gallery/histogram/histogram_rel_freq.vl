@@ -1,0 +1,68 @@
+{
+    "transform": [
+        {
+            "as": "bin_Horsepwoer",
+            "field": "Horsepower",
+            "bin": {
+                "binned": true
+            }
+        },
+        {
+            "groupby": [
+                "bin_Horsepwoer",
+                "bin_Horsepwoer_end"
+            ],
+            "aggregate": [
+                {
+                    "op": "count",
+                    "as": "Count"
+                }
+            ]
+        },
+        {
+            "joinaggregate": [
+                {
+                    "op": "sum",
+                    "as": "TotalCount",
+                    "field": "Count"
+                }
+            ]
+        },
+        {
+            "as": "PercentOfTotal",
+            "calculate": "datum.Count/datum.TotalCount"
+        }
+    ],
+    "mark": {
+        "tooltip": {
+            "content": "encoding"
+        },
+        "type": "bar"
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x2": {
+            "field": "bin_Horsepwoer_end"
+        },
+        "x": {
+            "field": "bin_Horsepwoer",
+            "bin": {
+                "binned": true
+            },
+            "title": "Horsepower",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "PercentOfTotal",
+            "title": "Relative Frequency",
+            "type": "quantitative",
+            "axis": {
+                "format": ".1~%"
+            }
+        }
+    },
+    "description": "Relative frequency histogram. The data is binned with first transform. The number of values per bin and the total number are calculated in the second and third transform to calculate the relative frequency in the last transformation step."
+}

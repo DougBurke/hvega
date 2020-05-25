@@ -100,16 +100,14 @@
                         },
                         "x": {
                             "field": "Day",
-                            "type": "ordinal",
-                            "axis": {
-                                "labelAngle": 0
-                            }
+                            "type": "ordinal"
                         },
                         "y2": {
                             "field": "Value"
                         },
                         "y": {
                             "field": "baseline",
+                            "title": "PM2.5 Value",
                             "type": "quantitative"
                         }
                     }
@@ -118,49 +116,30 @@
         },
         {
             "data": {
-                "values": [
-                    {
-                        "ThresholdValue": 300,
-                        "Threshold": "hazardous"
-                    }
-                ]
+                "values": {}
             },
             "layer": [
                 {
-                    "mark": "rule",
-                    "encoding": {
-                        "y": {
-                            "field": "ThresholdValue",
-                            "type": "quantitative"
-                        }
-                    }
+                    "mark": "rule"
                 },
                 {
                     "mark": {
                         "dx": -2,
-                        "dy": -4,
+                        "dy": -2,
+                        "text": "hazardous",
                         "align": "right",
-                        "type": "text"
-                    },
-                    "encoding": {
-                        "text": {
-                            "field": "Threshold",
-                            "type": "ordinal"
-                        },
-                        "x": {
-                            "value": "width"
-                        },
-                        "y": {
-                            "field": "ThresholdValue",
-                            "type": "quantitative",
-                            "axis": {
-                                "title": "PM2.5 Value"
-                            }
-                        }
+                        "x": "width",
+                        "type": "text",
+                        "baseline": "bottom"
                     }
                 }
-            ]
+            ],
+            "encoding": {
+                "y": {
+                    "datum": 300
+                }
+            }
         }
     ],
-    "description": "Bar chart that highlights values beyond a threshold. The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html"
+    "description": "The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html"
 }

@@ -1218,8 +1218,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- to 'VL.Mark'; 'VL.Theta', 'VL.Theta2', 'VL.R', and 'VL.R2' have
 -- been added to 'VL.Position'; and 'VL.MInnerRadius',
 -- 'VL.MOuterRadius', 'VL.MPadAngle', 'VL.MRadius2',
--- 'VL.MRadiusOffset', 'VL.MRadius2Offset', and 'VL.MTheta2' added to
--- 'VL.MarkProperty'.
+-- 'VL.MRadiusOffset', 'VL.MRadius2Offset', 'VL.MTheta2',
+-- 'VL.MThetaOffset', and 'VL.MTheta2Offset' added to 'VL.MarkProperty'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
@@ -1230,6 +1230,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.MDatum' and 'VL.PDatum' constructors have been added to specify
 -- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
 -- respectively).
+--
+-- The 'VL.MarkProperty' now has support for labelling the X (or X2)
+-- coordinate as the \"width\" of the plot and Y (or Y2)
+-- as the \"height\" of the plot. See 'VL.MXWidth', 'VL.MX2Width',
+-- 'VL.MYHeight', and 'VL.MY2Height'.
 --
 -- Improved support for tick scales: 'VL.TickCount' and
 -- 'VL.TickCountTime' have been added to 'VL.AxisConfig',
