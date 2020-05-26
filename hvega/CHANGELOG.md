@@ -52,6 +52,10 @@ for custom format types (`CustomFormatStyle`).
 `DomainCap`, `GridCap`, `TickCap` and `AxDomainCap`, `AxGridCap`,
 `AxTickCap` respectively.
 
+The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
+(prior to Vega-Lite 4.12 it was only supported when used with
+`title`).
+
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the

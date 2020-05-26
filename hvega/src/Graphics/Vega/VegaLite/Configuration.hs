@@ -1817,8 +1817,6 @@ data TitleConfig
     | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
       --
-      --   This should only be used with 'title' and not 'TitleConfig'.
-      --
       --   @since 0.4.0.0
 
 

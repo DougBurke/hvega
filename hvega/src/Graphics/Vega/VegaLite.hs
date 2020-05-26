@@ -1264,6 +1264,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.AxisConfig' and 'VL.AxisProperty' have gained new cap styles:
 -- 'VL.DomainCap', 'VL.GridCap', 'VL.TickCap' and
 -- 'VL.AxDomainCap', 'VL.AxGridCap', 'VL.AxTickCap' respectively.
+--
+-- The 'VL.TZIndex' option of 'VL.TitleConfig' can now be used with
+-- 'VL.TitleStyle' (prior to Vega-Lite 4.12 it was only supported
+-- when used with 'VL.title').
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
