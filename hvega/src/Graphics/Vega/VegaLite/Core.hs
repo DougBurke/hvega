@@ -2129,7 +2129,7 @@ hyperlinkChannelProperty (HDataCondition tests elseClause) =
   dataCond_ hyperlinkChannelProperty tests elseClause
 hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
 hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
-hyperlinkChannelProperty (HString s) = [value_ s]  -- THIS MAY NOT BE VALID
+hyperlinkChannelProperty (HString s) = [value_ s]
 
 
 -- | A text description of this mark for ARIA accessibility.
@@ -2180,6 +2180,8 @@ data AriaDescriptionChannel
       --   for use with with 'ADFormat'.
     | ADLabelExpr VegaExpr
       -- ^ Provide the expression used to generate labels.
+    | ADString T.Text
+      -- ^ Literal string value.
     | ADTimeUnit TimeUnit
       -- ^ Time unit aggregation of field values when encoding with an Aria
       --   description channel.
@@ -2206,6 +2208,7 @@ ariaDescriptionChannelProperty ADFormatAsNum = ["formatType" .= fromT "number"]
 ariaDescriptionChannelProperty ADFormatAsTemporal = ["formatType" .= fromT "time"]
 ariaDescriptionChannelProperty (ADFormatAsCustom c) = ["formatType" .= c]
 ariaDescriptionChannelProperty (ADLabelExpr lbl) = ["labelExpr" .= lbl]
+ariaDescriptionChannelProperty (ADString s) = [value_ s]
 ariaDescriptionChannelProperty (ADTimeUnit tu) = [timeUnit_ tu]
 ariaDescriptionChannelProperty (ADTitle t) = ["title" .= t]
 ariaDescriptionChannelProperty ADNoTitle = ["title" .= A.Null]
