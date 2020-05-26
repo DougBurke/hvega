@@ -48,6 +48,10 @@ gained `HFormatAsCustom`. `TextChannel` has gained `TFormatAsCustom`.
 The `ConfigurationProperty` type has a new option to configure support
 for custom format types (`CustomFormatStyle`).
 
+`AxisConfig` and `AxisProperty` have gained new cap styles:
+`DomainCap`, `GridCap`, `TickCap` and `AxDomainCap`, `AxGridCap`,
+`AxTickCap` respectively.
+
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the

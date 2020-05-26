@@ -1324,6 +1324,10 @@ data AxisConfig
       --  @since 0.8.0.0
     | Domain Bool
       -- ^ Should the axis domain be displayed?
+    | DomainCap StrokeCap
+      -- ^ The stroke cap for the domain lines' ending style.
+      --
+      --   @since 0.9.0.0
     | DomainColor Color
       -- ^ The axis domain color.
     | DomainDash DashStyle
@@ -1370,6 +1374,10 @@ data AxisConfig
       --   @since 0.9.0.0
     | Grid Bool
       -- ^ Should an axis grid be displayed?
+    | GridCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | GridColor Color
       -- ^ The color for the grid.
     | GridDash DashStyle
@@ -1504,6 +1512,10 @@ data AxisConfig
       --   extents to indicate intervals.
       --
       --   @since 0.5.0.0
+    | TickCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | TickColor Color
       -- ^ The color of the ticks.
     | TickCount Int
@@ -1604,6 +1616,7 @@ axisConfigProperty (AStyle s) = "style" .= s
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Disable b) = "disable" .= b
 axisConfigProperty (Domain b) = "domain" .= b
+axisConfigProperty (DomainCap c) = "domainCap" .= strokeCapLabel c
 axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
 axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
@@ -1616,6 +1629,7 @@ axisConfigProperty FormatAsTemporal = "formatNum" .= fromT "type"
 axisConfigProperty (FormatAsCustom c) = "formatType" .= c
 
 axisConfigProperty (Grid b) = "grid" .= b
+axisConfigProperty (GridCap c) = "gridCap" .= strokeCapLabel c
 axisConfigProperty (GridColor c) = "gridColor" .= fromColor c
 axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
@@ -1648,6 +1662,7 @@ axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (TickBand band) = "tickBand" .= bandAlignLabel band
+axisConfigProperty (TickCap c) = "tickCap" .= strokeCapLabel c
 axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
 axisConfigProperty (TickCount n) = "tickCount" .= n
 axisConfigProperty (TickCountTime sn) = "tickCount" .= scaleNiceSpec sn

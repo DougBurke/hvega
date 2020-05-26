@@ -213,6 +213,7 @@ import Graphics.Vega.VegaLite.Foundation
   , Side
   , StackProperty
   , StackOffset
+  , StrokeCap
   , Channel
   , Resolve
   , Bounds
@@ -239,6 +240,7 @@ import Graphics.Vega.VegaLite.Foundation
   , vAlignLabel
   , bandAlignLabel
   , scaleLabel
+  , strokeCapLabel
   , positionLabel
   , overlapStrategyLabel
   , sideLabel
@@ -610,8 +612,8 @@ so it can either be used to add further encoding specifications or as
 @enc []@ to create a specification.
 
 The supported encodings are:
-'color', 'column', 'detail', 'fill', 'fillOpacity', 'hyperlink',
-'opacity', 'order', 'position', 'row', 'shape', 'size',
+'angle', 'color', 'column', 'detail', 'fill', 'fillOpacity',
+'hyperlink', 'opacity', 'order', 'position', 'row', 'shape', 'size',
 'stroke', 'strokeDash', 'strokeOpacity', 'strokeWidth', 'text', 'tooltip',
 'tooltips', and 'url'.
 
@@ -1190,6 +1192,10 @@ data AxisProperty
       --   @since 0.5.0.0
     | AxDomain Bool
       -- ^ Should the axis domain (the baseline) be displayed?
+    | AxDomainCap StrokeCap
+      -- ^ The stroke cap for the domain lines' ending style.
+      --
+      --   @since 0.9.0.0
     | AxDomainColor Color
       -- ^ The axis domain color.
       --
@@ -1238,6 +1244,10 @@ data AxisProperty
       --   @since 0.9.0.0
     | AxGrid Bool
       -- ^ Should an axis grid be displayed?
+    | AxGridCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | AxGridColor Color
       -- ^ The color for the grid.
       --
@@ -1406,6 +1416,10 @@ data AxisProperty
       --   extents to indicate intervals.
       --
       --   @since 0.5.0.0
+    | AxTickCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | AxTickColor Color
       -- ^ The color of the ticks.
       --
@@ -1569,6 +1583,7 @@ axisProperty (AxDataCondition predicate cap) =
                                              ]
                      , "value" .= elseProp]
 axisProperty (AxDomain b) = "domain" .= b
+axisProperty (AxDomainCap c) = "domainCap" .= strokeCapLabel c
 axisProperty (AxDomainColor s) = "domainColor" .= fromColor s
 axisProperty (AxDomainDash ds) = "domainDash" .= fromDS ds
 axisProperty (AxDomainDashOffset x) = "domainDashOffset" .= x
@@ -1579,6 +1594,7 @@ axisProperty AxFormatAsNum = "formatType" .= fromT "number"
 axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
 axisProperty (AxFormatAsCustom c) = "formatType" .= c
 axisProperty (AxGrid b) = "grid" .= b
+axisProperty (AxGridCap c) = "gridCap" .= strokeCapLabel c
 axisProperty (AxGridColor s) = "gridColor" .= fromColor s
 axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds
 axisProperty (AxGridDashOffset x) = "gridDashOffset" .= x
@@ -1615,6 +1631,7 @@ axisProperty (AxOrient side) = "orient" .= sideLabel side
 axisProperty (AxPosition n) = "position" .= n
 axisProperty (AxTicks b) = "ticks" .= b
 axisProperty (AxTickBand bnd) = "tickBand" .= bandAlignLabel bnd
+axisProperty (AxTickCap c) = "tickCap" .= strokeCapLabel c
 axisProperty (AxTickColor s) = "tickColor" .= fromColor s
 axisProperty (AxTickCount n) = "tickCount" .= n
 axisProperty (AxTickCountTime sn) = "tickCount" .= scaleNiceSpec sn

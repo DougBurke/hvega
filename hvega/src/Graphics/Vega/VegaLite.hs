@@ -1260,6 +1260,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.TFormatAsCustom'. The 'VL.ConfigurationProperty' type has a new
 -- option to configure support for custom format types
 -- ('VL.CustomFormatStyle').
+--
+-- 'VL.AxisConfig' and 'VL.AxisProperty' have gained new cap styles:
+-- 'VL.DomainCap', 'VL.GridCap', 'VL.TickCap' and
+-- 'VL.AxDomainCap', 'VL.AxGridCap', 'VL.AxTickCap' respectively.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
