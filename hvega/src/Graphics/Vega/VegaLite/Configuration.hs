@@ -204,6 +204,15 @@ data ConfigurationProperty
       --   @since 0.9.0.0
     | AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
+    | AriaStyle Bool
+      -- ^ A boolean flag indicating if ARIA default attributes should be included for
+      --   marks and guides (SVG output only). If False, the \"aria-hidden\"
+      --   attribute will be set for all guides, removing them from the ARIA accessibility
+      --   tree and Vega-Lite will not generate default descriptions for marks.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
     | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
       --
@@ -534,6 +543,7 @@ aprops_ f mps = f .= object (map axisProperty mps)
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (ArcStyle mps) = mprops_ "arc" mps
 configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (AriaStyle b) = "aria" .= b
 configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
 configProperty (AxisBand c acs) = toAxisChoice c "Band" acs
@@ -749,7 +759,30 @@ This data type has seen significant changes in the @0.4.0.0@ release:
 -- based on schema 3.3.0 #/definitions/LegendConfig
 
 data LegendConfig
-    = LeClipHeight Double
+    = LeAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group,
+      --   removing the legend from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
+    | LeAriaDescription T.Text
+      -- ^ A text description of this legend for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'LeAria' property is true, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | LeClipHeight Double
       -- ^ The height in pixels at which to clip symbol legend entries.
       --
       --   @since 0.4.0.0
@@ -1010,6 +1043,8 @@ data LegendConfig
       --   @since 0.9.0.0
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
+legendConfigProperty (LeAria b) = "bool" .= b
+legendConfigProperty (LeAriaDescription t) = "description" .= t
 legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
@@ -1312,7 +1347,30 @@ The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 
 -}
 data AxisConfig
-    = AStyle [StyleLabel]
+    = Aria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group, removing
+      --   the axis from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
+    | AriaDescription T.Text
+      -- ^ A text description of this axis for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'Aria' property is True, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | AStyle [StyleLabel]
       -- ^ The named styles - generated with 'AxisNamedStyles' - to apply to the
       --   axis or axes.
       --
@@ -1619,6 +1677,9 @@ axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (AStyle [s]) = "style" .= s
 axisConfigProperty (AStyle s) = "style" .= s
 
+axisConfigProperty (Aria b) = "aria" .= b
+axisConfigProperty (AriaDescription t) = "description" .= t
+
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Disable b) = "disable" .= b
 axisConfigProperty (Domain b) = "domain" .= b
@@ -1742,6 +1803,17 @@ data TitleConfig
       -- ^ The anchor position when placing titles.
     | TAngle Angle
       -- ^ The angle when orientating titles.
+    | TAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group,
+      --   removing the title from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
     | TBaseline VAlign
       -- ^ The vertical alignment when placing titles.
     | TColor Color  -- this allows for null as a color
@@ -1830,6 +1902,7 @@ titleConfigSpec :: TitleConfig -> LabelledSpec
 titleConfigSpec (TAlign ha) = "align" .= hAlignLabel ha
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
+titleConfigSpec (TAria b) = "aria" .= b
 titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
 titleConfigSpec (TColor clr) = "color" .= fromColor clr
 titleConfigSpec (TdX x) = "dx" .= x

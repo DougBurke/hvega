@@ -15,10 +15,15 @@ Support for arcs has been added: the `Arc` type has been added to
 `MThetaOffset`, and `MTheta2Offset` added to `MarkProperty`.
 `ArcStyle` has been added to `ConfigurationProperty`.
 
+Support for ARIA attributes has been added to a number of features
+(e.g. `Aria` and `AriaDescription` for `AxisConfig` and `MAria`,
+`MAriaDescription`, `MAriaRole`, `MAriaRoleDescription` for
+`MarkProperty`, `AriaStyle` for `ConfigurationProperty`).
+
 The `angle` encoding channel has been added for text and point marks.
 
 The `Channel` type has gained `ChAngle`, `ChTheta`, `ChTheta2`,
-`ChRadius`, `ChRadius`', and `ChURL`.
+`ChRadius`, `ChRadius`', 'ChDescription', and `ChURL`.
 
 Layers have been added to `Arrangement` (`Layer`) and to `RepeatFields`
 (`LayerFields`).

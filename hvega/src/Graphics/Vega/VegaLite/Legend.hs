@@ -231,7 +231,30 @@ The @LEntryPadding@ constructor was removed in @0.4.0.0@.
 -- based on schema #/definitions/Legend
 
 data LegendProperty
-    = LClipHeight Double
+    = LAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group,
+      --   removing the legend from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --    @since 0.9.0.0
+    | LAriaDescription T.Text
+      -- ^ A text description of this legend for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'LAria' property is true, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | LClipHeight Double
       -- ^ The height, in pixels, to clip symbol legend entries.
       --
       --   @since 0.4.0.0
@@ -468,6 +491,8 @@ data LegendProperty
       -- ^ The z-index at which to draw the legend.
 
 legendProperty :: LegendProperty -> LabelledSpec
+legendProperty (LAria b) = "aria" .= b
+legendProperty (LAriaDescription t) = "description" .= t
 legendProperty (LClipHeight x) = "clipHeight" .= x
 legendProperty (LColumnPadding x) = "columnPadding" .= x
 legendProperty (LColumns n) = "columns" .= n

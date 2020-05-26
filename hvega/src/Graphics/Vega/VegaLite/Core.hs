@@ -1151,7 +1151,30 @@ The @AxTitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 -}
 {-# DEPRECATED AxDates "Please change AxDates to AxValues" #-}
 data AxisProperty
-    = AxBandPosition Double
+    = AxAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group, removing
+      --   the axis from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
+    | AxAriaDescription T.Text
+      -- ^ A text description of this axis for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'AxAria' property is True, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | AxBandPosition Double
       -- ^ An interpolation fraction indicating where, for @band@ scales, axis ticks should
       --   be position. A value of @0@ places ticks at the left-edge of the band, @0.5@ in
       --   the middle, and @1@ at the right edge.
@@ -1572,6 +1595,9 @@ data AxisProperty
 axisProperty :: AxisProperty -> LabelledSpec
 axisProperty (AxStyle [s]) = "style" .= s
 axisProperty (AxStyle s) = "style" .= s
+
+axisProperty (AxAria b) = "aria" .= b
+axisProperty (AxAriaDescription t) = "description" .= t
 
 axisProperty (AxBandPosition x) = "bandPosition" .= x
 axisProperty (AxDataCondition predicate cap) =

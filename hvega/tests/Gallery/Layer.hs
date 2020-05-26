@@ -23,6 +23,7 @@ testSpecs = [ ("layer1", layer1)
             , ("layer6", layer6)
             , ("layer7", layer7)
             , ("layertimeunitrect", layerTimeunitRect)
+            , ("layer_bar_fruit", layerBarFruit)
             ]
 
 
@@ -442,4 +443,45 @@ layerTimeunitRect =
   
   in toVegaLite [ description desc
                 , layer [asSpec lyr1, asSpec lyr2]
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/layer_bar_fruit.html
+layerBarFruit :: VegaLite
+layerBarFruit =
+  let desc = "Vega-Lite version of bar chart from https://observablehq.com/@d3/learn-d3-scales."
+
+      dvals = dataFromColumns []
+              . dataColumn "name" (Strings ["🍊", "🍇", "🍏", "🍌", "🍐", "🍋", "🍎", "🍉"])
+              . dataColumn "count" (Numbers [21,13, 8, 5, 3, 2, 1, 1])
+              $ []
+
+      plot1 = [ mark Bar []
+              , encoding
+                . color [MName "count", MmType Quantitative, MTitle "Number of fruit"]
+                $ []
+              ]
+
+      plot2 = [ mark Text [ MAlign AlignRight
+                          , MXOffset (-4)
+                          , MAria False
+                          ]
+              , encoding
+                . text [TName "count", TmType Quantitative]
+                . color [ MDataCondition
+                          -- want "test: {field: count, gt 10}"
+                          [(Expr "datum.count > 10", [MString "white"])]
+                          [MString "black"]
+                        ]
+                $ []
+              ]
+
+  in toVegaLite [ description desc
+                , width 400
+                , dvals
+                , encoding
+                  . position X [PName "count", PmType Quantitative, PNoTitle]
+                  . position Y [PName "name", PmType Ordinal, PSort [Descending, ByChannel ChX], PNoTitle]
+                  $ []
+                , layer [asSpec plot1, asSpec plot2]
                 ]

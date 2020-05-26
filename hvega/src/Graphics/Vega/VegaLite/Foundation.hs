@@ -1172,6 +1172,8 @@ data Channel
       -- ^ @since 0.4.0.0
     | ChText
       -- ^ @since 0.4.0.0
+    | ChDescription
+      -- ^ @since 0.9.0.0
     | ChURL
       -- ^ @since 0.9.0.0
 
@@ -1202,6 +1204,7 @@ channelLabel ChStrokeDash = "strokeDash"
 channelLabel ChStrokeOpacity = "strokeOpacity"
 channelLabel ChStrokeWidth = "strokeWidth"
 channelLabel ChText = "text"
+channelLabel ChDescription = "description"
 channelLabel ChURL = "url"
 
 {-|

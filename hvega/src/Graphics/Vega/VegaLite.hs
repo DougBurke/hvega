@@ -1223,10 +1223,15 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.MarkProperty'. 'VL.ArcStyle' has been added to
 -- 'VL.ConfigurationProperty'.
 --
+-- Support for ARIA attributes has been added to a number of features
+-- (e.g. 'VL.Aria' and 'VL.AriaDescription' for 'VL.AxisConfig' and
+-- 'VL.MAria', 'VL.MAriaDescription', 'VL.MAriaRole', 'VL.MAriaRoleDescription'
+-- for 'VL.MarkProperty', 'VL.AriaStyle' for 'VL.ConfigurationProperty').
+--
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
 -- The 'VL.Channel' type has gained 'VL.ChAngle', 'VL.ChTheta', 'VL.ChTheta2',
--- 'VL.ChRadius', 'VL.ChRadius2', and 'VL.ChURL'.
+-- 'VL.ChRadius', 'VL.ChRadius2', 'VL.ChDescription', and 'VL.ChURL'.
 --
 -- Layers have been added to 'VL.Arrangement' ('VL.Layer') and to
 -- 'VL.RepeatFields' ('VL.LayerFields').

@@ -239,6 +239,43 @@ data MarkProperty
       -- ^ Horizontal alignment of a text mark.
     | MAngle Angle
       -- ^ Rotation angle of a text, point, or square marks.
+    | MAria Bool
+      -- ^ Should [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG element,
+      --   removing the mark item from the ARIA accessibility tree.
+      --
+      --   @since 0.9.0.0
+    | MAriaDescription T.Text
+      -- ^ A text description of the mark item for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If specified, this property determines the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute).
+      --
+      --   @since 0.9.0.0
+    | MAriaRole T.Text
+      -- ^ Sets the type of user interface element of the mark item for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If specified, this property determines the \"role\" attribute.
+      --
+      --   Warning: this property is experimental and may be changed in the future.
+      --
+      --   @since 0.9.0.0
+    | MAriaRoleDescription T.Text
+      -- ^ A human-readable, author-localized description for the role of the mark item for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If specified, this property determines the \"aria-roledescription\" attribute.
+      --
+      --   Warning: this property is experimental and may be changed in the future.
+      --
+      --   @since 0.9.0.0
     | MAspect Bool
       -- ^ Should the aspect ratio of an 'Image' mark be preserved?
       --
@@ -692,6 +729,12 @@ markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
 
 markProperty (MAlign algn) = "align" .= hAlignLabel algn
 markProperty (MAngle x) = "angle" .= x
+
+markProperty (MAria b) = "aria" .= b
+markProperty (MAriaDescription t) = "description" .= t
+markProperty (MAriaRole t) = "ariaRole" .= t
+markProperty (MAriaRoleDescription t) = "ariaRoleDescription" .= t
+
 markProperty (MAspect b) = "aspect" .= b
 markProperty (MBaseline va) = "baseline" .= vAlignLabel va
 
