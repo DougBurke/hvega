@@ -18,7 +18,9 @@ Support for arcs has been added: the `Arc` type has been added to
 Support for ARIA attributes has been added to a number of features
 (e.g. `Aria` and `AriaDescription` for `AxisConfig` and `MAria`,
 `MAriaDescription`, `MAriaRole`, `MAriaRoleDescription` for
-`MarkProperty`, `AriaStyle` for `ConfigurationProperty`).
+`MarkProperty`, `AriaStyle` for `ConfigurationProperty`).  The
+`ariaDescrption` encoding has been added, along with the
+`AriaDescriptionChannel`.
 
 The `angle` encoding channel has been added for text and point marks.
 
@@ -64,7 +66,7 @@ The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the
-Vega-Lite schema.
+Vega-Lite Sschema.
 
 The `RepeatStyle` constructor for `ConfigurationProperty` should not
 be used, as its functionality has been moved to `ConcatStyle` in

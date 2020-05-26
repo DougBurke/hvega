@@ -608,6 +608,12 @@ module Graphics.Vega.VegaLite
        , VL.detail
        , VL.DetailChannel(..)
 
+         -- ** Aria Description Channel
+         --
+
+       , VL.ariaDescription
+       , VL.AriaDescriptionChannel(..)
+
          -- ** Scaling
          --
          -- $scaling
@@ -1227,6 +1233,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- (e.g. 'VL.Aria' and 'VL.AriaDescription' for 'VL.AxisConfig' and
 -- 'VL.MAria', 'VL.MAriaDescription', 'VL.MAriaRole', 'VL.MAriaRoleDescription'
 -- for 'VL.MarkProperty', 'VL.AriaStyle' for 'VL.ConfigurationProperty').
+-- The 'VL.ariaDescrption' encoding has been added, along with the
+-- 'VL.AriaDescriptionChannel'.
 --
 -- The 'VL.angle' encoding channel has been added for text and point marks.
 --
