@@ -30,9 +30,10 @@ The `Channel` type has gained `ChAngle`, `ChTheta`, `ChTheta2`,
 Layers have been added to `Arrangement` (`Layer`) and to `RepeatFields`
 (`LayerFields`).
 
-The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
-`MDatum` and `PDatum` constructors have been added to specify a
-position in data space (`MarkChannel` and `PositionChannel`
+The `MRepeatDatum` and `TRepeatDatum` constructors have been added to
+`MarkChannel` and `TextChannel` respectively.  The `MDatum`, `PDatum`,
+and `TDatum` constructors have been added to specify a position in
+data space (`MarkChannel`, `PositionChannel`, and `TextChannel`
 respectively).
 
 The `MarkProperty` now has support for labelling the X (or X2)
