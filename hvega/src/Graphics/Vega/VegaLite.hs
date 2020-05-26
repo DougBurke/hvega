@@ -1267,7 +1267,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.TZIndex' option of 'VL.TitleConfig' can now be used with
 -- 'VL.TitleStyle' (prior to Vega-Lite 4.12 it was only supported
--- when used with 'VL.title').
+-- when used with 'VL.title'). The 'VL.LeZIndex' type has been added
+-- to 'VL.LegendConfig'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of

@@ -1003,6 +1003,11 @@ data LegendConfig
       --   The default is 0.35.
       --
       --   @since 0.6.0.0
+    | LeZIndex ZIndex
+      -- ^ The z-index indicating the layering of the legend group relative
+      --   to the other axis, mark, and legend groups.
+      --
+      --   @since 0.9.0.0
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
 legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
@@ -1078,6 +1083,7 @@ legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
 legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 legendConfigProperty (LeUnselectedOpacity x) = "unselectedOpacity" .= x
+legendConfigProperty (LeZIndex z) = "zindex" .= z
 
 
 {-|

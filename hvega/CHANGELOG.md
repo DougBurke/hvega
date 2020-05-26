@@ -54,7 +54,7 @@ for custom format types (`CustomFormatStyle`).
 
 The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
 (prior to Vega-Lite 4.12 it was only supported when used with
-`title`).
+`title`). The `LeZIndex` type has been added to `LegendConfig`.
 
 ## 0.8.0.0
 
