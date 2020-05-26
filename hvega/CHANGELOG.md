@@ -65,8 +65,9 @@ The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
 
 The `HyperlinkChannel` has gained a number of constructors it was
 missing: `HyBand`, `HyFormat`, `HyFormatAsNum`, `HyFormatAsTemporal`,
-`HyFormatAsCustom`, `HyLabelExpr`, `HyTitle`, and `HyNoTitle`.
-
+`HyFormatAsCustom`, `HyLabelExpr`, `HyTitle`, and `HyNoTitle`.  A
+similar update has been made to `TextChannel`, which has gained
+`TBand` and `TLabelExpr`.
 
 ## 0.8.0.0
 

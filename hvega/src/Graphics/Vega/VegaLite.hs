@@ -1286,7 +1286,8 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The 'VL.HyperlinkChannel' has gained a number of constructors it was
 -- missing: 'VL.HyBand', 'VL.HyFormat', 'VL.HyFormatAsNum',
 -- 'VL.HyFormatAsTemporal', 'VL.HyFormatAsCustom', 'VL.HyLabelExpr',
--- 'VL.HyTitle', and 'VL.HyNoTitle'.
+-- 'VL.HyTitle', and 'VL.HyNoTitle'. A similar update has been made
+-- to 'VL.TextChannel', which has gained 'VL.TBand' and 'VL.TLabelExpr'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
