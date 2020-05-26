@@ -268,6 +268,7 @@ data ConfigurationProperty
       --    - \"guide-label\": style for axis, legend, and header labels
       --    - \"guide-title\": style for axis, legend, and header titles
       --    - \"group-label\": styles for chart titles
+      --    - \"group-subtitle\"
       --
       --   @since 0.6.0.0
     | BackgroundStyle Color
