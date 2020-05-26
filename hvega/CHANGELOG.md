@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.9.0.0
 
-The Vega-Lite tests are now validated against version 4.11 of the
+The Vega-Lite tests are now validated against version 4.12 of the
 Vega-Lite schema.
 
 ### New Constructors
