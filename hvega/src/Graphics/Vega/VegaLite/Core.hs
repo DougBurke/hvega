@@ -2083,6 +2083,7 @@ data FilterRange
 
 -- | Types of hyperlink channel property used for linking marks or text to URLs.
 --
+--   Unfortunately there is a split between @H@ and @Hy@ as the prefix.
 data HyperlinkChannel
     = HName FieldName
       -- ^ Field used for encoding with a hyperlink channel.
@@ -2092,16 +2093,20 @@ data HyperlinkChannel
       --   fields that are to be arranged in columns, in rows, or a with a flow layout.
     | HmType Measurement
       -- ^ Level of measurement when encoding with a hyperlink channel.
+    | HAggregate Operation
+      -- ^ Compute aggregate summary statistics for a field to be encoded with a
+      --   hyperlink channel.
+    | HyBand Double
+      -- ^ Specify the mark position or size relative to the band size.
+      --   The value is in the range 0 to 1, inclusive.
+      --
+      --   @since 0.9.0.0
     | HBin [BinProperty]
       -- ^ Discretize numeric values into bins when encoding with a hyperlink channel.
     | HBinned
       -- ^ Indicate that data encoded with a hyperlink channel are already binned.
       --
       --   @since 0.4.0.0
-    | HAggregate Operation
-      -- ^ Compute aggregate summary statistics for a field to be encoded with a
-      --   hyperlink channel.
-    | HTimeUnit TimeUnit
     | HSelectionCondition BooleanOp [HyperlinkChannel] [HyperlinkChannel]
       -- ^ Make a hyperlink channel conditional on interactive selection. The first parameter
       --   provides the selection to evaluate, the second the encoding to apply if the hyperlink
@@ -2114,22 +2119,69 @@ data HyperlinkChannel
       --
       --   The arguments to this constructor have changed in @0.4.0.0@
       --   to support multiple expressions.
+    | HyFormat T.Text
+      -- ^ [Formatting pattern](https://vega.github.io/vega-lite/docs/format.html)
+      --   for hyperlink properties. To distinguish between formatting as numeric values and data/time
+      --   values, additionally use 'HyFormatAsNum', 'HyFormatAsTemporal', and
+      --   'HyFormatAsCustom'.
+      --
+      --   @since 0.9.0.0
+    | HyFormatAsNum
+      -- ^ The marks should be formatted as numbers. Use a
+      --   [d3 numeric format string](https://github.com/d3/d3-format#locale_format)
+      --   with 'HyFormat'.
+      --
+      --   @since 0.9.0.0
+    | HyFormatAsTemporal
+      -- ^ The marks should be formatted as dates or times. Use a
+      --   [d3 date/time format string](https://github.com/d3/d3-time-format#locale_format)
+      --   with 'HyFormat'.
+      --
+      --   @since 0.9.0.0
+    | HyFormatAsCustom T.Text
+      -- ^ The [custom format type](https://vega.github.io/vega-lite/docs/config.html#custom-format-type)
+      --   for use with with 'HyFormat'.
+      --
+      --   @since 0.9.0.0
+    | HyLabelExpr VegaExpr
+      -- ^ Provide the expression used to generate labels.
+      --
+      --   @since 0.9.0.0
     | HString T.Text
       -- ^ Literal string value when encoding with a hyperlink channel.
+    | HTimeUnit TimeUnit
+      -- ^ Time unit aggregation of field values when encoding with a
+      --   hyperlink channel.
+    | HyTitle T.Text
+      -- ^ Title of a field when encoding with a hyperlink channel.
+      --
+      --   @since 0.9.0.0
+    | HyNoTitle
+      -- ^ Display no title.
+      --
+      --   @since 0.9.0.0
 
 hyperlinkChannelProperty :: HyperlinkChannel -> [LabelledSpec]
 hyperlinkChannelProperty (HName s) = [field_ s]
 hyperlinkChannelProperty (HRepeat arr) = ["field" .= object [repeat_ arr]]
 hyperlinkChannelProperty (HmType t) = [mtype_ t]
+hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
+hyperlinkChannelProperty (HyBand x) = ["band" .= x]
 hyperlinkChannelProperty (HBin bps) = [bin bps]
 hyperlinkChannelProperty HBinned = [binned_]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
   selCond_ hyperlinkChannelProperty selName ifClause elseClause
 hyperlinkChannelProperty (HDataCondition tests elseClause) =
   dataCond_ hyperlinkChannelProperty tests elseClause
-hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
-hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
+hyperlinkChannelProperty (HyFormat fmt) = ["format" .= fmt]
+hyperlinkChannelProperty HyFormatAsNum = ["formatType" .= fromT "number"]
+hyperlinkChannelProperty HyFormatAsTemporal = ["formatType" .= fromT "time"]
+hyperlinkChannelProperty (HyFormatAsCustom c) = ["formatType" .= c]
+hyperlinkChannelProperty (HyLabelExpr lbl) = ["labelExpr" .= lbl]
 hyperlinkChannelProperty (HString s) = [value_ s]
+hyperlinkChannelProperty (HTimeUnit tu) = [timeUnit_ tu]
+hyperlinkChannelProperty (HyTitle t) = ["title" .= t]
+hyperlinkChannelProperty HyNoTitle = ["title" .= A.Null]
 
 
 -- | A text description of this mark for ARIA accessibility.

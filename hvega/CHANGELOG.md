@@ -63,6 +63,11 @@ The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
 (prior to Vega-Lite 4.12 it was only supported when used with
 `title`). The `LeZIndex` type has been added to `LegendConfig`.
 
+The `HyperlinkChannel` has gained a number of constructors it was
+missing: `HyBand`, `HyFormat`, `HyFormatAsNum`, `HyFormatAsTemporal`,
+`HyFormatAsCustom`, `HyLabelExpr`, `HyTitle`, and `HyNoTitle`.
+
+
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the
