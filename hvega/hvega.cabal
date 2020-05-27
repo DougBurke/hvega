@@ -158,7 +158,7 @@ library
                        Graphics.Vega.VegaLite.Time
                        Graphics.Vega.VegaLite.Transform
   build-depends:       base >= 4.9 && < 5
-                     , aeson >= 0.11 && < 1.5
+                     , aeson >= 0.11 && < 1.6
                      , text == 1.2.*
                      , unordered-containers == 0.2.*
 
@@ -214,7 +214,7 @@ test-suite test
                        Gallery.Scatter
                        Gallery.Table
 
-  build-depends:       aeson >= 0.11 && < 1.5
+  build-depends:       aeson >= 0.11 && < 1.6
                      , aeson-pretty == 0.8.*
                      , base >= 4 && < 5
                      , bytestring == 0.10.*
