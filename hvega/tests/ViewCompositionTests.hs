@@ -41,6 +41,7 @@ testSpecs = [ ("columns1", columns1)
             , ("grid5", grid5)
             , ("repeatinglayers", repeatinglayers)
             , ("highlightvalue", highlightvalue)
+            , ("highlightDateTime", highlightDateTime)
             ]
 
 
@@ -334,6 +335,7 @@ repeatinglayers =
                 ]
 
 
+-- layer_line_datum_rule.vl.json
 highlightvalue :: VegaLite
 highlightvalue =
   let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
@@ -352,6 +354,31 @@ highlightvalue =
       plot2 = [ dummy
               , mark Rule [MStrokeDash [2, 2], MSize 2]
               , encoding (position Y [PDatum (Number 300)] [])
+              ]
+
+  in toVegaLite [ layer [asSpec plot1, asSpec plot2]
+                ]
+
+
+-- layer_line_datum_rule_datetime.vl.json
+highlightDateTime :: VegaLite
+highlightDateTime =
+  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/stocks.csv" []
+      dummy = dataFromJson emptyData []
+      emptyData = Object empty
+
+      plot1 = [ dvals
+              , mark Line []
+              , encoding
+                . position X [PName "date", PmType Temporal]
+                . position Y [PName "price", PmType Quantitative]
+                . color [MName "symbol", MmType Nominal]
+                $ []
+              ]
+
+      plot2 = [ dummy
+              , mark Rule [MStrokeDash [2, 2], MSize 2]
+              , encoding (position X [PDatum (DateTime [DTYear 2006])] [])
               ]
 
   in toVegaLite [ layer [asSpec plot1, asSpec plot2]

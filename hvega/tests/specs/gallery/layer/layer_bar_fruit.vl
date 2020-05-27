@@ -1,0 +1,93 @@
+{
+    "data": {
+        "values": [
+            {
+                "count": 21,
+                "name": "🍊"
+            },
+            {
+                "count": 13,
+                "name": "🍇"
+            },
+            {
+                "count": 8,
+                "name": "🍏"
+            },
+            {
+                "count": 5,
+                "name": "🍌"
+            },
+            {
+                "count": 3,
+                "name": "🍐"
+            },
+            {
+                "count": 2,
+                "name": "🍋"
+            },
+            {
+                "count": 1,
+                "name": "🍎"
+            },
+            {
+                "count": 1,
+                "name": "🍉"
+            }
+        ]
+    },
+    "width": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "layer": [
+        {
+            "mark": "bar",
+            "encoding": {
+                "color": {
+                    "field": "count",
+                    "title": "Number of fruit",
+                    "type": "quantitative"
+                }
+            }
+        },
+        {
+            "mark": {
+                "aria": false,
+                "align": "right",
+                "xOffset": -4,
+                "type": "text"
+            },
+            "encoding": {
+                "color": {
+                    "value": "black",
+                    "condition": {
+                        "value": "white",
+                        "test": {
+                            "field": "count",
+                            "gt": 10
+                        }
+                    }
+                },
+                "text": {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "count",
+            "title": null,
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "name",
+            "sort": {
+                "encoding": "x",
+                "order": "descending"
+            },
+            "title": null,
+            "type": "ordinal"
+        }
+    },
+    "description": "Vega-Lite version of bar chart from https://observablehq.com/@d3/learn-d3-scales."
+}

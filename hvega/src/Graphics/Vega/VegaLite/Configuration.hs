@@ -204,6 +204,15 @@ data ConfigurationProperty
       --   @since 0.9.0.0
     | AreaStyle [MarkProperty]
       -- ^ The default appearance of area marks.
+    | AriaStyle Bool
+      -- ^ A boolean flag indicating if ARIA default attributes should be included for
+      --   marks and guides (SVG output only). If False, the \"aria-hidden\"
+      --   attribute will be set for all guides, removing them from the ARIA accessibility
+      --   tree and Vega-Lite will not generate default descriptions for marks.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
     | AutosizeStyle [Autosize]
       -- ^ The default sizing of visualizations.
       --
@@ -259,6 +268,7 @@ data ConfigurationProperty
       --    - \"guide-label\": style for axis, legend, and header labels
       --    - \"guide-title\": style for axis, legend, and header titles
       --    - \"group-label\": styles for chart titles
+      --    - \"group-subtitle\"
       --
       --   @since 0.6.0.0
     | BackgroundStyle Color
@@ -534,6 +544,7 @@ aprops_ f mps = f .= object (map axisProperty mps)
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (ArcStyle mps) = mprops_ "arc" mps
 configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (AriaStyle b) = "aria" .= b
 configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
 configProperty (AxisBand c acs) = toAxisChoice c "Band" acs
@@ -749,7 +760,30 @@ This data type has seen significant changes in the @0.4.0.0@ release:
 -- based on schema 3.3.0 #/definitions/LegendConfig
 
 data LegendConfig
-    = LeClipHeight Double
+    = LeAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group,
+      --   removing the legend from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
+    | LeAriaDescription T.Text
+      -- ^ A text description of this legend for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'LeAria' property is true, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | LeClipHeight Double
       -- ^ The height in pixels at which to clip symbol legend entries.
       --
       --   @since 0.4.0.0
@@ -1003,8 +1037,15 @@ data LegendConfig
       --   The default is 0.35.
       --
       --   @since 0.6.0.0
+    | LeZIndex ZIndex
+      -- ^ The z-index indicating the layering of the legend group relative
+      --   to the other axis, mark, and legend groups.
+      --
+      --   @since 0.9.0.0
 
 legendConfigProperty :: LegendConfig -> LabelledSpec
+legendConfigProperty (LeAria b) = "bool" .= b
+legendConfigProperty (LeAriaDescription t) = "description" .= t
 legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
 legendConfigProperty (LeColumnPadding x) = "columnPadding" .= x
 legendConfigProperty (LeColumns n) = "columns" .= n
@@ -1078,6 +1119,7 @@ legendConfigProperty (LeTitleOpacity x) = "titleOpacity" .= x
 legendConfigProperty (LeTitleOrient orient) = "titleOrient" .= sideLabel orient
 legendConfigProperty (LeTitlePadding x) = "titlePadding" .= x
 legendConfigProperty (LeUnselectedOpacity x) = "unselectedOpacity" .= x
+legendConfigProperty (LeZIndex z) = "zindex" .= z
 
 
 {-|
@@ -1306,7 +1348,30 @@ The @TitleMaxLength@ constructor was removed in release @0.4.0.0@. The
 
 -}
 data AxisConfig
-    = AStyle [StyleLabel]
+    = Aria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group, removing
+      --   the axis from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
+    | AriaDescription T.Text
+      -- ^ A text description of this axis for
+      --   [ARIA accessibility](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   (SVG output only).
+      --
+      --   If the 'Aria' property is True, for SVG output the
+      --   [\"aria-label\" attribute](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/ARIA_Techniques/Using_the_aria-label_attribute)
+      --   will be set to this description.
+      --
+      --   If the description is unspecified it will be automatically generated.
+      --
+      --   @since 0.9.0.0
+    | AStyle [StyleLabel]
       -- ^ The named styles - generated with 'AxisNamedStyles' - to apply to the
       --   axis or axes.
       --
@@ -1324,6 +1389,10 @@ data AxisConfig
       --  @since 0.8.0.0
     | Domain Bool
       -- ^ Should the axis domain be displayed?
+    | DomainCap StrokeCap
+      -- ^ The stroke cap for the domain lines' ending style.
+      --
+      --   @since 0.9.0.0
     | DomainColor Color
       -- ^ The axis domain color.
     | DomainDash DashStyle
@@ -1370,6 +1439,10 @@ data AxisConfig
       --   @since 0.9.0.0
     | Grid Bool
       -- ^ Should an axis grid be displayed?
+    | GridCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | GridColor Color
       -- ^ The color for the grid.
     | GridDash DashStyle
@@ -1504,6 +1577,10 @@ data AxisConfig
       --   extents to indicate intervals.
       --
       --   @since 0.5.0.0
+    | TickCap StrokeCap
+      -- ^ The stroke cap for the grid lines' ending style.
+      --
+      --   @since 0.9.0.0
     | TickColor Color
       -- ^ The color of the ticks.
     | TickCount Int
@@ -1601,9 +1678,13 @@ axisConfigProperty :: AxisConfig -> LabelledSpec
 axisConfigProperty (AStyle [s]) = "style" .= s
 axisConfigProperty (AStyle s) = "style" .= s
 
+axisConfigProperty (Aria b) = "aria" .= b
+axisConfigProperty (AriaDescription t) = "description" .= t
+
 axisConfigProperty (BandPosition x) = "bandPosition" .= x
 axisConfigProperty (Disable b) = "disable" .= b
 axisConfigProperty (Domain b) = "domain" .= b
+axisConfigProperty (DomainCap c) = "domainCap" .= strokeCapLabel c
 axisConfigProperty (DomainColor c) = "domainColor" .= fromColor c
 axisConfigProperty (DomainDash ds) = "domainDash" .= fromDS ds
 axisConfigProperty (DomainDashOffset x) = "domainDashOffset" .= x
@@ -1616,6 +1697,7 @@ axisConfigProperty FormatAsTemporal = "formatNum" .= fromT "type"
 axisConfigProperty (FormatAsCustom c) = "formatType" .= c
 
 axisConfigProperty (Grid b) = "grid" .= b
+axisConfigProperty (GridCap c) = "gridCap" .= strokeCapLabel c
 axisConfigProperty (GridColor c) = "gridColor" .= fromColor c
 axisConfigProperty (GridDash ds) = "gridDash" .= fromDS ds
 axisConfigProperty (GridDashOffset x) = "gridDashOffset" .= x
@@ -1648,6 +1730,7 @@ axisConfigProperty (MaxExtent n) = "maxExtent" .= n
 axisConfigProperty (MinExtent n) = "minExtent" .= n
 axisConfigProperty (Orient orient) = "orient" .= sideLabel orient
 axisConfigProperty (TickBand band) = "tickBand" .= bandAlignLabel band
+axisConfigProperty (TickCap c) = "tickCap" .= strokeCapLabel c
 axisConfigProperty (TickColor c) = "tickColor" .= fromColor c
 axisConfigProperty (TickCount n) = "tickCount" .= n
 axisConfigProperty (TickCountTime sn) = "tickCount" .= scaleNiceSpec sn
@@ -1721,6 +1804,17 @@ data TitleConfig
       -- ^ The anchor position when placing titles.
     | TAngle Angle
       -- ^ The angle when orientating titles.
+    | TAria Bool
+      -- ^ A boolean flag indicating if
+      --   [ARIA attributes](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA)
+      --   should be included (SVG output only).
+      --
+      --   If False, the \"aria-hidden\" attribute will be set on the output SVG group,
+      --   removing the title from the ARIA accessibility tree.
+      --
+      --   __Default value:__ True
+      --
+      --   @since 0.9.0.0
     | TBaseline VAlign
       -- ^ The vertical alignment when placing titles.
     | TColor Color  -- this allows for null as a color
@@ -1802,8 +1896,6 @@ data TitleConfig
     | TZIndex ZIndex
       -- ^ Drawing order of a title relative to the other chart elements.
       --
-      --   This should only be used with 'title' and not 'TitleConfig'.
-      --
       --   @since 0.4.0.0
 
 
@@ -1811,6 +1903,7 @@ titleConfigSpec :: TitleConfig -> LabelledSpec
 titleConfigSpec (TAlign ha) = "align" .= hAlignLabel ha
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
+titleConfigSpec (TAria b) = "aria" .= b
 titleConfigSpec (TBaseline va) = "baseline" .= vAlignLabel va
 titleConfigSpec (TColor clr) = "color" .= fromColor clr
 titleConfigSpec (TdX x) = "dx" .= x

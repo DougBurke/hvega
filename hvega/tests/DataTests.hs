@@ -57,6 +57,7 @@ testSpecs = [ ("data1", data1)
             , ("domain2", domain2)
             , ("domain3", domain3)
             -- , ("key1", key1)
+            , ("argmin_spaces", argminSpaces)
             ]
 
 
@@ -717,3 +718,37 @@ key1 =
   in toVegaLite [ dvals [], enc [], mark Line [] ]
 
 -}
+
+
+-- From https://github.com/vega/vega-lite/pull/6475/files
+argminSpaces :: VegaLite
+argminSpaces =
+  let desc = "An example showing how to use argmin in tooltips with fields with spaces"
+
+      dvals = dataFromColumns []
+              . dataColumn "Fighter Name" (Strings [ "liukang", "liukang", "liukang"
+                                                   , "johnnycage", "johnnycage", "johnnycage"
+                                                   , "raided", "raiden", "raiden"
+                                                   ])
+              . dataColumn "Place Rank" (Numbers [1, 10, 3, 6, 5, 4, 8, 12, 2])
+              . dataColumn "Fighting Style" (Strings [ "tiger", "crane", "shaolin"
+                                                     , "tiger", "crane", "shaolin"
+                                                     , "tiger", "crane", "shaolin"
+                                                     ])
+              $ []
+
+  in toVegaLite [ description desc
+                , dvals
+                , mark Point []
+                , encoding
+                  . position X [PName "Place Rank", PAggregate Min, PmType Quantitative]
+                  . position Y [PName "Fighter Name", PmType Nominal]
+                  . tooltips [ [TName "Fighter Name", TmType Nominal]
+                             , [TName "Place Rank", TAggregate Min, TmType Quantitative]
+                             , [ TName "Fighting Style"
+                               , TmType Nominal
+                               , TAggregate (ArgMin (Just "Place Rank"))
+                               ]
+                             ]
+                  $ []
+                ]

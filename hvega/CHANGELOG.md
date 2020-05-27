@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.9.0.0
 
-The Vega-Lite tests are now validated against version 4.11 of the
+The Vega-Lite tests are now validated against version 4.12 of the
 Vega-Lite schema.
 
 ### New Constructors
@@ -15,15 +15,24 @@ Support for arcs has been added: the `Arc` type has been added to
 `MThetaOffset`, and `MTheta2Offset` added to `MarkProperty`.
 `ArcStyle` has been added to `ConfigurationProperty`.
 
+Support for ARIA attributes has been added to a number of features
+(e.g. `Aria` and `AriaDescription` for `AxisConfig` and `MAria`,
+`MAriaDescription`, `MAriaRole`, `MAriaRoleDescription` for
+`MarkProperty`, `AriaStyle` for `ConfigurationProperty`).  The
+`ariaDescrption` encoding has been added, along with the
+`AriaDescriptionChannel`.
+
 The `angle` encoding channel has been added for text and point marks.
+
+The `Channel` type has gained `ChAngle`, `ChTheta`, `ChTheta2`,
+`ChRadius`, `ChRadius`', 'ChDescription', and `ChURL`.
 
 Layers have been added to `Arrangement` (`Layer`) and to `RepeatFields`
 (`LayerFields`).
 
-The `MRepeatDatum` constructor has been added to `MarkChannel`.  The
-`MDatum` and `PDatum` constructors have been added to specify a
-position in data space (`MarkChannel` and `PositionChannel`
-respectively).
+The `MRepeatDatum` and `MDatum`, `PRepeatDatum` and `PDatum`, and
+`TRepeatDatum` and `TDatum` pairs have been added to `MarkChannel`,
+`PositionChannel`, and `TextChannel` respectively.
 
 The `MarkProperty` now has support for labelling the X (or X2)
 coordinate as the "width" of the plot and Y (or Y2) as the "height" of
@@ -45,10 +54,24 @@ gained `HFormatAsCustom`. `TextChannel` has gained `TFormatAsCustom`.
 The `ConfigurationProperty` type has a new option to configure support
 for custom format types (`CustomFormatStyle`).
 
+`AxisConfig` and `AxisProperty` have gained new cap styles:
+`DomainCap`, `GridCap`, `TickCap` and `AxDomainCap`, `AxGridCap`,
+`AxTickCap` respectively.
+
+The `TZIndex` option of `TitleConfig` can now be used with `TitleStyle`
+(prior to Vega-Lite 4.12 it was only supported when used with
+`title`). The `LeZIndex` type has been added to `LegendConfig`.
+
+The `HyperlinkChannel` has gained a number of constructors it was
+missing: `HyBand`, `HyFormat`, `HyFormatAsNum`, `HyFormatAsTemporal`,
+`HyFormatAsCustom`, `HyLabelExpr`, `HyTitle`, and `HyNoTitle`.  A
+similar update has been made to `TextChannel`, which has gained
+`TBand` and `TLabelExpr`.
+
 ## 0.8.0.0
 
 The Vega-Lite tests are now validated against version 4.8 of the
-Vega-Lite schema.
+Vega-Lite Sschema.
 
 The `RepeatStyle` constructor for `ConfigurationProperty` should not
 be used, as its functionality has been moved to `ConcatStyle` in

@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.9 of @hvega@ supports version 4.11 of the Vega-Lite specification.
+Version 0.9 of @hvega@ supports version 4.12 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -607,6 +607,12 @@ module Graphics.Vega.VegaLite
 
        , VL.detail
        , VL.DetailChannel(..)
+
+         -- ** Aria Description Channel
+         --
+
+       , VL.ariaDescription
+       , VL.AriaDescriptionChannel(..)
 
          -- ** Scaling
          --
@@ -1209,7 +1215,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- an older version of @hvega@.
 
 -- $update0900
--- The @0.9.0.0@ release updates @hvega@ to support version 4.11 of
+-- The @0.9.0.0@ release updates @hvega@ to support version 4.12 of
 -- the Vega-Lite schema.
 --
 -- __New constructors__
@@ -1223,15 +1229,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.MarkProperty'. 'VL.ArcStyle' has been added to
 -- 'VL.ConfigurationProperty'.
 --
+-- Support for ARIA attributes has been added to a number of features
+-- (e.g. 'VL.Aria' and 'VL.AriaDescription' for 'VL.AxisConfig' and
+-- 'VL.MAria', 'VL.MAriaDescription', 'VL.MAriaRole', 'VL.MAriaRoleDescription'
+-- for 'VL.MarkProperty', 'VL.AriaStyle' for 'VL.ConfigurationProperty').
+-- The 'VL.ariaDescrption' encoding has been added, along with the
+-- 'VL.AriaDescriptionChannel'.
+--
 -- The 'VL.angle' encoding channel has been added for text and point marks.
+--
+-- The 'VL.Channel' type has gained 'VL.ChAngle', 'VL.ChTheta', 'VL.ChTheta2',
+-- 'VL.ChRadius', 'VL.ChRadius2', 'VL.ChDescription', and 'VL.ChURL'.
 --
 -- Layers have been added to 'VL.Arrangement' ('VL.Layer') and to
 -- 'VL.RepeatFields' ('VL.LayerFields').
 --
--- The 'VL.MRepeatDatum' constructor has been added to 'VL.MarkChannel'.
--- The 'VL.MDatum' and 'VL.PDatum' constructors have been added to specify
--- a position in data space ('VL.MarkChannel' and 'VL.PositionChannel'
--- respectively).
+-- The 'VL.MRepeatDatum' and 'VL.MDatum', 'VL.PRepeatDatum' and
+-- 'VL.PDatum', and 'VL.TRepeatDatum' and 'VL.TDatum' pairs have been
+-- added to 'VL.MarkChannel', 'VL.PositionChannel', and
+-- 'VL.TextChannel' respectively.
 --
 -- The 'VL.MarkProperty' now has support for labelling the X (or X2)
 -- coordinate as the \"width\" of the plot and Y (or Y2)
@@ -1257,6 +1273,21 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.TFormatAsCustom'. The 'VL.ConfigurationProperty' type has a new
 -- option to configure support for custom format types
 -- ('VL.CustomFormatStyle').
+--
+-- 'VL.AxisConfig' and 'VL.AxisProperty' have gained new cap styles:
+-- 'VL.DomainCap', 'VL.GridCap', 'VL.TickCap' and
+-- 'VL.AxDomainCap', 'VL.AxGridCap', 'VL.AxTickCap' respectively.
+--
+-- The 'VL.TZIndex' option of 'VL.TitleConfig' can now be used with
+-- 'VL.TitleStyle' (prior to Vega-Lite 4.12 it was only supported
+-- when used with 'VL.title'). The 'VL.LeZIndex' type has been added
+-- to 'VL.LegendConfig'.
+--
+-- The 'VL.HyperlinkChannel' has gained a number of constructors it was
+-- missing: 'VL.HyBand', 'VL.HyFormat', 'VL.HyFormatAsNum',
+-- 'VL.HyFormatAsTemporal', 'VL.HyFormatAsCustom', 'VL.HyLabelExpr',
+-- 'VL.HyTitle', and 'VL.HyNoTitle'. A similar update has been made
+-- to 'VL.TextChannel', which has gained 'VL.TBand' and 'VL.TLabelExpr'.
 
 -- $update0800
 -- The @0.8.0.0@ release updates @hvega@ to support version 4.8 of
