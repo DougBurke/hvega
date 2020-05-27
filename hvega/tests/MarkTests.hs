@@ -25,6 +25,7 @@ testSpecs = [ ("blendmode", blendMode)
             , ("pieChartWithLabels", pieChartWithLabels)
             , ("donutChart", donutChart)
             , ("radialChart", radialChart)
+            , ("histogram_binned_no_x2", histogramBinnedNoX2)
             ]
 
 
@@ -226,4 +227,25 @@ radialChart =
                   $ []
                 , layer [asSpec plot, asSpec label]
                 , viewBackground [VBNoStroke]
+                ]
+
+
+-- https://github.com/vega/vega-lite/pull/6473
+-- as part of https://github.com/vega/vega-lite/issues/6086
+histogramBinnedNoX2 :: VegaLite
+histogramBinnedNoX2 =
+  let dvals = dataFromColumns []
+              . dataColumn "bin_start" (Numbers [8, 10, 12, 14, 16, 18, 20, 22])
+              . dataColumn "count" (Numbers [7, 29, 71, 127, 94, 54, 17, 5])
+              $ []
+
+  in toVegaLite [ dvals
+                , mark Bar []
+                , encoding
+                  . position X [ PName "bin_start"
+                               , PmType Quantitative
+                               , PBin [AlreadyBinned True, Step 2]
+                               ]
+                  . position Y [PName "count", PmType Quantitative]
+                  $ []
                 ]
