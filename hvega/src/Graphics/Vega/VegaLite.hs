@@ -1244,11 +1244,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- Layers have been added to 'VL.Arrangement' ('VL.Layer') and to
 -- 'VL.RepeatFields' ('VL.LayerFields').
 --
--- The 'VL.MRepeatDatum' and 'VL.TRepeatDatum' constructors have been
--- added to 'VL.MarkChannel' and 'VL.TextChannel' respectively.  The
--- 'VL.MDatum', 'VL.PDatum', and 'VL.TDatum' constructors have been
--- added to specify a position in data space ('VL.MarkChannel',
--- 'VL.PositionChannel', and 'VL.TextChannel' respectively).
+-- The 'VL.MRepeatDatum' and 'VL.MDatum', 'VL.PRepeatDatum' and
+-- 'VL.PDatum', and 'VL.TRepeatDatum' and 'VL.TDatum' pairs have been
+-- added to 'VL.MarkChannel', 'VL.PositionChannel', and
+-- 'VL.TextChannel' respectively.
 --
 -- The 'VL.MarkProperty' now has support for labelling the X (or X2)
 -- coordinate as the \"width\" of the plot and Y (or Y2)
