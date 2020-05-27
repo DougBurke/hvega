@@ -41,6 +41,7 @@ testSpecs = [ ("defaultSize1", defaultSize1)
             , ("scribbleMap1", scribbleMap1)
             , ("scribbleMap2", scribbleMap2)
             , ("map1d", map1d)
+            , ("geo_constant_value", geo_constant_value)
             ]
 
 
@@ -653,3 +654,41 @@ map1d =
     toVegaLite
         [ width 500, height 400
         , layer [ backgroundSpec, cSpec, hSpec, vSpec ] ]
+
+
+-- geo_constant_value.vl.json
+geo_constant_value :: VegaLite
+geo_constant_value =
+  let lyr1 = [ mark Square []
+             , encoding
+               . position Longitude [PName "longitude", PmType Quantitative]
+               . position Latitude [PName "latitude", PmType Quantitative]
+               . size [MNumber 1]
+               . color [MString "gray"]
+               $ []
+             ]
+
+      lyr2 = [ mark Square []
+             , encoding
+               . position Longitude [PDatum (Number (-122.335167))]
+               . position Latitude [PName "latitude", PmType Quantitative]
+               . size [MNumber 1]
+               . color [MString "steelblue"]
+               $ []
+             ]
+
+      lyr3 = [ mark Square []
+             , encoding
+               . position Longitude [PName "longitude", PmType Quantitative]
+               . position Latitude [PDatum (Number 47.608013)]
+               . size [MNumber 1]
+               . color [MString "firebrick"]
+               $ []
+             ]
+
+  in toVegaLite [ width 500
+                , height 300
+                , dataFromUrl "https://vega.github.io/vega-lite/data/airports.csv" []
+                , projection [PrType AlbersUsa]
+                , layer (map asSpec [lyr1, lyr2, lyr3])
+                ]
