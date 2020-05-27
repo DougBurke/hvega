@@ -60,7 +60,10 @@
                     "value": "black",
                     "condition": {
                         "value": "white",
-                        "test": "datum.count > 10"
+                        "test": {
+                            "field": "count",
+                            "gt": 10
+                        }
                     }
                 },
                 "text": {

@@ -469,8 +469,7 @@ layerBarFruit =
               , encoding
                 . text [TName "count", TmType Quantitative]
                 . color [ MDataCondition
-                          -- want "test: {field: count, gt 10}"
-                          [(Expr "datum.count > 10", [MString "white"])]
+                          [(FilterOp (FGreaterThan "count" (Number 10)), [MString "white"])]
                           [MString "black"]
                         ]
                 $ []
