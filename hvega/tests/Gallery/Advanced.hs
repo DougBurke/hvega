@@ -8,7 +8,7 @@ module Gallery.Advanced (testSpecs) where
 
 import Graphics.Vega.VegaLite
 
-import Prelude hiding (filter, lookup)
+import Prelude hiding (filter, lookup, repeat)
 import Data.Aeson (Value, toJSON)
 
 
@@ -31,6 +31,7 @@ testSpecs = [ ("advanced1", advanced1)
             , ("layered2", layered2)
             , ("layered3", layered3)
             , ("benchmark", benchmark)
+            , ("irisScatterplotMatrix", irisScatterplotMatrix)
             ]
 
 
@@ -360,6 +361,10 @@ advanced7 =
   in toVegaLite [ des, groupData, trans [], enc [], mark Bar [] ]
 
 
+irisData :: Data
+irisData = dataFromUrl "https://vega.github.io/vega-lite/data/iris.json" []
+
+
 -- advanced14 in elm
 advanced8 :: VegaLite
 advanced8 =
@@ -377,9 +382,6 @@ advanced8 =
                         , ( "tick", [ MOrient Horizontal, MTooltip TTNone ] )
                         ]
                     )
-
-        dvals =
-            dataFromUrl "https://vega.github.io/vega-lite/data/iris.json"
 
         fields = ["petalLength", "petalWidth", "sepalLength", "sepalWidth"]
         trans =
@@ -441,7 +443,7 @@ advanced8 =
         , cfg []
         , width 600
         , height 300
-        , dvals []
+        , irisData
         , trans []
         , layer [ specLine, specAxis, specAxisLabelsTop, specAxisLabelsMid, specAxisLabelsBot ]
         ]
@@ -476,9 +478,7 @@ advanced9 =
 --
 density1 :: VegaLite
 density1 =
-  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/iris.json" []
-
-      trans = transform
+  let trans = transform
               . foldAs [ "petalWidth", "petalLength", "sepalWidth", "sepalLength" ] "organ" "value"
               . density "value" [ DnBandwidth 0.3, DnGroupBy [ "organ" ] ]
 
@@ -487,16 +487,14 @@ density1 =
             . position Y [ PName "density", pQuant ]
             . row [ FName "organ", fNominal ]
 
-  in toVegaLite [ width 300, height 50, dvals, trans [], enc [], mark Area [] ]
+  in toVegaLite [ width 300, height 50, irisData, trans [], enc [], mark Area [] ]
 
 
 -- advanced13 in elm
 --
 density2 :: VegaLite
 density2 =
-  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/iris.json" []
-
-      trans = transform
+  let trans = transform
               . foldAs [ "petalWidth", "petalLength", "sepalWidth", "sepalLength" ] "measurement" "value"
               . density "value"
                     [ DnBandwidth 0.3
@@ -510,7 +508,7 @@ density2 =
             . position Y [ PName "density", pQuant ]
             . color [ MName "measurement", mNominal ]
 
-  in toVegaLite [ width 400, height 100, dvals, trans [], enc [], mark Area [ MOpacity 0.5 ] ]
+  in toVegaLite [ width 400, height 100, irisData, trans [], enc [], mark Area [ MOpacity 0.5 ] ]
 
 
 -- advanced7 in elm
@@ -745,3 +743,31 @@ benchmark =
         , enc []
         , layer [ specFalcon, specSquare ]
         ]
+
+
+-- https://vega.github.io/vega-lite/docs/repeat.html#scatterplot-matrix-splom
+irisScatterplotMatrix :: VegaLite
+irisScatterplotMatrix =
+  let splom = [ width 150
+              , height 150
+              , mark Point []
+              , encoding
+                . position X [ PRepeat Column
+                             , PmType Quantitative
+                             , PScale [SZero False]
+                             ]
+                . position Y [ PRepeat Row
+                             , PmType Quantitative
+                             , PScale [SZero False]
+                             ]
+                . color [MName "species", MmType Nominal]
+                $ []
+              ]
+
+      rows = ["petalWidth", "petalLength", "sepalWidth", "sepalLength"]
+      cols = ["sepalLength", "sepalWidth", "petalLength", "petalWidth"]
+
+  in toVegaLite [ irisData
+                , repeat [RowFields rows, ColumnFields cols]
+                , specification (asSpec splom)
+                ]
