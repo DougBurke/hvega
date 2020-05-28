@@ -19,11 +19,11 @@ This code is released under the BSD3 license.
 
 # Current status
 
-If your visualization uses anything more modern than version 2 of the Vega-Lite
-specification (and possibly even version 2 features) then there is a good chance
-that it will not display correctly in IHaskell. This can differ depending on
-whether you are using the notebook or lab interface.
+The display should work correctly when using the IHaskell `notebook`
+interface, supporting features included in Vega-Lite 4 (this is new to
+version 0.3, as earlier versions were limited to features in Vega-Lite
+3).
 
-For the lab interface I am waiting for support for custom mime-types to be
-released (it is in the master branch of IHaskell). For the notebook interface
-I gave up on trying to work through the JavaScript issues I came across.
+Support for the Jupyter lab interface is **very limited** since there
+is a curious combination of IHaskell and Jupyter lab issues (including
+whether you are using v1.2 or v2). This is very annoying.

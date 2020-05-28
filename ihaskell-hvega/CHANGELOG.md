@@ -1,7 +1,15 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
-## 0.2.2.0 - 0.2.5.0
+## 0.3.0.0
+
+Support for the IHaskell notebook has been updated to version 4 of the
+Vega-Lite schema. Finally.
+
+Support for the Jupyter Lab interface remains stuck in a maze of
+very-twisty paths...
+
+## 0.2.2.0 - 0.2.6.0
 
 Bump the maximum version of hvega.
 

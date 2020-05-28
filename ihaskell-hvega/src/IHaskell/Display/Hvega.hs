@@ -3,7 +3,7 @@
 
 {-|
 Module      : IHaskell.Display.Hvega
-Copyright   : (c) Douglas Burke 2018, 2019
+Copyright   : (c) Douglas Burke 2018, 2019, 2020
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -78,30 +78,15 @@ import IHaskell.Display (IHaskellDisplay(..), Display(..)
 instance IHaskellDisplay VegaLite where
   display vl =
 
-    let -- Note: need to look in the package.json files for these packages
-        -- to find the "full name" (the contents of the jsdelivr key),
-        -- since requirejs does seem to like appending .js to everything.
-        --
-        jsname n v = "'https://cdn.jsdelivr.net/npm/"
-                     <> n
-                     <> "@" <> v
-                     <> "/build/"
-                     <> n <> ".min'"
-
-        -- Should the config be set on require or requirejs?
-        --
-        -- These versions are known to work; later versions
-        -- do not work but I have not tried to work out the
-        -- latest version that does work.
-        --
-        config = "requirejs({paths:{vg:" <> jsname "vega" "3.2.1"
-                 <> ",vl:" <> jsname "vega-lite" "2.3.0"
-                 <> ",vge:" <> jsname "vega-embed" "3.5.2"
-                 <> "},shim:{vge:{deps:['vg.global','vl.global']}"
-                 <> ",vl:{deps:['vg']}"
+    let -- does https://github.com/vega/vega-embed/issues/8 help?
+        config = "requirejs.config({"
+                 <> "baseUrl: 'https://cdn.jsdelivr.net/npm/',"
+                 <> "paths: {"
+                 <> "'vega-embed': 'vega-embed@6?noext',"
+                 <> "'vega-lib': 'vega-lib?noext',"
+                 <> "'vega-lite': 'vega-lite@4?noext',"
+                 <> "'vega': 'vega@5?noext'"
                  <> "}});"
-                 <> "define('vg.global',['vg'],function(g){window.vega = g;});"
-                 <> "define('vl.global',['vl'],function(g){window.vl = g;});"
 
         -- rely on the element variable being set up; it appears to be an array
         -- so use the first element to add the div to.
@@ -115,7 +100,7 @@ instance IHaskellDisplay VegaLite where
         -- Use the div element we have just created for the plot.
         -- More options could be passed to vegaEmbed.
         --
-        plot = "require(['vge'],function(vegaEmbed){"
+        plot = "require(['vega-embed'],function(vegaEmbed){"
                <> "vegaEmbed(ndiv," <> js <> ").then("
                <> "function (result) { console.log(result); }).catch("
                <> "function (error) { ndiv.innerHTML = "
