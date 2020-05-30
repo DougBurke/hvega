@@ -214,7 +214,7 @@ test-suite test
                        Gallery.Scatter
                        Gallery.Table
 
-  build-depends:       aeson >= 0.11 && < 1.6
+  build-depends:       aeson >= 1.4.2 && < 1.6
                      , aeson-pretty == 0.8.*
                      , base >= 4 && < 5
                      , bytestring == 0.10.*
