@@ -38,17 +38,20 @@ let cars =  dataFromUrl "https://vega.github.io/vega-datasets/data/cars.json" []
 
     enc = encoding
             . position X [ PName "Horsepower", PmType Quantitative ]
-            . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+            . position Y [ PName "Miles_per_Gallon", PmType Quantitative, PTitle "Miles per Gallon" ]
             . color [ MName "Origin", MmType Nominal ]
 
     bkg = background "rgba(0, 0, 0, 0.05)"
 
-in toVegaLite [ bkg, cars, mark Circle [], enc [] ]
+in toVegaLite [ bkg, cars, mark Circle [MTooltip TTEncoding], enc [] ]
 ```
 
-When the JSON is viewed with a Vega-Lite aware viewer, the resultant plot is
+When the JSON is viewed with a Vega-Lite aware viewer, the resultant plot
+can be interacted with (e.g. to use the tooltip support) using the
+[interactive version](https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcoAuB7FAbJBLADg0AxigHZICmpCIFRAJlsQOYgC+ANCEgJ45lUFYoBdH3YhaEJBHwgArlHRUAFkiQ4AzvAD0WgG5lGEAHSMsSJbIBGRrCj0GIAWglT1ZJOq0uIWgtHVGAFbqJKwcACTqBEpkkMqqGtr2hiZmFta2WlExkMlO6GZkegAsQSHEIBw0KPRMMkToKFAyAGZYZOi0VADyUFimFRzcvFTEKGAMEIpiAB6t7Z1UABJNbjgoAO5kzUM8fPAgAI6yEKRmklj6YSBc8x1dBwCyWCLqAPq8UG8A4lONg5wzCIqM9XgACT5g37of6VTh7KjHU7YKTYK4sMSWCAEGCMKAoWTEB4gKCMLEACgADGxqbSjJSAKwASlYQA).
+It can also be viewed as a PNG:
 
-![Simple scatterplot](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/intro.png "Simple scatterplot")
+![Simple scatterplot](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example-car.png "Simple scatterplot")
 
 ### Betelgeuse
 
@@ -154,9 +157,9 @@ This can be viewed as
 
  - an [interactive version](https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhJUBLAG2gFNY8oATeaAVywDpKb6A5eFloEADAF0wAXmlgA5ADVZkAL4AaYhDI86DfJBbsuWeAHNEFdk1pgAPGAAsK9SVKR4yRvvgBPD6qgAxvBUAWxUrLSeBhycAFZMYAC0YABM9gCsAByZ9gCcnCIqxGLOgeiIlCaMoC5uAB4UHvg1LlDQFlS0AGLl0ADqtBQmABbQnoiYxlSQpbXhAEa0VD2I0ADKFABekfgAjPazJDAd3b0b24y7AGwaYMrEasRe0PDVt5BssNN6o9AADshcAB6IEIADunBMFmGbHmbGQ9ACvVoq04SKwQIAIug2CYAEKfADWtCBwwAbrQTPAgcZkDpSRSqUCDNTFnQqCZaPDaIkUiI+YkRABmRK7fKxZDlSAPUqQMlIxBBMb4IguFq1YaDEbKsC7dIiQ4QSDGWCE6qQdB-eABCzeRgiTjpfwwbx-HZQP7oCirGZQHidJiMVDBBGPVpQMEUJjQYaMK4iA23I0IzoBdpS5pJo7zWDw2OZ8O1b0Wc11RgEXl8-y7BMlKB2lWCx3+FKOsRhwtGlFIpjekxNQiQMvOu0lLO1aCu92Qb06MnBaWd+7hju1bvoXuIKoFwuQJFUTBvTtGyhLQN6bT8QSRQ2tF1u8boLDehe3uaUlHn0jju8LJYrdYtndfY3zvdpoE6TwumoHQZh-CcTgA85gJuY87h-Vc72QYZ4AfZpyAoM9PEvWABCEX172nCZn0QBdMNqMsd07AiiL0FhfDgtDKM8ABHNgkHA1gKApTjj3qRpzXAyC9ExHxkDAZBvQCawACkkH42BvF1Ft+UKZdC3oo4G2-LjTyoL9jVMcxLBveCoGQIJpNcJgn3gb1y1FfwhXbUDk0wHV9FoBzPz7UTmMnPCoD4gSLCEkTfKgeAGgHMgpOnABZKyLDYKwiiXLN9IgTD1SOZA3QCI9d01IZRkufVQMs01zUta1bXtZs2inTxPVnCj-VoL9gyoUMGsjaN8zAeNE2Y9dN23EyxP3Q8mLEsyLJIsjbLQo0Iqop8X2mBKjU6TlEC-EquL-ZYziAy4DjshCIOnaDeAYI6jjSpDbr2VDtsKgyEsgbDcPdLRCPM4iYKvcjnV2x8aLowHGIW0zwYs9i-Ae+zHNB-RXPc-C1qiOSKJTWg0woDMoBzPMVEM8NuL0aLVli9p4qx8SUuOJ7GEQMIqH+ldAeMi7dyJvRjDMbLcveoGcfNFzjAJ1xxagSXrJym97KWcn00QTwaewunZclWAAqsYKztC2W4aZ-iWZeNmtu2znJJOXn+cF1ovaKgrbz3dAqA4FBLn94NlJ1UWTzRyHXs2sK701eArF0FHdyugBBRVhmWqBPwThmroAUTqP5U8gWQXp0fBZDAABqMBoi4K6C9-eBFioAAFZO5sYXl7su9v-xui4fsBtKPaoKhAczqghn1vRYBqsYMIa22oGog7F29-2ytardLhEW59LHI0ABIHM1YxPF+AFgSBRl4EhaFYU4SmgUv2hjAfyl4ESOe6AP3sHESU+tZQTxWjAWgdQAp4loOyD83JZDyXVtLawQh3CfC-iiaAyB-D7nCHQBI8wtIZwzvINYAB5BO5AR7AUyDKJ4FsAhLz+HrTwAAJdAYIwA4XknA9knIkHyRzMvRAQV5LziXgNfw8x3ADTAOURurB4BgAIREYhpDyFULAAAClvoCEEYJjGcHgPAMkkpOCYBMECAAlJwMAABNHECkc5hASCGdAYADzoEJGAVgvDoD-EMUCaAkYgn0DRE+IEbIljzHQNAfxZ1AnBPvlCGMr90SkgoH8P4xIYnwLiQkhxABJRJYJ3D+KnmAGM1gECckUYgBS6AbTBDAEIXsqiAm1IUi8M2ijUCpF0pwaUyggA)
 
-  - as a PNG:
+ - as a PNG:
 
-![PNG version of the lightcurve](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example.png "PNG version of the lightcurve")
+![PNG version of the lightcurve](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example-betelgeuse.png "PNG version of the lightcurve")
 
 ## Documentation
 
@@ -178,21 +181,12 @@ which describes the set up, and then the individual
 sections have their own notebooks (with names of
 `VegaLiteGallery-<section>.ipynb`.
 
-Unfortunately the plots created by VegaEmbed **do not always appear**
-in the notebook when viewed with either GitHub's viewer or
-[ipynb viewer](http://nbviewer.jupyter.org/github/DougBurke/hvega/blob/master/notebooks/VegaLiteGallery.ipynb),
-but things seem better when using Jupyter Lab (rather than
-notebook) to create the notebooks (since Vega is natively
-supported in this environment). However, the native support is
-for Vega-Lite version 1, and so many of the more-recent
-capabilities are either ignored or cause the visualization to
-fail.
+It is **strongly advised** that you stick with `jupyter notebook`
+rather than `jupyter lab`, since the 0.3 release of `ihaskell-hvega`
+provides **much better** support for the former than the latter.
 
-The notebooks have been re-created
-using Jupyter Lab (thanks to Tweag I/O's
-[JupyterWith environment](https://www.tweag.io/posts/2019-02-28-jupyter-with.html)), which should make the plots appear on GitHub (you may need
-to reload the notebooks as I find they don't display on the
-first try).
+The notebooks have been created using Jupyter Lab (thanks to Tweag I/O's
+[JupyterWith environment](https://www.tweag.io/posts/2019-02-28-jupyter-with.html)).
 
 ## Differences to Elm Vega
 

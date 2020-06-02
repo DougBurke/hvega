@@ -41,7 +41,10 @@ which contains plots you can view; e.g. with
 The [`notebooks/` directory](https://github.com/DougBurke/hvega/tree/master/notebooks) contains a (very small, very random) sample
 of notebooks experimenting with `hvega`. I recommend using
 [Tweag I/O's jupyterWith environment](https://github.com/tweag/jupyterWith)
-to view these.
+to view these. At present there is support for `Jupyter notebook`,
+whereas the support for `Jupyter lab` is unfortunately limited (due
+to limitations on the current IHaskell environment and differences
+between the Jupyter Lab versions).
 
 There is also a
 [Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb),

@@ -30,7 +30,7 @@ package provides an easy way to embed Vega-Lite
 visualizations in an IHaskell notebook (using
 <https://vega.github.io/vega-lite/usage/embed.html Vega-Embed>).
 
-== Example
+== Examples
 
 Note that this module exports several symbols that are exported
 by the Prelude, such as 'VL.filter', 'VL.lookup',
@@ -47,17 +47,60 @@ or to hide the clashing names explicitly:
 import Prelude hiding (filter, lookup, repeat)
 @
 
-In the following example, we'll assume the latter.
-The aim is to create the following visualization:
+In the following examples, we'll assume the latter.
 
-<<images/example.png>>
+=== Example: viewing columns from a file
 
-However this is missing the interactive elements of the visualization, primarily
-selection and zooming in the top plot changes the axis ranges of the bottom two
-plots. This interactivity requires a Vega-Lite viewer such as
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhJUBLAG2gFNY8oATeaAVywDpKb6A5eFloEADAF0wAXmlgA5ADVZkAL4AaYhDI86DfJBbsuWeAHNEFdk1pgAPGAAsK9SVKR4yRvvgBPD6qgAxvBUAWxUrLSeBhycAFZMYAC0YABM9gCsAByZ9gCcnCIqxGLOgeiIlCaMoC5uAB4UHvg1LlDQFlS0AGLl0ADqtBQmABbQnoiYxlSQpbXhAEa0VD2I0ADKFABekfgAjPazJDAd3b0b24y7AGwaYMrEasRe0PDVt5BssNN6o9AADshcAB6IEIADunBMFmGbHmbGQ9ACvVoq04SKwQIAIug2CYAEKfADWtCBwwAbrQTPAgcZkDpSRSqUCDNTFnQqCZaPDaIkUiI+YkRABmRK7fKxZDlSAPUqQMlIxBBMb4IguFq1YaDEbKsC7dIiQ4QSDGWCE6qQdB-eABCzeRgiTjpfwwbx-HZQP7oCirGZQHidJiMVDBBGPVpQMEUJjQYaMK4iA23I0IzoBdpS5pJo7zWDw2OZ8O1b0Wc11RgEXl8-y7BMlKB2lWCx3+FKOsRhwtGlFIpjekxNQiQMvOu0lLO1aCu92Qb06MnBaWd+7hju1bvoXuIKoFwuQJFUTBvTtGyhLQN6bT8QSRQ2tF1u8boLDehe3uaUlHn0jju8LJYrdYtndfY3zvdpoE6TwumoHQZh-CcTgA85gJuY87h-Vc72QYZ4AfZpyAoM9PEvWABCEX172nCZn0QBdMNqMsd07AiiL0FhfDgtDKM8ABHNgkHA1gKApTjj3qRpzXAyC9ExHxkDAZBvQCawACkkH42BvF1Ft+UKZdC3oo4G2-LjTyoL9jVMcxLBveCoGQIJpNcJgn3gb1y1FfwhXbUDk0wHV9FoBzPz7UTmMnPCoD4gSLCEkTfKgeAGgHMgpOnABZKyLDYKwiiXLN9IgTD1SOZA3QCI9d01IZRkufVQMs01zUta1bXtZs2inTxPVnCj-VoL9gyoUMGsjaN8zAeNE2Y9dN23EyxP3Q8mLEsyLJIsjbLQo0Iqop8X2mBKjU6TlEC-EquL-ZYziAy4DjshCIOnaDeAYI6jjSpDbr2VDtsKgyEsgbDcPdLRCPM4iYKvcjnV2x8aLowHGIW0zwYs9i-Ae+zHNB-RXPc-C1qiOSKJTWg0woDMoBzPMVEM8NuL0aLVli9p4qx8SUuOJ7GEQMIqH+ldAeMi7dyJvRjDMbLcveoGcfNFzjAJ1xxagSXrJym97KWcn00QTwaewunZclWAAqsYKztC2W4aZ-iWZeNmtu2znJJOXn+cF1ovaKgrbz3dAqA4FBLn94NlJ1UWTzRyHXs2sK701eArF0FHdyugBBRVhmWqBPwThmroAUTqP5U8gWQXp0fBZDAABqMBoi4K6C9-eBFioAAFZO5sYXl7su9v-xui4fsBtKPaoKhAczqghn1vRYBqsYMIa22oGog7F29-2ytardLhEW59LHI0ABIHM1YxPF+AFgSBRl4EhaFYU4SmgUv2hjAfyl4ESOe6AP3sHESU+tZQTxWjAWgdQAp4loOyD83JZDyXVtLawQh3CfC-iiaAyB-D7nCHQBI8wtIZwzvINYAB5BO5AR7AUyDKJ4FsAhLz+HrTwAAJdAYIwA4XknA9knIkHyRzMvRAQV5LziXgNfw8x3ADTAOURurB4BgAIREYhpDyFULAAAClvoCEEYJjGcHgPAMkkpOCYBMECAAlJwMAABNHECkc5hASCGdAYADzoEJGAVgvDoD-EMUCaAkYgn0DRE+IEbIljzHQNAfxZ1AnBPvlCGMr90SkgoH8P4xIYnwLiQkhxABJRJYJ3D+KnmAGM1gECckUYgBS6AbTBDAEIXsqiAm1IUi8M2ijUCpF0pwaUyggA the Vega Editor>.
+The [Vega-Lite example gallery](https://vega.github.io/vega-lite/examples/) contain
+a number of visualizations of the \"cars.json\" dataset (and many other
+datasets ;-), which has a number of
+columns to display, such as \"Horsepower\", \"Miles_per_Gallon\", and \"Origin\". The
+following code will create a visualization that plots the efficiency of the
+cars (the \"mpg\") as a function of its Horsepower, and color-code by the
+origin of the car:
 
-It is rather lengthy, as it includes
+@
+let cars =  'VL.dataFromUrl' \"https:\/\/vega.github.io\/vega-datasets\/data\/cars.json\" []
+
+    enc = 'VL.encoding'
+            . 'VL.position' 'VL.X' [ 'VL.PName' \"Horsepower\", 'VL.PmType' 'VL.Quantitative' ]
+            . 'VL.position' 'VL.Y' [ 'VL.PName' \"Miles_per_Gallon\", 'VL.PmType' 'VL.Quantitative', 'VL.PTitle' \"Miles per Gallon\" ]
+            . 'VL.color' [ 'VL.MName' \"Origin\", 'VL.MmType' 'VL.Nominal' ]
+
+    bkg = 'VL.background' \"rgba(0, 0, 0, 0.05)\"
+
+in 'VL.toVegaLite' [ bkg, cars, 'VL.mark' 'VL.Circle' ['VL.MTooltip' 'VL.TTEncoding'], enc [] ]
+@
+
+When viewed with a Vega-Lite viewer (normally some form of a browser), you
+can view the result. For instance:
+
+ - the 'VL.fromVL' function will create the JSON representation of the
+   visualization, which can then be passed to a Vega-Lite viewer;
+
+ - a routine like 'VL.toHtmlFile' can be used to create a HTML file
+   that will display the visualization using the
+   <https://github.com/vega/vega-embed Vega-Embed> Javascript library;
+
+ - users of the @Jupyter notebook@ environment can make use of the
+   automatic display of the `VL.VegaLite` type, using @ihaskell-hvega@,
+   to view an in-browser version of the plot (generated via Vega-Embed);
+
+ - and users of @Jupyter lab@ can use the @vlShow@ method (from @ihaskell-hvega@),
+   but be aware that it is currently limited to only supporing features
+   from Vega-Lite version 2.
+
+The visualization can be viewed in the Vega Editor, which lets you
+interact with the plot and modify its contents, as shown for
+<https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcoAuB7FAbJBLADg0AxigHZICmpCIFRAJlsQOYgC+ANCEgJ45lUFYoBdH3YhaEJBHwgArlHRUAFkiQ4AzvAD0WgG5lGEAHSMsSJbIBGRrCj0GIAWglT1ZJOq0uIWgtHVGAFbqJKwcACTqBEpkkMqqGtr2hiZmFta2WlExkMlO6GZkegAsQSHEIBw0KPRMMkToKFAyAGZYZOi0VADyUFimFRzcvFTEKGAMEIpiAB6t7Z1UABJNbjgoAO5kzUM8fPAgAI6yEKRmklj6YSBc8x1dBwCyWCLqAPq8UG8A4lONg5wzCIqM9XgACT5g37of6VTh7KjHU7YKTYK4sMSWCAEGCMKAoWTEB4gKCMLEACgADGxqbSjJSAKwASlYQA this example>.
+
+It can also be viewed as a PNG version:
+
+<<images/example-car.png>>
+
+=== Example: faceting, data transformation, and interaction
+
+The following example is rather lengthy, as it includes
 data tranformation (sub-setting the data and creating a
 new column), automatic faceting (that is, creating separate plots
 for unique values of a data column), interactive elements
@@ -216,16 +259,14 @@ betelgeuse =
 
 @
 
-The 'VL.fromVL' function will create the JSON representation of the visualization,
-which can then be passed to a Vega-Lite viewer (or a routine like 'VL.toHtmlFile'
-can be used to create a HTML file that will display the visualization using the
-<https://github.com/vega/vega-embed Vega-Embed> Javascript library).
+The PNG version shows the basic features:
 
-Output can be achieved in a Jupyter Lab session with the @vlShow@ function,
-provided by @ihaskell-vega@, or 'VL.toHtmlFile' can be used to write out a page of
-HTML that includes pointer to JavaScript files which will display a Vega-Lite
-specification (there are also functions which provide more control over
-the embedding).
+<<images/example-betelgeuse.png>>
+
+However this is missing the interactive elements of the visualization, primarily
+selection and zooming in the top plot changes the axis ranges of the bottom two
+plots. This interactivity requires a Vega-Lite viewer such as
+<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhJUBLAG2gFNY8oATeaAVywDpKb6A5eFloEADAF0wAXmlgA5ADVZkAL4AaYhDI86DfJBbsuWeAHNEFdk1pgAPGAAsK9SVKR4yRvvgBPD6qgAxvBUAWxUrLSeBhycAFZMYAC0YABM9gCsAByZ9gCcnCIqxGLOgeiIlCaMoC5uAB4UHvg1LlDQFlS0AGLl0ADqtBQmABbQnoiYxlSQpbXhAEa0VD2I0ADKFABekfgAjPazJDAd3b0b24y7AGwaYMrEasRe0PDVt5BssNN6o9AADshcAB6IEIADunBMFmGbHmbGQ9ACvVoq04SKwQIAIug2CYAEKfADWtCBwwAbrQTPAgcZkDpSRSqUCDNTFnQqCZaPDaIkUiI+YkRABmRK7fKxZDlSAPUqQMlIxBBMb4IguFq1YaDEbKsC7dIiQ4QSDGWCE6qQdB-eABCzeRgiTjpfwwbx-HZQP7oCirGZQHidJiMVDBBGPVpQMEUJjQYaMK4iA23I0IzoBdpS5pJo7zWDw2OZ8O1b0Wc11RgEXl8-y7BMlKB2lWCx3+FKOsRhwtGlFIpjekxNQiQMvOu0lLO1aCu92Qb06MnBaWd+7hju1bvoXuIKoFwuQJFUTBvTtGyhLQN6bT8QSRQ2tF1u8boLDehe3uaUlHn0jju8LJYrdYtndfY3zvdpoE6TwumoHQZh-CcTgA85gJuY87h-Vc72QYZ4AfZpyAoM9PEvWABCEX172nCZn0QBdMNqMsd07AiiL0FhfDgtDKM8ABHNgkHA1gKApTjj3qRpzXAyC9ExHxkDAZBvQCawACkkH42BvF1Ft+UKZdC3oo4G2-LjTyoL9jVMcxLBveCoGQIJpNcJgn3gb1y1FfwhXbUDk0wHV9FoBzPz7UTmMnPCoD4gSLCEkTfKgeAGgHMgpOnABZKyLDYKwiiXLN9IgTD1SOZA3QCI9d01IZRkufVQMs01zUta1bXtZs2inTxPVnCj-VoL9gyoUMGsjaN8zAeNE2Y9dN23EyxP3Q8mLEsyLJIsjbLQo0Iqop8X2mBKjU6TlEC-EquL-ZYziAy4DjshCIOnaDeAYI6jjSpDbr2VDtsKgyEsgbDcPdLRCPM4iYKvcjnV2x8aLowHGIW0zwYs9i-Ae+zHNB-RXPc-C1qiOSKJTWg0woDMoBzPMVEM8NuL0aLVli9p4qx8SUuOJ7GEQMIqH+ldAeMi7dyJvRjDMbLcveoGcfNFzjAJ1xxagSXrJym97KWcn00QTwaewunZclWAAqsYKztC2W4aZ-iWZeNmtu2znJJOXn+cF1ovaKgrbz3dAqA4FBLn94NlJ1UWTzRyHXs2sK701eArF0FHdyugBBRVhmWqBPwThmroAUTqP5U8gWQXp0fBZDAABqMBoi4K6C9-eBFioAAFZO5sYXl7su9v-xui4fsBtKPaoKhAczqghn1vRYBqsYMIa22oGog7F29-2ytardLhEW59LHI0ABIHM1YxPF+AFgSBRl4EhaFYU4SmgUv2hjAfyl4ESOe6AP3sHESU+tZQTxWjAWgdQAp4loOyD83JZDyXVtLawQh3CfC-iiaAyB-D7nCHQBI8wtIZwzvINYAB5BO5AR7AUyDKJ4FsAhLz+HrTwAAJdAYIwA4XknA9knIkHyRzMvRAQV5LziXgNfw8x3ADTAOURurB4BgAIREYhpDyFULAAAClvoCEEYJjGcHgPAMkkpOCYBMECAAlJwMAABNHECkc5hASCGdAYADzoEJGAVgvDoD-EMUCaAkYgn0DRE+IEbIljzHQNAfxZ1AnBPvlCGMr90SkgoH8P4xIYnwLiQkhxABJRJYJ3D+KnmAGM1gECckUYgBS6AbTBDAEIXsqiAm1IUi8M2ijUCpF0pwaUyggA the Vega Editor>.
 
 -}
 

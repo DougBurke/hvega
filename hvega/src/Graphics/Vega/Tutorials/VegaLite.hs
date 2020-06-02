@@ -1068,7 +1068,7 @@ gmagLineWithColor =
 -- are a number of measures of the \"spread\" of a population, such as
 -- the sample standard deviation ('Stdev').
 --
--- You can also syntehsize new data based on existing data, with the
+-- You can also synthesize new data based on existing data, with the
 -- 'transform' operation. Unlike the 'encoding' function, the order
 -- of the arguments to 'transform' do matter, as they control the
 -- data flow (e.g. you can not filter a data set if you have not

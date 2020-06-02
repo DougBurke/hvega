@@ -60,8 +60,8 @@ extra-source-files:  README.md
                      tests/specs/gallery/scatter/*.vl
                      tests/specs/gallery/table/*.vl
 
-extra-doc-files:     images/example.png
-                     images/intro.png
+extra-doc-files:     images/example-car.png
+                     images/example-betelgeuse.png
                      images/zindex.png
                      images/vl/stripplot.png
                      images/vl/stripplotwithbackground.png
