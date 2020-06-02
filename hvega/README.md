@@ -38,17 +38,20 @@ let cars =  dataFromUrl "https://vega.github.io/vega-datasets/data/cars.json" []
 
     enc = encoding
             . position X [ PName "Horsepower", PmType Quantitative ]
-            . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
+            . position Y [ PName "Miles_per_Gallon", PmType Quantitative, PTitle "Miles per Gallon" ]
             . color [ MName "Origin", MmType Nominal ]
 
     bkg = background "rgba(0, 0, 0, 0.05)"
 
-in toVegaLite [ bkg, cars, mark Circle [], enc [] ]
+in toVegaLite [ bkg, cars, mark Circle [MTooltip TTEncoding], enc [] ]
 ```
 
-When the JSON is viewed with a Vega-Lite aware viewer, the resultant plot is
+When the JSON is viewed with a Vega-Lite aware viewer, the resultant plot
+can be interacted with (e.g. to use the tooltip support) using the
+[interactive version](https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcoAuB7FAbJBLADg0AxigHZICmpCIFRAJlsQOYgC+ANCEgJ45lUFYoBdH3YhaEJBHwgArlHRUAFkiQ4AzvAD0WgG5lGEAHSMsSJbIBGRrCj0GIAWglT1ZJOq0uIWgtHVGAFbqJKwcACTqBEpkkMqqGtr2hiZmFta2WlExkMlO6GZkegAsQSHEIBw0KPRMMkToKFAyAGZYZOi0VADyUFimFRzcvFTEKGAMEIpiAB6t7Z1UABJNbjgoAO5kzUM8fPAgAI6yEKRmklj6YSBc8x1dBwCyWCLqAPq8UG8A4lONg5wzCIqM9XgACT5g37of6VTh7KjHU7YKTYK4sMSWCAEGCMKAoWTEB4gKCMLEACgADGxqbSjJSAKwASlYQA).
+It can also be viewed as a PNG:
 
-![Simple scatterplot](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/intro.png "Simple scatterplot")
+![Simple scatterplot](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example-car.png "Simple scatterplot")
 
 ### Betelgeuse
 
@@ -156,7 +159,7 @@ This can be viewed as
 
  - as a PNG:
 
-![PNG version of the lightcurve](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example.png "PNG version of the lightcurve")
+![PNG version of the lightcurve](https://raw.githubusercontent.com/DougBurke/hvega/master/hvega/images/example-betelgeuse.png "PNG version of the lightcurve")
 
 ## Documentation
 
