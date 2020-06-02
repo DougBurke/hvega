@@ -1,6 +1,12 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.9.0.1
+
+The introductory text of the module has been updated to start
+with the "cars" example (from the README) before rampng up to
+the Betelgeuse example.
+
 ## 0.9.0.0
 
 The Vega-Lite tests are now validated against version 4.12 of the

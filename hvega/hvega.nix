@@ -3,7 +3,7 @@
 }:
 mkDerivation {
   pname = "hvega";
-  version = "0.9.0.0";
+  version = "0.9.0.1";
   src = ./.;
   isLibrary = true;
   isExecutable = true;
