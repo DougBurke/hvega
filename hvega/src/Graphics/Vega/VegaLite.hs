@@ -857,6 +857,8 @@ module Graphics.Vega.VegaLite
 
          -- ** Version 0.9
          --
+         -- $update0910
+         --
          -- $update0900
 
          -- ** Version 0.8
@@ -1254,6 +1256,9 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update0910
+-- The tutorial has been expanded to add a section with pie charts.
 
 -- $update0900
 -- The @0.9.0.0@ release updates @hvega@ to support version 4.12 of

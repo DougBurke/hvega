@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.9.1.0
+
+The tutorial has been expanded to add a section describing the
+new pie chart support (the Arc mark).
+
 ## 0.9.0.1
 
 The introductory text of the module has been updated to start
