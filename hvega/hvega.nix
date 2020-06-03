@@ -1,13 +1,19 @@
 { mkDerivation, aeson, aeson-pretty, base, bytestring, containers
-, filepath, stdenv, tasty, tasty-golden, text, unordered-containers
+, directory, filepath, http-conduit, stdenv, tagsoup, tasty
+, tasty-golden, text, unordered-containers
 }:
 mkDerivation {
   pname = "hvega";
-  version = "0.9.0.1";
+  version = "0.9.1.0";
   src = ./.;
+  configureFlags = [ "-ftools" ];
   isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [ aeson base text unordered-containers ];
+  executableHaskellDepends = [
+    aeson aeson-pretty base bytestring directory filepath http-conduit
+    tagsoup text
+  ];
   testHaskellDepends = [
     aeson aeson-pretty base bytestring containers filepath tasty
     tasty-golden text unordered-containers

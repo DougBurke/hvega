@@ -19,7 +19,7 @@ The Elm tutorial is based on the talk given by
 <https://youtu.be/9uaHRWj04D4 Wongsuphasawat et al at the 2017 Open Vis Conf>.
 
 The tutorial targets version 4 of the Vega-Lite specification and
-the functionality provided in version @0.5.0.0@ of hvega.
+the functionality provided in version @0.9.0.0@ of hvega.
 
 -}
 
@@ -81,6 +81,13 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- $stripplot-mmtype
 
   , stripPlotWithColorOrdinal
+
+  -- * A Pie Chart
+  --
+  -- $pie-chart
+
+  , pieChart
+  , pieChartWithCounting
 
   -- * Adding an axis
   --
@@ -632,7 +639,7 @@ Data can also be defined algorithmically - using 'dataSequence' and
 'dataFromRows' - or directly from JSON (as a 'Data.Aeson.Value') using
 'dataFromJson'.
 
-An example showing 'dataFromColumns' is the 'skyPlotWithGraticules' plot,
+Examples showing 'dataFromColumns' are the 'pieChart' and'skyPlotWithGraticules' plots,
 but let's not peak ahead!
 
 -}
@@ -737,6 +744,120 @@ stripPlotWithColorOrdinal =
      , enc []
      ]
 
+
+-- $pie-chart
+-- Before adding a second axis, let's temporarily look at another
+-- \"one dimensiona" chart, namel the humble pie chart.
+-- The 'Arc' mark type allows you to create pie charts, as well as more
+-- complex visualizations which we won't discuss further in this
+-- tutorial.
+
+
+{-|
+
+In this example we embed the data for the pie chart - namely the number
+of stars per cluster - in the vsualization itself (using
+'dataFromColumns' to create column data labelled \"cluster\" and
+\"count\"). The 'position' encoding is set to 'Theta', which is
+given the star counts, and the 'color' is set to the
+Cluster name.
+
+<<images/vl/piechart.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcJoGMQBoQBMIBcINADcIAbAVwFMBnBAbVGXKpwqgSRIAcALCAAgAKrdCGQB7MgDscCAOwAWAAwBfNAyYs2iAEIkIk8XwCMI8VJnx5ADgCcq9WWbDEAYTGQ+24RjPSERgFYAZntRDWcQAAkATwhMalMJP3gAwNDGR012AEkXPgAmIJsTHySLIPyA9PCtEFyCgDZFfMTzBHkbfOrMiIA5AHE8-PlU1uSlFTUwntqBEgoASziE0rb4IwqG7qdZqAhqCk4KMYsbIKtlAF1VEAASKmRuCkh2bhwcTip4AHpvwgoAOYQAB0AIWOG4ZAARsCFmJvg8npA-oCIABaEjgih-eTAgBWVDEkhEFAMYkwC0kAIIIAhFDwNIAZgsKCRMOxfDIMDhokd2ABHMj6HDg3ALf4gG7iEhiLSgZms9mIDI7EQ8vmISTuSmkSXKZRAA Open this visualization in the Vega Editor>
+
+@
+let manualData = 'dataFromColumns' []
+                 . 'dataColumn' "cluster" ('Strings' clusters)
+                 . dataColumn "count" ('Numbers' counts)
+                 $ []
+
+    clusters = [ \"alpha Per\", \"Blanco 1\", \"Coma Ber\", \"Hyades\", \"IC 2391\"
+               , \"IC 2602\", \"NGC 2451\", \"Pleiades\", \"Praesepe\"]
+    counts = [ 740, 489, 153, 515, 325, 492, 400, 1326, 938]
+
+    enc = encoding
+          . position 'Theta' [PName "count", PmType Quantitative]
+          . color [MName "cluster", MmType Nominal]
+
+in toVegaLite
+   [ manualData
+   , mark 'Arc' []
+   , enc []
+   ]
+@
+
+-}
+
+pieChart :: VegaLite
+pieChart =
+  let manualData = dataFromColumns []
+                   . dataColumn "cluster" (Strings clusters)
+                   . dataColumn "count" (Numbers counts)
+                   $ []
+
+      clusters = [ "alpha Per", "Blanco 1", "Coma Ber", "Hyades", "IC 2391"
+                 , "IC 2602", "NGC 2451", "Pleiades", "Praesepe"]
+      counts = [ 740, 489, 153, 515, 325, 492, 400, 1326, 938]
+
+      enc = encoding
+            . position Theta [PName "count", PmType Quantitative]
+            . color [MName "cluster", MmType Nominal]
+
+  in toVegaLite
+     [ manualData
+     , mark Arc []
+     , enc []
+     ]
+
+
+{-|
+
+There are three main changes to 'pieChart':
+
+ - 'MInnerRadius' is used to impose a minimum radius on the pie slices
+   (so leaving a hole in the center);
+
+ - the 'ViewStyle' configuration is used to turn off the plot edge;
+
+ - and the count value is calculated automatically by the 'PAggregate'
+   method (summing over the \"Cluster\" column), rather than having a
+   hand-generated table of values encoded in the visualization.
+
+<<images/vl/piechartwithcounting.png>>
+
+<https://vega.github.io/editor/#/url/vega-lite/N4Igxg9gdgZglgcxALlANzgUwO4tAZwBcAnCAa0xSgFcAbWgXwYBoQBbAQ2LLxEIE8ADpWQguYEKzhQomYgCUOAEzjV8KAEwAGFiCUdCHXtWK0UIABaFCg-MgD094h2wA6BHEIXqAIzVzIKEJMINdINnsAEQhqBAAhEwp7CzRMBA57TiI5ZNT0+31De3S4DgBaDnKANgBGKoqarTLDH1pMGo5XKAgyi0xlOVdCfDRJEBgIYk5CXkEufBFQAHFOJFEaNh85MfkAQQB9AEkAYXkAZXMNreIxwVoAD0vqTe3WSIBRI9OL9efrscw+zuj1+LxuTF0ABJ8GA+pxzFYbHZHHlOh4vL5XHAIPYYXCMqiyrRPJh7GgACyuABW+GgAKgkBUUDWoC8mEMvA4CAQxDSBhE4BiQTGAmE5gAjtQOEFPAY4KkQLpILRJrx4JhaEpzMdaGpgjdWKKBd02NIOGYIUA Open this visualization in the Vega Editor> 
+
+@
+let enc = encoding
+          . position Theta ['PAggregate' 'Count', PmType Quantitative]
+          . color [MName "Cluster", MmType Nominal]
+
+in toVegaLite
+   [ gaiaData
+   , mark Arc ['MInnerRadius' 20]
+   , enc []
+   , configure (configuration ('ViewStyle' ['ViewNoStroke']) [])
+   ]
+@
+
+-}
+
+
+pieChartWithCounting :: VegaLite
+pieChartWithCounting =
+  let enc = encoding
+            . position Theta [PAggregate Count, PmType Quantitative]
+            . color [MName "Cluster", MmType Nominal]
+
+  in toVegaLite
+     [ gaiaData
+     , mark Arc [MInnerRadius 20]
+     , enc []
+     , configure (configuration (ViewStyle [ViewNoStroke]) [])
+     ]
+
+
 -- $add-axis
 -- While the strip plot shows the range of parallaxes, it is hard to
 -- make out the distribution of values, since the ticks overlap. Even
@@ -745,7 +866,6 @@ stripPlotWithColorOrdinal =
 -- property of the 'mark' - only helps so much. Adding a second
 -- axis is easy to do, so let's see how the parallax distribution
 -- varies with cluster membership.
-
 
 {-|
 
@@ -824,7 +944,7 @@ simpleHistogram :: T.Text -> VegaLite
 simpleHistogram field =
   let enc = encoding
               . position X [ PName field, PmType Quantitative, 'PBin' [] ]
-              . position Y [ 'PAggregate' 'Count', PmType Quantitative ]
+              . position Y [ PAggregate Count, PmType Quantitative ]
 
   in toVegaLite
        [ gaiaData
@@ -973,7 +1093,7 @@ let enc = encoding
             . color [ MName \"Cluster\", MmType Nominal ]
 
     binning = PBin [ 'Step' 1 ]
-    axis = PAxis [ 'AxValues' ('Numbers' [ 0, 5 .. 20 ]) ]
+    axis = PAxis [ 'AxValues' (Numbers [ 0, 5 .. 20 ]) ]
 
 in toVegaLite
    [ gaiaData
@@ -2410,7 +2530,7 @@ let trans = transform
     labelSpec = asSpec [ labelEnc [], mark 'Text' [ 'MdY' (-6) ] ]
 
     cfg = configure
-          . configuration ('ViewStyle' ['ViewNoStroke'])
+          . configuration (ViewStyle [ViewNoStroke])
 
 in toVegaLite [ width 300
               , height 250
@@ -2538,10 +2658,10 @@ let trans = transform
                     , mark Geoshape [ ]
                     ]
 
-    raData = 'dataFromColumns' []
-                 . 'dataColumn' "x" (Numbers [ -120, -60, 60, 120 ])
+    raData = dataFromColumns []
+                 . dataColumn "x" (Numbers [ -120, -60, 60, 120 ])
                  . dataColumn "y" (Numbers [ 0, 0, 0, 0 ])
-                 . dataColumn "lbl" ('Strings' [ "16h", "20h", "4h", "8h" ])
+                 . dataColumn "lbl" (Strings [ "16h", "20h", "4h", "8h" ])
 
     decData = dataFromColumns []
                  . dataColumn "x" (Numbers [ 0, 0 ])
