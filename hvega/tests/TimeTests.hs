@@ -28,7 +28,17 @@ testSpecs = [ ("timeYear", timeYear)
             , ("timeMinutesSeconds", timeMinutesSeconds)
             , ("localTime", localTime)
             , ("utcTime", utcTime)
+            , ("monthAggregate", monthAggregate)
+            , ("withBar", withBar)
             , ("timeBand", timeBand)
+            , ("withBarOrdinal", withBarOrdinal)
+            , ("timeUnitTransform", timeUnitTransform)
+            , ("parseAsUTC", parseAsUTC)
+            , ("parseAsLocal", parseAsLocal)
+            , ("parseAsFormat", parseAsFormat)
+            , ("outputAsUTC", outputAsUTC)
+            , ("outputScaledAsUTC", outputScaledAsUTC)
+            , ("customizeStep", customizeStep)
             ]
 
 
@@ -169,11 +179,58 @@ utcTime :: VegaLite
 utcTime = parseTime UTC
 
 
+-- examples from the documentation
+--
+-- https://vega.github.io/vega-lite/docs/timeunit.html
+
+seattleTemps :: Data
+seattleTemps = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-temps.csv" []
+
+seattleWeather :: Data
+seattleWeather = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv" []
+
+
+monthAggregate :: VegaLite
+monthAggregate =
+  let enc = encoding
+            . position X [ PName "date"
+                         , PTimeUnit Month
+                         , PmType Temporal
+                         ]
+            . position Y [ PName "temp"
+                         , PAggregate Mean
+                         , PmType Quantitative ]
+
+  in toVegaLite
+        [ seattleTemps
+        , mark Line [MInterpolate Monotone]
+        , enc []
+        ]
+
+
+withBar :: VegaLite
+withBar =
+  let enc = encoding
+            . position X [ PName "date"
+                         , PTimeUnit Month
+                         , PmType Temporal
+                         ]
+            . position Y [ PName "precipitation"
+                         , PAggregate Mean
+                         , PmType Quantitative ]
+
+  in toVegaLite
+        [ seattleWeather
+        , mark Bar []
+        , enc []
+        ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#time-units-band
+
 timeBand :: VegaLite
 timeBand =
-  let dvals = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-temps.csv" []
-
-      enc = encoding
+  let enc = encoding
             . position X [ PName "date", PTimeUnit Month
                          , PmType Temporal, PBand 0.5 ]
             . position Y [ PName "temp", PAggregate Mean
@@ -181,7 +238,203 @@ timeBand =
 
   in toVegaLite
         [ width 400
-        , dvals
+        , seattleTemps
         , enc []
         , mark Line [ MPoint (PMMarker [ MFill "black" ]) ]
         ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#time-unit-with-ordinal-fields
+
+withBarOrdinal :: VegaLite
+withBarOrdinal =
+  let enc = encoding
+            . position X [ PName "date"
+                         , PTimeUnit Month
+                         , PmType Ordinal
+                         ]
+            . position Y [ PName "precipitation"
+                         , PAggregate Mean
+                         , PmType Quantitative ]
+
+  in toVegaLite
+        [ seattleWeather
+        , mark Bar []
+        , enc []
+        ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#transform
+
+timeUnitTransform :: VegaLite
+timeUnitTransform =
+  let enc = encoding
+            . position X [ PName "month"
+                         , PmType Temporal
+                         , PAxis [AxFormat "%b"]
+                         ]
+            . position Y [ PName "temp_max"
+                         , PAggregate Max
+                         , PmType Quantitative ]
+
+  in toVegaLite
+        [ seattleWeather
+        , mark Line []
+        , transform (timeUnitAs Month "date" "month" [])
+        , enc []
+        ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#input
+
+parseAsUTC :: VegaLite
+parseAsUTC =
+  toVegaLite [ dataFromColumns []
+               . dataColumn "date" (Strings ["2011-10-10", "2011-10-12"])
+               $ []
+             , mark Point []
+             , encoding
+               . position Y [ PName "date"
+                            , PmType Ordinal
+                            , PTimeUnit (Utc Hours)
+                            , PAxis [AxTitle "time"]
+                            ]
+               $ []
+             ]
+
+
+parseAsLocal :: VegaLite
+parseAsLocal =
+  toVegaLite [ dataFromColumns []
+               . dataColumn "date" (Strings ["10 Oct 2011 22:48:00", "11 Oct 2022 23:00:00"])
+               $ []
+             , mark Point []
+             , encoding
+               . position Y [ PName "date"
+                            , PmType Ordinal
+                            , PTimeUnit HoursMinutes
+                            , PAxis [AxTitle "time"]
+                            ]
+               $ []
+             ]
+
+
+parseAsFormat :: VegaLite
+parseAsFormat =
+  toVegaLite [ dataFromColumns [Parse [("date", FoUtc "%d %b %Y %H:%M:%S")]]
+               . dataColumn "date" (Strings ["10 Oct 2011 22:48:00", "11 Oct 2022 23:00:00"])
+               $ []
+             , mark Point []
+             , encoding
+               . position Y [ PName "date"
+                            , PmType Ordinal
+                            , PTimeUnit HoursMinutes
+                            , PAxis [AxTitle "time"]
+                            ]
+               $ []
+             ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#output
+
+exampleData :: Data
+exampleData =
+  dataFromColumns []
+  . dataColumn "date" (Strings [ "Sun, 01 Jan 2012 23:00:00"
+                               , "Sun, 02 Jan 2012 00:00:00"
+                               , "Sun, 02 Jan 2012 01:00:00"
+                               , "Sun, 02 Jan 2012 02:00:00"
+                               , "Sun, 02 Jan 2012 03:00:00"
+                               ])
+
+  . dataColumn "price" (Numbers [150, 100, 170, 165, 200])
+  $ []
+
+
+outputAsUTC :: VegaLite
+outputAsUTC =
+  toVegaLite [ exampleData
+             , mark Line []
+             , encoding
+               . position X [ PName "date"
+                            , PmType Temporal
+                            , PTimeUnit (Utc YearMonthDateHoursMinutes)
+                            , PAxis [AxLabelAngle 15]
+                            ]
+               . position Y [ PName "price"
+                            , PmType Quantitative
+                            ]
+               $ []
+             ]
+
+
+outputScaledAsUTC :: VegaLite
+outputScaledAsUTC =
+  toVegaLite [ exampleData
+             , mark Line []
+             , encoding
+               . position X [ PName "date"
+                            , PmType Temporal
+                            , PTimeUnit YearMonthDateHoursMinutes
+                            , PScale [SType ScUtc]
+                            , PAxis [AxLabelAngle 15]
+                            ]
+               . position Y [ PName "price"
+                            , PmType Quantitative
+                            ]
+               $ []
+             ]
+
+
+-- https://vega.github.io/vega-lite/docs/timeunit.html#example-customizing-step
+
+customizeStep :: VegaLite
+customizeStep =
+  toVegaLite [ dataFromColumns []
+               . dataColumn "date" (Strings [ "Sun, 01 Jan 2012 00:00:00"
+                                            , "Sun, 01 Jan 2012 00:01:00"
+                                            , "Sun, 01 Jan 2012 00:02:00"
+                                            , "Sun, 01 Jan 2012 00:03:00"
+                                            , "Sun, 01 Jan 2012 00:04:00"
+                                            , "Sun, 01 Jan 2012 00:05:00"
+                                            , "Sun, 01 Jan 2012 00:06:00"
+                                            , "Sun, 01 Jan 2012 00:07:00"
+                                            , "Sun, 01 Jan 2012 00:08:00"
+                                            , "Sun, 01 Jan 2012 00:09:00"
+                                            , "Sun, 01 Jan 2012 00:10:00"
+                                            , "Sun, 01 Jan 2012 00:11:00"
+                                            , "Sun, 01 Jan 2012 00:12:00"
+                                            , "Sun, 01 Jan 2012 00:13:00"
+                                            , "Sun, 01 Jan 2012 00:14:00"
+                                            , "Sun, 01 Jan 2012 00:15:00"
+                                            ])
+               . dataColumn "distance" (Numbers [ 1
+                                                , 1
+                                                , 2
+                                                , 1
+                                                , 4
+                                                , 2
+                                                , 5
+                                                , 2
+                                                , 6
+                                                , 4
+                                                , 1
+                                                , 1
+                                                , 3
+                                                , 0
+                                                , 2
+                                                , 3
+                                                ])
+               $ []
+             , mark Bar []
+             , encoding
+               . position X [ PName "date"
+                            , PmType Temporal
+                            , PTimeUnit (TUStep 5 Minutes)
+                            ]
+               . position Y [ PName "distance"
+                            , PmType Quantitative
+                            , PAggregate Sum
+                            ]
+               $ []
+             ]
