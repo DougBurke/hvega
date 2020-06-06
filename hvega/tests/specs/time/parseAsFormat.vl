@@ -1,0 +1,29 @@
+{
+    "mark": "point",
+    "data": {
+        "values": [
+            {
+                "date": "10 Oct 2011 22:48:00"
+            },
+            {
+                "date": "11 Oct 2022 23:00:00"
+            }
+        ],
+        "format": {
+            "parse": {
+                "date": "utc:'%d %b %Y %H:%M:%S'"
+            }
+        }
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "y": {
+            "field": "date",
+            "timeUnit": "hoursminutes",
+            "type": "ordinal",
+            "axis": {
+                "title": "time"
+            }
+        }
+    }
+}

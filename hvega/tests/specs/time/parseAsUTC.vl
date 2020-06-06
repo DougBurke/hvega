@@ -1,0 +1,27 @@
+{
+    "mark": "point",
+    "data": {
+        "values": [
+            {
+                "date": "2011-10-10"
+            },
+            {
+                "date": "2011-10-12"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "y": {
+            "field": "date",
+            "timeUnit": {
+                "utc": true,
+                "unit": "hours"
+            },
+            "type": "ordinal",
+            "axis": {
+                "title": "time"
+            }
+        }
+    }
+}

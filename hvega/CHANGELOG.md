@@ -1,6 +1,17 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.10.0.0
+
+The Vega-Lite tests are now validated against version 4.13 of the
+Vega-Lite schema.
+
+The `TimeUnit` type has seen a number of additions: the `Week` and
+`DayOfYear` time units added in Vega-Lite 4.13.0, along with the
+associated composite units (such as `YearWeek`), and a number of
+composite types that were missing (such as `MonthDateHours`).  The
+`DateTime` type has added the `DTWeek` and `DTDayOfYear` constructors.
+
 ## 0.9.1.0
 
 The tutorial has been expanded to add a section describing the
