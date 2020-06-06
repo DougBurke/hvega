@@ -58,13 +58,23 @@ data DateTime
       -- ^ The month number (1 to 12, inclusive).
       --
       --    @since 0.5.0.0
-    | DTDate Int
-      -- ^ Day of the month (1 to 31, inclusive).
+    | DTWeek Int
+      -- ^ The week number. Each week begins on Sunday, which means that days
+      --   before the first Sunday of the year are considered to be in week 0,
+      --   as the first Sunday of the year is the start of week 1.
+      --
+      --   @since 0.10.0.0
     | DTDay DayName
     | DTDayNum Int
       -- ^ The day number (1 represents Monday, 7 is Sunday).
       --
-      --    @since 0.5.0.0
+      --   @since 0.5.0.0
+    | DTDayOfYear Int
+      -- ^ The day of the year (1 to 366).
+      --
+      --   @since 0.10.0.0
+    | DTDate Int
+      -- ^ Day of the month (1 to 31, inclusive).
     | DTHours Int
       -- ^ Hour of the day, where 0 is midnight, 1 is 1am, and
       --   23 is 11pm.
@@ -146,6 +156,32 @@ for further details.
 data TimeUnit
     = Year
       -- ^ Year.
+    | Quarter
+      -- ^ Quarter of the year.
+    | Month
+      -- ^ Month of the year.
+    | Week
+      -- ^ Sunday-based week number. Days before the first Sunday of the year
+      --   are considered to be in week 0, and the first Sunday of the year
+      --   is the start of week 1,
+      --
+      --   @since 0.10.0.0
+    | Date
+      -- ^ Day of the month (1 to 31).
+    | Day
+      -- ^ Day of the week.
+    | DayOfYear
+      -- ^ Day of the year (starting at 1).
+      --
+      --   @since 0.10.0.0
+    | Hours
+      -- ^ Hour of the day.
+    | Minutes
+      -- ^ Minutes of the hour.
+    | Seconds
+      -- ^ Seconds of the minute.
+    | Milliseconds
+      -- ^ Milliseconds.
     | YearQuarter
       -- ^ Year and quarter.
     | YearQuarterMonth
@@ -160,34 +196,82 @@ data TimeUnit
       -- ^ Year, month, day of month, hour of day, and minutes.
     | YearMonthDateHoursMinutesSeconds
       -- ^ Year, month, day of month, hour of day, minutes, and seconds.
-    | Quarter
-      -- ^ Quarter of the year.
+    | YearWeek
+      -- ^ Year and week.
+      --
+      --   @since 0.10.0
+    | YearWeekDay
+      -- ^ Year, week, and day.
+      --
+      --   @since 0.10.0
+    | YearWeekDayHours
+      -- ^ Year, week, day, and hour of day.
+      --
+      --   @since 0.10.0
+    | YearWeekDayHoursMinutes
+      -- ^ Year, week, day, hour of day, and minutes.
+      --
+      --   @since 0.10.0
+    | YearWeekDayHoursMinutesSeconds
+      -- ^ Year, week, day, hour of day, minutes, and seconds.
+      --
+      --   @since 0.10.0
+    | YearDayOfYear
+      -- ^ Year and day of year.
+      --
+      --   @since 0.10.0
     | QuarterMonth
       -- ^ Quarter of the year and month.
-    | Month
-      -- ^ Month of the year.
     | MonthDate
       -- ^ Month of the year and day of the month.
-    | Date
-      -- ^ Day of the month (1 to 31).
-    | Day
-      -- ^ Day of the week.
-    | Hours
-      -- ^ Hour of the day.
+    | MonthDateHours
+      -- ^ Month, day of the month, and hours.
+      --
+      --   @since 0.10.0.0
+    | MonthDateHoursMinutes
+      -- ^ Month, day of the month, hours, and minutes.
+      --
+      --   @since 0.10.0.0
+    | MonthDateHoursMinutesSeconds
+      -- ^ Month, day of the month, hours, minutes, and seconds.
+      --
+      --   @since 0.10.0.0
+    | WeekDay
+      -- ^ Week and day of month.
+      --
+      --   @since 0.10.0.0
+    | WeeksDayHours
+      -- ^ Week, day of month, and hours.
+      --
+      --   @since 0.10.0.0
+    | WeeksDayHoursMinutes
+      -- ^ Week, day of month, hours, and minutes.
+      --
+      --   @since 0.10.0.0
+    | WeeksDayHoursMinutesSeconds
+      -- ^ Week, day of month, hours, minutes, and seconds.
+      --
+      --   @since 0.10.0.0
+    | DayHours
+      -- ^ Day of the week and hours.
+      --
+      --   @since 0.10.0.0
+    | DayHoursMinutes
+      -- ^ Day of the week, hours, and minutes.
+      --
+      --   @since 0.10.0.0
+    | DayHoursMinutesSeconds
+      -- ^ Day of the week, hours, minutes, and seconds.
+      --
+      --   @since 0.10.0.0
     | HoursMinutes
       -- ^ Hour of the day and minutes.
     | HoursMinutesSeconds
       -- ^ Hour of the day, minutes, and seconds.
-    | Minutes
-      -- ^ Minutes of the hour.
     | MinutesSeconds
       -- ^ Minutes of the hour and seconds.
-    | Seconds
-      -- ^ Seconds of the minute.
     | SecondsMilliseconds
       -- ^ Seconds of the minute and milliseconds.
-    | Milliseconds
-      -- ^ Milliseconds.
     | Utc TimeUnit
       -- ^ Encode a time as UTC (coordinated universal time, independent of local time
       --   zones or daylight saving).
@@ -213,8 +297,10 @@ dateTimeProperty (DTYear y) = "year" .= y
 dateTimeProperty (DTQuarter q) = "quarter" .= q
 dateTimeProperty (DTMonth mon) = "month" .= monthNameLabel mon
 dateTimeProperty (DTMonthNum n) = "month" .= n
+dateTimeProperty (DTWeek w) = "week" .= w
 dateTimeProperty (DTDate dt) = "date" .= dt
 dateTimeProperty (DTDay day) = "day" .= dayLabel day
+dateTimeProperty (DTDayOfYear n) = "dayofyear" .= n
 dateTimeProperty (DTDayNum n) = "day" .= n
 dateTimeProperty (DTHours h) = "hours" .= h
 dateTimeProperty (DTMinutes m) = "minutes" .= m
@@ -259,6 +345,17 @@ timeHelper unit = ["unit" .= unit]
 
 timeUnitProperties :: TimeUnit -> [LabelledSpec]
 timeUnitProperties Year = timeHelper "year"
+timeUnitProperties Quarter = timeHelper "quarter"
+timeUnitProperties Month = timeHelper "month"
+timeUnitProperties Week = timeHelper "week"
+timeUnitProperties Date = timeHelper "date"
+timeUnitProperties Day = timeHelper "day"
+timeUnitProperties DayOfYear = timeHelper "dayofyear"
+timeUnitProperties Hours = timeHelper "hours"
+timeUnitProperties Minutes = timeHelper "minutes"
+timeUnitProperties Seconds = timeHelper "seconds"
+timeUnitProperties Milliseconds = timeHelper "milliseconds"
+
 timeUnitProperties YearQuarter = timeHelper "yearquarter"
 timeUnitProperties YearQuarterMonth = timeHelper "yearquartermonth"
 timeUnitProperties YearMonth = timeHelper "yearmonth"
@@ -266,20 +363,29 @@ timeUnitProperties YearMonthDate = timeHelper "yearmonthdate"
 timeUnitProperties YearMonthDateHours = timeHelper "yearmonthdatehours"
 timeUnitProperties YearMonthDateHoursMinutes = timeHelper "yearmonthdatehoursminutes"
 timeUnitProperties YearMonthDateHoursMinutesSeconds = timeHelper "yearmonthdatehoursminutesseconds"
-timeUnitProperties Quarter = timeHelper "quarter"
+timeUnitProperties YearWeek = timeHelper "yearweek"
+timeUnitProperties YearWeekDay = timeHelper "yearweekday"
+timeUnitProperties YearWeekDayHours = timeHelper "yearweekdayhours"
+timeUnitProperties YearWeekDayHoursMinutes = timeHelper "yearweekdayhoursminutes"
+timeUnitProperties YearWeekDayHoursMinutesSeconds = timeHelper "yearweekdayhoursminutesseconds"
+timeUnitProperties YearDayOfYear = timeHelper "yeardayofyear"
 timeUnitProperties QuarterMonth = timeHelper "quartermonth"
-timeUnitProperties Month = timeHelper "month"
 timeUnitProperties MonthDate = timeHelper "monthdate"
-timeUnitProperties Date = timeHelper "date"
-timeUnitProperties Day = timeHelper "day"
-timeUnitProperties Hours = timeHelper "hours"
+timeUnitProperties MonthDateHours = timeHelper "monthdatehours"
+timeUnitProperties MonthDateHoursMinutes = timeHelper "monthdatehoursminutes"
+timeUnitProperties MonthDateHoursMinutesSeconds = timeHelper "monthdatehoursminutesseconds"
+timeUnitProperties WeekDay = timeHelper "weekday"
+timeUnitProperties WeeksDayHours = timeHelper "weeksdayhours"
+timeUnitProperties WeeksDayHoursMinutes = timeHelper "weeksdayhoursminutes"
+timeUnitProperties WeeksDayHoursMinutesSeconds = timeHelper "weeksdayhoursminutesseconds"
+timeUnitProperties DayHours = timeHelper "dayhours"
+timeUnitProperties DayHoursMinutes = timeHelper "dayhoursminutes"
+timeUnitProperties DayHoursMinutesSeconds = timeHelper "dayhoursminutesseconds"
 timeUnitProperties HoursMinutes = timeHelper "hoursminutes"
 timeUnitProperties HoursMinutesSeconds = timeHelper "hoursminutesseconds"
-timeUnitProperties Minutes = timeHelper "minutes"
 timeUnitProperties MinutesSeconds = timeHelper "minutesseconds"
-timeUnitProperties Seconds = timeHelper "seconds"
 timeUnitProperties SecondsMilliseconds = timeHelper "secondsmilliseconds"
-timeUnitProperties Milliseconds = timeHelper "milliseconds"
+
 timeUnitProperties (Utc tu) = "utc" .= True : timeUnitProperties tu
 timeUnitProperties (TUStep x tu) = "step" .= x : timeUnitProperties tu
 timeUnitProperties (TUMaxBins n) = [ "maxbins" .= n ]

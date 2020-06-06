@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.9 of @hvega@ supports version 4.12 of the Vega-Lite specification.
+Version 0.10 of @hvega@ supports version 4.13 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -855,6 +855,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.10
+         --
+         -- $update01000
+
          -- ** Version 0.9
          --
          -- $update0910
@@ -1256,6 +1260,19 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01000
+-- The @0.10.0.0@ release updates @hvega@ to support version 4.13 of
+-- the Vega-Lite schema.
+--
+-- __New constructors__
+--
+-- The 'VL.TimeUnit' type has seen a number of additions: the 'VL.Week' and
+-- 'VL.DayOfYear' time units added in Vega-Lite 4.13.0, along with the
+-- associated composite units (such as 'VL.YearWeek'), and a number of
+-- composite types that were missing (such as 'VL.MonthDateHours').
+-- The 'VL.DateTime' type has added the 'VL.DTWeek' and 'VL.DTDayOfYear'
+-- constructors.
 
 -- $update0910
 -- The tutorial has been expanded to add a section with pie charts.
