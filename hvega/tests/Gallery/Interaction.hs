@@ -148,7 +148,7 @@ interaction4 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonth ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonth] ]
                 . position Y [ PName "count", PmType Quantitative, PAggregate Sum ]
 
         specBackground =
@@ -290,7 +290,7 @@ interaction8 =
 
         enc1 =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit Month ]
+                . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Month] ]
                 . opacity
                     [ MSelectionCondition (SelectionName "myBrush")
                         [ MNumber 1 ]
@@ -397,9 +397,9 @@ interaction10 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonthDate ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonthDate] ]
                 . tooltips
-                    [ [ TName "date", TmType Temporal, TTimeUnit YearMonthDate ]
+                    [ [ TName "date", TmType Temporal, TTimeUnit [TU YearMonthDate] ]
                     , [ TName "temp_max", TmType Quantitative ]
                     , [ TName "temp_min", TmType Quantitative ]
                     ]

@@ -344,7 +344,7 @@ mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
 mtype_ :: Measurement -> LabelledSpec
 mtype_ m = "type" .= measurementLabel m
 
-timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ :: [TimeUnit] -> LabelledSpec
 timeUnit_ tu = "timeUnit" .= timeUnitSpec tu
 
 -- The assumption at the moment is that it's always correct to
@@ -496,8 +496,10 @@ data MarkChannel
       -- ^ Sort order.
       --
       --   @since 0.4.0.0
-    | MTimeUnit TimeUnit
+    | MTimeUnit [TimeUnit]
       -- ^ Time unit aggregation of field values when encoding with a mark property channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | MTitle T.Text
       -- ^ Title of a field when encoding with a mark property channel.
       --
@@ -1001,8 +1003,10 @@ data PositionChannel
       -- ^ Indicate that the data encoded with position is already binned.
       --
       --   @since 0.4.0.0
-    | PTimeUnit TimeUnit
+    | PTimeUnit [TimeUnit]
       -- ^ Form of time unit aggregation of field values when encoding with a position channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | PTitle T.Text
       -- ^ Title of a field when encoding with a position channel.
       --
@@ -1231,7 +1235,7 @@ data AxisProperty
       --   @
       --   'PAxis' [ 'AxDataCondition'
       --             ('FEqual' "value" ('Graphics.Vega.VegaLite.DateTime' ['Grahics.Vega.VegaLite.DTMonth' 'Graphics.Vega.VegaLite.Jan', 'Graphics.Vega.VegaLite.DTDate' 1])
-      --             & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.MonthDate'))
+      --             & 'FilterOpTrans' ('MTimeUnit' ['Graphics.Vega.VegaLite.TU' 'Graphics.Vega.VegaLite.MonthDate']))
       --             ('CAxGridDash' [] [2, 2])
       --         ]
       --   @
@@ -1882,7 +1886,7 @@ data BooleanOp
       --
       --   @
       --   'filter' ('FRange' "date" ('NumberRange' 2010 2017)
-      --           & 'FilterOpTrans' ('MTimeUnit' 'Graphics.Vega.VegaLite.Year')
+      --           & 'FilterOpTrans' ('MTimeUnit' ['Graphics.Vega.VegaLite.TU' 'Graphics.Vega.VegaLite.Year'])
       --           & 'FCompose'
       --           )
       --   @
@@ -2157,9 +2161,11 @@ data HyperlinkChannel
       --   @since 0.9.0.0
     | HString T.Text
       -- ^ Literal string value when encoding with a hyperlink channel.
-    | HTimeUnit TimeUnit
+    | HTimeUnit [TimeUnit]
       -- ^ Time unit aggregation of field values when encoding with a
       --   hyperlink channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | HyTitle T.Text
       -- ^ Title of a field when encoding with a hyperlink channel.
       --
@@ -2242,9 +2248,11 @@ data AriaDescriptionChannel
       -- ^ Provide the expression used to generate labels.
     | ADString T.Text
       -- ^ Literal string value.
-    | ADTimeUnit TimeUnit
+    | ADTimeUnit [TimeUnit]
       -- ^ Time unit aggregation of field values when encoding with an Aria
       --   description channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | ADTitle T.Text
       -- ^ Title of a field when encoding with an Aria description channel.
     | ADNoTitle
@@ -2375,8 +2383,10 @@ data FacetChannel
       --   use 'Graphics.Vega.VegaLite.CompSpacing' as a replacement.
       --
       --   @since 0.6.0.0
-    | FTimeUnit TimeUnit
+    | FTimeUnit [TimeUnit]
       -- ^ The time-unit for a temporal field.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | FTitle T.Text
       -- ^ The title for the field.
       --
@@ -2496,8 +2506,10 @@ data TextChannel
       -- ^ A multi-line value. See also 'TString'.
       --
       --   @since 0.7.0.0
-    | TTimeUnit TimeUnit
+    | TTimeUnit [TimeUnit]
       -- ^ Time unit aggregation of field values when encoding with a text channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | TTitle T.Text
       -- ^ Title of a field when encoding with a text or tooltip channel.
       --
@@ -2550,9 +2562,11 @@ data OrderChannel
     | OAggregate Operation
       -- ^ Compute some aggregate summary statistics for a field to be encoded
       --   with an order channel.
-    | OTimeUnit TimeUnit
+    | OTimeUnit [TimeUnit]
       -- ^ Form of time unit aggregation of field values when encoding with
       --   an order channel.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | OSort [SortProperty]
       -- ^ Sort order for field when encoding with an order channel.
 
@@ -2577,8 +2591,10 @@ data DetailChannel
       -- ^ The measurement type of the field.
     | DBin [BinProperty]
       -- ^ How to convert discrete numeric values into bins.
-    | DTimeUnit TimeUnit
+    | DTimeUnit [TimeUnit]
       -- ^ The form of time unit aggregation.
+      --
+      --   Prior to @0.10.0.0@ this took a single 'Graphics.Vega.VegaLite.TimeUnit' field.
     | DAggregate Operation
       -- ^ How should the detail field be aggregated?
 
@@ -4928,24 +4944,27 @@ The following example takes a temporal dataset and encodes daily totals from it
 grouping by month:
 
 @
-trans = 'transform' . 'timeUnitAs' 'Graphics.Vega.VegaLite.Month' \"date\" \"monthly\"
+trans = 'transform' . 'timeUnitAs' ['Graphics.Vega.VegaLite.TU' 'Graphics.Vega.VegaLite.Month'] \"date\" \"monthly\"
 
 enc = 'encoding'
-        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' 'Graphics.Vega.VegaLite.Day' ]
+        . 'position' 'Graphics.Vega.VegaLite.X' [ 'PName' \"date\", 'PmType' 'Graphics.Vega.VegaLite.Temporal', 'PTimeUnit' ['Graphics.Vega.VegaLite.TU' 'Graphics.Vega.VegaLite.Day'] ]
         . 'position' 'Graphics.Vega.VegaLite.Y' [ 'PAggregate' 'Graphics.Vega.VegaLite.Sum', 'PmType' 'Graphics.Vega.VegaLite.Quantitative' ]
         . 'detail' [ 'DName' \"monthly\", 'DmType' 'Graphics.Vega.VegaLite.Temporal' ]
 @
+
 -}
 timeUnitAs ::
-  TimeUnit
+  [TimeUnit]
   -- ^ The width of each bin.
+  --
+  --   Prior to @0.10.0.0@ this was sent a single time unit.
   -> FieldName
   -- ^ The field to bin.
   -> FieldName
   -- ^ The name of the binned data created by this routine.
   -> BuildTransformSpecs
-timeUnitAs tu field label ols =
-  let fields = [ "timeUnit" .= timeUnitSpec tu
+timeUnitAs tus field label ols =
+  let fields = [ "timeUnit" .= timeUnitSpec tus
                , "field" .= field
                , "as" .= label ]
   in TS (object fields) : ols

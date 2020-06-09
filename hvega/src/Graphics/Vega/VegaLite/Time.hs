@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -18,6 +19,7 @@ module Graphics.Vega.VegaLite.Time
        , MonthName(..)
        , DayName(..)
        , TimeUnit(..)
+       , BaseTimeUnit(..)
 
        -- not for external export
        , dateTimeProperty
@@ -28,6 +30,10 @@ module Graphics.Vega.VegaLite.Time
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object)
+
+#if !(MIN_VERSION_base(4, 12, 0))
+import Data.Monoid ((<>))
+#endif
 
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
@@ -115,17 +121,6 @@ data MonthName
     | Dec
 
 
-{-|
-
-Describes a unit of time. Useful for encoding and transformations. See the
-<https://vega.github.io/vega-lite/docs/timeunit.html Vega-Lite documentation>
-for further details.
-
-@
-'Graphics.Vega.VegaLite.encoding'
-    . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' "date", 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Temporal', 'Graphics.Vega.VegaLite.PTimeUnit' ('Utc' 'YearMonthDateHours') ]
-@
--}
 
 -- Vega-Lite 4.4.0 has
 --   LocalMultiTimeUnit which is yearquarter, yearquartermonth, ,secondsmilliseconds
@@ -146,14 +141,60 @@ for further details.
 --   unit    - this is TimeUnit
 --   utc     - boolean
 --
--- So, could be something like "TU <time unit type> [options]"
--- where an empty array means it's a "TimeUnit", and the options are from
--- TimeUnitParams (apart from the unit field). Unfortunately this doesn't
--- capture the use case of supplying "maxbins" only (it may be that "step"
--- can also be used without any other value).
---
+
+{-|
+
+Describes a unit of time. Useful for encoding and transformations. See the
+<https://vega.github.io/vega-lite/docs/timeunit.html Vega-Lite documentation>
+for further details.
+
+@
+'Graphics.Vega.VegaLite.encoding'
+    . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' "date", 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Temporal', 'Graphics.Vega.VegaLite.PTimeUnit' ['Utc' 'YearMonthDateHours'] ]
+@
+
+Prior to version @0.10.0.0@ the field was a combination of what is now
+'BaseTimeUnit' and the \"option\" fields (e.g. encode as UTC or the
+maximum nuber of bins), and only a single setting could be changed.
+
+-}
 
 data TimeUnit
+  = TU BaseTimeUnit
+    -- ^ Encode a time as local time.
+  | Utc BaseTimeUnit
+    -- ^ Encode a time as UTC (coordinated universal time, independent of local time
+    --   zones or daylight saving).
+  | TUMaxBins Natural
+    -- ^ The maximum number of bins to use when discretising time values.
+    --   This can be useful as an algternative to explicitly providing the
+    --   time unit to bin by, as it will be inferred from the temporal
+    --   extent and the number of bins. As an example, @[TUMaxBins 366]@
+    --   will bin by day when applied to a dataset of hourly readings
+    --   for a full year.
+    --
+    --   @since 0.6.0.0
+  | TUStep Double
+    -- ^ The number of steps between time-unit bins, in terms of the
+    --   least-significant unit provided. So @[TUStep 14, TU YearMonthDate]@
+    --   will bin temporal data into bi-weekly groups.
+    --
+    --   In @0.10.0.0@ the ability to define the units was dropped,
+    --   as this is now specified as a list of options.
+    --
+    --   @since 0.6.0.0
+
+
+{-|
+
+Define the time unit, either as a base unit - such as 'Hours' - or
+as a composite type, for example 'WeeksDayHours'.
+
+@since 0.10.0.0
+
+-}
+
+data BaseTimeUnit
     = Year
       -- ^ Year.
     | Quarter
@@ -272,24 +313,50 @@ data TimeUnit
       -- ^ Minutes of the hour and seconds.
     | SecondsMilliseconds
       -- ^ Seconds of the minute and milliseconds.
-    | Utc TimeUnit
-      -- ^ Encode a time as UTC (coordinated universal time, independent of local time
-      --   zones or daylight saving).
-    | TUMaxBins Natural
-      -- ^ The maximum number of bins to use when discretising time values.
-      --   This can be useful as an algternative to explicitly providing the
-      --   time unit to bin by, as it will be inferred from the temporal
-      --   extent and the number of bins. As an example, @TUMaxBins 366@
-      --   will bin by day when applied to a dataset of hourly readings
-      --   for a full year.
-      --
-      --   @since 0.6.0.0
-    | TUStep Double TimeUnit
-      -- ^ The number of steps between time-unit bins, in terms of the
-      --   least-significant unit provided. So @TUStep 14 YearMonthDate@
-      --   wull bin temporal data into bi-weekly groups.
-      --
-      --   @since 0.6.0.0
+
+
+baseTimeUnitLabel :: BaseTimeUnit -> T.Text
+baseTimeUnitLabel Year = "year"
+baseTimeUnitLabel Quarter = "quarter"
+baseTimeUnitLabel Month = "month"
+baseTimeUnitLabel Week = "week"
+baseTimeUnitLabel Date = "date"
+baseTimeUnitLabel Day = "day"
+baseTimeUnitLabel DayOfYear = "dayofyear"
+baseTimeUnitLabel Hours = "hours"
+baseTimeUnitLabel Minutes = "minutes"
+baseTimeUnitLabel Seconds = "seconds"
+baseTimeUnitLabel Milliseconds = "milliseconds"
+
+baseTimeUnitLabel YearQuarter = "yearquarter"
+baseTimeUnitLabel YearQuarterMonth = "yearquartermonth"
+baseTimeUnitLabel YearMonth = "yearmonth"
+baseTimeUnitLabel YearMonthDate = "yearmonthdate"
+baseTimeUnitLabel YearMonthDateHours = "yearmonthdatehours"
+baseTimeUnitLabel YearMonthDateHoursMinutes = "yearmonthdatehoursminutes"
+baseTimeUnitLabel YearMonthDateHoursMinutesSeconds = "yearmonthdatehoursminutesseconds"
+baseTimeUnitLabel YearWeek = "yearweek"
+baseTimeUnitLabel YearWeekDay = "yearweekday"
+baseTimeUnitLabel YearWeekDayHours = "yearweekdayhours"
+baseTimeUnitLabel YearWeekDayHoursMinutes = "yearweekdayhoursminutes"
+baseTimeUnitLabel YearWeekDayHoursMinutesSeconds = "yearweekdayhoursminutesseconds"
+baseTimeUnitLabel YearDayOfYear = "yeardayofyear"
+baseTimeUnitLabel QuarterMonth = "quartermonth"
+baseTimeUnitLabel MonthDate = "monthdate"
+baseTimeUnitLabel MonthDateHours = "monthdatehours"
+baseTimeUnitLabel MonthDateHoursMinutes = "monthdatehoursminutes"
+baseTimeUnitLabel MonthDateHoursMinutesSeconds = "monthdatehoursminutesseconds"
+baseTimeUnitLabel WeekDay = "weekday"
+baseTimeUnitLabel WeeksDayHours = "weeksdayhours"
+baseTimeUnitLabel WeeksDayHoursMinutes = "weeksdayhoursminutes"
+baseTimeUnitLabel WeeksDayHoursMinutesSeconds = "weeksdayhoursminutesseconds"
+baseTimeUnitLabel DayHours = "dayhours"
+baseTimeUnitLabel DayHoursMinutes = "dayhoursminutes"
+baseTimeUnitLabel DayHoursMinutesSeconds = "dayhoursminutesseconds"
+baseTimeUnitLabel HoursMinutes = "hoursminutes"
+baseTimeUnitLabel HoursMinutesSeconds = "hoursminutesseconds"
+baseTimeUnitLabel MinutesSeconds = "minutesseconds"
+baseTimeUnitLabel SecondsMilliseconds = "secondsmilliseconds"
 
 
 dateTimeProperty :: DateTime -> LabelledSpec
@@ -333,71 +400,19 @@ monthNameLabel Nov = "Nov"
 monthNameLabel Dec = "Dec"
 
 
--- Assume there's no "embedded" values the time unit used by
--- the "grouping" cases, such as Utc, are "singular" and not
--- themselves compound.
---
--- Ideally this would know when it could just return the label
--- and not a labelled spec, but for now leave it as is.
---
-timeHelper :: T.Text -> [LabelledSpec]
-timeHelper unit = ["unit" .= unit]
-
-timeUnitProperties :: TimeUnit -> [LabelledSpec]
-timeUnitProperties Year = timeHelper "year"
-timeUnitProperties Quarter = timeHelper "quarter"
-timeUnitProperties Month = timeHelper "month"
-timeUnitProperties Week = timeHelper "week"
-timeUnitProperties Date = timeHelper "date"
-timeUnitProperties Day = timeHelper "day"
-timeUnitProperties DayOfYear = timeHelper "dayofyear"
-timeUnitProperties Hours = timeHelper "hours"
-timeUnitProperties Minutes = timeHelper "minutes"
-timeUnitProperties Seconds = timeHelper "seconds"
-timeUnitProperties Milliseconds = timeHelper "milliseconds"
-
-timeUnitProperties YearQuarter = timeHelper "yearquarter"
-timeUnitProperties YearQuarterMonth = timeHelper "yearquartermonth"
-timeUnitProperties YearMonth = timeHelper "yearmonth"
-timeUnitProperties YearMonthDate = timeHelper "yearmonthdate"
-timeUnitProperties YearMonthDateHours = timeHelper "yearmonthdatehours"
-timeUnitProperties YearMonthDateHoursMinutes = timeHelper "yearmonthdatehoursminutes"
-timeUnitProperties YearMonthDateHoursMinutesSeconds = timeHelper "yearmonthdatehoursminutesseconds"
-timeUnitProperties YearWeek = timeHelper "yearweek"
-timeUnitProperties YearWeekDay = timeHelper "yearweekday"
-timeUnitProperties YearWeekDayHours = timeHelper "yearweekdayhours"
-timeUnitProperties YearWeekDayHoursMinutes = timeHelper "yearweekdayhoursminutes"
-timeUnitProperties YearWeekDayHoursMinutesSeconds = timeHelper "yearweekdayhoursminutesseconds"
-timeUnitProperties YearDayOfYear = timeHelper "yeardayofyear"
-timeUnitProperties QuarterMonth = timeHelper "quartermonth"
-timeUnitProperties MonthDate = timeHelper "monthdate"
-timeUnitProperties MonthDateHours = timeHelper "monthdatehours"
-timeUnitProperties MonthDateHoursMinutes = timeHelper "monthdatehoursminutes"
-timeUnitProperties MonthDateHoursMinutesSeconds = timeHelper "monthdatehoursminutesseconds"
-timeUnitProperties WeekDay = timeHelper "weekday"
-timeUnitProperties WeeksDayHours = timeHelper "weeksdayhours"
-timeUnitProperties WeeksDayHoursMinutes = timeHelper "weeksdayhoursminutes"
-timeUnitProperties WeeksDayHoursMinutesSeconds = timeHelper "weeksdayhoursminutesseconds"
-timeUnitProperties DayHours = timeHelper "dayhours"
-timeUnitProperties DayHoursMinutes = timeHelper "dayhoursminutes"
-timeUnitProperties DayHoursMinutesSeconds = timeHelper "dayhoursminutesseconds"
-timeUnitProperties HoursMinutes = timeHelper "hoursminutes"
-timeUnitProperties HoursMinutesSeconds = timeHelper "hoursminutesseconds"
-timeUnitProperties MinutesSeconds = timeHelper "minutesseconds"
-timeUnitProperties SecondsMilliseconds = timeHelper "secondsmilliseconds"
-
-timeUnitProperties (Utc tu) = "utc" .= True : timeUnitProperties tu
-timeUnitProperties (TUStep x tu) = "step" .= x : timeUnitProperties tu
-timeUnitProperties (TUMaxBins n) = [ "maxbins" .= n ]
+timeUnitProperties :: TimeUnit -> LabelledSpec
+timeUnitProperties (TU tu) = "unit" .= baseTimeUnitLabel tu
+timeUnitProperties (Utc tu) = "unit" .= ("utc" <> baseTimeUnitLabel tu)
+timeUnitProperties (TUStep x) = "step" .= x
+timeUnitProperties (TUMaxBins n) = "maxbins" .= n
 
 
 -- Special case this so that
 --   {'unit': blah}              -> blah
---   {'unit': blah, 'utc': true} -> 'utc' <> blah  [would be nice but not done for now]
 --
-timeUnitSpec :: TimeUnit -> VLSpec
-timeUnitSpec tu =
-  let props = timeUnitProperties tu
+timeUnitSpec :: [TimeUnit] -> VLSpec
+timeUnitSpec tus =
+  let props = map timeUnitProperties tus
   in case props of
     [(k, v)] | k == "unit" -> v
     _ -> object props

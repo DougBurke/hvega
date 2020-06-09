@@ -48,10 +48,7 @@
             "scale": {
                 "type": "utc"
             },
-            "timeUnit": {
-                "utc": true,
-                "unit": "yearmonthdatehours"
-            },
+            "timeUnit": "utcyearmonthdatehours",
             "type": "temporal",
             "axis": {
                 "format": "%d %b %H:%M"

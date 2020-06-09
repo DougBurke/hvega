@@ -271,7 +271,7 @@ label5 =
 
         encBar =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit Month ]
+                . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Month] ]
                 . position Y [ PName "precipitation", PmType Quantitative, PAggregate Mean ]
 
         specBar =
@@ -342,8 +342,8 @@ label7 =
 
         encRects =
             encoding
-                . position X [ PName "start", PmType Temporal, PTimeUnit Year, PAxis [] ]
-                . position X2 [ PName "end", PTimeUnit Year ]
+                . position X [ PName "start", PmType Temporal, PTimeUnit [TU Year], PAxis [] ]
+                . position X2 [ PName "end", PTimeUnit [TU Year] ]
                 . color [ MName "event", MmType Nominal ]
 
         specRects =
@@ -351,7 +351,7 @@ label7 =
 
         encPopulation =
             encoding
-                . position X [ PName "year", PmType Temporal, PTimeUnit Year, PAxis [ AxNoTitle ] ]
+                . position X [ PName "year", PmType Temporal, PTimeUnit [TU Year], PAxis [ AxNoTitle ] ]
                 . position Y [ PName "population", PmType Quantitative ]
                 . color [ MString "#333" ]
 

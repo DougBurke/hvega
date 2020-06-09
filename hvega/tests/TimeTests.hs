@@ -42,15 +42,15 @@ testSpecs = [ ("timeYear", timeYear)
             ]
 
 
-timeByUnit :: TimeUnit -> VegaLite
-timeByUnit tu =
+timeByUnit :: BaseTimeUnit -> VegaLite
+timeByUnit btu =
     let
         dataVals =
             dataFromUrl "https://gicentre.github.io/data/tests/timeTest.tsv" []
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit tu ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU btu] ]
                 . position Y [ PName "temperature", PmType Quantitative
                              , PAggregate Mean, PScale [ SZero False ] ]
     in
@@ -142,10 +142,10 @@ parseTime dType =
         tu =
             case dType of
                 Local ->
-                    PTimeUnit YearMonthDateHours
+                    PTimeUnit [TU YearMonthDateHours]
 
                 UTC ->
-                    PTimeUnit (Utc YearMonthDateHours)
+                    PTimeUnit [Utc YearMonthDateHours]
 
         timeScale =
             case dType of
@@ -194,7 +194,7 @@ monthAggregate :: VegaLite
 monthAggregate =
   let enc = encoding
             . position X [ PName "date"
-                         , PTimeUnit Month
+                         , PTimeUnit [TU Month]
                          , PmType Temporal
                          ]
             . position Y [ PName "temp"
@@ -212,7 +212,7 @@ withBar :: VegaLite
 withBar =
   let enc = encoding
             . position X [ PName "date"
-                         , PTimeUnit Month
+                         , PTimeUnit [TU Month]
                          , PmType Temporal
                          ]
             . position Y [ PName "precipitation"
@@ -231,7 +231,7 @@ withBar =
 timeBand :: VegaLite
 timeBand =
   let enc = encoding
-            . position X [ PName "date", PTimeUnit Month
+            . position X [ PName "date", PTimeUnit [TU Month]
                          , PmType Temporal, PBand 0.5 ]
             . position Y [ PName "temp", PAggregate Mean
                          , PmType Quantitative ]
@@ -250,7 +250,7 @@ withBarOrdinal :: VegaLite
 withBarOrdinal =
   let enc = encoding
             . position X [ PName "date"
-                         , PTimeUnit Month
+                         , PTimeUnit [TU Month]
                          , PmType Ordinal
                          ]
             . position Y [ PName "precipitation"
@@ -280,7 +280,7 @@ timeUnitTransform =
   in toVegaLite
         [ seattleWeather
         , mark Line []
-        , transform (timeUnitAs Month "date" "month" [])
+        , transform (timeUnitAs [TU Month] "date" "month" [])
         , enc []
         ]
 
@@ -296,7 +296,7 @@ parseAsUTC =
              , encoding
                . position Y [ PName "date"
                             , PmType Ordinal
-                            , PTimeUnit (Utc Hours)
+                            , PTimeUnit [Utc Hours]
                             , PAxis [AxTitle "time"]
                             ]
                $ []
@@ -312,7 +312,7 @@ parseAsLocal =
              , encoding
                . position Y [ PName "date"
                             , PmType Ordinal
-                            , PTimeUnit HoursMinutes
+                            , PTimeUnit [TU HoursMinutes]
                             , PAxis [AxTitle "time"]
                             ]
                $ []
@@ -328,7 +328,7 @@ parseAsFormat =
              , encoding
                . position Y [ PName "date"
                             , PmType Ordinal
-                            , PTimeUnit HoursMinutes
+                            , PTimeUnit [TU HoursMinutes]
                             , PAxis [AxTitle "time"]
                             ]
                $ []
@@ -358,7 +358,7 @@ outputAsUTC =
              , encoding
                . position X [ PName "date"
                             , PmType Temporal
-                            , PTimeUnit (Utc YearMonthDateHoursMinutes)
+                            , PTimeUnit [Utc YearMonthDateHoursMinutes]
                             , PAxis [AxLabelAngle 15]
                             ]
                . position Y [ PName "price"
@@ -375,7 +375,7 @@ outputScaledAsUTC =
              , encoding
                . position X [ PName "date"
                             , PmType Temporal
-                            , PTimeUnit YearMonthDateHoursMinutes
+                            , PTimeUnit [TU YearMonthDateHoursMinutes]
                             , PScale [SType ScUtc]
                             , PAxis [AxLabelAngle 15]
                             ]
@@ -430,7 +430,7 @@ customizeStep =
              , encoding
                . position X [ PName "date"
                             , PmType Temporal
-                            , PTimeUnit (TUStep 5 Minutes)
+                            , PTimeUnit [TUStep 5, TU Minutes]
                             ]
                . position Y [ PName "distance"
                             , PmType Quantitative

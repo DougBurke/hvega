@@ -332,15 +332,15 @@ stackPlot =
   in toVegaLite [ cars, trans [], enc [], mark Rect [] ]
 
 
-weather :: TimeUnit -> FieldName -> VegaLite
-weather tunit field =
+weather :: [TimeUnit] -> FieldName -> VegaLite
+weather tunits field =
   let weatherData = dataFromUrl "https://vega.github.io/vega-lite/data/seattle-weather.csv"
                     [ Parse [ ( "date", FoDate "%Y/%m/%d" ) ] ]
 
       trans = transform
               . calculateAs "datum.date" "sampleDate"
               . calculateAs "datum.temp_max" "maxTemp"
-              . timeUnitAs tunit "sampleDate" field
+              . timeUnitAs tunits "sampleDate" field
 
       enc = encoding
             . position X [ PName field, PmType Temporal, PAxis [ AxFormat "%b" ] ]
@@ -354,13 +354,13 @@ weather tunit field =
                 ]
 
 weatherByMonth :: VegaLite
-weatherByMonth = weather Month "month"
+weatherByMonth = weather [TU Month] "month"
 
 weatherByTwoMonths :: VegaLite
-weatherByTwoMonths = weather (TUStep 2 Month) "bimonth"
+weatherByTwoMonths = weather [TU Month, TUStep 2] "bimonth"
 
 weatherMaxBins :: VegaLite
-weatherMaxBins = weather (TUMaxBins 3) "tbin"
+weatherMaxBins = weather [TUMaxBins 3] "tbin"
 
 
 distances :: VegaLite
@@ -375,7 +375,7 @@ distances =
       enc = encoding
             . position X [ PName "date"
                          , PmType Temporal
-                         , PTimeUnit (TUMaxBins 15) ]
+                         , PTimeUnit [TUMaxBins 15] ]
             . position Y [ PName "distance"
                          , PmType Quantitative
                          , PAggregate Sum ]

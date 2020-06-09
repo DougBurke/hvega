@@ -82,7 +82,7 @@ window3 =
     let trans =
             transform
                 . filter (FExpr "datum.IMDB_Rating != null")
-                . timeUnitAs Year "Release_Date" "year"
+                . timeUnitAs [TU Year] "Release_Date" "year"
                 . window [ ( [ WAggregateOp Mean, WField "IMDB_Rating" ], "AverageYearRating" ) ]
                     [ WGroupBy [ "year" ], WFrame Nothing Nothing ]
                 . filter (FExpr "(datum.IMDB_Rating - datum.AverageYearRating) > 2.5")
@@ -186,13 +186,13 @@ window7 =
         trans =
             transform
                 . filter (FExpr "datum.Miles_per_Gallon !== null")
-                . timeUnitAs Year "Year" "year"
+                . timeUnitAs [TU Year] "Year" "year"
                 . window [ ( [ WAggregateOp Mean, WField "Miles_per_Gallon" ], "Average_MPG" ) ]
                     [ WSort [ WAscending "year" ], WIgnorePeers False, WFrame Nothing (Just 0) ]
 
         circleEnc =
             encoding
-                . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
+                . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
                 . position Y [ PName "Miles_per_Gallon", PmType Quantitative ]
 
         circleSpec =
@@ -200,7 +200,7 @@ window7 =
 
         lineEnc =
             encoding
-                . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
+                . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
                 . position Y [ PName "Average_MPG", PmType Quantitative, PAxis [ AxTitle "Miles per gallon" ] ]
 
         lineSpec =
@@ -259,7 +259,7 @@ joinAggregate3 =
         trans =
             transform
                 . filter (FExpr "datum.IMDB_Rating != null")
-                . timeUnitAs Year "Release_Date" "year"
+                . timeUnitAs [TU Year] "Release_Date" "year"
                 . joinAggregate [ opAs Mean "IMDB_Rating" "AverageYearRating" ]
                     [ WGroupBy [ "year" ] ]
                 . filter (FExpr "(datum.IMDB_Rating - datum.AverageYearRating) > 2.5")

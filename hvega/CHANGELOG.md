@@ -6,7 +6,22 @@ For the latest version of this document, please see
 The Vega-Lite tests are now validated against version 4.13 of the
 Vega-Lite schema.
 
-The `TimeUnit` type has seen a number of additions: the `Week` and
+### Breaking Changes
+
+The handling of time units (for both `TimeUnit` and `ScaleNice`) has
+changed. The contents of these types have been split into two parts: a
+"time unit" and the options that get applied to it (rather than having
+a single type that combines both functions). This does mean that
+setting time units has now become __more verbose__, but it has stopped
+some problem cases (and, in the case of `ScaleNice`, fixed a logical
+error on my part). The new time units are `BaseTimeUnit` and
+`NTimeUnit`, and contain the "basic" constructors for the time
+units. The `TimeUnit` and `ScaleNice` constructors now reference these
+types rather than include them in their definition, so that `PTimeUnit
+Month` has been changed to `PTimeUnit [TU Month]` and `SNice NMinute`
+has changed to `SNice (NTU NMinute)`.
+
+The `BaseTimeUnit' type has seen a number of additions: the `Week` and
 `DayOfYear` time units added in Vega-Lite 4.13.0, along with the
 associated composite units (such as `YearWeek`), and a number of
 composite types that were missing (such as `MonthDateHours`).  The

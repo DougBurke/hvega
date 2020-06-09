@@ -163,10 +163,10 @@ axisDateCondition1 =
         encoding
           . position X [ PName "Year"
                        , PmType Temporal
-                       , PTimeUnit Year
+                       , PTimeUnit [TU Year]
                        , PAxis [ AxDataCondition
                                  (FEqual "value" (DateTime [DTMonth Jan, DTDate 1])
-                                   & FilterOpTrans (MTimeUnit MonthDate))
+                                   & FilterOpTrans (MTimeUnit [TU MonthDate]))
                                  (CAxGridWidth 4 1)
                                ]
                        ]

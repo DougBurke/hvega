@@ -17,6 +17,7 @@ module Graphics.Vega.VegaLite.Scale
        ( ScaleDomain(..)
        , ScaleRange(..)
        , ScaleNice(..)
+       , NTimeUnit(..)
 
          -- not for external export
        , scaleDomainSpec
@@ -40,9 +41,7 @@ import Graphics.Vega.VegaLite.Specification
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
-  , TimeUnit
   , dateTimeProperty
-  , timeUnitSpec
   )
 
 
@@ -112,43 +111,63 @@ scaleDomainSpec Unaggregated = "unaggregated"
 
 Describes the way a scale can be rounded to \"nice\" numbers. For full details see the
 <https://vega.github.io/vega-lite/docs/scale.html#continuous Vega-Lite documentation>.
+
+Prior to version @0.10.0.0@ the time units were included in the constructors
+for @ScaleNice@.
+
 -}
 data ScaleNice
-    = NMillisecond
-      -- ^ Nice time intervals that try to align with rounded milliseconds.
-    | NSecond
-      -- ^ Nice time intervals that try to align with whole or rounded seconds.
-    | NMinute
-      -- ^ Nice time intervals that try to align with whole or rounded minutes.
-    | NHour
-      -- ^ Nice time intervals that try to align with whole or rounded hours.
-    | NDay
-      -- ^ Nice time intervals that try to align with whole or rounded days.
-    | NWeek
+  = NTU NTimeUnit
+    -- ^ Time range.
+  | NInterval NTimeUnit Int
+    -- ^ \"Nice\" temporal interval values when scaling.
+  | IsNice Bool
+    -- ^ Enable or disable nice scaling.
+  | NTickCount Int
+    -- ^ Desired number of tick marks in a \"nice\" scaling.
+
+{-|
+
+The time intervals that can be rounded to \"nice\" numbers.
+
+Prior to @0.10.0.0@ these were part of 'ScaleNice'.
+
+-}
+
+data NTimeUnit
+  = NMillisecond
+    -- ^ Nice time intervals that try to align with rounded milliseconds.
+  | NSecond
+    -- ^ Nice time intervals that try to align with whole or rounded seconds.
+  | NMinute
+    -- ^ Nice time intervals that try to align with whole or rounded minutes.
+  | NHour
+    -- ^ Nice time intervals that try to align with whole or rounded hours.
+  | NDay
+    -- ^ Nice time intervals that try to align with whole or rounded days.
+  | NWeek
     -- ^ Nice time intervals that try to align with whole or rounded weeks.
-    | NMonth
-      -- ^ Nice time intervals that try to align with whole or rounded months.
-    | NYear
-      -- ^ Nice time intervals that try to align with whole or rounded years.
-    | NInterval TimeUnit Int
-      -- ^ \"Nice\" temporal interval values when scaling.
-    | IsNice Bool
-      -- ^ Enable or disable nice scaling.
-    | NTickCount Int
-      -- ^ Desired number of tick marks in a \"nice\" scaling.
+  | NMonth
+    -- ^ Nice time intervals that try to align with whole or rounded months.
+  | NYear
+    -- ^ Nice time intervals that try to align with whole or rounded years.
+
+
+nTimeUnitSpec :: NTimeUnit -> VLSpec
+nTimeUnitSpec NMillisecond = fromT "millisecond"
+nTimeUnitSpec NSecond = fromT "second"
+nTimeUnitSpec NMinute = fromT "minute"
+nTimeUnitSpec NHour = fromT "hour"
+nTimeUnitSpec NDay = fromT "day"
+nTimeUnitSpec NWeek = fromT "week"
+nTimeUnitSpec NMonth = fromT "month"
+nTimeUnitSpec NYear = fromT "year"
 
 
 scaleNiceSpec :: ScaleNice -> VLSpec
-scaleNiceSpec NMillisecond = fromT "millisecond"
-scaleNiceSpec NSecond = fromT "second"
-scaleNiceSpec NMinute = fromT "minute"
-scaleNiceSpec NHour = fromT "hour"
-scaleNiceSpec NDay = fromT "day"
-scaleNiceSpec NWeek = fromT "week"
-scaleNiceSpec NMonth = fromT "month"
-scaleNiceSpec NYear = fromT "year"
+scaleNiceSpec (NTU tu) = nTimeUnitSpec tu
 scaleNiceSpec (NInterval tu step) =
-  object ["interval" .= timeUnitSpec tu, "step" .= step]
+  object ["interval" .= nTimeUnitSpec tu, "step" .= step]
 scaleNiceSpec (IsNice b) = toJSON b
 scaleNiceSpec (NTickCount n) = toJSON n
 
