@@ -28,10 +28,7 @@
     "encoding": {
         "x": {
             "field": "date",
-            "timeUnit": {
-                "utc": true,
-                "unit": "yearmonthdatehoursminutes"
-            },
+            "timeUnit": "utcyearmonthdatehoursminutes",
             "type": "temporal",
             "axis": {
                 "labelAngle": 15

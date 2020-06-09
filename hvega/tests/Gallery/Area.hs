@@ -36,7 +36,7 @@ area1 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonth, PAxis [ AxFormat "%Y" ] ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonth], PAxis [ AxFormat "%Y" ] ]
                 . position Y [ PName "count", PmType Quantitative, PAggregate Sum, PAxis [ AxTitle "Count" ] ]
     in
     toVegaLite
@@ -80,7 +80,7 @@ area3 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonth, PAxis [ AxFormat "%Y" ] ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonth], PAxis [ AxFormat "%Y" ] ]
                 . position Y [ PName "count", PmType Quantitative, PAggregate Sum ]
                 . color [ MName "series", MmType Nominal, MScale [ SScheme "category20b" [] ] ]
     in
@@ -100,7 +100,7 @@ area4 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonth, PAxis [ AxDomain False, AxFormat "%Y" ] ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonth], PAxis [ AxDomain False, AxFormat "%Y" ] ]
                 . position Y [ PName "count", PmType Quantitative, PAggregate Sum, PAxis [], PStack StNormalize ]
                 . color [ MName "series", MmType Nominal, MScale [ SScheme "category20b" [] ] ]
     in
@@ -122,7 +122,7 @@ area5 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit YearMonth, PAxis [ AxDomain False, AxFormat "%Y" ] ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonth], PAxis [ AxDomain False, AxFormat "%Y" ] ]
                 . position Y [ PName "count", PmType Quantitative, PAggregate Sum, PAxis [], PStack StCenter ]
                 . color [ MName "series", MmType Nominal, MScale [ SScheme "category20b" [] ] ]
     in
@@ -290,10 +290,10 @@ lasagna =
               ]
 
       xCondition = FEqual "value" (DateTime [DTMonthNum 1, DTDate 1])
-                   & FilterOpTrans (MTimeUnit MonthDate)
+                   & FilterOpTrans (MTimeUnit [TU MonthDate])
                    
       enc = encoding
-            . position X [ PTimeUnit YearMonthDate
+            . position X [ PTimeUnit [TU YearMonthDate]
                          , PName "date"
                          , PmType Ordinal
                          , PTitle "Time"

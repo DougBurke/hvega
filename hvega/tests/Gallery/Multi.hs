@@ -262,7 +262,7 @@ multi5 =
                 . position X
                     [ PName "date"
                     , PmType Temporal
-                    , PTimeUnit MonthDate
+                    , PTimeUnit [TU MonthDate]
                     , PAxis [ AxTitle "Date", AxFormat "%b" ]
                     ]
                 . position Y

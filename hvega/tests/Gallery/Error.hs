@@ -111,7 +111,7 @@ error3 =
             description "Line chart with confidence interval band."
 
         encTime =
-            encoding . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
+            encoding . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
 
         encBand =
             encoding

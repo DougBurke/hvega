@@ -300,7 +300,7 @@ lookupSelection1 =
                                  , encoding
                                    . text [ TName "date"
                                           , TmType Temporal
-                                          , TTimeUnit YearMonth
+                                          , TTimeUnit [TU YearMonth]
                                           ]
                                    . position Y [PNumber 310]
                                    $ []

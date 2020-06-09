@@ -91,7 +91,7 @@ compositeVis config =
 
         streamEnc =
             encoding
-                . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
+                . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
                 . yCount [ PStack StCenter, PAxis [] ]
                 . color mOrigin
 
@@ -129,7 +129,7 @@ vbTest =
 
         streamEnc =
             encoding
-                . position X [ PName "Year", PmType Temporal, PTimeUnit Year ]
+                . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
                 . yCount [ PStack StCenter, PAxis [] ]
                 . color mOrigin
 

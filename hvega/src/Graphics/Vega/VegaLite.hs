@@ -666,6 +666,7 @@ module Graphics.Vega.VegaLite
        , VL.ScaleDomain(..)
        , VL.ScaleRange(..)
        , VL.ScaleNice(..)
+       , VL.NTimeUnit(..)
 
          -- *** Color scaling
          --
@@ -850,6 +851,7 @@ module Graphics.Vega.VegaLite
        , VL.MonthName(..)
        , VL.DayName(..)
        , VL.TimeUnit(..)
+       , VL.BaseTimeUnit(..)
 
          -- * Update notes
          --
@@ -1265,9 +1267,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- The @0.10.0.0@ release updates @hvega@ to support version 4.13 of
 -- the Vega-Lite schema.
 --
--- __New constructors__
+-- __Breaking Changes__
 --
--- The 'VL.TimeUnit' type has seen a number of additions: the 'VL.Week' and
+-- The handling of time units (for both 'VL.TimeUnit' and 'VL.ScaleNice') has
+-- changed. The contents of these types have been split into two parts:
+-- a \"time unit\" and the options that get applied to it (rather than having
+-- a single type that combines both functions). This does mean that setting
+-- time units has now become __more verbose__, but it has stopped some
+-- problem cases (and, in the case of 'VL.ScaleNice', fixed a logical error
+-- on my part). The new time units are 'VL.BaseTimeUnit' and 'VL.NTimeUnit',
+-- and contain the \"basic\" constructors for the time units. The
+-- 'VL.TimeUnit' and 'VL.ScaleNice' constructors now reference these
+-- types rather than include them in their definition, so that
+-- @PTimeUnit Month@ has been changed to
+-- @'VL.PTimeUnit' ['VL.TU' 'VL.Month']@
+-- and
+-- @SNice NMinute@ has changed to
+-- @'VL.SNice' ('VL.NTU' 'VL.NMinute')@.
+--
+-- The 'VL.BaseTimeUnit' type has seen a number of additions: the 'VL.Week' and
 -- 'VL.DayOfYear' time units added in Vega-Lite 4.13.0, along with the
 -- associated composite units (such as 'VL.YearWeek'), and a number of
 -- composite types that were missing (such as 'VL.MonthDateHours').

@@ -14,10 +14,7 @@
     "encoding": {
         "y": {
             "field": "date",
-            "timeUnit": {
-                "utc": true,
-                "unit": "hours"
-            },
+            "timeUnit": "utchours",
             "type": "ordinal",
             "axis": {
                 "title": "time"
