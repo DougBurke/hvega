@@ -6,16 +6,11 @@
 # (the only component with tests) is in a sub-directory.
 #
 
-sudo: true
 language: haskell
-
-# I tried this because of what-turned-out-to-be transient failures
-# with Travis (it couldn't download GHC 8.8.1). However, with the
-# following change the tests no longer ran, and it's not clear to
-# me if that's because there's something wrong below or not, so
-# I am removing it for now.
-#
 # dist: bionic
+dist: xenial
+os: linux
+
 # addons
 #   apt:
 #     sources:
@@ -27,7 +22,7 @@ language: haskell
 git:
   depth: 5
 
-cabal: "2.4"
+cabal: "3.2"
 
 cache:
   directories:
@@ -38,7 +33,7 @@ cache:
 # The stack test takes longer, presumably because of what needs to be
 # downloaded, so run this first.
 #
-matrix:
+jobs:
   include:
 
   # Stack
@@ -57,22 +52,22 @@ install:
       cd $TRAVIS_BUILD_DIR/hvega
       ghc --version
       cabal --version
-      cabal new-update
-      cabal new-build --enable-tests --enable-benchmarks
+      cabal v2-update
+      cabal v2-build --enable-tests --enable-benchmarks
     else
       # install stack
       curl -sSL https://get.haskellstack.org/ | sh
 
       # build project with stack
       stack --version
-      stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks
+      stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --ghc-options=-Werror
     fi
 
 script:
   - |
     if [ -z "$STACK_YAML" ]; then
       cd $TRAVIS_BUILD_DIR/hvega
-      cabal new-test --enable-tests
+      cabal v2-test --enable-tests
     else
       stack test --system-ghc
     fi
