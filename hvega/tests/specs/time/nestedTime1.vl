@@ -1,0 +1,53 @@
+{
+    "mark": "line",
+    "data": {
+        "values": [
+            {
+                "histo": {
+                    "date": "Sun, 02 Jan 2012 00:00:00",
+                    "price": 150
+                }
+            },
+            {
+                "histo": {
+                    "date": "Sun, 02 Jan 2012 00:00:00",
+                    "price": 100
+                }
+            },
+            {
+                "histo": {
+                    "date": "Sun, 02 Jan 2012 01:00:00",
+                    "price": 170
+                }
+            },
+            {
+                "histo": {
+                    "date": "Sun, 02 Jan 2012 02:00:00",
+                    "price": 165
+                }
+            },
+            {
+                "histo": {
+                    "date": "Sun, 02 Jan 2012 03:00:00",
+                    "price": 200
+                }
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "x": {
+            "field": "histo.date",
+            "scale": {
+                "type": "utc"
+            },
+            "timeUnit": "yearmonthdatehoursminutes",
+            "type": "temporal"
+        },
+        "y": {
+            "field": "histo.price",
+            "type": "quantitative"
+        }
+    },
+    "description": "Google's stock price over time."
+}

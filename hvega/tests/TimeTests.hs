@@ -1,10 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 --
 -- Based on the Elm VegaLite TimeTests.elm as of version 1.12.0
 --
 
 module TimeTests (testSpecs) where
+
+import Data.Aeson (Value)
+import Data.Aeson.QQ.Simple (aesonQQ)
 
 import Graphics.Vega.VegaLite
 
@@ -39,6 +43,8 @@ testSpecs = [ ("timeYear", timeYear)
             , ("outputAsUTC", outputAsUTC)
             , ("outputScaledAsUTC", outputScaledAsUTC)
             , ("customizeStep", customizeStep)
+            , ("nestedTime1", nestedTime1)
+            , ("nestedTime2", nestedTime2)
             ]
 
 
@@ -438,3 +444,53 @@ customizeStep =
                             ]
                $ []
              ]
+
+
+embeddedData, flattenedData :: Value
+embeddedData = [aesonQQ|
+[
+   {"histo": {"date": "Sun, 02 Jan 2012 00:00:00", "price": 150}},
+   {"histo": {"date": "Sun, 02 Jan 2012 00:00:00", "price": 100}},
+   {"histo": {"date": "Sun, 02 Jan 2012 01:00:00", "price": 170}},
+   {"histo": {"date": "Sun, 02 Jan 2012 02:00:00", "price": 165}},
+   {"histo": {"date": "Sun, 02 Jan 2012 03:00:00", "price": 200}}
+]
+|]
+  
+flattenedData = [aesonQQ|
+[
+   {"date": "Sun, 02 Jan 2012 00:00:00", "price": 150},
+   {"date": "Sun, 02 Jan 2012 00:00:00", "price": 100},
+   {"date": "Sun, 02 Jan 2012 01:00:00", "price": 170},
+   {"date": "Sun, 02 Jan 2012 02:00:00", "price": 165},
+   {"date": "Sun, 02 Jan 2012 03:00:00", "price": 200}
+]
+|]
+  
+
+-- https://github.com/vega/vega-lite/issues/5662
+
+nestedTime :: Value -> FieldName -> FieldName -> VegaLite
+nestedTime jData xname yname =
+  let desc = "Google's stock price over time."
+      dvals = dataFromJson jData []
+      
+  in toVegaLite [ description desc
+                , dvals
+                , mark Line []
+                , encoding
+                  . position X [ PName xname
+                               , PmType Temporal
+                               , PTimeUnit [TU YearMonthDateHoursMinutes]
+                               , PScale [SType ScUtc]
+                               ]
+                  . position Y [ PName yname
+                               , PmType Quantitative
+                               ]
+                  $ []
+                ]
+
+  
+nestedTime1, nestedTime2 :: VegaLite
+nestedTime1 = nestedTime embeddedData "histo.date" "histo.price"
+nestedTime2 = nestedTime flattenedData "date" "price"
