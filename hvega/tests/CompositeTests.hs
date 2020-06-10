@@ -145,7 +145,7 @@ eBand ext hasBorders =
 
         enc =
             encoding
-                . position X [ PName "Year", PmType Temporal, PTimeUnit [TU Year] ]
+                . position X [ PName "Year", PmType Temporal, PTimeUnit (TU Year) ]
                 . position Y
                     [ PName "Miles_per_Gallon"
                     , PmType Quantitative

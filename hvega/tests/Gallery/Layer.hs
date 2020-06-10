@@ -55,7 +55,7 @@ layer1 =
                 . position X
                     [ PName "date"
                     , PmType Temporal
-                    , PTimeUnit [TU YearMonthDate]
+                    , PTimeUnit (TU YearMonthDate)
                     , PScale [ SDomain (DDateTimes [ [ DTMonth May, DTDate 31, DTYear 2009 ], [ DTMonth Jul, DTDate 1, DTYear 2009 ] ]) ]
                     , PAxis [ AxTitle "Date in 2009", AxFormat "%m/%d" ]
                     ]
@@ -68,7 +68,7 @@ layer1 =
 
         encBar =
             encoding
-                . position X [ PName "date", PmType Temporal, PTimeUnit [TU YearMonthDate] ]
+                . position X [ PName "date", PmType Temporal, PTimeUnit (TU YearMonthDate) ]
                 . position Y [ PName "open", PmType Quantitative ]
                 . position Y2 [ PName "close" ]
                 . size [ MNumber 5 ]
@@ -221,7 +221,7 @@ layer4 =
             description "Layered bar/line chart with dual axes"
 
         encTime =
-            encoding . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Month] ]
+            encoding . position X [ PName "date", PmType Ordinal, PTimeUnit (TU Month) ]
 
         encBar =
             encoding
@@ -411,7 +411,7 @@ layerTimeunitRect :: VegaLite
 layerTimeunitRect =
   let desc = "Drawing rect bin from the beginning of May to end of July"
 
-      xAxis = [ PTimeUnit [TU Month]
+      xAxis = [ PTimeUnit (TU Month)
               , PName "date"
               , PmType Temporal
               ]
@@ -437,7 +437,7 @@ layerTimeunitRect =
              , mark Rect [MOpacity 0.5, MColor "grey"]
              , encoding
                . position X xAxis
-               . position X2 [PTimeUnit [TU Month], PName "date_end"]
+               . position X2 [PTimeUnit (TU Month), PName "date_end"]
                $ []
              ]
   

@@ -32,9 +32,9 @@ repeat1 =
 
         enc1 =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Month] ]
+                . position X [ PName "date", PmType Ordinal, PTimeUnit (TU Month) ]
                 . position Y [ PRepeat Column, PmType Quantitative, PAggregate Mean ]
-                . detail [ DName "date", DmType Temporal, DTimeUnit [TU Year] ]
+                . detail [ DName "date", DmType Temporal, DTimeUnit (TU Year) ]
                 . color [ MName "location", MmType Nominal ]
                 . opacity [ MNumber 0.2 ]
 
@@ -43,7 +43,7 @@ repeat1 =
 
         enc2 =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Month] ]
+                . position X [ PName "date", PmType Ordinal, PTimeUnit (TU Month) ]
                 . position Y [ PRepeat Column, PmType Quantitative, PAggregate Mean ]
                 . color [ MName "location", MmType Nominal ]
 
@@ -73,7 +73,7 @@ repeat2 =
 
         enc1 =
             encoding
-                . position X [ PName "date", PTimeUnit [TU Month], PmType Ordinal ]
+                . position X [ PName "date", PTimeUnit (TU Month), PmType Ordinal ]
                 . position Y [ PName "precipitation", PmType Quantitative, PAggregate Mean ]
 
         spec1 =

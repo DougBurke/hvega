@@ -189,7 +189,7 @@ bar5 =
             encoding
                 . position X [ PName "date"
                              , PmType Ordinal
-                             , PTimeUnit [TU Month]
+                             , PTimeUnit (TU Month)
                              , PAxis [ AxTitle "Month of the year" ]
                              ]
                 . position Y [ PmType Quantitative, PAggregate Count ]
@@ -751,7 +751,7 @@ initialLetter =
                 , encoding
                   . position X [ PName "date"
                                , PmType Temporal
-                               , PTimeUnit [TU Month]
+                               , PTimeUnit (TU Month)
                                , PAxis [ AxLabelAlign AlignLeft
                                        , AxLabelExpr "datum.label[0]"
                                        ]
