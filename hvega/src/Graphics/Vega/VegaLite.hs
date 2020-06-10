@@ -1280,7 +1280,7 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- 'VL.TimeUnit' and 'VL.ScaleNice' constructors now reference these
 -- types rather than include them in their definition, so that
 -- @PTimeUnit Month@ has been changed to
--- @'VL.PTimeUnit' ['VL.TU' 'VL.Month']@
+-- @'VL.PTimeUnit' ('VL.TU' 'VL.Month')@
 -- and
 -- @SNice NMinute@ has changed to
 -- @'VL.SNice' ('VL.NTU' 'VL.NMinute')@.

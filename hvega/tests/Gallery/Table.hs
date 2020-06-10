@@ -54,8 +54,8 @@ table2 =
 
         enc =
             encoding
-                . position X [ PName "date", PmType Ordinal, PTimeUnit [TU Date], PAxis [ AxTitle "Day", AxLabelAngle 0, AxFormat "%e" ] ]
-                . position Y [ PName "date", PmType Ordinal, PTimeUnit [TU Month], PAxis [ AxTitle "Month" ] ]
+                . position X [ PName "date", PmType Ordinal, PTimeUnit (TU Date), PAxis [ AxTitle "Day", AxLabelAngle 0, AxFormat "%e" ] ]
+                . position Y [ PName "date", PmType Ordinal, PTimeUnit (TU Month), PAxis [ AxTitle "Month" ] ]
                 . color [ MName "temp", MmType Quantitative, MAggregate Max, MLegend [ LNoTitle ] ]
     in
     toVegaLite
@@ -117,8 +117,8 @@ table4 =
 
         enc =
             encoding
-                . position X [ PName "time", PmType Ordinal, PTimeUnit [TU Hours] ]
-                . position Y [ PName "time", PmType Ordinal, PTimeUnit [TU Day] ]
+                . position X [ PName "time", PmType Ordinal, PTimeUnit (TU Hours) ]
+                . position Y [ PName "time", PmType Ordinal, PTimeUnit (TU Day) ]
                 . size [ MName "count", MmType Quantitative, MAggregate Sum ]
     in
     toVegaLite

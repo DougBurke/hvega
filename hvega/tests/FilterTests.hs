@@ -48,7 +48,7 @@ dateFilter fexpr =
 dateFilterNumbers :: Maybe Double -> Maybe Double -> VegaLite
 dateFilterNumbers mlo mhi =
   let yearRange = FRange "date" frange
-                  & FilterOpTrans (MTimeUnit [TU Year])
+                  & FilterOpTrans (MTimeUnit (TU Year))
                   & FCompose
 
       frange = case (mlo, mhi) of

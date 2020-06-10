@@ -29,7 +29,7 @@ module Graphics.Vega.VegaLite.Time
 
 import qualified Data.Text as T
 
-import Data.Aeson ((.=), object)
+import Data.Aeson ((.=), object, toJSON)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -150,14 +150,15 @@ for further details.
 
 @
 'Graphics.Vega.VegaLite.encoding'
-    . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' "date", 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Temporal', 'Graphics.Vega.VegaLite.PTimeUnit' ['Utc' 'YearMonthDateHours'] ]
+    . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' [ 'Graphics.Vega.VegaLite.PName' "date", 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Temporal', 'Graphics.Vega.VegaLite.PTimeUnit' ('Utc' 'YearMonthDateHours') ]
 @
 
 Prior to version @0.10.0.0@ the field was a combination of what is now
 'BaseTimeUnit' and the \"option\" fields (e.g. encode as UTC or the
-maximum nuber of bins), and only a single setting could be changed.
+maximum nuber of bins).
 
 -}
+
 
 data TimeUnit
   = TU BaseTimeUnit
@@ -174,15 +175,19 @@ data TimeUnit
     --   for a full year.
     --
     --   @since 0.6.0.0
-  | TUStep Double
+  | TUStep Double BaseTimeUnit
     -- ^ The number of steps between time-unit bins, in terms of the
-    --   least-significant unit provided. So @[TUStep 14, TU YearMonthDate]@
+    --   least-significant unit provided. So @TUStep 14 YearMonthDate@
     --   will bin temporal data into bi-weekly groups.
     --
-    --   In @0.10.0.0@ the ability to define the units was dropped,
-    --   as this is now specified as a list of options.
-    --
     --   @since 0.6.0.0
+  | UtcStep Double BaseTimeUnit
+    -- ^ The number of steps between time-unit bins, in terms of the
+    --   least-significant unit provided for UTC times.
+    --   So @UtcStep 14 YearMonthDate]@
+    --   will bin temporal data into bi-weekly groups.
+    --
+    --   @since 0.10.0.0
 
 
 {-|
@@ -400,19 +405,12 @@ monthNameLabel Nov = "Nov"
 monthNameLabel Dec = "Dec"
 
 
-timeUnitProperties :: TimeUnit -> LabelledSpec
-timeUnitProperties (TU tu) = "unit" .= baseTimeUnitLabel tu
-timeUnitProperties (Utc tu) = "unit" .= ("utc" <> baseTimeUnitLabel tu)
-timeUnitProperties (TUStep x) = "step" .= x
-timeUnitProperties (TUMaxBins n) = "maxbins" .= n
+fromT :: T.Text -> VLSpec
+fromT = toJSON
 
-
--- Special case this so that
---   {'unit': blah}              -> blah
---
-timeUnitSpec :: [TimeUnit] -> VLSpec
-timeUnitSpec tus =
-  let props = map timeUnitProperties tus
-  in case props of
-    [(k, v)] | k == "unit" -> v
-    _ -> object props
+timeUnitSpec :: TimeUnit -> VLSpec
+timeUnitSpec (TU tu) = fromT (baseTimeUnitLabel tu)
+timeUnitSpec (Utc tu) = fromT ("utc" <> baseTimeUnitLabel tu)
+timeUnitSpec (TUStep x tu) = object ["step" .= x, "unit" .= baseTimeUnitLabel tu]
+timeUnitSpec (UtcStep x tu) = object ["step" .= x, "unit" .= ("utc" <> baseTimeUnitLabel tu)]
+timeUnitSpec (TUMaxBins n) = object ["maxbins" .= n]

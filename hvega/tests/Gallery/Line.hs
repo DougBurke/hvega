@@ -359,10 +359,10 @@ conditionalAxis =
       expr = "[timeFormat(datum.value, '%b'), timeFormat(datum.value, '%m') == '01' ? timeFormat(datum.value, '%Y') : '']"
 
       cond = FEqual "value" (Number 1)
-             & FilterOpTrans (MTimeUnit [TU Month])
+             & FilterOpTrans (MTimeUnit (TU Month))
 
       yearRange = FRange "date" (NumberRange 2006 2007)
-                  & FilterOpTrans (MTimeUnit [TU Year])
+                  & FilterOpTrans (MTimeUnit (TU Year))
                   & FCompose
 
   in toVegaLite [ description "Line chart with conditional axis ticks, labels, and grid."

@@ -125,7 +125,7 @@ advanced3 =
         trans =
             transform
                 . filter (FExpr "isValid(datum.IMDB_Rating)")
-                . timeUnitAs [TU Year] "Release_Date" "year"
+                . timeUnitAs (TU Year) "Release_Date" "year"
                 . window [ ( [ WAggregateOp Mean, WField "IMDB_Rating" ], "AverageYearRating" ) ]
                     [ WGroupBy [ "year" ], WFrame Nothing Nothing ]
                 . filter (FExpr "(datum.IMDB_Rating - datum.AverageYearRating) > 2.5")
@@ -662,11 +662,11 @@ layered2 =
       trans = transform . filter (FExpr "datum.symbol === 'GOOG'")
 
       encRaw = encoding
-                . position X [ PName "date", pTemporal, PTimeUnit [TU Year] ]
+                . position X [ PName "date", pTemporal, PTimeUnit (TU Year) ]
                 . position Y [ PName "price", pQuant ]
 
       encAv = encoding
-                . position X [ PName "date", pTemporal, PTimeUnit [TU Year] ]
+                . position X [ PName "date", pTemporal, PTimeUnit (TU Year) ]
                 . position Y [ PName "price", PAggregate Mean, pQuant ]
 
       specRaw = asSpec [ encRaw [], mark Point [ MOpacity 0.3 ] ]

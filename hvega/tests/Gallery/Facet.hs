@@ -253,7 +253,7 @@ trellisAreaSeattle =
                 , configure (configuration (Axis [Grid False, Domain False]) [])
                 , facet [ RowBy [ FName "date"
                                 , FmType Nominal
-                                , FTimeUnit [TU Hours]
+                                , FTimeUnit (TU Hours)
                                 , FSort [ByFieldOp "order" Max] -- don't want an operation
                                 , FHeader [ HLabelAngle 0
                                           , HLabelPadding 2
