@@ -18,7 +18,7 @@ error on my part). The new time units are `BaseTimeUnit` and
 `NTimeUnit`, and contain the "basic" constructors for the time
 units. The `TimeUnit` and `ScaleNice` constructors now reference these
 types rather than include them in their definition, so that `PTimeUnit
-Month` has been changed to `PTimeUnit [TU Month]` and `SNice NMinute`
+Month` has been changed to `PTimeUnit (TU Month)` and `SNice NMinute`
 has changed to `SNice (NTU NMinute)`.
 
 The `BaseTimeUnit' type has seen a number of additions: the `Week` and
