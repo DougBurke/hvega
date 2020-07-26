@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.10.0.0
+version:             0.11.0.0
 synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
@@ -226,6 +226,8 @@ test-suite test
                      , tasty-golden >= 2.2 && < 2.4
                      , text == 1.2.*
                      , unordered-containers >= 0.2 && < 0.3
+                     -- hvega is not needed with recent cabal's, but it's
+                     -- not obvious if this is true with older versions
                      , hvega
 
   default-language:    Haskell2010
@@ -243,6 +245,8 @@ executable    playtutorial
                      , bytestring
                      , directory
                      , filepath
+                     -- hvega is not needed with recent cabal's, but it's
+                     -- not obvious if this is true with older versions
                      , hvega
                      , text
   else

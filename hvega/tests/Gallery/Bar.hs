@@ -21,6 +21,8 @@ testSpecs = [ ("bar1", bar1)
             , ("bar4", bar4)
             , ("bar5", bar5)
             , ("bar6", bar6)
+            , ("bar6order", bar6order)
+            , ("bar6sort", bar6sort)
             , ("bar7", bar7)
             , ("bar8", bar8)
             , ("bar9", bar9)
@@ -208,25 +210,58 @@ bar5 =
         ]
 
 
--- bar9 in GalleryBar.elm
+barley :: Data
+barley = dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
+
+
+barleyEnc :: [EncodingSpec] -> PropertySpec
+barleyEnc = encoding
+            . position X [ PName "yield", PmType Quantitative, PAggregate Sum ]
+            . position Y [ PName "variety", PmType Nominal ]
+            . color [ MName "site", MmType Nominal ]
+
+
+-- bar9 in GalleryBar.elm, also first version of
+-- https://vega.github.io/vega-lite/docs/stack.html#sorting-stack-order
 bar6 :: VegaLite
 bar6 =
-    let
-        des =
-            description "Barley crop yields as a horizontal stacked bar chart"
+  let des = description "Barley crop yields as a horizontal stacked bar chart"
 
-        enc =
-            encoding
-                . position X [ PName "yield", PmType Quantitative, PAggregate Sum ]
-                . position Y [ PName "variety", PmType Nominal ]
-                . color [ MName "site", MmType Nominal ]
-    in
-    toVegaLite
-        [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
-        , mark Bar []
-        , enc []
-        ]
+  in toVegaLite [ des
+                , barley
+                , mark Bar []
+                , barleyEnc []
+                ]
+
+
+-- tweaks to bar6 from https://vega.github.io/vega-lite/docs/stack.html#sorting-stack-order
+--
+bar6order :: VegaLite
+bar6order =
+  let enc = barleyEnc
+            . order [ OName "yield", OmType Quantitative, OAggregate Sum ]
+
+  in toVegaLite [ barley
+                , mark Bar []
+                , enc []
+                ]
+
+
+-- tweaks to bar6 from https://vega.github.io/vega-lite/docs/stack.html#sorting-stack-order
+--
+bar6sort :: VegaLite
+bar6sort =
+  let enc = barleyEnc
+            . order [ OName "siteOrder", OmType Quantitative ]
+
+      trans = transform
+              . calculateAs "if(datum.site === 'University Farm', 0, if(datum.site === 'Grand Rapids', 1, 2))" "siteOrder"
+
+  in toVegaLite [ barley
+                , trans []
+                , mark Bar []
+                , enc []
+                ]
 
 
 -- bar10 in GalleryBar.elm

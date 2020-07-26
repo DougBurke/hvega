@@ -174,13 +174,13 @@ errorband2 = eBand "stdev" True
 errorband2No = eBand "stdev" False
 
 
+barley :: Data
+barley = dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
+
+
 eBar :: MarkErrorExtent -> VegaLite
 eBar ext =
-    let
-        barley =
-            dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
-
-        enc =
+    let enc =
             encoding
                 . position X [ PName "yield", PmType Quantitative
                              , PScale [ SZero False ] ]
@@ -235,7 +235,7 @@ ebarsColor hasTicks =
     in
     toVegaLite
         [ des
-        , dataFromUrl "https://vega.github.io/vega-lite/data/barley.json" []
+        , barley
         , layer [ specErrorBars, specPoints ]
         ]
 

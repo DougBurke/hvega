@@ -1,9 +1,9 @@
 # hvega
 
-[![vega-lite version](https://img.shields.io/badge/Vega--Lite-v4.13-purple.svg)](https://vega.github.io/vega-lite/)
+[![vega-lite version](https://img.shields.io/badge/Vega--Lite-v4.14-purple.svg)](https://vega.github.io/vega-lite/)
 
 Create [Vega-Lite](https://vega.github.io/vega-lite/) visualizations in
-Haskell. It targets version 4.13 of the Vega-Lite specification. Note that
+Haskell. It targets version 4.14 of the Vega-Lite specification. Note that
 the module does not include a viewer for these visualizations (which are
 JSON files), but does provide several helper functions, such as
 [toHtmlFile](https://hackage.haskell.org/package/hvega/docs/Graphics-Vega-VegaLite.html#v:toHtmlFile),
