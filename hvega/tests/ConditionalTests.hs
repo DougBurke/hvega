@@ -25,6 +25,7 @@ testSpecs = [ ("markCondition1", markCondition1)
             , ("selectionCondition5", selectionCondition5)
             , ("bindScales1", bindScales1)
             , ("bindScales2", bindScales2)
+            , ("selectionHeatMap", selectionHeatMap)
             ]
 
 
@@ -325,3 +326,51 @@ bindScales2 =
     in
     toVegaLite
         [ width 300, height 300, carData, sel [], mark Circle [], encHorses [] ]
+
+
+-- https://github.com/vega/vega-lite/blob/master/examples/specs/selection_heatmap.vl.json
+--
+selectionHeatMap :: VegaLite
+selectionHeatMap =
+  let dvals = dataFromColumns []
+              . dataColumn "count" (Numbers [13, 0, 0, 0, 10, 6, 0, 0, 9])
+              . dataColumn "actual" (Strings ["A", "A", "A", "B", "B", "B", "C", "C", "C"])
+              . dataColumn "predicted" (Strings ["A", "B", "C", "A", "B", "C", "A", "B", "C"])
+
+      enc = encoding
+            . position X [PName "predicted", PmType Nominal]
+            . position Y [PName "actual", PmType Nominal]
+            . fill [MName "count", MmType Quantitative]
+            . stroke [ MDataCondition
+                       [(And
+                         (Selection "highlight")
+                         (Expr "length(data(\"highlight_store\"))")
+                        , [MString "black"])]
+                       [MNullValue]
+                     ]
+            . opacity [ MSelectionCondition
+                        (SelectionName "highlight")
+                        [MNumber 1]
+                        [MNumber 0.5]
+                      ]
+            . order [ OSelectionCondition
+                      (SelectionName "highlight")
+                      [ONumber 1]
+                      [ONumber 0]
+                    ]
+
+      sel = selection
+            . select "highlight" Single []
+
+      conf = configure
+             . configuration (ScaleStyle [SCBandPaddingInner 0, SCBandPaddingOuter 0])
+             . configuration (ViewStyle [ViewStep 40])
+             . configuration (RangeStyle [RRamp "yellowgreenblue"])
+             . configuration (Axis [Domain False])
+
+  in toVegaLite [ dvals []
+                , sel []
+                , enc []
+                , mark Rect [MStrokeWidth 2]
+                , conf []
+                ]

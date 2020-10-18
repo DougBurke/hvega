@@ -14,7 +14,7 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.10 of @hvega@ supports version 4.13 of the Vega-Lite specification.
+Version 0.11 of @hvega@ supports version 4.14 of the Vega-Lite specification.
 
 Although this is based on the Elm module, there are differences, such
 as using type constructors rather than functions for many properties -
@@ -857,6 +857,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.11
+         --
+         -- $update01100
+
          -- ** Version 0.10
          --
          -- $update01000
@@ -1262,6 +1266,25 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01100
+-- The @0.11.0.0@ release updates @hvega@ to support version 4.14 of
+-- the Vega-Lite schema.
+--
+-- Note that @hvega@ does __not__ provide any information to help users
+-- take advantage of the (new to 4.14) ability to
+-- omit the type of a field when
+-- [it can be inferred](https://vega.github.io/vega-lite/docs/type.html).
+-- As the type is currently optional in @hvega@ users can just
+-- not give a type.
+--
+-- __New constructors__
+--
+-- The 'VL.OrderChannel' type has gained 'VL.OBand', 'VL.OTitle'/'VL.ONoTitle',
+-- and conditional predicate support with 'VL.ODataCondition',
+-- 'VL.OSelectionCondition', and 'VL.ONumber' constructors.
+--
+-- The `VL.MarkChannel` type has gained the `VL.MNullValue` constructor.
 
 -- $update01000
 -- The @0.10.0.0@ release updates @hvega@ to support version 4.13 of
