@@ -1281,10 +1281,16 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- __New constructors__
 --
 -- The 'VL.OrderChannel' type has gained 'VL.OBand', 'VL.OTitle'/'VL.ONoTitle',
--- and conditional predicate support with 'VL.ODataCondition',
+-- and conditional-predicate support with 'VL.ODataCondition',
 -- 'VL.OSelectionCondition', and 'VL.ONumber' constructors.
 --
--- The `VL.MarkChannel` type has gained the `VL.MNullValue` constructor.
+-- The 'VL.MarkChannel' type has gained the 'VL.MNullValue' constructor.
+--
+-- 'VL.ScaleProperty' has gained domain and range properties:
+-- for 'VL.ScaleDomain' - 'VL.DMax', 'VL.DMaxTime', 'VL.DMid', 'VL.DMin',
+-- and 'VL.DMinTime' - and for 'VL.ScaleRange' -
+-- 'VL.RField', 'VL.RMax', and 'VL.RMin'. The 'VL.DomainMid' constructor
+-- will be removed in a future release as it has been replaced by 'VL.DMid'.
 
 -- $update01000
 -- The @0.10.0.0@ release updates @hvega@ to support version 4.13 of

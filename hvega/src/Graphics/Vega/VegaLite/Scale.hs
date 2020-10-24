@@ -52,7 +52,39 @@ Describes the scale domain (type of data in scale). For full details see the
 -}
 
 data ScaleDomain
-    = DNumbers [Double]
+    = DMax Double
+      -- ^ Sets the maximum value in the scale domain.
+      --   It is only intended for scales with a continuous domain.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMaxTime [DateTime]
+      -- ^ 'DMax' for dates.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMid Double
+      -- ^ Sets the mid-point of a continuous diverging domain.
+      --
+      --   It replaces 'Graphics.Vega.VegaLite.SDomainMid'.
+      --
+      --   @since 0.11.0.0
+    | DMin Double
+      -- ^ Sets the minimum value in the scale domain.
+      --   It is only intended for scales with a continuous domain.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMinTime [DateTime]
+      -- ^ 'DMin' for dates.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DNumbers [Double]
       -- ^ Numeric values that define a scale domain.
     | DStrings [T.Text]
       -- ^ String values that define a scale domain.
@@ -106,6 +138,11 @@ scaleDomainSpec (DSelectionChannel selName ch) = object [ "selection" .= selName
 scaleDomainSpec (DUnionWith sd) = object ["unionWith" .= scaleDomainSpec sd]
 scaleDomainSpec Unaggregated = "unaggregated"
 
+scaleDomainSpec (DMax _) = error "Internal error: DMax not handled!"
+scaleDomainSpec (DMaxTime _) = error "Internal error: DMaxTime not handled!"
+scaleDomainSpec (DMid _) = error "Internal error: DMid not handled!"
+scaleDomainSpec (DMin _) = error "Internal error: DMin not handled!"
+scaleDomainSpec (DMinTime _) = error "Internal error: DMinTime not handled!"
 
 {-|
 
@@ -188,7 +225,32 @@ for band and point scales.
 -}
 
 data ScaleRange
-    = RPair Double Double
+    = RField FieldName
+      -- ^ For [discrete](https://vega.github.io/vega-lite/docs/scale.html#discrete)
+      --   and [discretizing](https://vega.github.io/vega-lite/docs/scale.html#discretizing)
+      --   scales, the name if the field to use.
+      --
+      --   For example. if the field \"color\" contains CSS color names, we can say
+      --   @RField \"color\"@.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RMax Double
+      -- ^ Sets the maximum value in the scale range.
+      --   It is only intended for scales with a continuous range.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RMin Double
+      -- ^ Sets the minimum value in the scale range.
+      --   It is only intended for scales with a continuous range.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RPair Double Double
       -- ^ The minimum and maximum values.
       --
       --   @since 0.9.0.0

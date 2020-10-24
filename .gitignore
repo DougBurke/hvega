@@ -1,4 +1,8 @@
 *~
+
+# Trying out HLS, now I have random flymake files.
+*_flymake.hs
+
 .ghc.environment.*
 ^dist/
 dist-newstyle/
