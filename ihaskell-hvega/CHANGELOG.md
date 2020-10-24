@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.3.2.0
+
+Bump to support version hvega-0.11.0.0.
+
 ## 0.3.1.0
 
 Bump to support version hvega-0.10.0.0.
