@@ -1,0 +1,33 @@
+{
+    "mark": "circle",
+    "data": {
+        "values": [
+            {
+                "l": "A",
+                "col": "X",
+                "c": "#ff0000"
+            },
+            {
+                "l": "B",
+                "col": "Y",
+                "c": "#0000ff"
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "color": {
+            "field": "l",
+            "scale": {
+                "range": {
+                    "field": "c"
+                }
+            },
+            "type": "nominal"
+        },
+        "y": {
+            "field": "col",
+            "type": "nominal"
+        }
+    }
+}
