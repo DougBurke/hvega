@@ -275,9 +275,11 @@ import Graphics.Vega.VegaLite.Mark
   )
 import Graphics.Vega.VegaLite.Scale
   ( ScaleDomain(..)
+  , DomainLimits(..)
   , ScaleRange(..)
   , ScaleNice
-  , scaleDomainSpec
+  , scaleDomainProperty
+  , domainLimitsSpec
   , scaleNiceSpec
   )
 import Graphics.Vega.VegaLite.Specification
@@ -297,7 +299,7 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
-  , dateTimeProperty
+  , dateTimeSpec
   , timeUnitSpec
   )
 import Graphics.Vega.VegaLite.Transform
@@ -760,15 +762,21 @@ data ScaleProperty
       --   The default is @1@.
       --
       --   @since 0.4.0.0
-    | SDomain ScaleDomain
-      -- ^ Custom scaling domain.
+    | SDomain DomainLimits
+      -- ^ Custom scaling domain. See also 'SDomainOpt'.
+      --
+      --   In verson @0.11.0.0@ some functionality was moved to 'SDomainOpt'.
     | SDomainMid Double
       -- ^ Set the mid-point of a continuous diverging domain.
       --
-      --   This is deprecated as of 0.11.0.0 and @'SDomain' ('DMid' x)@ should be used
+      --   This is deprecated as of 0.11.0.0 and @'SDomainOpt' ('DMid' x)@ should be used
       --   instead.
       --
       --   @since 0.6.0.0
+    | SDomainOpt ScaleDomain
+      -- ^ Custom scaling domain. See also 'SDomain'.
+      --
+      --   @since 0.11.0.0
     | SExponent Double
       -- ^ The exponent to use for power scaling ('Graphics.Vega.VegaLite.ScPow').
       --
@@ -815,9 +823,6 @@ data ScaleProperty
       --   channel.
 
 
-dateTimeSpec :: [DateTime] -> VLSpec
-dateTimeSpec = object . map dateTimeProperty
-
 scaleProperty :: ScaleProperty -> LabelledSpec
 scaleProperty (SType sType) = "type" .= scaleLabel sType
 scaleProperty (SAlign c) = "align" .= clamped 0 1 c
@@ -825,13 +830,9 @@ scaleProperty (SBase x) = "base" .= x
 scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
-scaleProperty (SDomain (DMax x)) = "domainMax" .= x
-scaleProperty (SDomain (DMaxTime dts)) = "domainMax" .= dateTimeSpec dts
-scaleProperty (SDomain (DMid x)) = "domainMid" .= x
-scaleProperty (SDomain (DMin x)) = "domainMin" .= x
-scaleProperty (SDomain (DMinTime dts)) = "domainMin" .= dateTimeSpec dts
-scaleProperty (SDomain sd) = "domain" .= scaleDomainSpec sd
+scaleProperty (SDomain dl) = "domain" .= domainLimitsSpec dl
 scaleProperty (SDomainMid x) = "domainMid" .= x
+scaleProperty (SDomainOpt sd) = scaleDomainProperty sd
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
 scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni

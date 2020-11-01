@@ -37,7 +37,7 @@ multi1 =
                 . position X
                     [ PName "date"
                     , PmType Temporal
-                    , PScale [ SDomain (DSelection "myBrush") ]
+                    , PScale [ SDomainOpt (DSelection "myBrush") ]
                     , PAxis [ AxNoTitle ]
                     ]
                 . position Y [ PName "price", PmType Quantitative ]
@@ -515,8 +515,8 @@ selectAndZoom =
       xr = (Number 0.2, Number 6)
       yr = (Number (-0.8), Number 0.8)
 
-      xscale = [ SDomain (DSelectionField "brush" "theta") ]
-      yscale = [ SDomain (DSelectionChannel "brush" ChY) ]
+      xscale = [ SDomainOpt (DSelectionField "brush" "theta") ]
+      yscale = [ SDomainOpt (DSelectionChannel "brush" ChY) ]
 
       plot2 = asSpec [ encoding
                        . position X [ PName "theta", PmType Quantitative, PScale xscale ]

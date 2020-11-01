@@ -65,7 +65,7 @@ import Graphics.Vega.VegaLite.Specification
   , VLSpec
   , LabelledSpec
   )
-import Graphics.Vega.VegaLite.Time (dateTimeProperty)
+import Graphics.Vega.VegaLite.Time (dateTimeSpec)
 
 
 {-|
@@ -433,11 +433,10 @@ dataColumn :: FieldName -> DataValues -> [DataColumn] -> [DataColumn]
 dataColumn colName dVals xs =
   let col = case dVals of
         Booleans cs -> map toJSON cs
-        DateTimes cs -> map dtToJSON cs
+        DateTimes cs -> map dateTimeSpec cs
         Numbers cs -> map toJSON cs
         Strings cs -> map toJSON cs
 
-      dtToJSON = object . map dateTimeProperty
       x = map (colName,) col
 
   in x : xs

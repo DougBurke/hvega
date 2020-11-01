@@ -694,7 +694,7 @@ domain yExtra =
 domain1, domain2, domain3 :: VegaLite
 domain1 = domain []
 domain2 = domain [SDomain (DNumbers [90, 100])]
-domain3 = domain [SDomain (DUnionWith (DNumbers [90, 100]))]
+domain3 = domain [SDomainOpt (DUnionWith (DNumbers [90, 100]))]
 
 
 {-

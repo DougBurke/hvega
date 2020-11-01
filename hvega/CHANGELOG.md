@@ -21,11 +21,25 @@ and conditional-predicate support with `ODataCondition`,
 
 The `MarkChannel` type has gained the `MNullValue` constructor.
 
-`ScaleProperty` has gained domain and range properties: for
-`ScaleDomain` - `DMax`, `DMaxTime`, `DMid`, `DMin`, and `DMinTime` -
-and for `ScaleRange` - `RField`, `RMax`, and `RMin`. The `DomainMid`
-constructor will be removed in a future release as it has been
-replaced by `DMid`.
+The `ScaleRange` type has gained `RField`, `RMax`, and `RMin`
+constructors.
+
+### Breaking Changes
+
+Domain settings in `ScaleProperty` and associated types have been
+changed to better match the Vega-Lite schema: `SDomain` now takes
+a new type (`DomainLimits`) which actually contains many of the
+orignal symbols (so hopefully will require no changes), and a new
+constructor has been added (`SDomainOpt`) which takes the
+`ScaleDomain` type, which has seen new constructors - `DMax`,
+`DMaxTime`, `DMid`, `DMin`, and `DMinTime` - as well as
+some constructors moving to `DomainLimits`.
+
+### Deprecated symbols
+
+The `SDomainMid` constructor of `ScaleProperty` will be removed in a
+future release as it has been replaced by the `DMid` constructor
+in `ScaleDomain`.
 
 ## 0.10.0.0
 

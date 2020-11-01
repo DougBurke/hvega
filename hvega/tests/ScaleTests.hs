@@ -208,7 +208,7 @@ diverging1 = toVegaLite [ divergingData
 
 diverging2 :: VegaLite
 diverging2 = toVegaLite [ divergingData
-                        , divergingEnc [ SDomainMid 0 ]
+                        , divergingEnc [ SDomainOpt (DMid 0) ]
                         , mark Bar []
                         ]
 
@@ -233,7 +233,7 @@ axes xscale yscale =
 axisrange, axislimit :: VegaLite
 axisrange = axes [SRange (RWidth 50)] [SRange (RHeight 60)]
 axislimit = axes
-            [SDomain (DMin (-10)), SDomain (DMax 300)]
+            [SDomainOpt (DMin (-10)), SDomainOpt (DMax 300)]
             [SRange (RMin 220), SRange (RMax 10)]
 
 

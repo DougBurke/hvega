@@ -664,6 +664,7 @@ module Graphics.Vega.VegaLite
        , VL.categoricalDomainMap
        , VL.domainRangeMap
        , VL.ScaleDomain(..)
+       , VL.DomainLimits(..)
        , VL.ScaleRange(..)
        , VL.ScaleNice(..)
        , VL.NTimeUnit(..)
@@ -1286,12 +1287,27 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 --
 -- The 'VL.MarkChannel' type has gained the 'VL.MNullValue' constructor.
 --
--- 'VL.ScaleProperty' has gained domain and range properties:
--- for 'VL.ScaleDomain' - 'VL.DMax', 'VL.DMaxTime', 'VL.DMid', 'VL.DMin',
--- and 'VL.DMinTime' - and for 'VL.ScaleRange' -
--- 'VL.RField', 'VL.RMax', and 'VL.RMin'. The 'VL.DomainMid' constructor
--- will be removed in a future release as it has been replaced by 'VL.DMid'.
-
+-- 
+-- The 'VL.ScaleRange' type has gained 'VL.RField', 'VL.RMax', and 'VL.RMin'
+-- constructors.
+--
+-- __Breaking Changes__
+--
+-- Domain settings in 'VL.ScaleProperty' and associated types have been
+-- changed to better match the Vega-Lite schema: 'VL.SDomain' now takes
+-- a new type ('VL.DomainLimits') which actually contains many of the
+-- orignal symbols (so hopefully will require no changes), and a new
+-- constructor has been added ('VL.SDomainOpt') which takes the
+-- 'VL.ScaleDomain' type, which has seen new constructors - 'VL.DMax',
+-- 'VL.DMaxTime', 'VL.DMid', 'VL.DMin', and 'VL.DMinTime' - as well as
+-- some constructors moving to 'VL.DomainLimits'.
+--
+-- __Deprecated symbols__:
+--
+-- The 'VL.SDomainMid' constructor of 'VL.ScaleProperty' will be removed in a
+-- future release as it has been replaced by the 'VL.DMid' constructor
+-- in 'VL.ScaleDomain'.  
+  
 -- $update01000
 -- The @0.10.0.0@ release updates @hvega@ to support version 4.13 of
 -- the Vega-Lite schema.
