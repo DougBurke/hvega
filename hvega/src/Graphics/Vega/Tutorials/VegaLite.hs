@@ -4069,7 +4069,8 @@ let sel = selection . select \"brush\" Interval [ Encodings [ ChY ] ]
                                ]
                   . position Y [ PName \"plx\"
                                , PmType Quantitative
-                               , PScale [ SDomain ('DSelection' \"brush\") ]
+                                 -- prior to 0.11.0.0 this was 'SDomain'
+                               , PScale [ 'SDomainOpt' ('DSelection' \"brush\") ]
                                ]
                   . color [ MName \"Cluster\", MmType Nominal ]
 
@@ -4115,7 +4116,7 @@ contextAndFocus =
                 ]
             . position Y [ PName "plx"
                          , PmType Quantitative
-                         , PScale [ SDomain (DSelection "brush") ]
+                         , PScale [ SDomainOpt (DSelection "brush") ]
                          ]
                   . color [ MName "Cluster", MmType Nominal ]
 

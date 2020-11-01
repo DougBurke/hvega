@@ -20,6 +20,8 @@ testSpecs = [ ("scale1", scale1)
             , ("diverging1", diverging1)
             , ("diverging2", diverging2)
             , ("axisrange", axisrange)
+            , ("axislimit", axislimit)
+            , ("namedaxisrange", namedAxisRange)
             ]
 
 scale1 :: VegaLite
@@ -206,21 +208,19 @@ diverging1 = toVegaLite [ divergingData
 
 diverging2 :: VegaLite
 diverging2 = toVegaLite [ divergingData
-                        , divergingEnc [ SDomainMid 0 ]
+                        , divergingEnc [ SDomainOpt (DMid 0) ]
                         , mark Bar []
                         ]
 
 
-axisrange :: VegaLite
-axisrange =
+axes :: [ScaleProperty] -> [ScaleProperty] -> VegaLite
+axes xscale yscale =
   let cars = dataFromUrl "https://vega.github.io/vega-lite/data/cars.json" []
 
-      ax axis vals = [ PName axis, PmType Quantitative, PScale [SRange vals] ]
-      xrange = RWidth 50
-      yrange = RHeight 60
+      ax axis vals = [ PName axis, PmType Quantitative, PScale vals ]
       enc = encoding
-            . position X (ax "Horsepower" xrange)
-            . position Y (ax "Miles_per_Gallon" yrange)
+            . position X (ax "Horsepower" xscale)
+            . position Y (ax "Miles_per_Gallon" yscale)
             . size [ MName "Acceleration", MmType Quantitative, MBin [] ]
             . opacity [ MName "Acceleration", MmType Quantitative, MBin [] ]
             
@@ -228,3 +228,26 @@ axisrange =
                 , enc []
                 , mark Point [ MFilled True, MStroke "white", MStrokeWidth 0.4 ]
                 ]
+
+
+axisrange, axislimit :: VegaLite
+axisrange = axes [SRange (RWidth 50)] [SRange (RHeight 60)]
+axislimit = axes
+            [SDomainOpt (DMin (-10)), SDomainOpt (DMax 300)]
+            [SRange (RMin 220), SRange (RMax 10)]
+
+
+-- Based on https://github.com/vega/vega-lite/issues/6392
+--
+namedAxisRange :: VegaLite
+namedAxisRange =
+  let dataVals = dataFromColumns []
+                 . dataColumn "col" (Strings ["X", "Y"])
+                 . dataColumn "l" (Strings ["A", "B"])
+                 . dataColumn "c" (Strings ["#ff0000", "#0000ff"])
+
+      enc = encoding
+            . position Y [PName "col", PmType Nominal]
+            . color [MName "l", MmType Nominal, MScale [SRange (RField "c")]]
+
+  in toVegaLite [dataVals [], mark Circle [], enc []]

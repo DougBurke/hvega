@@ -15,12 +15,14 @@ Scale-related functionality.
 
 module Graphics.Vega.VegaLite.Scale
        ( ScaleDomain(..)
+       , DomainLimits(..)
        , ScaleRange(..)
        , ScaleNice(..)
        , NTimeUnit(..)
 
          -- not for external export
-       , scaleDomainSpec
+       , scaleDomainProperty
+       , domainLimitsSpec
        , scaleNiceSpec
        ) where
 
@@ -37,11 +39,12 @@ import Graphics.Vega.VegaLite.Foundation
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
+  , LabelledSpec
   , SelectionLabel
   )
 import Graphics.Vega.VegaLite.Time
   ( DateTime
-  , dateTimeProperty
+  , dateTimeSpec
   )
 
 
@@ -49,15 +52,44 @@ import Graphics.Vega.VegaLite.Time
 
 Describes the scale domain (type of data in scale). For full details see the
 <https://vega.github.io/vega-lite/docs/scale.html#domain Vega-Lite documentation>.
+
+In @0.11.0.0@ the functionality has been split into 'ScaleDomain' and
+'DomainLimits'.
 -}
 
 data ScaleDomain
-    = DNumbers [Double]
-      -- ^ Numeric values that define a scale domain.
-    | DStrings [T.Text]
-      -- ^ String values that define a scale domain.
-    | DDateTimes [[DateTime]]
-      -- ^ Date-time values that define a scale domain.
+    = DMax Double
+      -- ^ Sets the maximum value in the scale domain.
+      --   It is only intended for scales with a continuous domain.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMaxTime [DateTime]
+      -- ^ 'DMax' for dates.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMid Double
+      -- ^ Sets the mid-point of a continuous diverging domain.
+      --
+      --   It replaces 'Graphics.Vega.VegaLite.SDomainMid'.
+      --
+      --   @since 0.11.0.0
+    | DMin Double
+      -- ^ Sets the minimum value in the scale domain.
+      --   It is only intended for scales with a continuous domain.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | DMinTime [DateTime]
+      -- ^ 'DMin' for dates.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
     | DSelection SelectionLabel
       -- ^ Scale domain based on a named interactive selection.
       --   See also 'DSelectionField' and 'DSelectionChannel', which should
@@ -77,34 +109,70 @@ data ScaleDomain
       --   is projected over multiple fields or encodings.
       --
       --   @since 0.7.0.0
-    | DUnionWith ScaleDomain
+    | DUnionWith DomainLimits
       -- ^ Combine the domain of the data with the provided domain.
       --
       --   The following example will use a range of at least 0 to 100,
       --   but this will be increased if the data (either initially or
       --   via any updates to the Vege-Lite visualization) exceeds this:
       --
-      --   @'Graphics.Vega.VegaLite.PScale' ['Graphics.Vega.VegaLite.SDomain' (DUnionWith ('DNumbers' [0, 100]))]@
-      --
-      --   Note that 'DUnionWith' should not be nested, but this
-      --   is not enforced by @hvega@.
+      --   @'Graphics.Vega.VegaLite.PScale' ['Graphics.Vega.VegaLite.SDomainOpt' (DUnionWith ('DNumbers' [0, 100]))]@
       --
       --   @since 0.6.0.0
     | Unaggregated
-    -- ^ Indicate that a domain of aggregated data should be scaled to
-    --   the domain of the data prior to aggregation.
+      -- ^ Indicate that a domain of aggregated data should be scaled to
+      --   the domain of the data prior to aggregation.
 
-scaleDomainSpec :: ScaleDomain -> VLSpec
-scaleDomainSpec (DNumbers nums) = toJSON (map toJSON nums)
-scaleDomainSpec (DDateTimes dts) = toJSON (map (object . map dateTimeProperty) dts)
-scaleDomainSpec (DStrings cats) = toJSON (map toJSON cats)
-scaleDomainSpec (DSelection selName) = object ["selection" .= selName]
-scaleDomainSpec (DSelectionField selName field) = object [ "selection" .= selName
-                                                         , "field" .= field ]
-scaleDomainSpec (DSelectionChannel selName ch) = object [ "selection" .= selName
-                                                        , "encoding" .= channelLabel ch ]
-scaleDomainSpec (DUnionWith sd) = object ["unionWith" .= scaleDomainSpec sd]
-scaleDomainSpec Unaggregated = "unaggregated"
+
+-- For now we do not include Unaggregated in DomainLimits as the
+-- documentaiton suggests we should ubt the schema does not: see
+-- https://github.com/vega/vega-lite/issues/7022
+--
+
+{-|
+
+Represent the range of the domain, which is used by 'VL.SDomain'
+and 'DUnionWith'.
+
+Prior to @0.11.0.0@ this was part of 'ScaleDomain'.
+
+@since 0.11.0.0
+-}
+data DomainLimits
+  = DNumbers [Double]
+    -- ^ Numeric values that define a scale domain.
+    --
+    --   It is expected that this contains two values (minimum and
+    --   maximum), but more can be given for
+    --   [piecewise  quantitative scales](https://vega.github.io/vega-lite/docs/scale.html#piecewise).
+  | DStrings [T.Text]
+    -- ^ String values that define a scale domain
+  | DDateTimes [[DateTime]]
+    -- ^ Date-time values that define a scale domain.
+
+
+scaleDomainProperty :: ScaleDomain -> LabelledSpec
+
+scaleDomainProperty (DMax x) = "domainMax" .= x
+scaleDomainProperty (DMaxTime dts) = "domainMax" .= dateTimeSpec dts
+scaleDomainProperty (DMid x) = "domainMid" .= x
+scaleDomainProperty (DMin x) = "domainMin" .= x
+scaleDomainProperty (DMinTime dts) = "domainMin" .= dateTimeSpec dts
+
+
+scaleDomainProperty (DSelection selName) = "domain" .= object ["selection" .= selName]
+scaleDomainProperty (DSelectionField selName field) = "domain" .= object [ "selection" .= selName
+                                                                         , "field" .= field ]
+scaleDomainProperty (DSelectionChannel selName ch) = "domain" .= object [ "selection" .= selName
+                                                                        , "encoding" .= channelLabel ch ]
+scaleDomainProperty (DUnionWith sd) = "domain" .= object ["unionWith" .= domainLimitsSpec sd]
+scaleDomainProperty Unaggregated = "domain" .= fromT "unaggregated"
+
+
+domainLimitsSpec :: DomainLimits -> VLSpec
+domainLimitsSpec (DNumbers nums) = toJSON (map toJSON nums)
+domainLimitsSpec (DDateTimes dts) = toJSON (map dateTimeSpec dts)
+domainLimitsSpec (DStrings cats) = toJSON (map toJSON cats)
 
 
 {-|
@@ -188,7 +256,32 @@ for band and point scales.
 -}
 
 data ScaleRange
-    = RPair Double Double
+    = RField FieldName
+      -- ^ For [discrete](https://vega.github.io/vega-lite/docs/scale.html#discrete)
+      --   and [discretizing](https://vega.github.io/vega-lite/docs/scale.html#discretizing)
+      --   scales, the name if the field to use.
+      --
+      --   For example. if the field \"color\" contains CSS color names, we can say
+      --   @RField \"color\"@.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RMax Double
+      -- ^ Sets the maximum value in the scale range.
+      --   It is only intended for scales with a continuous range.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RMin Double
+      -- ^ Sets the minimum value in the scale range.
+      --   It is only intended for scales with a continuous range.
+      --
+      --   It is supported in Vega-Lite 4.14 and later.
+      --
+      --   @since 0.11.0.0
+    | RPair Double Double
       -- ^ The minimum and maximum values.
       --
       --   @since 0.9.0.0

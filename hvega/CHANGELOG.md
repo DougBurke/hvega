@@ -13,14 +13,33 @@ omit the type of a field when
 As the type is currently optional in `hvega` users can just
 not give a type.
 
-
 ### New Constructors
 
 The `OrderChannel` type has gained `OBand`, `OTitle`/`ONoTitle`,
-and conditional predicate support with `ODataCondition`,
+and conditional-predicate support with `ODataCondition`,
 `OSelectionCondition`, and `ONumber` constructors.
 
 The `MarkChannel` type has gained the `MNullValue` constructor.
+
+The `ScaleRange` type has gained `RField`, `RMax`, and `RMin`
+constructors.
+
+### Breaking Changes
+
+Domain settings in `ScaleProperty` and associated types have been
+changed to better match the Vega-Lite schema: `SDomain` now takes
+a new type (`DomainLimits`) which actually contains many of the
+orignal symbols (so hopefully will require no changes), and a new
+constructor has been added (`SDomainOpt`) which takes the
+`ScaleDomain` type, which has seen new constructors - `DMax`,
+`DMaxTime`, `DMid`, `DMin`, and `DMinTime` - as well as
+some constructors moving to `DomainLimits`.
+
+### Deprecated symbols
+
+The `SDomainMid` constructor of `ScaleProperty` will be removed in a
+future release as it has been replaced by the `DMid` constructor
+in `ScaleDomain`.
 
 ## 0.10.0.0
 
@@ -42,7 +61,7 @@ types rather than include them in their definition, so that `PTimeUnit
 Month` has been changed to `PTimeUnit (TU Month)` and `SNice NMinute`
 has changed to `SNice (NTU NMinute)`.
 
-The `BaseTimeUnit' type has seen a number of additions: the `Week` and
+The `BaseTimeUnit` type has seen a number of additions: the `Week` and
 `DayOfYear` time units added in Vega-Lite 4.13.0, along with the
 associated composite units (such as `YearWeek`), and a number of
 composite types that were missing (such as `MonthDateHours`).  The
@@ -83,7 +102,7 @@ Support for ARIA attributes has been added to a number of features
 The `angle` encoding channel has been added for text and point marks.
 
 The `Channel` type has gained `ChAngle`, `ChTheta`, `ChTheta2`,
-`ChRadius`, `ChRadius`', 'ChDescription', and `ChURL`.
+`ChRadius`, `ChRadius`, `ChDescription`, and `ChURL`.
 
 Layers have been added to `Arrangement` (`Layer`) and to `RepeatFields`
 (`LayerFields`).
@@ -851,7 +870,7 @@ The `ArgMax` and `ArgMin` constructors of `Operation` now take an
 optional field name, to allow them to be used as part of an encoding
 aggregation (e.g. with `PAggregate`).
 
-The "z index" value has changed from an 'Int' to the 'ZIndex' type.
+The "z index" value has changed from an `Int` to the `ZIndex` type.
 
 The constructors for the `Symbol` type now all start with `Sym`, so
 `Cross`, `Diamond`, `TriangleUp`, `TriangleDown`, and `Path` have been
@@ -859,7 +878,7 @@ renamed to `SymCross`, `SymDiamond`, `SymTriangleUp`,
 `SymTriangleDown`, and `SymPath`, respectively.
 
 The `Legend` type has been renamed `LegendType` and its constructors
-have been renamed 'GradientLegend' and 'SymbolLegend'.
+have been renamed `GradientLegend` and `SymbolLegend`.
 
 ### Improved testing
 

@@ -73,7 +73,7 @@ import Graphics.Vega.VegaLite.Scale
 import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
 import Graphics.Vega.VegaLite.Time
   ( DateTime
-  , dateTimeProperty
+  , dateTimeSpec
   )
 
 
@@ -561,7 +561,7 @@ legendProperty (LType lType) = "type" .= legendLabel lType
 legendProperty (LValues vals) =
   let ls = case vals of
         LNumbers xs    -> map toJSON xs
-        LDateTimes dts -> map (object . map dateTimeProperty) dts
+        LDateTimes dts -> map dateTimeSpec dts
         LStrings ss    -> map toJSON ss
   in "values" .= ls
 legendProperty (LeX x) = "legendX" .= x

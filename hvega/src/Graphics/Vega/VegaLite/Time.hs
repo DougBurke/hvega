@@ -22,7 +22,7 @@ module Graphics.Vega.VegaLite.Time
        , BaseTimeUnit(..)
 
        -- not for external export
-       , dateTimeProperty
+       , dateTimeSpec
        , timeUnitSpec
        
        ) where
@@ -378,6 +378,10 @@ dateTimeProperty (DTHours h) = "hours" .= h
 dateTimeProperty (DTMinutes m) = "minutes" .= m
 dateTimeProperty (DTSeconds s) = "seconds" .= s
 dateTimeProperty (DTMilliseconds ms) = "milliseconds" .= ms
+
+
+dateTimeSpec :: [DateTime] -> VLSpec
+dateTimeSpec = object . map dateTimeProperty
 
 
 dayLabel :: DayName -> T.Text

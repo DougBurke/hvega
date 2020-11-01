@@ -275,9 +275,11 @@ import Graphics.Vega.VegaLite.Mark
   )
 import Graphics.Vega.VegaLite.Scale
   ( ScaleDomain(..)
+  , DomainLimits(..)
   , ScaleRange(..)
   , ScaleNice
-  , scaleDomainSpec
+  , scaleDomainProperty
+  , domainLimitsSpec
   , scaleNiceSpec
   )
 import Graphics.Vega.VegaLite.Specification
@@ -297,7 +299,7 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , TimeUnit
-  , dateTimeProperty
+  , dateTimeSpec
   , timeUnitSpec
   )
 import Graphics.Vega.VegaLite.Transform
@@ -760,12 +762,21 @@ data ScaleProperty
       --   The default is @1@.
       --
       --   @since 0.4.0.0
-    | SDomain ScaleDomain
-      -- ^ Custom scaling domain.
+    | SDomain DomainLimits
+      -- ^ Custom scaling domain. See also 'SDomainOpt'.
+      --
+      --   In verson @0.11.0.0@ some functionality was moved to 'SDomainOpt'.
     | SDomainMid Double
       -- ^ Set the mid-point of a continuous diverging domain.
       --
+      --   This is deprecated as of 0.11.0.0 and @'SDomainOpt' ('DMid' x)@ should be used
+      --   instead.
+      --
       --   @since 0.6.0.0
+    | SDomainOpt ScaleDomain
+      -- ^ Custom scaling domain. See also 'SDomain'.
+      --
+      --   @since 0.11.0.0
     | SExponent Double
       -- ^ The exponent to use for power scaling ('Graphics.Vega.VegaLite.ScPow').
       --
@@ -819,14 +830,18 @@ scaleProperty (SBase x) = "base" .= x
 scaleProperty (SBins xs) = "bins" .= xs
 scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
-scaleProperty (SDomain sdType) = "domain" .= scaleDomainSpec sdType
+scaleProperty (SDomain dl) = "domain" .= domainLimitsSpec dl
 scaleProperty (SDomainMid x) = "domainMid" .= x
+scaleProperty (SDomainOpt sd) = scaleDomainProperty sd
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
 scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
 scaleProperty (SPadding x) = "padding" .= x
 scaleProperty (SPaddingInner x) = "paddingInner" .= x
 scaleProperty (SPaddingOuter x) = "paddingOuter" .= x
+scaleProperty (SRange (RField f)) = "range" .= object ["field" .= f]
+scaleProperty (SRange (RMax x)) = "rangeMax" .= x
+scaleProperty (SRange (RMin x)) = "rangeMin" .= x
 scaleProperty (SRange (RPair lo hi)) = "range" .= [lo, hi]
 scaleProperty (SRange (RHeight w)) = "range" .= [fromT "height", toJSON w]
 scaleProperty (SRange (RWidth h)) = "range" .= [toJSON h, fromT "width"]
@@ -1718,7 +1733,7 @@ axisProperty (AxTitleX x) = "titleX" .= x
 axisProperty (AxTitleY x) = "titleY" .= x
 axisProperty (AxTranslateOffset x) = "translate" .= x
 axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
-axisProperty (AxDates dtss) = "values" .= map (object . map dateTimeProperty) dtss
+axisProperty (AxDates dtss) = "values" .= map dateTimeSpec dtss
 axisProperty (AxZIndex z) = "zindex" .= z
 
 
@@ -2042,14 +2057,14 @@ filterProperty (FRange field vals) =
               DateRange dMin dMax -> [process dMin, process dMax]
 
       process [] = A.Null
-      process dts = object (map dateTimeProperty dts)
+      process dts = dateTimeSpec dts
 
   in [field_ field, "range" .= ans]
 
 filterProperty (FOneOf field vals) =
   let ans = case vals of
               Numbers xs -> map toJSON xs
-              DateTimes dts -> map (object . map dateTimeProperty) dts
+              DateTimes dts -> map dateTimeSpec dts
               Strings ss -> map toJSON ss
               Booleans bs -> map toJSON bs
 

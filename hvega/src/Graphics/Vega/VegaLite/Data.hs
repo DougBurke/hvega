@@ -24,13 +24,13 @@ module Graphics.Vega.VegaLite.Data
 import qualified Data.Aeson as A
 import qualified Data.Text as T
 
-import Data.Aeson (object, toJSON)
+import Data.Aeson (toJSON)
 
 
 import Graphics.Vega.VegaLite.Specification (VLSpec)
 import Graphics.Vega.VegaLite.Time
   ( DateTime
-  , dateTimeProperty
+  , dateTimeSpec
   )
 
 
@@ -68,7 +68,7 @@ data DataValue
 
 dataValueSpec :: DataValue -> VLSpec
 dataValueSpec (Boolean b) = toJSON b
-dataValueSpec (DateTime dt) = object (map dateTimeProperty dt)
+dataValueSpec (DateTime dt) = dateTimeSpec dt
 dataValueSpec (Number x) = toJSON x
 dataValueSpec (Str t) = toJSON t
 dataValueSpec NullValue = A.Null
@@ -94,7 +94,7 @@ data DataValues
 
 dataValuesSpecs :: DataValues -> [VLSpec]
 dataValuesSpecs (Booleans bs) = map toJSON bs
-dataValuesSpecs (DateTimes dtss) = map (object . map dateTimeProperty) dtss
+dataValuesSpecs (DateTimes dtss) = map dateTimeSpec dtss
 dataValuesSpecs (Numbers xs) = map toJSON xs
 dataValuesSpecs (Strings ss) = map toJSON ss
 
