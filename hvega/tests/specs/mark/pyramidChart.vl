@@ -1,0 +1,69 @@
+{
+    "mark": {
+        "type": "arc",
+        "outerRadius": 80
+    },
+    "data": {
+        "values": [
+            {
+                "category": "Sky",
+                "value": 75,
+                "order": 3
+            },
+            {
+                "category": "Shady side of a pyramid",
+                "value": 10,
+                "order": 1
+            },
+            {
+                "category": "Sunny side of a pyramid",
+                "value": 15,
+                "order": 2
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "view": {
+        "stroke": null
+    },
+    "encoding": {
+        "theta": {
+            "field": "value",
+            "scale": {
+                "range": [
+                    2.35619449,
+                    8.639379797
+                ]
+            },
+            "type": "quantitative",
+            "stack": "zero"
+        },
+        "color": {
+            "field": "category",
+            "scale": {
+                "domain": [
+                    "Sky",
+                    "Shady side of a pyramid",
+                    "Sunny side of a pyramid"
+                ],
+                "range": [
+                    "#416D9D",
+                    "#674028",
+                    "#DEAC58"
+                ]
+            },
+            "type": "nominal",
+            "legend": {
+                "orient": "none",
+                "columns": 1,
+                "title": null,
+                "legendY": 80,
+                "legendX": 200
+            }
+        },
+        "order": {
+            "field": "order"
+        }
+    },
+    "description": "Reproducing http://robslink.com/SAS/democd91/pyramid_pie.htm"
+}
