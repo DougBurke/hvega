@@ -7,11 +7,13 @@ The Vega-Lite tests are now validated against version 4.14 of the
 Vega-Lite schema.
 
 Note that `hvega` does __not__ provide any information to help users
-take advantage of the (new to 4.14) ability to
-omit the type of a field when
-[it can be inferred](https://vega.github.io/vega-lite/docs/type.html).
-As the type is currently optional in `hvega` users can just
-not give a type.
+take advantage of the (new to 4.14) ability to omit the type of a
+field when [it can be inferred](https://vega.github.io/vega-lite/docs/type.html).
+As the type is currently optional in `hvega` users can just not give a type.
+
+Similarly, Vega-Lite 4.14 allows you to share the type, scale, axis,
+and legend in a shared encoding. There is no explicit support added in
+0.11.0.0 because `hvega` already allowed you to create the specification.
 
 ### New Constructors
 
