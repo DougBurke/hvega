@@ -1279,6 +1279,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- As the type is currently optional in @hvega@ users can just
 -- not give a type.
 --
+-- Similarly, Vega-Lite 4.14 allows you to share the type, scale, axis,
+-- and legend in a shared encoding. There is no explicit support added in
+-- @0.11.0.0@ because @hvega@ already allowed you to create the specification.
+--
 -- __New constructors__
 --
 -- The 'VL.OrderChannel' type has gained 'VL.OBand', 'VL.OTitle'/'VL.ONoTitle',

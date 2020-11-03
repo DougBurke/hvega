@@ -8,9 +8,12 @@ module Gallery.Facet (testSpecs) where
 
 import Graphics.Vega.VegaLite
 
--- import qualified Data.Text as T
+import qualified Data.Text as T
 
 import Prelude hiding (filter, lookup, repeat)
+
+import Data.Aeson (Value, (.=), object, toJSON)
+
 
 testSpecs :: [(String, VegaLite)]
 testSpecs = [ ("facet1", facet1)
@@ -22,6 +25,7 @@ testSpecs = [ ("facet1", facet1)
             , ("facet7", facet7)
             , ("trellisareaseattle", trellisAreaSeattle)
             , ("facetgridbar", facetGridBar)
+            , ("facet_bullet", facetBullet)
             ]
 
 
@@ -326,4 +330,70 @@ facetGridBar =
                 , spacing 5
                 , mark Bar []
                 , enc []
+                ]
+
+
+bullets :: Value
+bullets =
+  let item :: T.Text -> T.Text -> [Double] -> [Double] -> [Double] -> Value
+      item ttl subtitle ranges measures markers =
+        object [ "title" .= ttl
+               , "subtitle" .= subtitle
+               , "ranges" .= ranges
+               , "measures" .= measures
+               , "markers" .= markers
+               ]
+
+  in toJSON [ item "Revenue" "US$, in thousands" [150,225,300] [220,270] [250]
+            , item "Profit" "%" [20,25,30] [21,23] [26]
+            , item "Order Size" "US$, average" [350,500,600] [100,320] [550]
+            , item "New Customers" "count" [1400,2000,2500] [1000,1650] [2100]
+            , item "Satisfaction" "out of 5" [3.5,4.25,5] [3.2,4.7] [4.4]
+            ]
+
+
+-- https://vega.github.io/vega-lite/examples/facet_bullet.html
+facetBullet :: VegaLite
+facetBullet =
+  let facetOpts = facet [ RowBy [ FName "title"
+                                , FmType Ordinal
+                                , FHeader [ HLabelAngle 0
+                                          , HNoTitle ]
+                                ]
+                        ]
+
+      plot = asSpec [ encoding
+                      (position X [ PmType Quantitative
+                                  , PScale [SNice (IsNice False)]
+                                  , PNoTitle
+                                  ] [])
+                    , layer (map asSpec plots)
+                    ]
+
+      encX fld = encoding (position X [PName fld] [])
+
+      plots = [ [ mark Bar [MColor "#eee"]
+                , encX "ranges[2]" ]
+              , [ mark Bar [MColor "#ddd"]
+                , encX "ranges[1]" ]
+              , [ mark Bar [MColor "#ccc"]
+                , encX "ranges[0]" ]
+              , [ mark Bar [MColor "lightsteelblue", MSize 10]
+                , encX "measures[1]" ]
+              , [ mark Bar [MColor "steelblue", MSize 10]
+                , encX "measures[0]" ]
+              , [ mark Tick [MColor "black"]
+                , encX "markers[0]" ]
+              ]
+
+      res = resolve . resolution (RScale [(ChX, Independent)])
+
+      cfg = configure . configuration (TickStyle [MThickness 2])
+
+  in toVegaLite [ dataFromJson bullets []
+                , facetOpts
+                , spacing 10
+                , specification plot
+                , res []
+                , cfg []
                 ]
