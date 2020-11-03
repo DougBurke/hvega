@@ -252,7 +252,7 @@ bar6order =
 bar6sort :: VegaLite
 bar6sort =
   let enc = barleyEnc
-            . order [ OName "siteOrder", OmType Quantitative ]
+            . order [ OName "siteOrder" ]
 
       trans = transform
               . calculateAs "if(datum.site === 'University Farm', 0, if(datum.site === 'Grand Rapids', 1, 2))" "siteOrder"

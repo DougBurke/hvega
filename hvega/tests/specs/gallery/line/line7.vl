@@ -16,8 +16,7 @@
             "type": "quantitative"
         },
         "order": {
-            "field": "year",
-            "type": "temporal"
+            "field": "year"
         },
         "y": {
             "field": "gas",

@@ -280,7 +280,7 @@ geo7 =
         encoding
         . position Longitude [ PName "longitude", PmType Quantitative ]
         . position Latitude [ PName "latitude", PmType Quantitative ]
-        . order [ OName "order", OmType Ordinal ]
+        . order [ OName "order" ]
 
       flightsSpec =
         asSpec
