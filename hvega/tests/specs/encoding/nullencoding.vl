@@ -1,0 +1,64 @@
+{
+    "data": {
+        "values": [
+            {
+                "a": "A",
+                "b": 28
+            },
+            {
+                "a": "B",
+                "b": 55
+            },
+            {
+                "a": "D",
+                "b": 91
+            },
+            {
+                "a": "E",
+                "b": 81
+            },
+            {
+                "a": "E",
+                "b": 81
+            },
+            {
+                "a": "G",
+                "b": 19
+            },
+            {
+                "a": "H",
+                "b": 87
+            },
+            {
+                "a": "I",
+                "b": 52
+            }
+        ]
+    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "layer": [
+        {
+            "mark": "bar"
+        },
+        {
+            "mark": "rule",
+            "encoding": {
+                "x": {}
+            }
+        }
+    ],
+    "encoding": {
+        "x": {
+            "field": "a",
+            "type": "nominal",
+            "axis": {
+                "labelAngle": 0
+            }
+        },
+        "y": {
+            "field": "b",
+            "type": "quantitative"
+        }
+    },
+    "description": "Can we null the encoding"
+}

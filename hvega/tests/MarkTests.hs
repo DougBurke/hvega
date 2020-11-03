@@ -25,6 +25,7 @@ testSpecs = [ ("blendmode", blendMode)
             , ("pieChartWithLabels", pieChartWithLabels)
             , ("donutChart", donutChart)
             , ("radialChart", radialChart)
+            , ("pyramidChart", pyramidChart)
             , ("histogram_binned_no_x2", histogramBinnedNoX2)
             ]
 
@@ -226,6 +227,48 @@ radialChart =
                   . color [MName "data", MmType Nominal, MLegend []]
                   $ []
                 , layer [asSpec plot, asSpec label]
+                , viewBackground [VBNoStroke]
+                ]
+
+
+-- https://vega.github.io/vega-lite/examples/arc_pie_pyramid.html
+--
+pyramidChart :: VegaLite
+pyramidChart =
+  let desc = description "Reproducing http://robslink.com/SAS/democd91/pyramid_pie.htm"
+      dvals = dataFromColumns []
+              . dataColumn "value" (Numbers [75, 10, 15])
+              . dataColumn "order" (Numbers [3, 1, 2])
+              . dataColumn "category" (Strings ["Sky", "Shady side of a pyramid", "Sunny side of a pyramid"])
+              $ []
+
+      cmap = [ ("Sky", "#416D9D")
+             , ("Shady side of a pyramid", "#674028")
+             , ("Sunny side of a pyramid", "#DEAC58")
+             ]
+
+  in toVegaLite [ desc
+                , dvals
+                , mark Arc [MOuterRadius 80]
+                , encoding
+                  . position Theta [ PName "value"
+                                   , PmType Quantitative
+                                   , PScale [SRange (RPair 2.35619449 8.639379797)]
+                                   -- How to get "stack": True???
+                                   , PStack StZero
+                                   ]
+                  . color [ MName "category"
+                          , MmType Nominal
+                          , MScale (categoricalDomainMap cmap)
+                          , MLegend [ LOrient LONone
+                                    , LNoTitle
+                                    , LColumns 1
+                                    , LeX 200
+                                    , LeY 80
+                                    ]
+                          ]
+                  . order [OName "order"]
+                  $ []
                 , viewBackground [VBNoStroke]
                 ]
 
