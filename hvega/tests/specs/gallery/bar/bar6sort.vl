@@ -21,8 +21,7 @@
             "type": "quantitative"
         },
         "order": {
-            "field": "siteOrder",
-            "type": "quantitative"
+            "field": "siteOrder"
         },
         "y": {
             "field": "variety",

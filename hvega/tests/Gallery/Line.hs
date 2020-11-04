@@ -134,7 +134,7 @@ line7 =
             encoding
                 . position X [ PName "miles", PmType Quantitative, PScale [ SZero False ] ]
                 . position Y [ PName "gas", PmType Quantitative, PScale [ SZero False ] ]
-                . order [ OName "year", OmType Temporal ]
+                . order [ OName "year" ]
     in
     toVegaLite
         [ des

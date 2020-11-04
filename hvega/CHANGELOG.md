@@ -3,7 +3,7 @@ For the latest version of this document, please see
 
 ## 0.11.0.0
 
-The Vega-Lite tests are now validated against version 4.14 of the
+The Vega-Lite tests are now validated against version 4.15 of the
 Vega-Lite schema.
 
 Note that `hvega` does __not__ provide any information to help users
