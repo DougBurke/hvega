@@ -4280,42 +4280,34 @@ tutorial.
 
 <<images/vl/loessexample.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJUBLAG2gFNY8oAKAE3mgFcsA6AEQFEB9AJIBhAEoBlMAD4AvGAAMASjAAyMExbtu-YeLAAeWQBZFkAL4BdADTgozaPDqgIESK1jk6kABbRoAB2RcAHoghAB3DgBzUmgvVgAjVmQaAGN0RGoMjjSsIK50VkiAITcAayogrwA3Kkj4IKx4ZGpYSpq6oLt6utJ4AFp4foA2AEYhgZG5Pvt48ioR+A5EdD6vKnhGGg5oZCrIa2coDGwWRxtDyD94WGSzw4uAcUbIz0R2eJp98-vIEQBBQSiMSvd6fA73Fx+cgADxBWA+tHBEMgvEB4jhCK+EJcVD4UNh+Egb3hn2+EFM3wp5PBkGQfioKTuzm8VFIkR8dAATABWORIqBhUiMWJc3n8yDkeAAT0++AIZLATmxkEasFKnj86FIGSxyqoiDSjG1L3wSuxUDS5EwjhIpCo5EYniE5CSLX2UGgUvpr3QWG18A8ligc0i+sd+De5HIpn5yIJioVyLI9vDUCe8BeseVyBSAaoNoAXjR0HRUAHkjHEz9Pd7CQBHVhIaAxFikGqQKvUztQKVM80uZMOjUw3X9qA5vOF4ul8tUStjlw1-P1xsZFvN9vdqnY7eHef3M3VhAoY44OXdw-myCRWAFPzxXtyyDO12fKzdlxNOgESCwoOQXt3wXYN0CoZBkGHP8PygdJPHTF4tyrIDlVVdVTVpOB0HKAB1IURXwTl-2aW9yk8WZ4BSdV-yXTxyG1fN92RfVDWNPtlXjYhB1TX93RgL1lygBsm3XNt83-eBoVICCI1YKNGOVR9FVtFNPF7aj+M8IS13sDcxKgCSpLoSNoyrXdnDM8wbH3SAABIczWRpPB8fxAhCdpFmiWIEg4Uh0CCeyqEaIJ3L6OjqGCwwOAAK2QWCaUtdgUC5GkyxSKhoBtLinRdZowQ9DTCWWP1EADMx4vSMgTUVClTCAA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4IgLgTghgdgzgMwPYQLYgFwG1QIJYA2YAphJiABQAmUYArqgHQAiAogPoCSAwgEoDKAAgB8AXkEAGAJSCAZIOq0GLDjwGCAPOIAs0kAF8AugBoQNMFEyg6EAuQAWYMAAc4GAPTvoAd0YBzPDB7OgAjOjhSAGMkGBJYxmjUd2YkOj8AIRsAa2J3ewA3Yj8od1QoOBIIPMLi93MS4rwoAFooFoA2AEZ21s6JZosQgmJOqEYYJGb7YigqUkYwOHyQU2Q0WisQZygICM2AcTK-chgGENIVkF4AQS4+fhOzi9NnAgAPR9RzslM2O4FPt9LsR2K8PhgQKcvhd9LDTHBnMRIptpng-I5MAAmACsElM3jwVCCWNxpgIUAAnhdsKAyhAsuRnEg8LFgTBolQWccMKBogQUJt8MQCFRyNwCOFKpdhn5iDBRRhTgQCPpTODcHhhQqQIcoMd4ZEoMNNgAvUhITAII0RVXgCmI8gARzosDAgVoeEKBlMFMFmpFjPelzghuNPJAZogFowVoINtMYHtxCdLti7rdXthqtAkFgiBQ6BpID8UbozhCvuwIHFkouJhA-OIcDggY+phi5F1xyMpjpDPDFSjOQA6oTiRhMfDIEgcuQhlBIgyE0nyAQWcnbXKOVzNuqQEKAxCu8HQ8nw5Ho7H43aHRDna7056Nz6-VrWyejWfQBfLdbiLbE1vEB7zTCwMw3WFDFtAASENpjKBwnFcDx3BqMYAiCUJGDwJB3Dg4gylQooWjXEhUO0RgACs4A7Uw+QYeAsVWBdiDAV9D2rCUKmeG8z0hJBUBZI0DH0IA Open this visualization in the Vega Editor>
 
 @
 let simplify = transform
                . filter (FExpr \"(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)\")
 
-    rawEnc = encoding
-            . position X [ PName \"Gmag\"
-                         , PmType Quantitative
-                         , PScale [ SZero False ]
-                         ]
-            . position Y [ PName \"plx\"
-                         , PmType Quantitative
-                         , PScale [ SZero False ]
-                         ]
+    baseEnc = encoding
+             . position X [ PName \"Gmag\"
+                          , PmType Quantitative
+                          , PScale [ SZero False ]
+                          ]
+             . position Y [ PName \"plx\"
+                          , PmType Quantitative
+                          , PScale [ SZero False ]
+                          ]
+
+    rawEnc = baseEnc
             . color [ MName \"Cluster\"
-                    , MmType Nominal
                     , MLegend []
                     ]
 
     rawLayer = asSpec [ rawEnc [], mark Point [] ]
 
     trans = transform
-            . 'loess' \"plx\" \"Gmag\" [ 'LsAs' \"x\" \"y\"
-                                 , 'LsGroupBy' [ \"Cluster\" ] ]
-
-    trendAx pos lbl = position pos [ PName lbl
-                                   , PmType Quantitative
-                                   , PAxis []
-                                   ]
-    trendEnc = encoding
-               . trendAx X \"x\"
-               . trendAx Y \"y\"
+            . 'loess' \"plx\" \"Gmag\" [ 'LsGroupBy' [ \"Cluster\" ] ]
 
     trendLayer = asSpec [ trans []
-                        , trendEnc []
+                        , baseEnc []
                         , mark Line [ MStroke \"black\"
                                     , MStrokeWidth 2
                                     ]
@@ -4350,36 +4342,28 @@ loessExample =
   let simplify = transform
                  . filter (FExpr "(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)")
 
-      rawEnc = encoding
-              . position X [ PName "Gmag"
-                           , PmType Quantitative
-                           , PScale [ SZero False ]
-                           ]
-              . position Y [ PName "plx"
-                           , PmType Quantitative
-                           , PScale [ SZero False ]
-                           ]
-              . color [ MName "Cluster"
-                      , MmType Nominal
-                      , MLegend []
-                      ]
+      baseEnc = encoding
+                . position X [ PName "Gmag"
+                             , PmType Quantitative
+                             , PScale [ SZero False ]
+                             ]
+                . position Y [ PName "plx"
+                             , PmType Quantitative
+                             , PScale [ SZero False ]
+                             ]
+
+      rawEnc = baseEnc
+               . color [ MName "Cluster"
+                       , MLegend []
+                       ]
 
       rawLayer = asSpec [ rawEnc [], mark Point [] ]
 
       trans = transform
-              . loess "plx" "Gmag" [ LsAs "x" "y"
-                                   , LsGroupBy [ "Cluster" ] ]
-
-      trendAx pos lbl = position pos [ PName lbl
-                                     , PmType Quantitative
-                                     , PAxis []
-                                     ]
-      trendEnc = encoding
-                 . trendAx X "x"
-                 . trendAx Y "y"
+              . loess "plx" "Gmag" [ LsGroupBy [ "Cluster" ] ]
 
       trendLayer = asSpec [ trans []
-                          , trendEnc []
+                          , baseEnc []
                           , mark Line [ MStroke "black"
                                       , MStrokeWidth 2
                                       ]
@@ -4408,42 +4392,28 @@ a single visualization.
 
 <<images/vl/regressionexample.png>>
 
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1hJUBLAG2gFNY8oAKAE3mgFcsA6AEQFEB9AJIBhAEoBlMAD4AvGAAMASjAAyMExbtu-YeLAAeWQBZFkAL4BdADTgoACyqkA5reh0AzHLnWIkZtHh0oBA+rLDkdJAu0AAOyLgA9PEIAO4cjqTQtqwARqzINADG6IjUJRxFWPFc6KyOAEKhANZU8bYAblSO8PFY8MjUsK0dXfF+3V2k8AC08NMAbACMczMLclP+2eRUC-AciOhT9vCMNBzQyG2Q3sEkmL2u+EHBPtHwsPmBNs8+AOK9jhFEOxsjQrl9vpARABBQSiMSA4Gg67fKDRcgADwRWBBtGREN4sPEWJxYJRPiofDRmPwkCB2NB4IgpnBzKZ10gyVIjEy7k87IAJMgCvZehEorEEvFhrt0pkchxSOh4kKRd1pVNyBkWm1DBwAFbIYqkqDkeAAT1B+AI4Kez0gvVgjQi0XQpBKxrtVEQRUYboBj0ZNyK5EwgRIpCo5EYESE5DyAyuUGgZuiVEB6Cwbvg4VMeLt1LAtrJ4cj0Zpf3gALzEKF2bTj0gAC8aOg6Khs-lc4G7cnUxEAI6sJDQDIsUgdSDdsBdslQM1hsil50YxOQWtbMPN2Ct-Dt8idyxJlP1qCD4ejkcT1nfa9sm2BmAIFAYbB0a2zosoyCObesaLZecrUgWN41BKwpx8Po30gTFD0gedwNnHxYE6FDkGQRVEGXWCIKgI1y3+SdZ1vYJEIhB0nQbfpt2aAB1LkeXwAAmODqPQZoIk2eACidODexPSBNUQNMZwhL0fT9T5Z0gYNQwbRcoxjON+iRI8+xpfZM0QbMzGrHwC2IBSyygWC1IEs8Sgvcc0zg+B0VIZA6CBchyFEr9AMLEtFJpec+OPAch0s-xLxsqA7IcpzWBckimRZGwyJk4oyH9QtmVMIA Open this visualization in the Vega Editor>
+<https://vega.github.io/editor/#/url/vega-lite/N4IgLgTghgdgzgMwPYQLYgFwG1QIJYA2YAphJiABQAmUYArqgHQAiAogPoCSAwgEoDKAAgB8AXkEAGAJSCAZIOq0GLDjwGCAPOIAs0kAF8AugBoQAC2J4A5mbCYAzBImmaYKJlB0IBcrbAAHOAwAemDoAHdGKzwwMzoAIzo4UgBjJBgSDMY01GDmJDorACEvAGtiYLMAN2IrKGDUKDgSCEqauuDXerq8KABaKH6ANgBGIYGRiT63eIJiEahGGCQ+iygqUkYwOCqQU2Q0Wg8QfygIZOOAcUarchgGeNI9kF4AQS4+fjuHp9N-AgAHt9UI8yKY2B8BMDQc9iOx-kCMCB7iCnvp0aZwngqLEHE5TAASOApCyNXxgAJBULtRbRWIJRh4JDBYmk+o0voEGIVKraRgAKzg6WeBCgAE8nthQI0IKVyP4kHgMrCYGkqErbhhQGkCChjvhiAQqORuAQki0DKZEbg8IbjUjrlBbqZiVA5scAF6kJCYBBu5L6UxgMX+YjkACOdFgYBitDwNUtIDF+ttRvlgOervdWpAXogPowfoIAaDIbDSMj0djMYT6MDoEgsEQKHQUpAVnzdH88WT2BApvNTxMIAgtVHcDgTJg6aBpmFDpuBmHMrlOea+fKAHVsbiMAAmF2QJDlcizKApOWl0PkLkwMOBkDEVVIdUwTXapC6sg5g1ppED5o0StFM7XIR1nRALNy1APMCyLEtwDLCMowyat43vUxextUCkQRTMUjdaDc29X1-WIB9g2vCsUJjNwa3vdFDH0IA Open this visualization in the Vega Editor>
 
 @
 let simplify = transform
                . filter (FExpr \"(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)\")
 
-    rawAx pos lbl = position pos [ PName lbl
-                                 , PmType Quantitative
-                                 , PScale [ SZero False ]
-                                 ]
-    cluster = color [ MName \"Cluster\"
-                    , MmType Nominal
-                    ]
+    axis pos lbl = position pos [ PName lbl
+                                , PmType Quantitative
+                                , PScale [ SZero False ]
+                                ]
+    enc = encoding
+          . axis X \"Gmag\"
+          . axis Y \"plx\"
+          . color [ MName \"Cluster\" ]
 
-    rawEnc = encoding
-             . rawAx X \"Gmag\"
-             . rawAx Y \"plx\"
-             . cluster
-
-    rawLayer = asSpec [ rawEnc [], mark Point [] ]
+    rawLayer = asSpec [ enc [], mark Point [] ]
 
     trans = transform
-            . 'regression' \"plx\" \"Gmag\" [ 'RgAs' \"x\" \"y\"
-                                      , 'RgGroupBy' [ \"Cluster\" ] ]
-
-    trendAx pos lbl = position pos [ PName lbl
-                                   , PmType Quantitative
-                                   , PAxis []
-                                   ]
-    trendEnc = encoding
-               . trendAx X \"x\"
-               . trendAx Y \"y\"
-               . cluster
+            . 'regression' \"plx\" \"Gmag\" [ 'RgGroupBy' [ \"Cluster\" ] ]
 
     trendLayer = asSpec [ trans []
-                        , trendEnc []
+                        , enc []
                         , mark Line [ MStroke \"black\"
                                     , MStrokeWidth 2
                                     ]
@@ -4468,36 +4438,22 @@ regressionExample =
   let simplify = transform
                  . filter (FExpr "(datum.DE_ICRS >= 0) & (datum.DE_ICRS <= 40)")
 
-      rawAx pos lbl = position pos [ PName lbl
-                                   , PmType Quantitative
-                                   , PScale [ SZero False ]
-                                   ]
-      cluster = color [ MName "Cluster"
-                      , MmType Nominal
-                      ]
+      axis pos lbl = position pos [ PName lbl
+                                  , PmType Quantitative
+                                  , PScale [ SZero False ]
+                                  ]
+      enc = encoding
+            . axis X "Gmag"
+            . axis Y "plx"
+            . color [ MName "Cluster" ]
 
-      rawEnc = encoding
-               . rawAx X "Gmag"
-               . rawAx Y "plx"
-               . cluster
-
-      rawLayer = asSpec [ rawEnc [], mark Point [] ]
+      rawLayer = asSpec [ enc [], mark Point [] ]
 
       trans = transform
-              . regression "plx" "Gmag" [ RgAs "x" "y"
-                                        , RgGroupBy [ "Cluster" ] ]
-
-      trendAx pos lbl = position pos [ PName lbl
-                                     , PmType Quantitative
-                                     , PAxis []
-                                     ]
-      trendEnc = encoding
-                 . trendAx X "x"
-                 . trendAx Y "y"
-                 . cluster
+              . regression "plx" "Gmag" [ RgGroupBy [ "Cluster" ] ]
 
       trendLayer = asSpec [ trans []
-                          , trendEnc []
+                          , enc []
                           , mark Line [ MStroke "black"
                                       , MStrokeWidth 2
                                       ]
