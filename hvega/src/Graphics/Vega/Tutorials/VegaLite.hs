@@ -19,7 +19,9 @@ The Elm tutorial is based on the talk given by
 <https://youtu.be/9uaHRWj04D4 Wongsuphasawat et al at the 2017 Open Vis Conf>.
 
 The tutorial targets version 4 of the Vega-Lite specification and
-the functionality provided in version @0.9.0.0@ of hvega.
+the functionality provided in version @0.11.0.0@ of hvega (although
+a number of examples could be simplified by removing the
+now-optional type information as of Vega-Lite 4.14).
 
 -}
 
@@ -75,6 +77,7 @@ module Graphics.Vega.Tutorials.VegaLite (
   -- ** Adding color as an encoding
 
   , stripPlotWithColor
+  , stripPlotWithColor2
 
   -- ** Comparing Ordinal with Nominal data types
   --
@@ -699,6 +702,46 @@ stripPlotWithColor =
   let enc = encoding
             . position X [ PName "plx", PmType Quantitative, PAxis [ AxTitle "Parallax (mas)" ] ]
             . color [ MName "Cluster", MmType Nominal ]
+
+  in toVegaLite
+     [ gaiaData
+     , mark Tick []
+     , enc []
+     ]
+
+{-|
+
+As of Vega-Lite version 4.14 we can now drop the type information when
+it can be inferred. I am a little hazy of the rules, so I am going to
+include the information (as it also means I don't have to change
+the existing code!). However, as an example, we don't need to
+add the @MmType Nominal@ setting to the 'color' channel, since the
+following creates the same visualization as 'stripPlotWithColor':
+
+<https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcIAuBLAxnANCAJhJECoArlADYIgAWSSADgM7wD0zUEA7gHQDmKSVYgCNiDAKZQ0AewB2SMXK7SwzACJTiPAEKkYY5lQBuYnhGaQG8qAeOnmeAs1MoIAWghuAbAEZP77wAMrgRCZGLeEFwyUq5UYhA4ElxIDIYg2ABmUlCQSEQgdNDi+QDikDyUMsRgQhLpIABKAIIA+gCSAMINAMqV1bVQ9XRkAB59NXXYqgCi7V29iFUTg9hiLcNji-11AL572AAkDGhxkJQ09EystpF8AsJcKFLMx6dmN65k-PqGACxcACsGLJ6gppDgUDIKvBQNIyNl8hkUGIyDhKB0yKIrCAdthNqAkSi0YgNvVUEgwpQAArQCBkMgQEYAAgAFBYAJRkgCedDElAAjsQIHJ+PgUMYcXsgA Open this visualization in the Vega Editor>
+
+@
+let enc = encoding
+            . position X [ PName \"plx\", PmType Quantitative, 'PTitle' \"Parallax (mas)\" ]
+            . 'color' [ 'MName' \"Cluster\" ]
+
+in toVegaLite
+    [ gaiaData
+    , mark Tick []
+    , enc []
+    ]
+@
+
+Note that as well as removing @MmType Nominal@ from the 'color' encoding, I have
+switched to the 'PTitle' option (which is the same as @PAxis [AxTitle ...]@.
+
+-}
+
+stripPlotWithColor2 :: VegaLite
+stripPlotWithColor2 =
+  let enc = encoding
+            . position X [ PName "plx", PmType Quantitative, PTitle "Parallax (mas)" ]
+            . color [ MName "Cluster" ]
 
   in toVegaLite
      [ gaiaData
