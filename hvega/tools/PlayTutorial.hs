@@ -54,12 +54,28 @@ import Graphics.Vega.VegaLite hiding (name)
 import System.Directory (createDirectoryIfMissing)
 import System.Environment (getArgs, getProgName)
 import System.Exit (exitFailure)
-import System.FilePath ((</>), FilePath)
+import System.FilePath ((</>))
 import System.IO (hPutStrLn, stderr)
 
 import Prelude hiding (filter)
 
 -- Could use TH to get at the tutorials, but for now hard code the names.
+
+-- The simple example used in the README
+--
+carData :: VegaLite
+carData =
+  let cars =  dataFromUrl "https://vega.github.io/vega-datasets/data/cars.json" []
+
+      enc = encoding
+            . position X [ PName "Horsepower", PmType Quantitative ]
+            . position Y [ PName "Miles_per_Gallon", PmType Quantitative, PTitle "Miles per Gallon" ]
+            . color [ MName "Origin" ]
+
+      bkg = background "rgba(0, 0, 0, 0.05)"
+
+  in toVegaLite [ bkg, cars, mark Circle [MTooltip TTEncoding], enc [] ]
+
 
 -- The intro visualization used in the API documentation (not in
 -- the tutorial).
@@ -76,12 +92,12 @@ betelgeuse =
       w = width 600
       h = height 150
 
-      pos1Opts fld ttl = [PName fld, PmType Quantitative, PAxis [AxTitle ttl]]
+      pos1Opts fld ttl = [PName fld, PmType Quantitative, PTitle ttl]
       x1Opts = pos1Opts "days" "Days since January 1, 2020"
       y1Opts = pos1Opts "magnitude" "Magnitude" ++ [PSort [Descending], yRange]
       yRange = PScale [SDomain (DNumbers [-1, 3])]
 
-      filtOpts = [MName "filterName", MmType Nominal]
+      filtOpts = [MName "filterName"]
       filtEnc = color (MLegend [ LTitle "Filter", LTitleFontSize 16, LLabelFontSize 14 ] : filtOpts)
                 . shape filtOpts
 
@@ -93,8 +109,8 @@ betelgeuse =
                     . filtEnc
 
       selName = "brush"
-      pos2Opts fld = [PName fld, PmType Quantitative, PAxis [AxNoTitle],
-                     PScale [SDomain (DSelectionField selName fld)]]
+      pos2Opts fld = [PName fld, PmType Quantitative, PNoTitle,
+                     PScale [SDomainOpt (DSelectionField selName fld)]]
       x2Opts = pos2Opts "days"
       y2Opts = pos2Opts "magnitude" ++ [PSort [Descending]]
 
@@ -132,7 +148,6 @@ betelgeuse =
 
       details = asSpec [ columns 1
                        , facetFlow [ FName "filterName"
-                                   , FmType Nominal
                                    , FHeader headerOpts
                                    ]
                        , spacing 10
@@ -161,6 +176,7 @@ betelgeuse =
 --
 vl :: [(String, VegaLite)]
 vl = [ ("api-betelgeuse", betelgeuse)
+     , ("api-cardata", carData)
      , ("stripplot", VL.stripPlot)
      , ("stripplotwithbackground", VL.stripPlotWithBackground)
      , ("stripploty", VL.stripPlotY)
