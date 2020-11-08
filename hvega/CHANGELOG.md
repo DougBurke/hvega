@@ -10,6 +10,8 @@ Note that `hvega` does __not__ provide any information to help users
 take advantage of the (new to 4.14) ability to omit the type of a
 field when [it can be inferred](https://vega.github.io/vega-lite/docs/type.html).
 As the type is currently optional in `hvega` users can just not give a type.
+The example [IHaskell notebooks](https://github.com/DougBurke/hvega/tree/master/notebooks)
+have been updated to show off the optional support.
 
 Similarly, Vega-Lite 4.14 allows you to share the type, scale, axis,
 and legend in a shared encoding. There is no explicit support added in
