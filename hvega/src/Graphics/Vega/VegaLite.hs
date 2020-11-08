@@ -65,7 +65,7 @@ let cars =  'VL.dataFromUrl' \"https:\/\/vega.github.io\/vega-datasets\/data\/ca
     enc = 'VL.encoding'
             . 'VL.position' 'VL.X' [ 'VL.PName' \"Horsepower\", 'VL.PmType' 'VL.Quantitative' ]
             . 'VL.position' 'VL.Y' [ 'VL.PName' \"Miles_per_Gallon\", 'VL.PmType' 'VL.Quantitative', 'VL.PTitle' \"Miles per Gallon\" ]
-            . 'VL.color' [ 'VL.MName' \"Origin\", 'VL.MmType' 'VL.Nominal' ]
+            . 'VL.color' [ 'VL.MName' \"Origin\" ]
 
     bkg = 'VL.background' \"rgba(0, 0, 0, 0.05)\"
 
@@ -92,7 +92,7 @@ can view the result. For instance:
 
 The visualization can be viewed in the Vega Editor, which lets you
 interact with the plot and modify its contents, as shown for
-<https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcoAuB7FAbJBLADg0AxigHZICmpCIFRAJlsQOYgC+ANCEgJ45lUFYoBdH3YhaEJBHwgArlHRUAFkiQ4AzvAD0WgG5lGEAHSMsSJbIBGRrCj0GIAWglT1ZJOq0uIWgtHVGAFbqJKwcACTqBEpkkMqqGtr2hiZmFta2WlExkMlO6GZkegAsQSHEIBw0KPRMMkToKFAyAGZYZOi0VADyUFimFRzcvFTEKGAMEIpiAB6t7Z1UABJNbjgoAO5kzUM8fPAgAI6yEKRmklj6YSBc8x1dBwCyWCLqAPq8UG8A4lONg5wzCIqM9XgACT5g37of6VTh7KjHU7YKTYK4sMSWCAEGCMKAoWTEB4gKCMLEACgADGxqbSjJSAKwASlYQA this example>.
+<https://vega.github.io/editor/#/url/vega-lite/N4IgtghgTg1iBcoAuB7FAbJBLADg0AxigHZICmpCIFRAJlsQOYgC+ANCEgJ45lUFYoBdH3YhaEJBHwgArlHRUAFkiQ4AzvAD0WgG5lGEAHSMsSJbIBGRrCj0GIAWglT1ZJOq0uIWgtHVGAFbqJKwcACTqBEpkkMqqGtr2hiZmFta2WlExkMlO6GZkegAsQSHEIBw0KPRMMkToKFAyAGZYZOi0VADyUFimFWIAHq3tnVQAEk1uOCgA7mTNHNy8VACOshCkZpJY+mEgXKMdXfAgALJYIuoA+rxQNwDiEOiNFctmIlSX1wAE979nq9QsseHwzhsttgpNh9iwxJYIAQYIwoChZMRTiAoIxEQAKAAMbF+RJJxIJRgJAFYAJSsIA this example>.
 
 It can also be viewed as a PNG version:
 
@@ -156,7 +156,7 @@ betelgeuse =
       -- Define the properties used for the "position" channels. For this example
       -- it makes sense to define as functions since they are used several times.
       --
-      pos1Opts fld ttl = ['VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PAxis' ['VL.AxTitle' ttl]]
+      pos1Opts fld ttl = ['VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PTitle' ttl]
       x1Opts = pos1Opts \"days\" \"Days since January 1, 2020\"
       y1Opts = pos1Opts \"magnitude\" \"Magnitude\" ++ ['VL.PSort' ['VL.Descending'], y1Range]
       y1Range = 'VL.PScale' ['VL.SDomain' ('VL.DNumbers' [-1, 3])]
@@ -164,7 +164,7 @@ betelgeuse =
       -- The filter name is used as a facet, but also to define the
       -- color and shape of the points.
       --
-      filtOpts = ['VL.MName' \"filterName\", 'VL.MmType' 'VL.Nominal']
+      filtOpts = ['VL.MName' \"filterName\"]
       filtEnc = 'VL.color' ('VL.MLegend' ['VL.LTitle' \"Filter\", 'VL.LTitleFontSize' 16, 'VL.LLabelFontSize' 14] : filtOpts)
                 . 'VL.shape' filtOpts
 
@@ -199,8 +199,8 @@ betelgeuse =
       -- What is plotted in the "detail" plot?
       --
       selName = \"brush\"
-      pos2Opts fld = [ 'VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PAxis' ['VL.AxNoTitle']
-                     , 'VL.PScale' ['VL.SDomain' ('VL.DSelectionField' selName fld)] ]
+      pos2Opts fld = [ 'VL.PName' fld, 'VL.PmType' 'VL.Quantitative', 'VL.PNoTitle'
+                     , 'VL.PScale' ['VL.SDomainOpt' ('VL.DSelectionField' selName fld)] ]
       x2Opts = pos2Opts \"days\"
       y2Opts = pos2Opts \"magnitude\" ++ ['VL.PSort' ['VL.Descending']]
 
@@ -231,7 +231,6 @@ betelgeuse =
       --
       details = 'VL.asSpec' [ 'VL.columns' 1
                        , 'VL.facetFlow' [ 'VL.FName' \"filterName\"
-                                   , 'VL.FmType' 'VL.Nominal'
                                    , 'VL.FHeader' headerOpts
                                    ]
                        , 'VL.spacing' 10
@@ -266,7 +265,7 @@ The PNG version shows the basic features:
 However this is missing the interactive elements of the visualization, primarily
 selection and zooming in the top plot changes the axis ranges of the bottom two
 plots. This interactivity requires a Vega-Lite viewer such as
-<https://vega.github.io/editor/#/url/vega-lite/N4KABGBEAuBOCGA7AzgMwPawLaQFxgG1wIxhJUBLAG2gFNY8oATeaAVywDpKb6A5eFloEADAF0wAXmlgA5ADVZkAL4AaYhDI86DfJBbsuWeAHNEFdk1pgAPGAAsK9SVKR4yRvvgBPD6qgAxvBUAWxUrLSeBhycAFZMYAC0YABM9gCsAByZ9gCcnCIqxGLOgeiIlCaMoC5uAB4UHvg1LlDQFlS0AGLl0ADqtBQmABbQnoiYxlSQpbXhAEa0VD2I0ADKFABekfgAjPazJDAd3b0b24y7AGwaYMrEasRe0PDVt5BssNN6o9AADshcAB6IEIADunBMFmGbHmbGQ9ACvVoq04SKwQIAIug2CYAEKfADWtCBwwAbrQTPAgcZkDpSRSqUCDNTFnQqCZaPDaIkUiI+YkRABmRK7fKxZDlSAPUqQMlIxBBMb4IguFq1YaDEbKsC7dIiQ4QSDGWCE6qQdB-eABCzeRgiTjpfwwbx-HZQP7oCirGZQHidJiMVDBBGPVpQMEUJjQYaMK4iA23I0IzoBdpS5pJo7zWDw2OZ8O1b0Wc11RgEXl8-y7BMlKB2lWCx3+FKOsRhwtGlFIpjekxNQiQMvOu0lLO1aCu92Qb06MnBaWd+7hju1bvoXuIKoFwuQJFUTBvTtGyhLQN6bT8QSRQ2tF1u8boLDehe3uaUlHn0jju8LJYrdYtndfY3zvdpoE6TwumoHQZh-CcTgA85gJuY87h-Vc72QYZ4AfZpyAoM9PEvWABCEX172nCZn0QBdMNqMsd07AiiL0FhfDgtDKM8ABHNgkHA1gKApTjj3qRpzXAyC9ExHxkDAZBvQCawACkkH42BvF1Ft+UKZdC3oo4G2-LjTyoL9jVMcxLBveCoGQIJpNcJgn3gb1y1FfwhXbUDk0wHV9FoBzPz7UTmMnPCoD4gSLCEkTfKgeAGgHMgpOnABZKyLDYKwiiXLN9IgTD1SOZA3QCI9d01IZRkufVQMs01zUta1bXtZs2inTxPVnCj-VoL9gyoUMGsjaN8zAeNE2Y9dN23EyxP3Q8mLEsyLJIsjbLQo0Iqop8X2mBKjU6TlEC-EquL-ZYziAy4DjshCIOnaDeAYI6jjSpDbr2VDtsKgyEsgbDcPdLRCPM4iYKvcjnV2x8aLowHGIW0zwYs9i-Ae+zHNB-RXPc-C1qiOSKJTWg0woDMoBzPMVEM8NuL0aLVli9p4qx8SUuOJ7GEQMIqH+ldAeMi7dyJvRjDMbLcveoGcfNFzjAJ1xxagSXrJym97KWcn00QTwaewunZclWAAqsYKztC2W4aZ-iWZeNmtu2znJJOXn+cF1ovaKgrbz3dAqA4FBLn94NlJ1UWTzRyHXs2sK701eArF0FHdyugBBRVhmWqBPwThmroAUTqP5U8gWQXp0fBZDAABqMBoi4K6C9-eBFioAAFZO5sYXl7su9v-xui4fsBtKPaoKhAczqghn1vRYBqsYMIa22oGog7F29-2ytardLhEW59LHI0ABIHM1YxPF+AFgSBRl4EhaFYU4SmgUv2hjAfyl4ESOe6AP3sHESU+tZQTxWjAWgdQAp4loOyD83JZDyXVtLawQh3CfC-iiaAyB-D7nCHQBI8wtIZwzvINYAB5BO5AR7AUyDKJ4FsAhLz+HrTwAAJdAYIwA4XknA9knIkHyRzMvRAQV5LziXgNfw8x3ADTAOURurB4BgAIREYhpDyFULAAAClvoCEEYJjGcHgPAMkkpOCYBMECAAlJwMAABNHECkc5hASCGdAYADzoEJGAVgvDoD-EMUCaAkYgn0DRE+IEbIljzHQNAfxZ1AnBPvlCGMr90SkgoH8P4xIYnwLiQkhxABJRJYJ3D+KnmAGM1gECckUYgBS6AbTBDAEIXsqiAm1IUi8M2ijUCpF0pwaUyggA the Vega Editor>.
+<https://vega.github.io/editor/#/url/vega-lite/N4IgLgTghgdgzgMwPYQLYgFwG1QIJYA2YAphJiACZRgCuqAdPkaQHJSrFYAMAugAQBeIXwDkANREgAvgBpchEmQyVqdeqigBzGHloVifADx8ALNLkgocclQCe1mSADGUAk5oFqxG6oYArCj4AWj4AJhMAVgAOKJMATnouaR5HJyQYfE1MUCgADzxrDFAwXQJiADF0sAB1YjxNAAswchgUDQIQR08AI2ICSpgwAGU8AC9vDABGE0cSsDKB4bGJyYA2KVkVMChskBoIDuUmsAAHOAwAegvoAHd6TV0Gmm6aOFI0weJB+jTUC4ARJA0TQAIX2AGtiBcGgA3YiaKAXDRwRTQuEIi5UbYXXokAiaYivYhBUJcUlBLgAZiCkwSfjg6XMIBhHxczWwoAadUa7MmES4jg0EHBuyQJygTl0tkwXHoEVmthOExAJyQeEGnRATDKFEwCFcb02NzwFDADUwqy4ApAbzKThKjKKIG6EFe5qd6t0u1ymCwJNJMkmVpSIGl2ApcpkoTlPE2XzSFHVmkKWBAPsc0pDYEVyvVihhrmkcZgCaTuzSBBQu3wfV1yiYijYHE1ZQJMDroB6fUWI3GmGms1KyvKClImrmCyqvZW602cAaUCV1bwtfIDdY7G8mx9TprBDrKns46H5H+UHsfDg6qcBgAUrAaFAILY+JMZGEyUkFUvlABHR+DLo1B4HCTJhvIq7KBo2i6DQ+ianALhlLsFBIBo6q+jSMiUrGjgMhA7KUMQiFfImMBZIO8zKgAsloOh6N437Kv+sBzMBoEbLIoBwEqTi7Fy9RNP2-KCk+IpOmKEpSjKkbgDm5CqnmmrasQdb6gQhqOMaprupa1rxkgZFZE6FZVruK77muo4QE2jEgK2pG7F2-RTss-YzOAJ7KCOzBkJRk6DNO-aznhC4-hBln1tZtlMjuEUHnYDg2khEygKh6EwMukGHkltrEPaeCOs6rrzkW-kTDAHgEEx5AsYB2wlBxGZZZFIDQfRcF2YhripZQaFQBh5nZe1sHwXhfT5Q6mXKC6bplTaKCEfoJHtmW5WYJVBDVXJP4gHVbGNVuGypEgBB0PA-aOPqN7svFVm+TFjhclA+hKJ2UC9AQACCJYNGZICOV0H19AAorkJxKCAIg+YoGCiHwADUfBYmozktsDBAAAovUZmAkh5zk9m5UyrOtGCbdtzlfQQ9TTSAECCc0x02uKkrkf2XBSCGAAkiFcho5DHGclwXOiUD3I8zz0IVFx88QGii-CUBBDTJCiyY9D0oyZPFMQuSESCxB4vChJvCIcB8CNDGW8QVj7PLXxgHA74Vp4JCBN0L5fV9YhDAA8sprl9lMUSbMtTgMycU3kAAEkgNx8AuFuG3iBJEubfAuozMDERbBYM6p77dFYql8OkyPUFAfCu14Htez7-t8AAFEL5xXDcHf0FAUAwgy9AoJoFwAJT0HwACaQKXn9HiBAaSB8JWSDgnw1CJ2ApxtxcYDGuvpA-GhOJG303RIGAK-tmvG8iw8ZpS780J4CcJyQofeIn2Ao8AJJnzcVgr1tfAzQGGgASMuMBLxIElK4G2iYq6ryAZebYBEy4IA-KSeg0ggA the Vega Editor>.
 
 -}
 
