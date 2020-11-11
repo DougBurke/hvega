@@ -1,2 +1,16 @@
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc883" }:
-(import ./default.nix { inherit nixpkgs compiler; }).env
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc884" }:
+
+let
+  inherit (nixpkgs) pkgs;
+  inherit (pkgs) haskellPackages;
+
+  package = import ./default.nix { inherit nixpkgs compiler; };
+
+  extra = [ haskellPackages.haskell-language-server
+            haskellPackages.cabal-install
+          ];
+in
+  pkgs.stdenv.mkDerivation {
+    name = "ihaskell-hvega-shell";
+    buildInputs = package.env.nativeBuildInputs ++ extra;
+  }
