@@ -1,0 +1,13 @@
+cradle:
+  cabal:
+    - path: "hvega/src"
+      component: "lib:hvega"
+
+    - path: "hvega/tests/"
+      component: "hvega:test:test"
+
+    - path: "hvega/tools/PlayTutorial.hs"
+      component: "hvega:exe:playtutorial"
+
+    - path: "hvega/tools/GetBetelgeuse.hs"
+      component: "hvega:exe:getbetelgeuse"
