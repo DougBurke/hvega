@@ -4,8 +4,10 @@
 # Use https://raw.githubusercontent.com/kowainik/.github/main/workflow-templates/ci.yml
 # as the basis.
 #
-# I am hoping to adjust this to support "multiple" repositries in the
-# same account (or, at least, just run hvega through CI).
+# I am hoping to adjust this to support "multiple" repositories in the
+# same account (or, at least, just run hvega through CI). It would be
+# nice to only run hvega changes for hvega-related changes, but given the
+# set up how would you automate that?
 #
 name: hvega-CI
 
@@ -25,16 +27,16 @@ jobs:
         os: [ubuntu-latest]
         cabal: ["3.2"]
         ghc:
-          # - "8.6.5"
-          # - "8.8.4"
+          - "8.6.5"
+          - "8.8.4"
           - "8.10.2"
 #        exclude:
 #          - os: macOS-latest
-#            ghc: 8.8.3
+#            ghc: 8.8.4
 #          - os: macOS-latest
 #            ghc: 8.6.5
 #          - os: windows-latest
-#            ghc: 8.8.3
+#            ghc: 8.8.4
 #          - os: windows-latest
 #            ghc: 8.6.5
 
