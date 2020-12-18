@@ -1,6 +1,7 @@
 # hvega
 
 [![vega-lite version](https://img.shields.io/badge/Vega--Lite-v4.15-purple.svg)](https://vega.github.io/vega-lite/)
+[![GitHub CI](https://github.com/DougBurke/hvega/workflows/hvega-CI/badge.svg)](https://github.com/DougBurke/hvega/actions)
 
 Create [Vega-Lite](https://vega.github.io/vega-lite/) visualizations in
 Haskell. It targets version 4.15 of the Vega-Lite specification. Note that
