@@ -18,7 +18,6 @@ extra-source-files:  README.md
                      stack.yaml
                      default.nix
                      shell.nix
-                     hvega.nix
                      tests/specs/axis/*.vl
                      tests/specs/color/*.vl
                      tests/specs/composite/*.vl
