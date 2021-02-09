@@ -3,7 +3,7 @@
 
 # Looks like release-20.03 doesn't have haskell-language-server so stick
 # with nixpkgs-unstable
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8102" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8103" }:
 
 let
   # sources = import ../nix/sources.nix;
