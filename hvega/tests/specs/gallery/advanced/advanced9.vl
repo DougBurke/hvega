@@ -1,15 +1,15 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Production budget of the film with highest US Gross in each major genre.",
     "encoding": {
         "x": {
-            "field": "Production_Budget",
             "aggregate": {
                 "argmax": "US_Gross"
             },
+            "field": "Production_Budget",
             "type": "quantitative"
         },
         "y": {
@@ -17,5 +17,5 @@
             "type": "nominal"
         }
     },
-    "description": "Production budget of the film with highest US Gross in each major genre."
+    "mark": "bar"
 }

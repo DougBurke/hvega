@@ -1,5 +1,5 @@
 {
-    "height": 175,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
@@ -8,11 +8,959 @@
     "data": {
         "name": "medians"
     },
-    "width": 250,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Questionnaire Ratings",
+    "datasets": {
+        "medians": [
+            {
+                "hi": "Hard",
+                "lo": "Easy",
+                "median": 1.999976,
+                "name": "Identify Errors:"
+            },
+            {
+                "hi": "Hard",
+                "lo": "Easy",
+                "median": 2,
+                "name": "Fix Errors:"
+            },
+            {
+                "hi": "Gesture",
+                "lo": "Toolbar",
+                "median": 1.999969,
+                "name": "Easier to Fix:"
+            },
+            {
+                "hi": "Gesture",
+                "lo": "Toolbar",
+                "median": 2.500045,
+                "name": "Faster to Fix:"
+            },
+            {
+                "hi": "Gesture",
+                "lo": "Toolbar",
+                "median": 1.500022,
+                "name": "Easier on Phone:"
+            },
+            {
+                "hi": "Gesture",
+                "lo": "Toolbar",
+                "median": 2.99998,
+                "name": "Easier on Tablet:"
+            },
+            {
+                "hi": "Tablet",
+                "lo": "Phone",
+                "median": 4.500007,
+                "name": "Device Preference:"
+            }
+        ],
+        "values": [
+            {
+                "id": "P1",
+                "name": "Participant ID",
+                "value": "P1"
+            },
+            {
+                "id": "P1",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P1",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P1",
+                "name": "Easier to Fix:",
+                "value": "3"
+            },
+            {
+                "id": "P1",
+                "name": "Faster to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P1",
+                "name": "Easier on Phone:",
+                "value": "2"
+            },
+            {
+                "id": "P1",
+                "name": "Easier on Tablet:",
+                "value": "5"
+            },
+            {
+                "id": "P1",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P1",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P1",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P2",
+                "name": "Participant ID",
+                "value": "P2"
+            },
+            {
+                "id": "P2",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P2",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P2",
+                "name": "Easier to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P2",
+                "name": "Faster to Fix:",
+                "value": "5"
+            },
+            {
+                "id": "P2",
+                "name": "Easier on Phone:",
+                "value": "5"
+            },
+            {
+                "id": "P2",
+                "name": "Easier on Tablet:",
+                "value": "5"
+            },
+            {
+                "id": "P2",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P2",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P2",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P3",
+                "name": "Participant ID",
+                "value": "P3"
+            },
+            {
+                "id": "P3",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P3",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P3",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P3",
+                "name": "Faster to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P3",
+                "name": "Easier on Phone:",
+                "value": "2"
+            },
+            {
+                "id": "P3",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P3",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P3",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P3",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P4",
+                "name": "Participant ID",
+                "value": "P4"
+            },
+            {
+                "id": "P4",
+                "name": "Identify Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P4",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P4",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P4",
+                "name": "Faster to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P4",
+                "name": "Easier on Phone:",
+                "value": "4"
+            },
+            {
+                "id": "P4",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P4",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P4",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P4",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P5",
+                "name": "Participant ID",
+                "value": "P5"
+            },
+            {
+                "id": "P5",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P5",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P5",
+                "name": "Easier to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P5",
+                "name": "Faster to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P5",
+                "name": "Easier on Phone:",
+                "value": "4"
+            },
+            {
+                "id": "P5",
+                "name": "Easier on Tablet:",
+                "value": "5"
+            },
+            {
+                "id": "P5",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P5",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P5",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P6",
+                "name": "Participant ID",
+                "value": "P6"
+            },
+            {
+                "id": "P6",
+                "name": "Identify Errors:",
+                "value": "1"
+            },
+            {
+                "id": "P6",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P6",
+                "name": "Easier to Fix:",
+                "value": "3"
+            },
+            {
+                "id": "P6",
+                "name": "Faster to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P6",
+                "name": "Easier on Phone:",
+                "value": "4"
+            },
+            {
+                "id": "P6",
+                "name": "Easier on Tablet:",
+                "value": "4"
+            },
+            {
+                "id": "P6",
+                "name": "Device Preference:",
+                "value": "4"
+            },
+            {
+                "id": "P6",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P6",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P7",
+                "name": "Participant ID",
+                "value": "P7"
+            },
+            {
+                "id": "P7",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P7",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P7",
+                "name": "Easier to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P7",
+                "name": "Faster to Fix:",
+                "value": "5"
+            },
+            {
+                "id": "P7",
+                "name": "Easier on Phone:",
+                "value": "3"
+            },
+            {
+                "id": "P7",
+                "name": "Easier on Tablet:",
+                "value": "2"
+            },
+            {
+                "id": "P7",
+                "name": "Device Preference:",
+                "value": "4"
+            },
+            {
+                "id": "P7",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P7",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P8",
+                "name": "Participant ID",
+                "value": "P8"
+            },
+            {
+                "id": "P8",
+                "name": "Identify Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P8",
+                "name": "Fix Errors:",
+                "value": "1"
+            },
+            {
+                "id": "P8",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P8",
+                "name": "Faster to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P8",
+                "name": "Easier on Phone:",
+                "value": "2"
+            },
+            {
+                "id": "P8",
+                "name": "Easier on Tablet:",
+                "value": "5"
+            },
+            {
+                "id": "P8",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P8",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P8",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P9",
+                "name": "Participant ID",
+                "value": "P9"
+            },
+            {
+                "id": "P9",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P9",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P9",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P9",
+                "name": "Faster to Fix:",
+                "value": "4"
+            },
+            {
+                "id": "P9",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P9",
+                "name": "Easier on Tablet:",
+                "value": "4"
+            },
+            {
+                "id": "P9",
+                "name": "Device Preference:",
+                "value": "4"
+            },
+            {
+                "id": "P9",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P9",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Participant ID",
+                "value": "P10"
+            },
+            {
+                "id": "P10",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P10",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P10",
+                "name": "Easier to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Faster to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P10",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P10",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Participant ID",
+                "value": "P11"
+            },
+            {
+                "id": "P11",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P11",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P11",
+                "name": "Easier to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Faster to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Device Preference:",
+                "value": "4"
+            },
+            {
+                "id": "P11",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P11",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P12",
+                "name": "Participant ID",
+                "value": "P12"
+            },
+            {
+                "id": "P12",
+                "name": "Identify Errors:",
+                "value": "1"
+            },
+            {
+                "id": "P12",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P12",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P12",
+                "name": "Faster to Fix:",
+                "value": "3"
+            },
+            {
+                "id": "P12",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P12",
+                "name": "Easier on Tablet:",
+                "value": "3"
+            },
+            {
+                "id": "P12",
+                "name": "Device Preference:",
+                "value": "3"
+            },
+            {
+                "id": "P12",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P12",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P13",
+                "name": "Participant ID",
+                "value": "P13"
+            },
+            {
+                "id": "P13",
+                "name": "Identify Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P13",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P13",
+                "name": "Easier to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P13",
+                "name": "Faster to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P13",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P13",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P13",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P13",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P13",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P14",
+                "name": "Participant ID",
+                "value": "P14"
+            },
+            {
+                "id": "P14",
+                "name": "Identify Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P14",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P14",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P14",
+                "name": "Faster to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P14",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P14",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P14",
+                "name": "Device Preference:",
+                "value": "1"
+            },
+            {
+                "id": "P14",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P14",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Participant ID",
+                "value": "P15"
+            },
+            {
+                "id": "P15",
+                "name": "Identify Errors:",
+                "value": "4"
+            },
+            {
+                "id": "P15",
+                "name": "Fix Errors:",
+                "value": "5"
+            },
+            {
+                "id": "P15",
+                "name": "Easier to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Faster to Fix:",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Easier on Tablet:",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P15",
+                "name": "Tablet_First",
+                "value": "1"
+            },
+            {
+                "id": "P15",
+                "name": "Toolbar_First",
+                "value": "0"
+            },
+            {
+                "id": "P16",
+                "name": "Participant ID",
+                "value": "P16"
+            },
+            {
+                "id": "P16",
+                "name": "Identify Errors:",
+                "value": "1"
+            },
+            {
+                "id": "P16",
+                "name": "Fix Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P16",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P16",
+                "name": "Faster to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P16",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P16",
+                "name": "Easier on Tablet:",
+                "value": "4"
+            },
+            {
+                "id": "P16",
+                "name": "Device Preference:",
+                "value": "5"
+            },
+            {
+                "id": "P16",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P16",
+                "name": "Toolbar_First",
+                "value": "1"
+            },
+            {
+                "id": "P17",
+                "name": "Participant ID",
+                "value": "P17"
+            },
+            {
+                "id": "P17",
+                "name": "Identify Errors:",
+                "value": "3"
+            },
+            {
+                "id": "P17",
+                "name": "Fix Errors:",
+                "value": "2"
+            },
+            {
+                "id": "P17",
+                "name": "Easier to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P17",
+                "name": "Faster to Fix:",
+                "value": "2"
+            },
+            {
+                "id": "P17",
+                "name": "Easier on Phone:",
+                "value": "1"
+            },
+            {
+                "id": "P17",
+                "name": "Easier on Tablet:",
+                "value": "3"
+            },
+            {
+                "id": "P17",
+                "name": "Device Preference:",
+                "value": "2"
+            },
+            {
+                "id": "P17",
+                "name": "Tablet_First",
+                "value": "0"
+            },
+            {
+                "id": "P17",
+                "name": "Toolbar_First",
+                "value": "0"
+            }
+        ]
+    },
+    "encoding": {
+        "y": {
+            "axis": {
+                "domain": false,
+                "grid": true,
+                "labelFontWeight": "bold",
+                "offset": 50,
+                "ticks": false,
+                "title": null
+            },
+            "field": "name",
+            "sort": null,
+            "type": "nominal"
+        }
+    },
+    "height": 175,
     "layer": [
         {
+            "data": {
+                "name": "values"
+            },
+            "encoding": {
+                "size": {
+                    "aggregate": "count",
+                    "legend": {
+                        "offset": 75,
+                        "title": "Number of Ratings"
+                    },
+                    "type": "quantitative"
+                },
+                "x": {
+                    "axis": {
+                        "grid": false,
+                        "values": [
+                            1,
+                            2,
+                            3,
+                            4,
+                            5
+                        ]
+                    },
+                    "field": "value",
+                    "scale": {
+                        "domain": [
+                            0,
+                            6
+                        ]
+                    },
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "#6eb4fd",
+                "type": "circle"
+            },
             "transform": [
                 {
                     "filter": "datum.name != 'Toolbar_First'"
@@ -23,52 +971,14 @@
                 {
                     "filter": "datum.name != 'Participant ID'"
                 }
-            ],
-            "mark": {
-                "color": "#6eb4fd",
-                "type": "circle"
-            },
-            "data": {
-                "name": "values"
-            },
-            "encoding": {
-                "size": {
-                    "aggregate": "count",
-                    "type": "quantitative",
-                    "legend": {
-                        "offset": 75,
-                        "title": "Number of Ratings"
-                    }
-                },
-                "x": {
-                    "field": "value",
-                    "scale": {
-                        "domain": [
-                            0,
-                            6
-                        ]
-                    },
-                    "type": "quantitative",
-                    "axis": {
-                        "values": [
-                            1,
-                            2,
-                            3,
-                            4,
-                            5
-                        ],
-                        "grid": false
-                    }
-                }
-            }
+            ]
         },
         {
-            "mark": {
-                "color": "black",
-                "type": "tick"
-            },
             "encoding": {
                 "x": {
+                    "axis": {
+                        "title": null
+                    },
                     "field": "median",
                     "scale": {
                         "domain": [
@@ -76,951 +986,41 @@
                             6
                         ]
                     },
-                    "type": "quantitative",
-                    "axis": {
-                        "title": null
-                    }
+                    "type": "quantitative"
                 }
+            },
+            "mark": {
+                "color": "black",
+                "type": "tick"
             }
         },
         {
-            "mark": {
-                "align": "right",
-                "x": -5,
-                "type": "text"
-            },
             "encoding": {
                 "text": {
                     "field": "lo",
                     "type": "nominal"
                 }
+            },
+            "mark": {
+                "align": "right",
+                "type": "text",
+                "x": -5
             }
         },
         {
-            "mark": {
-                "align": "left",
-                "x": 255,
-                "type": "text"
-            },
             "encoding": {
                 "text": {
                     "field": "hi",
                     "type": "nominal"
                 }
+            },
+            "mark": {
+                "align": "left",
+                "type": "text",
+                "x": 255
             }
         }
     ],
-    "encoding": {
-        "y": {
-            "field": "name",
-            "sort": null,
-            "type": "nominal",
-            "axis": {
-                "offset": 50,
-                "domain": false,
-                "labelFontWeight": "bold",
-                "grid": true,
-                "title": null,
-                "ticks": false
-            }
-        }
-    },
-    "datasets": {
-        "values": [
-            {
-                "value": "P1",
-                "name": "Participant ID",
-                "id": "P1"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P1"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P1"
-            },
-            {
-                "value": "3",
-                "name": "Easier to Fix:",
-                "id": "P1"
-            },
-            {
-                "value": "4",
-                "name": "Faster to Fix:",
-                "id": "P1"
-            },
-            {
-                "value": "2",
-                "name": "Easier on Phone:",
-                "id": "P1"
-            },
-            {
-                "value": "5",
-                "name": "Easier on Tablet:",
-                "id": "P1"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P1"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P1"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P1"
-            },
-            {
-                "value": "P2",
-                "name": "Participant ID",
-                "id": "P2"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P2"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P2"
-            },
-            {
-                "value": "4",
-                "name": "Easier to Fix:",
-                "id": "P2"
-            },
-            {
-                "value": "5",
-                "name": "Faster to Fix:",
-                "id": "P2"
-            },
-            {
-                "value": "5",
-                "name": "Easier on Phone:",
-                "id": "P2"
-            },
-            {
-                "value": "5",
-                "name": "Easier on Tablet:",
-                "id": "P2"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P2"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P2"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P2"
-            },
-            {
-                "value": "P3",
-                "name": "Participant ID",
-                "id": "P3"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P3"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P3"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P3"
-            },
-            {
-                "value": "1",
-                "name": "Faster to Fix:",
-                "id": "P3"
-            },
-            {
-                "value": "2",
-                "name": "Easier on Phone:",
-                "id": "P3"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P3"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P3"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P3"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P3"
-            },
-            {
-                "value": "P4",
-                "name": "Participant ID",
-                "id": "P4"
-            },
-            {
-                "value": "3",
-                "name": "Identify Errors:",
-                "id": "P4"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P4"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P4"
-            },
-            {
-                "value": "2",
-                "name": "Faster to Fix:",
-                "id": "P4"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Phone:",
-                "id": "P4"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P4"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P4"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P4"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P4"
-            },
-            {
-                "value": "P5",
-                "name": "Participant ID",
-                "id": "P5"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P5"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P5"
-            },
-            {
-                "value": "4",
-                "name": "Easier to Fix:",
-                "id": "P5"
-            },
-            {
-                "value": "4",
-                "name": "Faster to Fix:",
-                "id": "P5"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Phone:",
-                "id": "P5"
-            },
-            {
-                "value": "5",
-                "name": "Easier on Tablet:",
-                "id": "P5"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P5"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P5"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P5"
-            },
-            {
-                "value": "P6",
-                "name": "Participant ID",
-                "id": "P6"
-            },
-            {
-                "value": "1",
-                "name": "Identify Errors:",
-                "id": "P6"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P6"
-            },
-            {
-                "value": "3",
-                "name": "Easier to Fix:",
-                "id": "P6"
-            },
-            {
-                "value": "4",
-                "name": "Faster to Fix:",
-                "id": "P6"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Phone:",
-                "id": "P6"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Tablet:",
-                "id": "P6"
-            },
-            {
-                "value": "4",
-                "name": "Device Preference:",
-                "id": "P6"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P6"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P6"
-            },
-            {
-                "value": "P7",
-                "name": "Participant ID",
-                "id": "P7"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P7"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P7"
-            },
-            {
-                "value": "4",
-                "name": "Easier to Fix:",
-                "id": "P7"
-            },
-            {
-                "value": "5",
-                "name": "Faster to Fix:",
-                "id": "P7"
-            },
-            {
-                "value": "3",
-                "name": "Easier on Phone:",
-                "id": "P7"
-            },
-            {
-                "value": "2",
-                "name": "Easier on Tablet:",
-                "id": "P7"
-            },
-            {
-                "value": "4",
-                "name": "Device Preference:",
-                "id": "P7"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P7"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P7"
-            },
-            {
-                "value": "P8",
-                "name": "Participant ID",
-                "id": "P8"
-            },
-            {
-                "value": "3",
-                "name": "Identify Errors:",
-                "id": "P8"
-            },
-            {
-                "value": "1",
-                "name": "Fix Errors:",
-                "id": "P8"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P8"
-            },
-            {
-                "value": "4",
-                "name": "Faster to Fix:",
-                "id": "P8"
-            },
-            {
-                "value": "2",
-                "name": "Easier on Phone:",
-                "id": "P8"
-            },
-            {
-                "value": "5",
-                "name": "Easier on Tablet:",
-                "id": "P8"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P8"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P8"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P8"
-            },
-            {
-                "value": "P9",
-                "name": "Participant ID",
-                "id": "P9"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P9"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P9"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P9"
-            },
-            {
-                "value": "4",
-                "name": "Faster to Fix:",
-                "id": "P9"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P9"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Tablet:",
-                "id": "P9"
-            },
-            {
-                "value": "4",
-                "name": "Device Preference:",
-                "id": "P9"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P9"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P9"
-            },
-            {
-                "value": "P10",
-                "name": "Participant ID",
-                "id": "P10"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P10"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Easier to Fix:",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Faster to Fix:",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P10"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P10"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P10"
-            },
-            {
-                "value": "P11",
-                "name": "Participant ID",
-                "id": "P11"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P11"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P11"
-            },
-            {
-                "value": "1",
-                "name": "Easier to Fix:",
-                "id": "P11"
-            },
-            {
-                "value": "1",
-                "name": "Faster to Fix:",
-                "id": "P11"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P11"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P11"
-            },
-            {
-                "value": "4",
-                "name": "Device Preference:",
-                "id": "P11"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P11"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P11"
-            },
-            {
-                "value": "P12",
-                "name": "Participant ID",
-                "id": "P12"
-            },
-            {
-                "value": "1",
-                "name": "Identify Errors:",
-                "id": "P12"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P12"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P12"
-            },
-            {
-                "value": "3",
-                "name": "Faster to Fix:",
-                "id": "P12"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P12"
-            },
-            {
-                "value": "3",
-                "name": "Easier on Tablet:",
-                "id": "P12"
-            },
-            {
-                "value": "3",
-                "name": "Device Preference:",
-                "id": "P12"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P12"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P12"
-            },
-            {
-                "value": "P13",
-                "name": "Participant ID",
-                "id": "P13"
-            },
-            {
-                "value": "2",
-                "name": "Identify Errors:",
-                "id": "P13"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P13"
-            },
-            {
-                "value": "1",
-                "name": "Easier to Fix:",
-                "id": "P13"
-            },
-            {
-                "value": "1",
-                "name": "Faster to Fix:",
-                "id": "P13"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P13"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P13"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P13"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P13"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P13"
-            },
-            {
-                "value": "P14",
-                "name": "Participant ID",
-                "id": "P14"
-            },
-            {
-                "value": "3",
-                "name": "Identify Errors:",
-                "id": "P14"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P14"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P14"
-            },
-            {
-                "value": "2",
-                "name": "Faster to Fix:",
-                "id": "P14"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P14"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P14"
-            },
-            {
-                "value": "1",
-                "name": "Device Preference:",
-                "id": "P14"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P14"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P14"
-            },
-            {
-                "value": "P15",
-                "name": "Participant ID",
-                "id": "P15"
-            },
-            {
-                "value": "4",
-                "name": "Identify Errors:",
-                "id": "P15"
-            },
-            {
-                "value": "5",
-                "name": "Fix Errors:",
-                "id": "P15"
-            },
-            {
-                "value": "1",
-                "name": "Easier to Fix:",
-                "id": "P15"
-            },
-            {
-                "value": "1",
-                "name": "Faster to Fix:",
-                "id": "P15"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P15"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Tablet:",
-                "id": "P15"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P15"
-            },
-            {
-                "value": "1",
-                "name": "Tablet_First",
-                "id": "P15"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P15"
-            },
-            {
-                "value": "P16",
-                "name": "Participant ID",
-                "id": "P16"
-            },
-            {
-                "value": "1",
-                "name": "Identify Errors:",
-                "id": "P16"
-            },
-            {
-                "value": "3",
-                "name": "Fix Errors:",
-                "id": "P16"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P16"
-            },
-            {
-                "value": "2",
-                "name": "Faster to Fix:",
-                "id": "P16"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P16"
-            },
-            {
-                "value": "4",
-                "name": "Easier on Tablet:",
-                "id": "P16"
-            },
-            {
-                "value": "5",
-                "name": "Device Preference:",
-                "id": "P16"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P16"
-            },
-            {
-                "value": "1",
-                "name": "Toolbar_First",
-                "id": "P16"
-            },
-            {
-                "value": "P17",
-                "name": "Participant ID",
-                "id": "P17"
-            },
-            {
-                "value": "3",
-                "name": "Identify Errors:",
-                "id": "P17"
-            },
-            {
-                "value": "2",
-                "name": "Fix Errors:",
-                "id": "P17"
-            },
-            {
-                "value": "2",
-                "name": "Easier to Fix:",
-                "id": "P17"
-            },
-            {
-                "value": "2",
-                "name": "Faster to Fix:",
-                "id": "P17"
-            },
-            {
-                "value": "1",
-                "name": "Easier on Phone:",
-                "id": "P17"
-            },
-            {
-                "value": "3",
-                "name": "Easier on Tablet:",
-                "id": "P17"
-            },
-            {
-                "value": "2",
-                "name": "Device Preference:",
-                "id": "P17"
-            },
-            {
-                "value": "0",
-                "name": "Tablet_First",
-                "id": "P17"
-            },
-            {
-                "value": "0",
-                "name": "Toolbar_First",
-                "id": "P17"
-            }
-        ],
-        "medians": [
-            {
-                "median": 1.999976,
-                "hi": "Hard",
-                "name": "Identify Errors:",
-                "lo": "Easy"
-            },
-            {
-                "median": 2,
-                "hi": "Hard",
-                "name": "Fix Errors:",
-                "lo": "Easy"
-            },
-            {
-                "median": 1.999969,
-                "hi": "Gesture",
-                "name": "Easier to Fix:",
-                "lo": "Toolbar"
-            },
-            {
-                "median": 2.500045,
-                "hi": "Gesture",
-                "name": "Faster to Fix:",
-                "lo": "Toolbar"
-            },
-            {
-                "median": 1.500022,
-                "hi": "Gesture",
-                "name": "Easier on Phone:",
-                "lo": "Toolbar"
-            },
-            {
-                "median": 2.99998,
-                "hi": "Gesture",
-                "name": "Easier on Tablet:",
-                "lo": "Toolbar"
-            },
-            {
-                "median": 4.500007,
-                "hi": "Tablet",
-                "name": "Device Preference:",
-                "lo": "Phone"
-            }
-        ]
-    }
+    "title": "Questionnaire Ratings",
+    "width": 250
 }

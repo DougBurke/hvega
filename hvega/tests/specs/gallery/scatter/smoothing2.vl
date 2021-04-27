@@ -1,17 +1,12 @@
 {
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "How can we 'smooth' and rename data?",
+    "height": 300,
     "layer": [
         {
-            "mark": {
-                "opacity": 0.3,
-                "type": "point",
-                "filled": true
-            },
             "encoding": {
                 "x": {
                     "field": "Rotten_Tomatoes_Rating",
@@ -21,23 +16,14 @@
                     "field": "IMDB_Rating",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "filled": true,
+                "opacity": 0.3,
+                "type": "point"
             }
         },
         {
-            "transform": [
-                {
-                    "as": [
-                        "Rotten_Tomatoes_Rating",
-                        "ly"
-                    ],
-                    "loess": "IMDB_Rating",
-                    "on": "Rotten_Tomatoes_Rating"
-                }
-            ],
-            "mark": {
-                "color": "firebrick",
-                "type": "line"
-            },
             "encoding": {
                 "x": {
                     "field": "Rotten_Tomatoes_Rating",
@@ -47,23 +33,23 @@
                     "field": "ly",
                     "type": "quantitative"
                 }
-            }
-        },
-        {
+            },
+            "mark": {
+                "color": "firebrick",
+                "type": "line"
+            },
             "transform": [
                 {
                     "as": [
                         "Rotten_Tomatoes_Rating",
-                        "ry"
+                        "ly"
                     ],
-                    "regression": "IMDB_Rating",
+                    "loess": "IMDB_Rating",
                     "on": "Rotten_Tomatoes_Rating"
                 }
-            ],
-            "mark": {
-                "color": "orange",
-                "type": "line"
-            },
+            ]
+        },
+        {
             "encoding": {
                 "x": {
                     "field": "Rotten_Tomatoes_Rating",
@@ -73,8 +59,22 @@
                     "field": "ry",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": {
+                "color": "orange",
+                "type": "line"
+            },
+            "transform": [
+                {
+                    "as": [
+                        "Rotten_Tomatoes_Rating",
+                        "ry"
+                    ],
+                    "on": "Rotten_Tomatoes_Rating",
+                    "regression": "IMDB_Rating"
+                }
+            ]
         }
     ],
-    "description": "How can we 'smooth' and rename data?"
+    "width": 300
 }

@@ -1,17 +1,30 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "background": "yellow",
+    "config": {
+        "legend": {
+            "title": null
+        },
+        "style": {
+            "mySecondStyle": {
+                "fill": "black",
+                "stroke": "blue"
+            },
+            "myStyle": {
+                "fill": "red",
+                "fillOpacity": 0.1,
+                "strokeOpacity": 1
+            }
+        },
+        "view": {
+            "fill": "#feb"
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
     "hconcat": [
         {
-            "height": 200,
-            "mark": {
-                "size": 100,
-                "type": "point"
-            },
-            "width": 200,
-            "title": {
-                "color": "brown",
-                "text": "Car Scatter",
-                "fontSize": 12
-            },
             "encoding": {
                 "color": {
                     "field": "Cylinders",
@@ -29,25 +42,20 @@
                     "field": "Miles_per_Gallon",
                     "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": {
+                "size": 100,
+                "type": "point"
+            },
+            "title": {
+                "color": "brown",
+                "fontSize": 12,
+                "text": "Car Scatter"
+            },
+            "width": 200
         },
         {
-            "height": 200,
-            "mark": "bar",
-            "width": 200,
-            "view": {
-                "cornerRadius": 18,
-                "strokeWidth": 4,
-                "strokeCap": "round",
-                "strokeJoin": "bevel",
-                "stroke": "red",
-                "fill": "white",
-                "strokeDash": [
-                    10,
-                    10
-                ]
-            },
-            "title": "Car Histogram",
             "encoding": {
                 "color": {
                     "field": "Origin",
@@ -61,19 +69,25 @@
                     "aggregate": "count",
                     "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": "bar",
+            "title": "Car Histogram",
+            "view": {
+                "cornerRadius": 18,
+                "fill": "white",
+                "stroke": "red",
+                "strokeCap": "round",
+                "strokeDash": [
+                    10,
+                    10
+                ],
+                "strokeJoin": "bevel",
+                "strokeWidth": 4
+            },
+            "width": 200
         },
         {
-            "height": 200,
-            "mark": "area",
-            "width": 200,
-            "view": {
-                "style": [
-                    "myStyle",
-                    "mySecondStyle"
-                ]
-            },
-            "title": "Car Streamgraph",
             "encoding": {
                 "color": {
                     "field": "Origin",
@@ -86,41 +100,27 @@
                 },
                 "y": {
                     "aggregate": "count",
-                    "type": "quantitative",
                     "axis": null,
-                    "stack": "center"
+                    "stack": "center",
+                    "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": "area",
+            "title": "Car Streamgraph",
+            "view": {
+                "style": [
+                    "myStyle",
+                    "mySecondStyle"
+                ]
+            },
+            "width": 200
         }
     ],
-    "config": {
-        "style": {
-            "mySecondStyle": {
-                "stroke": "blue",
-                "fill": "black"
-            },
-            "myStyle": {
-                "fill": "red",
-                "strokeOpacity": 1,
-                "fillOpacity": 0.1
-            }
-        },
-        "view": {
-            "fill": "#feb"
-        },
-        "legend": {
-            "title": null
-        }
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/cars.json"
-    },
     "resolve": {
         "scale": {
             "color": "independent",
             "shape": "independent"
         }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "background": "yellow"
+    }
 }

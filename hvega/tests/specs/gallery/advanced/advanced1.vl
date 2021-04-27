@@ -1,64 +1,64 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "sum",
-                    "as": "TotalTime",
-                    "field": "Time"
-                }
-            ],
-            "frame": [
-                null,
-                null
-            ]
-        },
-        {
-            "as": "PercentOfTotal",
-            "calculate": "datum.Time/datum.TotalTime * 100"
-        }
-    ],
-    "height": {
-        "step": 12
-    },
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "Time": 8,
-                "Activity": "Sleeping"
+                "Activity": "Sleeping",
+                "Time": 8
             },
             {
-                "Time": 2,
-                "Activity": "Eating"
+                "Activity": "Eating",
+                "Time": 2
             },
             {
-                "Time": 4,
-                "Activity": "TV"
+                "Activity": "TV",
+                "Time": 4
             },
             {
-                "Time": 8,
-                "Activity": "Work"
+                "Activity": "Work",
+                "Time": 8
             },
             {
-                "Time": 2,
-                "Activity": "Exercise"
+                "Activity": "Exercise",
+                "Time": 2
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Calculation of percentage of total",
     "encoding": {
         "x": {
-            "field": "PercentOfTotal",
-            "type": "quantitative",
             "axis": {
                 "title": "% of total time"
-            }
+            },
+            "field": "PercentOfTotal",
+            "type": "quantitative"
         },
         "y": {
             "field": "Activity",
             "type": "nominal"
         }
     },
-    "description": "Calculation of percentage of total"
+    "height": {
+        "step": 12
+    },
+    "mark": "bar",
+    "transform": [
+        {
+            "frame": [
+                null,
+                null
+            ],
+            "window": [
+                {
+                    "as": "TotalTime",
+                    "field": "Time",
+                    "op": "sum"
+                }
+            ]
+        },
+        {
+            "as": "PercentOfTotal",
+            "calculate": "datum.Time/datum.TotalTime * 100"
+        }
+    ]
 }

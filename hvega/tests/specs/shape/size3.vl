@@ -1,28 +1,16 @@
 {
-    "transform": [
-        {
-            "as": "YearOfManufacture",
-            "calculate": "year(datum.Year)"
-        },
-        {
-            "filter": "datum.YearOfManufacture == 1970"
-        }
-    ],
-    "mark": {
-        "type": "point",
-        "filled": true
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Fixed shape, sized by number of cylinder category",
     "encoding": {
+        "opacity": {
+            "value": 0.6
+        },
         "size": {
             "field": "Cylinders",
             "type": "ordinal"
-        },
-        "opacity": {
-            "value": 0.6
         },
         "x": {
             "field": "Horsepower",
@@ -33,5 +21,17 @@
             "type": "quantitative"
         }
     },
-    "description": "Fixed shape, sized by number of cylinder category"
+    "mark": {
+        "filled": true,
+        "type": "point"
+    },
+    "transform": [
+        {
+            "as": "YearOfManufacture",
+            "calculate": "year(datum.Year)"
+        },
+        {
+            "filter": "datum.YearOfManufacture == 1970"
+        }
+    ]
 }

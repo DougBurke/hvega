@@ -1,29 +1,17 @@
 {
-    "transform": [
-        {
-            "filter": "datum.year == 2000"
-        },
-        {
-            "as": "gender",
-            "calculate": "datum.sex == 2 ? 'Female' : 'Male'"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
-        "view": {
-            "stroke": null
-        },
         "axis": {
             "domainWidth": 1
+        },
+        "view": {
+            "stroke": null
         }
     },
-    "mark": "bar",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
-    "width": {
-        "step": 12
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Grouped bar chart showing population structure by age and gender.",
     "encoding": {
         "color": {
             "field": "gender",
@@ -35,26 +23,38 @@
             },
             "type": "nominal"
         },
-        "x": {
-            "field": "gender",
-            "type": "nominal",
-            "axis": {
-                "title": null
-            }
-        },
         "column": {
             "field": "age",
             "type": "ordinal"
         },
+        "x": {
+            "axis": {
+                "title": null
+            },
+            "field": "gender",
+            "type": "nominal"
+        },
         "y": {
-            "field": "people",
             "aggregate": "sum",
-            "type": "quantitative",
             "axis": {
                 "grid": false,
                 "title": "population"
-            }
+            },
+            "field": "people",
+            "type": "quantitative"
         }
     },
-    "description": "Grouped bar chart showing population structure by age and gender."
+    "mark": "bar",
+    "transform": [
+        {
+            "filter": "datum.year == 2000"
+        },
+        {
+            "as": "gender",
+            "calculate": "datum.sex == 2 ? 'Female' : 'Male'"
+        }
+    ],
+    "width": {
+        "step": 12
+    }
 }

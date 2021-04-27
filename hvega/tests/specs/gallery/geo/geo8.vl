@@ -1,49 +1,49 @@
 {
-    "transform": [
-        {
-            "as": "geo",
-            "from": {
-                "data": {
-                    "url": "https://vega.github.io/vega-lite/data/us-10m.json",
-                    "format": {
-                        "feature": "states",
-                        "type": "topojson"
-                    }
-                },
-                "key": "id"
-            },
-            "lookup": "id"
-        }
-    ],
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "mark": "geoshape",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/income.json"
     },
-    "width": 500,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "Income in the U.S. by state, faceted over income brackets",
     "encoding": {
         "color": {
             "field": "pct",
             "sort": "descending",
             "type": "quantitative"
         },
-        "shape": {
-            "field": "geo",
-            "type": "geojson"
-        },
         "row": {
             "field": "group",
             "type": "nominal"
+        },
+        "shape": {
+            "field": "geo",
+            "type": "geojson"
         }
     },
-    "description": "Income in the U.S. by state, faceted over income brackets"
+    "height": 300,
+    "mark": "geoshape",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "transform": [
+        {
+            "as": "geo",
+            "from": {
+                "data": {
+                    "format": {
+                        "feature": "states",
+                        "type": "topojson"
+                    },
+                    "url": "https://vega.github.io/vega-lite/data/us-10m.json"
+                },
+                "key": "id"
+            },
+            "lookup": "id"
+        }
+    ],
+    "width": 500
 }

@@ -1,92 +1,92 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
-        "scale": {
-            "bandPaddingInner": 0,
-            "bandPaddingOuter": 0
+        "axis": {
+            "domain": false
         },
         "range": {
             "ramp": {
                 "scheme": "yellowgreenblue"
             }
         },
+        "scale": {
+            "bandPaddingInner": 0,
+            "bandPaddingOuter": 0
+        },
         "view": {
             "step": 40
-        },
-        "axis": {
-            "domain": false
         }
-    },
-    "mark": {
-        "strokeWidth": 2,
-        "type": "rect"
     },
     "data": {
         "values": [
             {
-                "predicted": "A",
+                "actual": "A",
                 "count": 13,
-                "actual": "A"
+                "predicted": "A"
             },
             {
-                "predicted": "B",
+                "actual": "A",
                 "count": 0,
-                "actual": "A"
+                "predicted": "B"
             },
             {
-                "predicted": "C",
+                "actual": "A",
                 "count": 0,
-                "actual": "A"
+                "predicted": "C"
             },
             {
-                "predicted": "A",
+                "actual": "B",
                 "count": 0,
-                "actual": "B"
+                "predicted": "A"
             },
             {
-                "predicted": "B",
+                "actual": "B",
                 "count": 10,
-                "actual": "B"
+                "predicted": "B"
             },
             {
-                "predicted": "C",
+                "actual": "B",
                 "count": 6,
-                "actual": "B"
+                "predicted": "C"
             },
             {
-                "predicted": "A",
+                "actual": "C",
                 "count": 0,
-                "actual": "C"
+                "predicted": "A"
             },
             {
-                "predicted": "B",
+                "actual": "C",
                 "count": 0,
-                "actual": "C"
+                "predicted": "B"
             },
             {
-                "predicted": "C",
+                "actual": "C",
                 "count": 9,
-                "actual": "C"
+                "predicted": "C"
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "highlight": {
-            "type": "single"
-        }
-    },
     "encoding": {
+        "fill": {
+            "field": "count",
+            "type": "quantitative"
+        },
         "opacity": {
-            "value": 0.5,
             "condition": {
-                "value": 1,
-                "selection": "highlight"
-            }
+                "selection": "highlight",
+                "value": 1
+            },
+            "value": 0.5
+        },
+        "order": {
+            "condition": {
+                "selection": "highlight",
+                "value": 1
+            },
+            "value": 0
         },
         "stroke": {
-            "value": null,
             "condition": {
-                "value": "black",
                 "test": {
                     "and": [
                         {
@@ -94,27 +94,27 @@
                         },
                         "length(data(\"highlight_store\"))"
                     ]
-                }
-            }
-        },
-        "fill": {
-            "field": "count",
-            "type": "quantitative"
+                },
+                "value": "black"
+            },
+            "value": null
         },
         "x": {
             "field": "predicted",
             "type": "nominal"
         },
-        "order": {
-            "value": 0,
-            "condition": {
-                "value": 1,
-                "selection": "highlight"
-            }
-        },
         "y": {
             "field": "actual",
             "type": "nominal"
+        }
+    },
+    "mark": {
+        "strokeWidth": 2,
+        "type": "rect"
+    },
+    "selection": {
+        "highlight": {
+            "type": "single"
         }
     }
 }

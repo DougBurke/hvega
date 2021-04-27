@@ -1,231 +1,201 @@
 {
-    "transform": [
-        {
-            "as": "emoji",
-            "calculate": "{'cattle': '🐄', 'pigs': '🐖', 'sheep': '🐏'}[datum.animal]"
-        },
-        {
-            "window": [
-                {
-                    "op": "rank",
-                    "as": "rank"
-                }
-            ],
-            "groupby": [
-                "country",
-                "animal"
-            ]
-        }
-    ],
-    "height": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "mark": {
-        "type": "text",
-        "baseline": "middle"
-    },
     "data": {
         "values": [
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 7
+                "col": 7,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 8
+                "col": 8,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 9
+                "col": 9,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 7
+                "col": 7,
+                "country": "United States"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 3
+                "col": 3,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "pigs",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "pigs",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 3
+                "col": 3,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 4
+                "col": 4,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 5
+                "col": 5,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 6
+                "col": 6,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 7
+                "col": 7,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 8
+                "col": 8,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 9
+                "col": 9,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 10
+                "col": 10,
+                "country": "Great Britain"
             }
         ]
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Isotype bar chart using emojis for symbols",
     "encoding": {
-        "size": {
-            "value": 65
-        },
-        "text": {
-            "field": "emoji",
-            "type": "nominal"
-        },
         "row": {
             "field": "country",
             "header": {
@@ -233,17 +203,47 @@
             },
             "type": "nominal"
         },
+        "size": {
+            "value": 65
+        },
+        "text": {
+            "field": "emoji",
+            "type": "nominal"
+        },
         "x": {
+            "axis": null,
             "field": "rank",
-            "type": "ordinal",
-            "axis": null
+            "type": "ordinal"
         },
         "y": {
+            "axis": null,
             "field": "animal",
             "sort": null,
-            "type": "nominal",
-            "axis": null
+            "type": "nominal"
         }
     },
-    "description": "Isotype bar chart using emojis for symbols"
+    "height": 200,
+    "mark": {
+        "baseline": "middle",
+        "type": "text"
+    },
+    "transform": [
+        {
+            "as": "emoji",
+            "calculate": "{'cattle': '🐄', 'pigs': '🐖', 'sheep': '🐏'}[datum.animal]"
+        },
+        {
+            "groupby": [
+                "country",
+                "animal"
+            ],
+            "window": [
+                {
+                    "as": "rank",
+                    "op": "rank"
+                }
+            ]
+        }
+    ],
+    "width": 800
 }

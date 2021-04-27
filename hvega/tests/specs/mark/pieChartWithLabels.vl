@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -27,41 +28,40 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "view": {
-        "stroke": null
+    "description": "A simple pie chart with labels.",
+    "encoding": {
+        "color": {
+            "field": "category",
+            "legend": null,
+            "type": "nominal"
+        },
+        "theta": {
+            "field": "value",
+            "stack": "zero",
+            "type": "quantitative"
+        }
     },
     "layer": [
         {
             "mark": {
-                "type": "arc",
-                "outerRadius": 80
+                "outerRadius": 80,
+                "type": "arc"
             }
         },
         {
-            "mark": {
-                "radius": 90,
-                "type": "text"
-            },
             "encoding": {
                 "text": {
                     "field": "category",
                     "type": "nominal"
                 }
+            },
+            "mark": {
+                "radius": 90,
+                "type": "text"
             }
         }
     ],
-    "encoding": {
-        "theta": {
-            "field": "value",
-            "type": "quantitative",
-            "stack": "zero"
-        },
-        "color": {
-            "field": "category",
-            "type": "nominal",
-            "legend": null
-        }
-    },
-    "description": "A simple pie chart with labels."
+    "view": {
+        "stroke": null
+    }
 }

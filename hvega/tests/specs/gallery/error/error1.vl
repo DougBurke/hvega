@@ -1,51 +1,51 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": {
-                "type": "point",
-                "filled": true
-            },
-            "encoding": {
-                "color": {
-                    "value": "black"
-                },
-                "x": {
-                    "field": "yield",
-                    "scale": {
-                        "zero": false
-                    },
-                    "aggregate": "mean",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Barley Yield"
-                    }
-                }
-            }
-        },
-        {
-            "mark": "rule",
-            "encoding": {
-                "x2": {
-                    "field": "yield",
-                    "aggregate": "ci1"
-                },
-                "x": {
-                    "field": "yield",
-                    "aggregate": "ci0",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "Error bars showing confidence intervals",
     "encoding": {
         "y": {
             "field": "variety",
             "type": "ordinal"
         }
     },
-    "description": "Error bars showing confidence intervals"
+    "layer": [
+        {
+            "encoding": {
+                "color": {
+                    "value": "black"
+                },
+                "x": {
+                    "aggregate": "mean",
+                    "axis": {
+                        "title": "Barley Yield"
+                    },
+                    "field": "yield",
+                    "scale": {
+                        "zero": false
+                    },
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "filled": true,
+                "type": "point"
+            }
+        },
+        {
+            "encoding": {
+                "x": {
+                    "aggregate": "ci0",
+                    "field": "yield",
+                    "type": "quantitative"
+                },
+                "x2": {
+                    "aggregate": "ci1",
+                    "field": "yield"
+                }
+            },
+            "mark": "rule"
+        }
+    ]
 }

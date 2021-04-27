@@ -1,55 +1,55 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "Place Rank": 1,
+                "Fighter Name": "liukang",
                 "Fighting Style": "tiger",
-                "Fighter Name": "liukang"
+                "Place Rank": 1
             },
             {
-                "Place Rank": 10,
+                "Fighter Name": "liukang",
                 "Fighting Style": "crane",
-                "Fighter Name": "liukang"
+                "Place Rank": 10
             },
             {
-                "Place Rank": 3,
+                "Fighter Name": "liukang",
                 "Fighting Style": "shaolin",
-                "Fighter Name": "liukang"
+                "Place Rank": 3
             },
             {
-                "Place Rank": 6,
+                "Fighter Name": "johnnycage",
                 "Fighting Style": "tiger",
-                "Fighter Name": "johnnycage"
+                "Place Rank": 6
             },
             {
-                "Place Rank": 5,
+                "Fighter Name": "johnnycage",
                 "Fighting Style": "crane",
-                "Fighter Name": "johnnycage"
+                "Place Rank": 5
             },
             {
-                "Place Rank": 4,
+                "Fighter Name": "johnnycage",
                 "Fighting Style": "shaolin",
-                "Fighter Name": "johnnycage"
+                "Place Rank": 4
             },
             {
-                "Place Rank": 8,
+                "Fighter Name": "raided",
                 "Fighting Style": "tiger",
-                "Fighter Name": "raided"
+                "Place Rank": 8
             },
             {
-                "Place Rank": 12,
+                "Fighter Name": "raiden",
                 "Fighting Style": "crane",
-                "Fighter Name": "raiden"
+                "Place Rank": 12
             },
             {
-                "Place Rank": 2,
+                "Fighter Name": "raiden",
                 "Fighting Style": "shaolin",
-                "Fighter Name": "raiden"
+                "Place Rank": 2
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "An example showing how to use argmin in tooltips with fields with spaces",
     "encoding": {
         "tooltip": [
             {
@@ -57,21 +57,21 @@
                 "type": "nominal"
             },
             {
-                "field": "Place Rank",
                 "aggregate": "min",
+                "field": "Place Rank",
                 "type": "quantitative"
             },
             {
-                "field": "Fighting Style",
                 "aggregate": {
                     "argmin": "Place Rank"
                 },
+                "field": "Fighting Style",
                 "type": "nominal"
             }
         ],
         "x": {
-            "field": "Place Rank",
             "aggregate": "min",
+            "field": "Place Rank",
             "type": "quantitative"
         },
         "y": {
@@ -79,5 +79,5 @@
             "type": "nominal"
         }
     },
-    "description": "An example showing how to use argmin in tooltips with fields with spaces"
+    "mark": "point"
 }

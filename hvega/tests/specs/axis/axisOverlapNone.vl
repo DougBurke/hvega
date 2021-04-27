@@ -1,5 +1,5 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -24,23 +24,23 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "x",
-            "type": "quantitative",
             "axis": {
-                "labelOverlap": false,
-                "labelFontSize": 20
-            }
+                "labelFontSize": 20,
+                "labelOverlap": false
+            },
+            "field": "x",
+            "type": "quantitative"
         },
         "y": {
-            "field": "y",
-            "type": "quantitative",
             "axis": {
-                "labelOverlap": false,
-                "labelFontSize": 20
-            }
+                "labelFontSize": 20,
+                "labelOverlap": false
+            },
+            "field": "y",
+            "type": "quantitative"
         }
-    }
+    },
+    "mark": "circle"
 }

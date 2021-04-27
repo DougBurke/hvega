@@ -1,208 +1,204 @@
 {
-    "height": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "mark": {
-        "type": "point",
-        "filled": true
-    },
     "data": {
         "values": [
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 7
+                "col": 7,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 8
+                "col": 8,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "cattle",
-                "col": 9
+                "col": 9,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "pigs",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 1
+                "col": 1,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 2
+                "col": 2,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 3
+                "col": 3,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 4
+                "col": 4,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 5
+                "col": 5,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 6
+                "col": 6,
+                "country": "United States"
             },
             {
-                "country": "United States",
                 "animal": "sheep",
-                "col": 7
+                "col": 7,
+                "country": "United States"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "cattle",
-                "col": 3
+                "col": 3,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "pigs",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "pigs",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 1
+                "col": 1,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 2
+                "col": 2,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 3
+                "col": 3,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 4
+                "col": 4,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 5
+                "col": 5,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 6
+                "col": 6,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 7
+                "col": 7,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 8
+                "col": 8,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 9
+                "col": 9,
+                "country": "Great Britain"
             },
             {
-                "country": "Great Britain",
                 "animal": "sheep",
-                "col": 10
+                "col": 10,
+                "country": "Great Britain"
             }
         ]
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Isotype bar chart inspired by this Only An Ocean Between, 1943. Population Live Stock, p.13.",
     "encoding": {
         "color": {
             "field": "animal",
+            "legend": null,
             "scale": {
                 "domain": [
                     "person",
@@ -217,17 +213,21 @@
                     "rgb(91,131,149)"
                 ]
             },
-            "type": "nominal",
-            "legend": null
-        },
-        "size": {
-            "value": 200
+            "type": "nominal"
         },
         "opacity": {
             "value": 1
         },
+        "row": {
+            "field": "country",
+            "header": {
+                "title": null
+            },
+            "type": "nominal"
+        },
         "shape": {
             "field": "animal",
+            "legend": null,
             "scale": {
                 "domain": [
                     "person",
@@ -242,26 +242,26 @@
                     "M-4.1 -0.5c0.2 0 0.2 0.2 0.5 0.2c0.3 0 0.3 -0.2 0.5 -0.2c0.2 0 0.2 0.2 0.4 0.2c0.2 0 0.2 -0.2 0.5 -0.2c0.2 0 0.2 0.2 0.4 0.2c0.2 0 0.2 -0.2 0.4 -0.2c0.1 0 0.2 0.2 0.4 0.1c0.2 0 0.2 -0.2 0.4 -0.3c0.1 0 0.1 -0.1 0.4 0c0.3 0 0.3 -0.4 0.6 -0.4c0.3 0 0.6 -0.3 0.7 -0.2c0.1 0.1 1.4 1 1.3 1.4c-0.1 0.4 -0.3 0.3 -0.4 0.3c-0.1 0 -0.5 -0.4 -0.7 -0.2c-0.3 0.2 -0.1 0.4 -0.2 0.6c-0.1 0.1 -0.2 0.2 -0.3 0.4c0 0.2 0.1 0.3 0 0.5c-0.1 0.2 -0.3 0.2 -0.3 0.5c0 0.3 -0.2 0.3 -0.3 0.6c-0.1 0.2 0 0.3 -0.1 0.5c-0.1 0.2 -0.1 0.2 -0.2 0.3c-0.1 0.1 0.3 1.1 0.3 1.1l-0.3 0c0 0 -0.3 -0.9 -0.3 -1c0 -0.1 -0.1 -0.2 -0.3 -0.2c-0.2 0 -0.3 0.1 -0.4 0.4c0 0.3 -0.2 0.8 -0.2 0.8l-0.3 0l0.3 -1c0 0 0.1 -0.6 -0.2 -0.5c-0.3 0.1 -0.2 -0.1 -0.4 -0.1c-0.2 -0.1 -0.3 0.1 -0.4 0c-0.2 -0.1 -0.3 0.1 -0.5 0c-0.2 -0.1 -0.1 0 -0.3 0.3c-0.2 0.3 -0.4 0.3 -0.4 0.3l0.2 1.1l-0.3 0l-0.2 -1.1c0 0 -0.4 -0.6 -0.5 -0.4c-0.1 0.3 -0.1 0.4 -0.3 0.4c-0.1 -0.1 -0.2 1.1 -0.2 1.1l-0.3 0l0.2 -1.1c0 0 -0.3 -0.1 -0.3 -0.5c0 -0.3 0.1 -0.5 0.1 -0.7c0.1 -0.2 -0.1 -1 -0.2 -1.1c-0.1 -0.2 -0.2 -0.8 -0.2 -0.8c0 0 -0.1 -0.5 0.4 -0.8z"
                 ]
             },
-            "type": "nominal",
-            "legend": null
-        },
-        "row": {
-            "field": "country",
-            "header": {
-                "title": null
-            },
             "type": "nominal"
         },
+        "size": {
+            "value": 200
+        },
         "x": {
+            "axis": null,
             "field": "col",
-            "type": "ordinal",
-            "axis": null
+            "type": "ordinal"
         },
         "y": {
+            "axis": null,
             "field": "animal",
-            "type": "ordinal",
-            "axis": null
+            "type": "ordinal"
         }
     },
-    "description": "Isotype bar chart inspired by this Only An Ocean Between, 1943. Population Live Stock, p.13."
+    "height": 200,
+    "mark": {
+        "filled": true,
+        "type": "point"
+    },
+    "width": 800
 }

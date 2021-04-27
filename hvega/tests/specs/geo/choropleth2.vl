@@ -1,29 +1,24 @@
 {
-    "height": 700,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 1200,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 700,
     "layer": [
         {
-            "mark": {
-                "strokeWidth": 2,
-                "stroke": "rgb(251,247,238)",
-                "type": "geoshape"
-            },
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json",
                 "format": {
                     "feature": "boroughs",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json"
             },
             "encoding": {
                 "color": {
                     "field": "id",
+                    "legend": null,
                     "scale": {
                         "domain": [
                             "Kingston upon Thames",
@@ -96,30 +91,23 @@
                             "#c7bfad"
                         ]
                     },
-                    "type": "nominal",
-                    "legend": null
+                    "type": "nominal"
                 },
                 "opacity": {
                     "value": 1
                 }
+            },
+            "mark": {
+                "stroke": "rgb(251,247,238)",
+                "strokeWidth": 2,
+                "type": "geoshape"
             }
         },
         {
-            "transform": [
-                {
-                    "as": "bLabel",
-                    "calculate": "indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name"
-                }
-            ],
-            "mark": "text",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/londonCentroids.json"
             },
             "encoding": {
-                "text": {
-                    "field": "bLabel",
-                    "type": "nominal"
-                },
                 "latitude": {
                     "field": "cy",
                     "type": "quantitative"
@@ -127,8 +115,20 @@
                 "longitude": {
                     "field": "cx",
                     "type": "quantitative"
+                },
+                "text": {
+                    "field": "bLabel",
+                    "type": "nominal"
                 }
-            }
+            },
+            "mark": "text",
+            "transform": [
+                {
+                    "as": "bLabel",
+                    "calculate": "indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name"
+                }
+            ]
         }
-    ]
+    ],
+    "width": 1200
 }

@@ -1,9 +1,22 @@
 {
-    "transform": [
-        {
-            "filter": "datum.symbol === 'GOOG'"
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "description": "Google's stock price over time with point markers.",
+    "encoding": {
+        "x": {
+            "axis": {
+                "format": "%Y"
+            },
+            "field": "date",
+            "type": "temporal"
+        },
+        "y": {
+            "field": "price",
+            "type": "quantitative"
         }
-    ],
+    },
     "mark": {
         "color": "green",
         "point": {
@@ -11,22 +24,9 @@
         },
         "type": "line"
     },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "date",
-            "type": "temporal",
-            "axis": {
-                "format": "%Y"
-            }
-        },
-        "y": {
-            "field": "price",
-            "type": "quantitative"
+    "transform": [
+        {
+            "filter": "datum.symbol === 'GOOG'"
         }
-    },
-    "description": "Google's stock price over time with point markers."
+    ]
 }

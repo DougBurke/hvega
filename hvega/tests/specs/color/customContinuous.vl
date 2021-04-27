@@ -1,15 +1,9 @@
 {
-    "transform": [
-        {
-            "as": "accelerationZScore",
-            "calculate": "(datum.Acceleration - 15.52)/2.80"
-        }
-    ],
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Custom continuous colour scheme (red to blue ramp).",
     "encoding": {
         "color": {
             "field": "Acceleration",
@@ -21,11 +15,11 @@
             },
             "type": "quantitative"
         },
-        "size": {
-            "value": 60
-        },
         "opacity": {
             "value": 1
+        },
+        "size": {
+            "value": 60
         },
         "x": {
             "field": "Horsepower",
@@ -36,5 +30,11 @@
             "type": "quantitative"
         }
     },
-    "description": "Custom continuous colour scheme (red to blue ramp)."
+    "mark": "circle",
+    "transform": [
+        {
+            "as": "accelerationZScore",
+            "calculate": "(datum.Acceleration - 15.52)/2.80"
+        }
+    ]
 }

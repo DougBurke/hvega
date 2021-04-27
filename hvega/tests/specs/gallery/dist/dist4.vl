@@ -1,99 +1,68 @@
 {
-    "transform": [
-        {
-            "groupby": [
-                "age"
-            ],
-            "aggregate": [
-                {
-                    "op": "min",
-                    "as": "lowerWhisker",
-                    "field": "people"
-                },
-                {
-                    "op": "q1",
-                    "as": "lowerBox",
-                    "field": "people"
-                },
-                {
-                    "op": "median",
-                    "as": "midBox",
-                    "field": "people"
-                },
-                {
-                    "op": "q3",
-                    "as": "upperBox",
-                    "field": "people"
-                },
-                {
-                    "op": "max",
-                    "as": "upperWhisker",
-                    "field": "people"
-                }
-            ]
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A vertical 2D box plot showing median, min, and max in the US population distribution of age groups in 2000.",
+    "encoding": {
+        "x": {
+            "field": "age",
+            "type": "ordinal"
+        }
+    },
     "layer": [
         {
+            "encoding": {
+                "y": {
+                    "axis": {
+                        "title": "Population"
+                    },
+                    "field": "lowerWhisker",
+                    "type": "quantitative"
+                },
+                "y2": {
+                    "field": "lowerBox"
+                }
+            },
             "mark": {
                 "style": "boxWhisker",
                 "type": "rule"
-            },
-            "encoding": {
-                "y2": {
-                    "field": "lowerBox"
-                },
-                "y": {
-                    "field": "lowerWhisker",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Population"
-                    }
-                }
             }
         },
         {
-            "mark": {
-                "style": "boxWhisker",
-                "type": "rule"
-            },
             "encoding": {
-                "y2": {
-                    "field": "upperWhisker"
-                },
                 "y": {
                     "field": "upperBox",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "upperWhisker"
                 }
+            },
+            "mark": {
+                "style": "boxWhisker",
+                "type": "rule"
             }
         },
         {
-            "mark": {
-                "style": "box",
-                "type": "bar"
-            },
             "encoding": {
                 "size": {
                     "value": 5
                 },
-                "y2": {
-                    "field": "upperBox"
-                },
                 "y": {
                     "field": "lowerBox",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "upperBox"
                 }
+            },
+            "mark": {
+                "style": "box",
+                "type": "bar"
             }
         },
         {
-            "mark": {
-                "style": "boxMid",
-                "type": "tick"
-            },
             "encoding": {
                 "color": {
                     "value": "white"
@@ -105,14 +74,45 @@
                     "field": "midBox",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "style": "boxMid",
+                "type": "tick"
             }
         }
     ],
-    "encoding": {
-        "x": {
-            "field": "age",
-            "type": "ordinal"
+    "transform": [
+        {
+            "aggregate": [
+                {
+                    "as": "lowerWhisker",
+                    "field": "people",
+                    "op": "min"
+                },
+                {
+                    "as": "lowerBox",
+                    "field": "people",
+                    "op": "q1"
+                },
+                {
+                    "as": "midBox",
+                    "field": "people",
+                    "op": "median"
+                },
+                {
+                    "as": "upperBox",
+                    "field": "people",
+                    "op": "q3"
+                },
+                {
+                    "as": "upperWhisker",
+                    "field": "people",
+                    "op": "max"
+                }
+            ],
+            "groupby": [
+                "age"
+            ]
         }
-    },
-    "description": "A vertical 2D box plot showing median, min, and max in the US population distribution of age groups in 2000."
+    ]
 }

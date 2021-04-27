@@ -1,88 +1,17 @@
 {
-    "transform": [
-        {
-            "groupby": [
-                "Origin",
-                "Cylinders"
-            ],
-            "aggregate": [
-                {
-                    "op": "count",
-                    "as": "count_*"
-                }
-            ]
-        },
-        {
-            "groupby": [],
-            "as": [
-                "stack_count_Origin1",
-                "stack_count_Origin2"
-            ],
-            "offset": "normalize",
-            "sort": [
-                {
-                    "field": "Origin",
-                    "order": "ascending"
-                }
-            ],
-            "stack": "count_*"
-        },
-        {
-            "window": [
-                {
-                    "op": "min",
-                    "as": "x",
-                    "field": "stack_count_Origin1"
-                },
-                {
-                    "op": "max",
-                    "as": "x2",
-                    "field": "stack_count_Origin2"
-                }
-            ],
-            "groupby": [
-                "Origin"
-            ],
-            "frame": [
-                null,
-                null
-            ]
-        },
-        {
-            "groupby": [
-                "Origin"
-            ],
-            "as": [
-                "y",
-                "y2"
-            ],
-            "offset": "normalize",
-            "sort": [
-                {
-                    "field": "Cylinders",
-                    "order": "ascending"
-                }
-            ],
-            "stack": "count_*"
-        }
-    ],
-    "mark": "rect",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
-        "x2": {
-            "field": "x2"
-        },
         "color": {
             "field": "Origin",
             "type": "nominal"
         },
         "opacity": {
             "field": "Cylinders",
-            "type": "quantitative",
-            "legend": null
+            "legend": null,
+            "type": "quantitative"
         },
         "tooltip": [
             {
@@ -95,17 +24,88 @@
             }
         ],
         "x": {
+            "axis": null,
             "field": "x",
-            "type": "quantitative",
-            "axis": null
+            "type": "quantitative"
+        },
+        "x2": {
+            "field": "x2"
+        },
+        "y": {
+            "axis": null,
+            "field": "y",
+            "type": "quantitative"
         },
         "y2": {
             "field": "y2"
-        },
-        "y": {
-            "field": "y",
-            "type": "quantitative",
-            "axis": null
         }
-    }
+    },
+    "mark": "rect",
+    "transform": [
+        {
+            "aggregate": [
+                {
+                    "as": "count_*",
+                    "op": "count"
+                }
+            ],
+            "groupby": [
+                "Origin",
+                "Cylinders"
+            ]
+        },
+        {
+            "as": [
+                "stack_count_Origin1",
+                "stack_count_Origin2"
+            ],
+            "groupby": [],
+            "offset": "normalize",
+            "sort": [
+                {
+                    "field": "Origin",
+                    "order": "ascending"
+                }
+            ],
+            "stack": "count_*"
+        },
+        {
+            "frame": [
+                null,
+                null
+            ],
+            "groupby": [
+                "Origin"
+            ],
+            "window": [
+                {
+                    "as": "x",
+                    "field": "stack_count_Origin1",
+                    "op": "min"
+                },
+                {
+                    "as": "x2",
+                    "field": "stack_count_Origin2",
+                    "op": "max"
+                }
+            ]
+        },
+        {
+            "as": [
+                "y",
+                "y2"
+            ],
+            "groupby": [
+                "Origin"
+            ],
+            "offset": "normalize",
+            "sort": [
+                {
+                    "field": "Cylinders",
+                    "order": "ascending"
+                }
+            ],
+            "stack": "count_*"
+        }
+    ]
 }

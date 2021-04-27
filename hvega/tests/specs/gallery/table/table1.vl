@@ -1,13 +1,13 @@
 {
-    "mark": "rect",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "'Table heatmap' showing engine size/power for three countries.",
     "encoding": {
         "color": {
-            "field": "Horsepower",
             "aggregate": "mean",
+            "field": "Horsepower",
             "type": "quantitative"
         },
         "x": {
@@ -19,5 +19,5 @@
             "type": "nominal"
         }
     },
-    "description": "'Table heatmap' showing engine size/power for three countries."
+    "mark": "rect"
 }

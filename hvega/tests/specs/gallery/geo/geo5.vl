@@ -1,14 +1,11 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "resolve": {
-        "scale": {
-            "color": "independent"
-        }
-    },
+    "description": "Population per state, engineers per state, and hurricanes per state",
     "repeat": {
         "row": [
             "population",
@@ -16,31 +13,14 @@
             "hurricanes"
         ]
     },
+    "resolve": {
+        "scale": {
+            "color": "independent"
+        }
+    },
     "spec": {
-        "transform": [
-            {
-                "as": "geo",
-                "from": {
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/us-10m.json",
-                        "format": {
-                            "feature": "states",
-                            "type": "topojson"
-                        }
-                    },
-                    "key": "id"
-                },
-                "lookup": "id"
-            }
-        ],
-        "height": 300,
-        "mark": "geoshape",
         "data": {
             "url": "https://vega.github.io/vega-lite/data/population_engineers_hurricanes.csv"
-        },
-        "width": 500,
-        "projection": {
-            "type": "albersUsa"
         },
         "encoding": {
             "color": {
@@ -54,8 +34,28 @@
                 "field": "geo",
                 "type": "geojson"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Population per state, engineers per state, and hurricanes per state"
+        },
+        "height": 300,
+        "mark": "geoshape",
+        "projection": {
+            "type": "albersUsa"
+        },
+        "transform": [
+            {
+                "as": "geo",
+                "from": {
+                    "data": {
+                        "format": {
+                            "feature": "states",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/us-10m.json"
+                    },
+                    "key": "id"
+                },
+                "lookup": "id"
+            }
+        ],
+        "width": 500
+    }
 }

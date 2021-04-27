@@ -1,45 +1,17 @@
 {
-    "height": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/stocks.csv",
         "format": {
             "parse": {
                 "date": "date"
             }
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Displays tooltips for all stock prices of the hovered time",
+    "height": 400,
     "layer": [
         {
-            "layer": [
-                {
-                    "mark": "line"
-                },
-                {
-                    "mark": "point",
-                    "selection": {
-                        "myTooltip": {
-                            "nearest": true,
-                            "empty": "none",
-                            "encodings": [
-                                "x"
-                            ],
-                            "type": "single",
-                            "on": "mouseover"
-                        }
-                    },
-                    "encoding": {
-                        "opacity": {
-                            "value": 0,
-                            "condition": {
-                                "value": 1,
-                                "selection": "myTooltip"
-                            }
-                        }
-                    }
-                }
-            ],
             "encoding": {
                 "color": {
                     "field": "symbol",
@@ -53,36 +25,51 @@
                     "field": "price",
                     "type": "quantitative"
                 }
-            }
-        },
-        {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "myTooltip"
-                    }
-                }
-            ],
+            },
             "layer": [
                 {
-                    "mark": {
-                        "color": "gray",
-                        "type": "rule"
+                    "mark": "line"
+                },
+                {
+                    "encoding": {
+                        "opacity": {
+                            "condition": {
+                                "selection": "myTooltip",
+                                "value": 1
+                            },
+                            "value": 0
+                        }
                     },
+                    "mark": "point",
+                    "selection": {
+                        "myTooltip": {
+                            "empty": "none",
+                            "encodings": [
+                                "x"
+                            ],
+                            "nearest": true,
+                            "on": "mouseover",
+                            "type": "single"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "layer": [
+                {
                     "encoding": {
                         "x": {
                             "field": "date",
                             "type": "temporal"
                         }
+                    },
+                    "mark": {
+                        "color": "gray",
+                        "type": "rule"
                     }
                 },
                 {
-                    "mark": {
-                        "dx": 5,
-                        "dy": -5,
-                        "align": "left",
-                        "type": "text"
-                    },
                     "encoding": {
                         "color": {
                             "field": "symbol",
@@ -100,10 +87,23 @@
                             "field": "price",
                             "type": "quantitative"
                         }
+                    },
+                    "mark": {
+                        "align": "left",
+                        "dx": 5,
+                        "dy": -5,
+                        "type": "text"
+                    }
+                }
+            ],
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "myTooltip"
                     }
                 }
             ]
         }
     ],
-    "description": "Displays tooltips for all stock prices of the hovered time"
+    "width": 800
 }

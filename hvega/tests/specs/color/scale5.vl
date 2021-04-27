@@ -1,15 +1,9 @@
 {
-    "transform": [
-        {
-            "as": "accelerationZScore",
-            "calculate": "(datum.Acceleration - 15.52)/2.80"
-        }
-    ],
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Square root colour scale.",
     "encoding": {
         "color": {
             "field": "Acceleration",
@@ -22,11 +16,11 @@
             },
             "type": "quantitative"
         },
-        "size": {
-            "value": 60
-        },
         "opacity": {
             "value": 1
+        },
+        "size": {
+            "value": 60
         },
         "x": {
             "field": "Horsepower",
@@ -37,5 +31,11 @@
             "type": "quantitative"
         }
     },
-    "description": "Square root colour scale."
+    "mark": "circle",
+    "transform": [
+        {
+            "as": "accelerationZScore",
+            "calculate": "(datum.Acceleration - 15.52)/2.80"
+        }
+    ]
 }

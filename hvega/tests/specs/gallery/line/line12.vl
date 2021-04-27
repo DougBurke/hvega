@@ -1,15 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "v",
-            "calculate": "sin(datum.u)"
-        },
-        {
-            "as": "w",
-            "calculate": "cos(datum.u)"
-        }
-    ],
-    "height": 150,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "sequence": {
             "as": "u",
@@ -18,11 +8,10 @@
             "stop": 12.7
         }
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Plots a function using a generated sequence",
+    "height": 150,
     "layer": [
         {
-            "mark": "line",
             "encoding": {
                 "x": {
                     "field": "u",
@@ -34,13 +23,10 @@
                     "title": "sin(x)",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "line"
         },
         {
-            "mark": {
-                "stroke": "firebrick",
-                "type": "line"
-            },
             "encoding": {
                 "x": {
                     "field": "u",
@@ -52,8 +38,22 @@
                     "title": "cos(x)",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "stroke": "firebrick",
+                "type": "line"
             }
         }
     ],
-    "description": "Plots a function using a generated sequence"
+    "transform": [
+        {
+            "as": "v",
+            "calculate": "sin(datum.u)"
+        },
+        {
+            "as": "w",
+            "calculate": "cos(datum.u)"
+        }
+    ],
+    "width": 300
 }

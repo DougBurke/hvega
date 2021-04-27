@@ -1,4 +1,27 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "description": "A scatterplot showing each movie in the database and the difference from the average movie rating.",
+    "encoding": {
+        "x": {
+            "field": "Release_Date",
+            "type": "temporal"
+        },
+        "y": {
+            "axis": {
+                "title": "Residual"
+            },
+            "field": "RatingDelta",
+            "type": "quantitative"
+        }
+    },
+    "mark": {
+        "opacity": 0.3,
+        "strokeWidth": 0.3,
+        "type": "point"
+    },
     "transform": [
         {
             "filter": "isValid(datum.IMDB_Rating)"
@@ -15,44 +38,21 @@
             }
         },
         {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "AverageRating",
-                    "field": "IMDB_Rating"
-                }
-            ],
             "frame": [
                 null,
                 null
+            ],
+            "window": [
+                {
+                    "as": "AverageRating",
+                    "field": "IMDB_Rating",
+                    "op": "mean"
+                }
             ]
         },
         {
             "as": "RatingDelta",
             "calculate": "datum.IMDB_Rating - datum.AverageRating"
         }
-    ],
-    "mark": {
-        "strokeWidth": 0.3,
-        "opacity": 0.3,
-        "type": "point"
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/movies.json"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "Release_Date",
-            "type": "temporal"
-        },
-        "y": {
-            "field": "RatingDelta",
-            "type": "quantitative",
-            "axis": {
-                "title": "Residual"
-            }
-        }
-    },
-    "description": "A scatterplot showing each movie in the database and the difference from the average movie rating."
+    ]
 }

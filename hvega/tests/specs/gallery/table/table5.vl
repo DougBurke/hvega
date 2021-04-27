@@ -1,42 +1,18 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
-        "text": {
-            "baseline": "middle"
-        },
         "scale": {
             "bandPaddingInner": 0,
             "bandPaddingOuter": 0
+        },
+        "text": {
+            "baseline": "middle"
         }
     },
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "rect",
-            "encoding": {
-                "color": {
-                    "field": "*",
-                    "aggregate": "count",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "text",
-            "encoding": {
-                "color": {
-                    "value": "white"
-                },
-                "text": {
-                    "field": "*",
-                    "aggregate": "count",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "Layering text over 'heatmap'.",
     "encoding": {
         "x": {
             "field": "Cylinders",
@@ -47,5 +23,29 @@
             "type": "ordinal"
         }
     },
-    "description": "Layering text over 'heatmap'."
+    "layer": [
+        {
+            "encoding": {
+                "color": {
+                    "aggregate": "count",
+                    "field": "*",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "rect"
+        },
+        {
+            "encoding": {
+                "color": {
+                    "value": "white"
+                },
+                "text": {
+                    "aggregate": "count",
+                    "field": "*",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "text"
+        }
+    ]
 }

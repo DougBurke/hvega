@@ -1,48 +1,66 @@
 {
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/stocks.csv",
         "format": {
             "parse": {
                 "date": "date"
             },
             "type": "csv"
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
-    "width": 650,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 300,
     "layer": [
         {
-            "mark": "point",
-            "selection": {
-                "index": {
-                    "nearest": true,
-                    "init": {
-                        "x": {
-                            "date": 1,
-                            "year": 2005,
-                            "month": 1
-                        }
-                    },
-                    "encodings": [
-                        "x"
-                    ],
-                    "type": "single",
-                    "on": "mouseover"
-                }
-            },
             "encoding": {
                 "opacity": {
                     "value": 0
                 },
                 "x": {
+                    "axis": null,
                     "field": "date",
-                    "type": "temporal",
-                    "axis": null
+                    "type": "temporal"
+                }
+            },
+            "mark": "point",
+            "selection": {
+                "index": {
+                    "encodings": [
+                        "x"
+                    ],
+                    "init": {
+                        "x": {
+                            "date": 1,
+                            "month": 1,
+                            "year": 2005
+                        }
+                    },
+                    "nearest": true,
+                    "on": "mouseover",
+                    "type": "single"
                 }
             }
         },
         {
+            "encoding": {
+                "color": {
+                    "field": "symbol",
+                    "type": "nominal"
+                },
+                "x": {
+                    "axis": null,
+                    "field": "date",
+                    "type": "temporal"
+                },
+                "y": {
+                    "axis": {
+                        "format": "%"
+                    },
+                    "field": "indexed_price",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "line",
             "transform": [
                 {
                     "from": {
@@ -55,35 +73,19 @@
                     "as": "indexed_price",
                     "calculate": "datum.index && datum.index.price > 0 ? (datum.price - datum.index.price)/datum.index.price : 0"
                 }
-            ],
-            "mark": "line",
-            "encoding": {
-                "color": {
-                    "field": "symbol",
-                    "type": "nominal"
-                },
-                "x": {
-                    "field": "date",
-                    "type": "temporal",
-                    "axis": null
-                },
-                "y": {
-                    "field": "indexed_price",
-                    "type": "quantitative",
-                    "axis": {
-                        "format": "%"
-                    }
-                }
-            }
+            ]
         },
         {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "index"
-                    }
+            "encoding": {
+                "color": {
+                    "value": "firebrick"
+                },
+                "x": {
+                    "axis": null,
+                    "field": "date",
+                    "type": "temporal"
                 }
-            ],
+            },
             "layer": [
                 {
                     "mark": {
@@ -92,11 +94,6 @@
                     }
                 },
                 {
-                    "mark": {
-                        "align": "center",
-                        "type": "text",
-                        "fontWeight": 100
-                    },
                     "encoding": {
                         "text": {
                             "field": "date",
@@ -106,19 +103,22 @@
                         "y": {
                             "value": 310
                         }
+                    },
+                    "mark": {
+                        "align": "center",
+                        "fontWeight": 100,
+                        "type": "text"
                     }
                 }
             ],
-            "encoding": {
-                "color": {
-                    "value": "firebrick"
-                },
-                "x": {
-                    "field": "date",
-                    "type": "temporal",
-                    "axis": null
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "index"
+                    }
                 }
-            }
+            ]
         }
-    ]
+    ],
+    "width": 650
 }

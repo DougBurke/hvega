@@ -1,33 +1,27 @@
 {
-    "transform": [
-        {
-            "as": "accelerationZScore",
-            "calculate": "(datum.Acceleration - 15.52)/2.80"
-        }
-    ],
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "SymLog colour scale with slope constant of 0.01.",
     "encoding": {
         "color": {
             "field": "accelerationZScore",
             "scale": {
+                "constant": 1.0e-2,
                 "range": [
                     "yellow",
                     "red"
                 ],
-                "type": "symlog",
-                "constant": 1.0e-2
+                "type": "symlog"
             },
             "type": "quantitative"
         },
-        "size": {
-            "value": 60
-        },
         "opacity": {
             "value": 1
+        },
+        "size": {
+            "value": 60
         },
         "x": {
             "field": "Horsepower",
@@ -38,5 +32,11 @@
             "type": "quantitative"
         }
     },
-    "description": "SymLog colour scale with slope constant of 0.01."
+    "mark": "circle",
+    "transform": [
+        {
+            "as": "accelerationZScore",
+            "calculate": "(datum.Acceleration - 15.52)/2.80"
+        }
+    ]
 }

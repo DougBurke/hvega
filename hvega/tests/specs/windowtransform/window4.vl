@@ -1,4 +1,31 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "format": {
+            "parse": {
+                "Release_Date": "date:'%b %d %Y'"
+            }
+        },
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "encoding": {
+        "x": {
+            "field": "Release_Date",
+            "type": "temporal"
+        },
+        "y": {
+            "axis": {
+                "title": "Residual"
+            },
+            "field": "RatingDelta",
+            "type": "quantitative"
+        }
+    },
+    "mark": {
+        "opacity": 0.3,
+        "strokeWidth": 0.3,
+        "type": "point"
+    },
     "transform": [
         {
             "filter": "datum.IMDB_Rating != null"
@@ -15,48 +42,21 @@
             }
         },
         {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "AverageRating",
-                    "field": "IMDB_Rating"
-                }
-            ],
             "frame": [
                 null,
                 null
+            ],
+            "window": [
+                {
+                    "as": "AverageRating",
+                    "field": "IMDB_Rating",
+                    "op": "mean"
+                }
             ]
         },
         {
             "as": "RatingDelta",
             "calculate": "datum.IMDB_Rating - datum.AverageRating"
         }
-    ],
-    "mark": {
-        "strokeWidth": 0.3,
-        "opacity": 0.3,
-        "type": "point"
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/movies.json",
-        "format": {
-            "parse": {
-                "Release_Date": "date:'%b %d %Y'"
-            }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "Release_Date",
-            "type": "temporal"
-        },
-        "y": {
-            "field": "RatingDelta",
-            "type": "quantitative",
-            "axis": {
-                "title": "Residual"
-            }
-        }
-    }
+    ]
 }

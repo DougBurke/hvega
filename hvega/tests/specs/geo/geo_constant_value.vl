@@ -1,22 +1,14 @@
 {
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/airports.csv"
     },
-    "width": 500,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "height": 300,
     "layer": [
         {
-            "mark": "square",
             "encoding": {
                 "color": {
                     "value": "gray"
-                },
-                "size": {
-                    "value": 1
                 },
                 "latitude": {
                     "field": "latitude",
@@ -25,17 +17,17 @@
                 "longitude": {
                     "field": "longitude",
                     "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "square",
-            "encoding": {
-                "color": {
-                    "value": "steelblue"
                 },
                 "size": {
                     "value": 1
+                }
+            },
+            "mark": "square"
+        },
+        {
+            "encoding": {
+                "color": {
+                    "value": "steelblue"
                 },
                 "latitude": {
                     "field": "latitude",
@@ -43,17 +35,17 @@
                 },
                 "longitude": {
                     "datum": -122.335167
-                }
-            }
-        },
-        {
-            "mark": "square",
-            "encoding": {
-                "color": {
-                    "value": "firebrick"
                 },
                 "size": {
                     "value": 1
+                }
+            },
+            "mark": "square"
+        },
+        {
+            "encoding": {
+                "color": {
+                    "value": "firebrick"
                 },
                 "latitude": {
                     "datum": 47.608013
@@ -61,8 +53,16 @@
                 "longitude": {
                     "field": "longitude",
                     "type": "quantitative"
+                },
+                "size": {
+                    "value": 1
                 }
-            }
+            },
+            "mark": "square"
         }
-    ]
+    ],
+    "projection": {
+        "type": "albersUsa"
+    },
+    "width": 500
 }

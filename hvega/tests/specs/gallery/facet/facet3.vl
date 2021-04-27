@@ -1,22 +1,22 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Scatterplots of movie takings vs profits for different MPAA ratings",
     "encoding": {
-        "x": {
-            "field": "Worldwide_Gross",
-            "type": "quantitative"
-        },
         "column": {
             "field": "MPAA_Rating",
             "type": "ordinal"
+        },
+        "x": {
+            "field": "Worldwide_Gross",
+            "type": "quantitative"
         },
         "y": {
             "field": "US_DVD_Sales",
             "type": "quantitative"
         }
     },
-    "description": "Scatterplots of movie takings vs profits for different MPAA ratings"
+    "mark": "point"
 }

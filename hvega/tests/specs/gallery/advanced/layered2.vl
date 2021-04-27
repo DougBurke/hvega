@@ -1,46 +1,46 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
+    },
+    "description": "Plot showing average data with raw values in the background.",
+    "layer": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "timeUnit": "year",
+                    "type": "temporal"
+                },
+                "y": {
+                    "field": "price",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "opacity": 0.3,
+                "type": "point"
+            }
+        },
+        {
+            "encoding": {
+                "x": {
+                    "field": "date",
+                    "timeUnit": "year",
+                    "type": "temporal"
+                },
+                "y": {
+                    "aggregate": "mean",
+                    "field": "price",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "line"
+        }
+    ],
     "transform": [
         {
             "filter": "datum.symbol === 'GOOG'"
         }
-    ],
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/stocks.csv"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": {
-                "opacity": 0.3,
-                "type": "point"
-            },
-            "encoding": {
-                "x": {
-                    "field": "date",
-                    "timeUnit": "year",
-                    "type": "temporal"
-                },
-                "y": {
-                    "field": "price",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "line",
-            "encoding": {
-                "x": {
-                    "field": "date",
-                    "timeUnit": "year",
-                    "type": "temporal"
-                },
-                "y": {
-                    "field": "price",
-                    "aggregate": "mean",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
-    "description": "Plot showing average data with raw values in the background."
+    ]
 }

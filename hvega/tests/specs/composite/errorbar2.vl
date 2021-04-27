@@ -1,15 +1,8 @@
 {
-    "mark": {
-        "extent": "stdev",
-        "type": "errorbar",
-        "ticks": {
-            "stroke": "blue"
-        }
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "yield",
@@ -22,5 +15,12 @@
             "field": "variety",
             "type": "ordinal"
         }
+    },
+    "mark": {
+        "extent": "stdev",
+        "ticks": {
+            "stroke": "blue"
+        },
+        "type": "errorbar"
     }
 }

@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "repeat": {
         "row": [
             "Horsepower",
@@ -9,7 +10,6 @@
         ]
     },
     "spec": {
-        "mark": "bar",
         "data": {
             "url": "https://vega.github.io/vega-lite/data/cars.json"
         },
@@ -19,17 +19,17 @@
                 "type": "nominal"
             },
             "x": {
+                "bin": true,
                 "field": {
                     "repeat": "row"
                 },
-                "bin": true,
                 "type": "quantitative"
             },
             "y": {
                 "aggregate": "count",
                 "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+        },
+        "mark": "bar"
+    }
 }

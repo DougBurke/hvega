@@ -1,68 +1,90 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "style": {
-            "arrow-label2": {
-                "dy": 24,
-                "fontSize": 9.5
-            },
             "arrow-label": {
                 "dy": 12,
                 "fontSize": 9.5
+            },
+            "arrow-label2": {
+                "dy": 24,
+                "fontSize": 9.5
             }
-        },
-        "view": {
-            "stroke": null
         },
         "title": {
             "fontSize": 12
+        },
+        "view": {
+            "stroke": null
         }
     },
     "data": {
         "values": [
             {
-                "mean": 1.81,
                 "hi": 2.37,
-                "study": "PoleStar vs Voyager",
+                "lo": 1.26,
+                "mean": 1.81,
                 "measure": "Open Exploration",
-                "lo": 1.26
+                "study": "PoleStar vs Voyager"
             },
             {
-                "mean": -1.69,
                 "hi": -1.05,
-                "study": "PoleStar vs Voyager",
+                "lo": -2.33,
+                "mean": -1.69,
                 "measure": "Focused Question Answering",
-                "lo": -2.33
+                "study": "PoleStar vs Voyager"
             },
             {
-                "mean": 2.19,
                 "hi": 2.71,
-                "study": "PoleStar vs Voyager 2",
+                "lo": 1.67,
+                "mean": 2.19,
                 "measure": "Open Exploration",
-                "lo": 1.67
+                "study": "PoleStar vs Voyager 2"
             },
             {
-                "mean": -6.0e-2,
                 "hi": 0.35,
-                "study": "PoleStar vs Voyager 2",
+                "lo": -0.47,
+                "mean": -6.0e-2,
                 "measure": "Focused Question Answering",
-                "lo": -0.47
+                "study": "PoleStar vs Voyager 2"
             }
         ]
     },
+    "description": "Comparing Likert scale ratings between two conditions.",
+    "spacing": 10,
     "vconcat": [
         {
-            "title": {
-                "text": "Mean of Subject Ratings (95% CIs)",
-                "frame": "bounds"
+            "encoding": {
+                "y": {
+                    "axis": {
+                        "domain": false,
+                        "grid": false,
+                        "labelPadding": 5,
+                        "ticks": false,
+                        "title": null
+                    },
+                    "field": "study",
+                    "type": "nominal"
+                }
             },
             "layer": [
                 {
-                    "mark": "rule",
                     "encoding": {
-                        "x2": {
-                            "field": "hi"
-                        },
                         "x": {
+                            "axis": {
+                                "gridColor": {
+                                    "condition": {
+                                        "test": "datum.value === 0",
+                                        "value": "#666"
+                                    },
+                                    "value": "#ccc"
+                                },
+                                "gridDash": [
+                                    3,
+                                    3
+                                ],
+                                "title": null
+                            },
                             "field": "lo",
                             "scale": {
                                 "domain": [
@@ -70,211 +92,189 @@
                                     3
                                 ]
                             },
-                            "type": "quantitative",
-                            "axis": {
-                                "gridDash": [
-                                    3,
-                                    3
-                                ],
-                                "gridColor": {
-                                    "value": "#ccc",
-                                    "condition": {
-                                        "value": "#666",
-                                        "test": "datum.value === 0"
-                                    }
-                                },
-                                "title": null
-                            }
+                            "type": "quantitative"
+                        },
+                        "x2": {
+                            "field": "hi"
                         }
-                    }
+                    },
+                    "mark": "rule"
                 },
                 {
-                    "mark": {
-                        "opacity": 1,
-                        "stroke": "black",
-                        "type": "circle"
-                    },
                     "encoding": {
                         "color": {
                             "field": "measure",
+                            "legend": null,
                             "scale": {
                                 "range": [
                                     "black",
                                     "white"
                                 ]
                             },
-                            "type": "nominal",
-                            "legend": null
+                            "type": "nominal"
                         },
                         "x": {
                             "field": "mean",
                             "type": "quantitative"
                         }
+                    },
+                    "mark": {
+                        "opacity": 1,
+                        "stroke": "black",
+                        "type": "circle"
                     }
                 }
             ],
-            "encoding": {
-                "y": {
-                    "field": "study",
-                    "type": "nominal",
-                    "axis": {
-                        "domain": false,
-                        "labelPadding": 5,
-                        "grid": false,
-                        "title": null,
-                        "ticks": false
-                    }
-                }
+            "title": {
+                "frame": "bounds",
+                "text": "Mean of Subject Ratings (95% CIs)"
             }
         },
         {
             "data": {
                 "values": [
                     {
-                        "to": -2.9,
                         "from": -0.25,
-                        "label": "PoleStar"
+                        "label": "PoleStar",
+                        "to": -2.9
                     },
                     {
-                        "to": 2.9,
                         "from": 0.25,
-                        "label": "Voyager / Voyager 2"
+                        "label": "Voyager / Voyager 2",
+                        "to": 2.9
                     }
                 ]
             },
             "layer": [
                 {
-                    "mark": "rule",
                     "encoding": {
-                        "x2": {
-                            "field": "to"
-                        },
                         "x": {
+                            "axis": null,
                             "field": "from",
                             "scale": {
                                 "zero": false
                             },
-                            "type": "quantitative",
-                            "axis": null
+                            "type": "quantitative"
+                        },
+                        "x2": {
+                            "field": "to"
                         }
-                    }
+                    },
+                    "mark": "rule"
                 },
                 {
-                    "mark": {
-                        "size": 60,
-                        "fill": "black",
-                        "type": "point",
-                        "filled": true
-                    },
                     "encoding": {
                         "shape": {
-                            "value": "triangle-left",
                             "condition": {
-                                "value": "triangle-right",
-                                "test": "datum.to > 0"
-                            }
+                                "test": "datum.to > 0",
+                                "value": "triangle-right"
+                            },
+                            "value": "triangle-left"
                         },
                         "x": {
+                            "axis": null,
                             "field": "to",
-                            "type": "quantitative",
-                            "axis": null
+                            "type": "quantitative"
                         }
+                    },
+                    "mark": {
+                        "fill": "black",
+                        "filled": true,
+                        "size": 60,
+                        "type": "point"
                     }
                 },
                 {
-                    "transform": [
-                        {
-                            "filter": "datum.label === 'PoleStar'"
-                        }
-                    ],
-                    "mark": {
-                        "style": "arrow-label",
-                        "align": "right",
-                        "type": "text"
-                    },
                     "encoding": {
                         "text": {
                             "field": "label",
                             "type": "nominal"
                         },
                         "x": {
+                            "axis": null,
                             "field": "from",
-                            "type": "quantitative",
-                            "axis": null
+                            "type": "quantitative"
                         }
-                    }
-                },
-                {
-                    "transform": [
-                        {
-                            "filter": "datum.label !== 'PoleStar'"
-                        }
-                    ],
+                    },
                     "mark": {
+                        "align": "right",
                         "style": "arrow-label",
-                        "align": "left",
                         "type": "text"
                     },
+                    "transform": [
+                        {
+                            "filter": "datum.label === 'PoleStar'"
+                        }
+                    ]
+                },
+                {
                     "encoding": {
                         "text": {
                             "field": "label",
                             "type": "nominal"
                         },
                         "x": {
+                            "axis": null,
                             "field": "from",
-                            "type": "quantitative",
-                            "axis": null
+                            "type": "quantitative"
                         }
-                    }
-                },
-                {
-                    "transform": [
-                        {
-                            "filter": "datum.label === 'PoleStar'"
-                        }
-                    ],
+                    },
                     "mark": {
-                        "style": "arrow-label2",
-                        "align": "right",
+                        "align": "left",
+                        "style": "arrow-label",
                         "type": "text"
                     },
-                    "encoding": {
-                        "text": {
-                            "value": "more valuable"
-                        },
-                        "x": {
-                            "field": "from",
-                            "type": "quantitative",
-                            "axis": null
-                        }
-                    }
-                },
-                {
                     "transform": [
                         {
                             "filter": "datum.label !== 'PoleStar'"
                         }
-                    ],
-                    "mark": {
-                        "style": "arrow-label2",
-                        "align": "left",
-                        "type": "text"
-                    },
+                    ]
+                },
+                {
                     "encoding": {
                         "text": {
                             "value": "more valuable"
                         },
                         "x": {
+                            "axis": null,
                             "field": "from",
-                            "type": "quantitative",
-                            "axis": null
+                            "type": "quantitative"
                         }
-                    }
+                    },
+                    "mark": {
+                        "align": "right",
+                        "style": "arrow-label2",
+                        "type": "text"
+                    },
+                    "transform": [
+                        {
+                            "filter": "datum.label === 'PoleStar'"
+                        }
+                    ]
+                },
+                {
+                    "encoding": {
+                        "text": {
+                            "value": "more valuable"
+                        },
+                        "x": {
+                            "axis": null,
+                            "field": "from",
+                            "type": "quantitative"
+                        }
+                    },
+                    "mark": {
+                        "align": "left",
+                        "style": "arrow-label2",
+                        "type": "text"
+                    },
+                    "transform": [
+                        {
+                            "filter": "datum.label !== 'PoleStar'"
+                        }
+                    ]
                 }
             ]
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Comparing Likert scale ratings between two conditions.",
-    "spacing": 10
+    ]
 }

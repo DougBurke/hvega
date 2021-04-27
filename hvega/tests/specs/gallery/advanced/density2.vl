@@ -1,40 +1,8 @@
 {
-    "transform": [
-        {
-            "as": [
-                "measurement",
-                "value"
-            ],
-            "fold": [
-                "petalWidth",
-                "petalLength",
-                "sepalWidth",
-                "sepalLength"
-            ]
-        },
-        {
-            "groupby": [
-                "measurement"
-            ],
-            "extent": [
-                0,
-                8
-            ],
-            "steps": 200,
-            "bandwidth": 0.3,
-            "density": "value"
-        }
-    ],
-    "height": 100,
-    "mark": {
-        "opacity": 0.5,
-        "type": "area"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/iris.json"
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "measurement",
@@ -49,5 +17,37 @@
             "field": "density",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 100,
+    "mark": {
+        "opacity": 0.5,
+        "type": "area"
+    },
+    "transform": [
+        {
+            "as": [
+                "measurement",
+                "value"
+            ],
+            "fold": [
+                "petalWidth",
+                "petalLength",
+                "sepalWidth",
+                "sepalLength"
+            ]
+        },
+        {
+            "bandwidth": 0.3,
+            "density": "value",
+            "extent": [
+                0,
+                8
+            ],
+            "groupby": [
+                "measurement"
+            ],
+            "steps": 200
+        }
+    ],
+    "width": 400
 }

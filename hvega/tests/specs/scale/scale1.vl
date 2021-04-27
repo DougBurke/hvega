@@ -1,26 +1,20 @@
 {
-    "mark": {
-        "strokeWidth": 0.4,
-        "stroke": "white",
-        "type": "point",
-        "filled": true
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "value": "rgb(203,24,29)"
         },
-        "size": {
-            "field": "Acceleration",
+        "opacity": {
             "bin": true,
+            "field": "Acceleration",
             "type": "quantitative"
         },
-        "opacity": {
-            "field": "Acceleration",
+        "size": {
             "bin": true,
+            "field": "Acceleration",
             "type": "quantitative"
         },
         "x": {
@@ -31,5 +25,11 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "filled": true,
+        "stroke": "white",
+        "strokeWidth": 0.4,
+        "type": "point"
     }
 }

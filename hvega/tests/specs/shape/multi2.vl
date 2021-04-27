@@ -1,30 +1,18 @@
 {
-    "transform": [
-        {
-            "as": "YearOfManufacture",
-            "calculate": "year(datum.Year)"
-        },
-        {
-            "filter": "datum.YearOfManufacture == 1970"
-        }
-    ],
-    "mark": {
-        "type": "point",
-        "filled": true
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Sized and shaped by number of cylinders (should only have a single set of legend items)",
     "encoding": {
-        "size": {
-            "field": "Cylinders",
-            "type": "ordinal"
-        },
         "opacity": {
             "value": 0.6
         },
         "shape": {
+            "field": "Cylinders",
+            "type": "ordinal"
+        },
+        "size": {
             "field": "Cylinders",
             "type": "ordinal"
         },
@@ -37,5 +25,17 @@
             "type": "quantitative"
         }
     },
-    "description": "Sized and shaped by number of cylinders (should only have a single set of legend items)"
+    "mark": {
+        "filled": true,
+        "type": "point"
+    },
+    "transform": [
+        {
+            "as": "YearOfManufacture",
+            "calculate": "year(datum.Year)"
+        },
+        {
+            "filter": "datum.YearOfManufacture == 1970"
+        }
+    ]
 }

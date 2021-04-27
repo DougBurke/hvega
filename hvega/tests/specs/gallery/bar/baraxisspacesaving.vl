@@ -1,46 +1,46 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "description": "Bar Chart with a spacing-saving y-axis",
+    "encoding": {
+        "x": {
+            "aggregate": "count",
+            "axis": {
+                "grid": false
+            },
+            "type": "quantitative"
+        },
+        "y": {
+            "axis": {
+                "bandPosition": 0,
+                "domain": false,
+                "grid": true,
+                "labelAlign": "left",
+                "labelBaseline": "middle",
+                "labelOffset": -15,
+                "labelPadding": -5,
+                "ticks": false,
+                "titleAlign": "left",
+                "titleAngle": 0,
+                "titleX": 5,
+                "titleY": -5
+            },
+            "band": 0.5,
+            "field": "Origin",
+            "scale": {
+                "padding": 0
+            },
+            "type": "nominal"
+        }
+    },
     "height": {
         "step": 50
     },
     "mark": {
         "cornerRadiusEnd": 2,
-        "yOffset": 5,
-        "type": "bar"
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/cars.json"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "aggregate": "count",
-            "type": "quantitative",
-            "axis": {
-                "grid": false
-            }
-        },
-        "y": {
-            "field": "Origin",
-            "scale": {
-                "padding": 0
-            },
-            "type": "nominal",
-            "axis": {
-                "titleAlign": "left",
-                "bandPosition": 0,
-                "titleX": 5,
-                "domain": false,
-                "labelOffset": -15,
-                "titleY": -5,
-                "labelPadding": -5,
-                "labelBaseline": "middle",
-                "grid": true,
-                "labelAlign": "left",
-                "ticks": false,
-                "titleAngle": 0
-            },
-            "band": 0.5
-        }
-    },
-    "description": "Bar Chart with a spacing-saving y-axis"
+        "type": "bar",
+        "yOffset": 5
+    }
 }

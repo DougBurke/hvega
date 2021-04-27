@@ -1,10 +1,5 @@
 {
-    "transform": [
-        {
-            "filter": "datum.a == 'A' || datum.a == 'C' || datum.a == 'E'"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -45,7 +40,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "a",
@@ -55,5 +49,11 @@
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar",
+    "transform": [
+        {
+            "filter": "datum.a == 'A' || datum.a == 'C' || datum.a == 'E'"
+        }
+    ]
 }

@@ -1,4 +1,51 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "config": {
+        "title": {
+            "font": "Roboto",
+            "fontSize": 28,
+            "fontWeight": 300
+        },
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/zipcodes.csv"
+    },
+    "encoding": {
+        "color": {
+            "field": "digit3",
+            "legend": null,
+            "type": "nominal"
+        },
+        "detail": {
+            "field": "ziplen",
+            "type": "nominal"
+        },
+        "latitude": {
+            "field": "latitude",
+            "type": "quantitative"
+        },
+        "longitude": {
+            "field": "longitude",
+            "type": "quantitative"
+        },
+        "order": {
+            "field": "zip_code",
+            "type": "quantitative"
+        }
+    },
+    "height": 600,
+    "mark": {
+        "interpolate": "monotone",
+        "strokeWidth": 0.2,
+        "type": "line"
+    },
+    "projection": {
+        "type": "albersUsa"
+    },
+    "title": "US connected zip codes, coloured by first three digits",
     "transform": [
         {
             "filter": "datum.latitude != '' && datum.county != 'Honolulu' && datum.state !='AS'&& datum.state !='FM'&& datum.state !='PW'&& datum.state !='MH'&& datum.state !='GU'&& datum.state !='MP'&& datum.state !='VI'&& datum.state !='PR'"
@@ -12,52 +59,5 @@
             "calculate": "length(datum.zip_code+' ')"
         }
     ],
-    "height": 600,
-    "config": {
-        "view": {
-            "stroke": null
-        },
-        "title": {
-            "fontSize": 28,
-            "font": "Roboto",
-            "fontWeight": 300
-        }
-    },
-    "mark": {
-        "strokeWidth": 0.2,
-        "interpolate": "monotone",
-        "type": "line"
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/zipcodes.csv"
-    },
-    "width": 1000,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
-    "title": "US connected zip codes, coloured by first three digits",
-    "encoding": {
-        "color": {
-            "field": "digit3",
-            "type": "nominal",
-            "legend": null
-        },
-        "latitude": {
-            "field": "latitude",
-            "type": "quantitative"
-        },
-        "longitude": {
-            "field": "longitude",
-            "type": "quantitative"
-        },
-        "order": {
-            "field": "zip_code",
-            "type": "quantitative"
-        },
-        "detail": {
-            "field": "ziplen",
-            "type": "nominal"
-        }
-    }
+    "width": 1000
 }

@@ -1,70 +1,70 @@
 {
-    "height": 600,
-    "mark": {
-        "opacity": 0.1,
-        "type": "point"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "width": 600,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "IMDB_Rating",
-            "type": "quantitative",
             "axis": {
-                "tickSize": {
-                    "value": 5,
+                "labelPadding": {
                     "condition": {
-                        "value": 20,
-                        "test": "(datum.value > 0) && (datum.value < 3)"
-                    }
+                        "test": "(datum.value >= 1) && (datum.value <= 4)",
+                        "value": 20
+                    },
+                    "value": 5
                 },
-                "tickWidth": {
-                    "value": 2,
+                "tickColor": {
                     "condition": {
-                        "value": 5,
-                        "test": "datum.label =='4.0'"
-                    }
+                        "test": "datum.value <= 2",
+                        "value": "red"
+                    },
+                    "value": "blue"
                 },
+                "tickCount": 20,
                 "tickDash": {
-                    "value": [],
                     "condition": {
+                        "test": "(datum.value >= 5) && (datum.value <= 8)",
                         "value": [
                             2,
                             2
-                        ],
-                        "test": "(datum.value >= 5) && (datum.value <= 8)"
-                    }
+                        ]
+                    },
+                    "value": []
                 },
-                "tickCount": 20,
                 "tickOpacity": {
-                    "value": 0.8,
                     "condition": {
-                        "value": 0.3,
-                        "test": "datum.value >=8"
-                    }
+                        "test": "datum.value >=8",
+                        "value": 0.3
+                    },
+                    "value": 0.8
                 },
-                "labelPadding": {
-                    "value": 5,
+                "tickSize": {
                     "condition": {
-                        "value": 20,
-                        "test": "(datum.value >= 1) && (datum.value <= 4)"
-                    }
+                        "test": "(datum.value > 0) && (datum.value < 3)",
+                        "value": 20
+                    },
+                    "value": 5
                 },
-                "tickColor": {
-                    "value": "blue",
+                "tickWidth": {
                     "condition": {
-                        "value": "red",
-                        "test": "datum.value <= 2"
-                    }
+                        "test": "datum.label =='4.0'",
+                        "value": 5
+                    },
+                    "value": 2
                 }
-            }
+            },
+            "field": "IMDB_Rating",
+            "type": "quantitative"
         },
         "y": {
             "field": "Rotten_Tomatoes_Rating",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 600,
+    "mark": {
+        "opacity": 0.1,
+        "type": "point"
+    },
+    "width": 600
 }

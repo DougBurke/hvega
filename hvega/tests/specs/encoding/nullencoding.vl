@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -35,30 +36,29 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar"
-        },
-        {
-            "mark": "rule",
-            "encoding": {
-                "x": {}
-            }
-        }
-    ],
+    "description": "Can we null the encoding",
     "encoding": {
         "x": {
-            "field": "a",
-            "type": "nominal",
             "axis": {
                 "labelAngle": 0
-            }
+            },
+            "field": "a",
+            "type": "nominal"
         },
         "y": {
             "field": "b",
             "type": "quantitative"
         }
     },
-    "description": "Can we null the encoding"
+    "layer": [
+        {
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "x": {}
+            },
+            "mark": "rule"
+        }
+    ]
 }

@@ -1,10 +1,31 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "encoding": {
+        "y": {
+            "aggregate": "mean",
+            "field": "precipitation",
+            "type": "quantitative"
+        }
+    },
     "layer": [
         {
+            "encoding": {
+                "opacity": {
+                    "condition": {
+                        "selection": "myBrush",
+                        "value": 1
+                    },
+                    "value": 0.7
+                },
+                "x": {
+                    "field": "date",
+                    "timeUnit": "month",
+                    "type": "ordinal"
+                }
+            },
             "mark": "bar",
             "selection": {
                 "myBrush": {
@@ -13,31 +34,10 @@
                     ],
                     "type": "interval"
                 }
-            },
-            "encoding": {
-                "opacity": {
-                    "value": 0.7,
-                    "condition": {
-                        "value": 1,
-                        "selection": "myBrush"
-                    }
-                },
-                "x": {
-                    "field": "date",
-                    "timeUnit": "month",
-                    "type": "ordinal"
-                }
             }
         },
         {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "myBrush"
-                    }
-                }
-            ],
-            "mark": "rule",
+            "description": "Drag over bars to update selection average",
             "encoding": {
                 "color": {
                     "value": "firebrick"
@@ -46,14 +46,14 @@
                     "value": 3
                 }
             },
-            "description": "Drag over bars to update selection average"
+            "mark": "rule",
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "myBrush"
+                    }
+                }
+            ]
         }
-    ],
-    "encoding": {
-        "y": {
-            "field": "precipitation",
-            "aggregate": "mean",
-            "type": "quantitative"
-        }
-    }
+    ]
 }

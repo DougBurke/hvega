@@ -1,4 +1,6 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Horizontally repeated charts that show the histograms of different parameters of cars in different countries",
     "repeat": {
         "column": [
             "Horsepower",
@@ -7,7 +9,6 @@
         ]
     },
     "spec": {
-        "mark": "bar",
         "data": {
             "url": "https://vega.github.io/vega-lite/data/cars.json"
         },
@@ -17,18 +18,17 @@
                 "type": "nominal"
             },
             "x": {
+                "bin": true,
                 "field": {
                     "repeat": "column"
                 },
-                "bin": true,
                 "type": "quantitative"
             },
             "y": {
                 "aggregate": "count",
                 "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Horizontally repeated charts that show the histograms of different parameters of cars in different countries"
+        },
+        "mark": "bar"
+    }
 }

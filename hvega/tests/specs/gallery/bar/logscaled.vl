@@ -1,24 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "logX",
-            "calculate": "log(datum.x)/log(10)"
-        },
-        {
-            "as": "binLogX",
-            "field": "logX",
-            "bin": true
-        },
-        {
-            "as": "x1",
-            "calculate": "pow(10,datum.binLogX)"
-        },
-        {
-            "as": "x2",
-            "calculate": "pow(10,datum.binLogX_end)"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -56,26 +37,45 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Log-scaled Histogram (may improve after https://github.com/vega/vega-lite/issues/4792)",
     "encoding": {
-        "x2": {
-            "field": "x2"
-        },
         "x": {
+            "axis": {
+                "tickCount": 5
+            },
             "field": "x1",
             "scale": {
                 "base": 10,
                 "type": "log"
             },
-            "type": "quantitative",
-            "axis": {
-                "tickCount": 5
-            }
+            "type": "quantitative"
+        },
+        "x2": {
+            "field": "x2"
         },
         "y": {
             "aggregate": "count",
             "type": "quantitative"
         }
     },
-    "description": "Log-scaled Histogram (may improve after https://github.com/vega/vega-lite/issues/4792)"
+    "mark": "bar",
+    "transform": [
+        {
+            "as": "logX",
+            "calculate": "log(datum.x)/log(10)"
+        },
+        {
+            "as": "binLogX",
+            "bin": true,
+            "field": "logX"
+        },
+        {
+            "as": "x1",
+            "calculate": "pow(10,datum.binLogX)"
+        },
+        {
+            "as": "x2",
+            "calculate": "pow(10,datum.binLogX_end)"
+        }
+    ]
 }

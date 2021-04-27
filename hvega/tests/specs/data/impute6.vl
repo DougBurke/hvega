@@ -1,5 +1,5 @@
 {
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -39,7 +39,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "c",
@@ -55,13 +54,14 @@
         "y": {
             "field": "b",
             "impute": {
-                "method": "mean",
                 "frame": [
                     -2,
                     2
-                ]
+                ],
+                "method": "mean"
             },
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line"
 }

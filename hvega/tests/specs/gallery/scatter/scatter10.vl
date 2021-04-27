@@ -1,54 +1,54 @@
 {
-    "transform": [
-        {
-            "filter": "datum.Entity !== 'All natural disasters'"
-        }
-    ],
-    "height": 400,
-    "mark": {
-        "strokeWidth": 1,
-        "opacity": 0.8,
-        "stroke": "black",
-        "type": "circle"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/disasters.csv"
     },
-    "width": 600,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Visualization of global deaths from natural disasters. Copy of chart from https://ourworldindata.org/natural-catastrophes",
     "encoding": {
         "color": {
             "field": "Entity",
-            "type": "nominal",
-            "legend": null
+            "legend": null,
+            "type": "nominal"
         },
         "size": {
             "field": "Deaths",
+            "legend": {
+                "title": "Annual Global Deaths"
+            },
             "scale": {
                 "range": [
                     0,
                     5000
                 ]
             },
-            "type": "quantitative",
-            "legend": {
-                "title": "Annual Global Deaths"
-            }
+            "type": "quantitative"
         },
         "x": {
-            "field": "Year",
-            "type": "ordinal",
             "axis": {
                 "labelAngle": 0
-            }
+            },
+            "field": "Year",
+            "type": "ordinal"
         },
         "y": {
-            "field": "Entity",
-            "type": "nominal",
             "axis": {
                 "title": null
-            }
+            },
+            "field": "Entity",
+            "type": "nominal"
         }
     },
-    "description": "Visualization of global deaths from natural disasters. Copy of chart from https://ourworldindata.org/natural-catastrophes"
+    "height": 400,
+    "mark": {
+        "opacity": 0.8,
+        "stroke": "black",
+        "strokeWidth": 1,
+        "type": "circle"
+    },
+    "transform": [
+        {
+            "filter": "datum.Entity !== 'All natural disasters'"
+        }
+    ],
+    "width": 600
 }

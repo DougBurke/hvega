@@ -1,80 +1,77 @@
 {
-    "height": 300,
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "Origin",
-            "type": "nominal",
             "legend": {
-                "labelOpacity": 0.6,
                 "cornerRadius": 5,
-                "symbolStrokeColor": null,
                 "fillColor": "pink",
-                "labelOverlap": "greedy",
-                "rowPadding": 15,
-                "symbolLimit": 5,
+                "labelAlign": "right",
+                "labelBaseline": "top",
                 "labelColor": "fireBrick",
                 "labelExpr": "'<' + datum.label + '>'",
-                "titlePadding": 20,
-                "symbolStrokeWidth": 1,
-                "labelFontWeight": 600,
-                "labelBaseline": "top",
                 "labelFontSize": 20,
-                "labelAlign": "right",
-                "padding": 30,
-                "strokeColor": "orange"
-            }
-        },
-        "size": {
-            "field": "Horsepower",
-            "type": "quantitative",
-            "legend": {
+                "labelFontWeight": 600,
                 "labelOpacity": 0.6,
-                "cornerRadius": 5,
-                "symbolStrokeColor": null,
-                "fillColor": "pink",
                 "labelOverlap": "greedy",
-                "rowPadding": 15,
-                "symbolLimit": 5,
-                "labelColor": "fireBrick",
-                "labelExpr": "'<' + datum.label + '>'",
-                "titlePadding": 20,
-                "symbolStrokeWidth": 1,
-                "labelFontWeight": 600,
-                "labelBaseline": "top",
-                "labelFontSize": 20,
-                "labelAlign": "right",
                 "padding": 30,
-                "strokeColor": "orange"
-            }
+                "rowPadding": 15,
+                "strokeColor": "orange",
+                "symbolLimit": 5,
+                "symbolStrokeColor": null,
+                "symbolStrokeWidth": 1,
+                "titlePadding": 20
+            },
+            "type": "nominal"
         },
         "opacity": {
             "field": "Weight_in_lbs",
-            "type": "quantitative",
             "legend": {
-                "labelOpacity": 0.6,
                 "cornerRadius": 5,
-                "symbolStrokeColor": null,
                 "fillColor": "pink",
-                "labelOverlap": "greedy",
-                "rowPadding": 15,
-                "symbolLimit": 5,
+                "labelAlign": "right",
+                "labelBaseline": "top",
                 "labelColor": "fireBrick",
                 "labelExpr": "'<' + datum.label + '>'",
-                "titlePadding": 20,
-                "symbolStrokeWidth": 1,
-                "labelFontWeight": 600,
-                "labelBaseline": "top",
                 "labelFontSize": 20,
-                "labelAlign": "right",
+                "labelFontWeight": 600,
+                "labelOpacity": 0.6,
+                "labelOverlap": "greedy",
                 "padding": 30,
-                "strokeColor": "orange"
-            }
+                "rowPadding": 15,
+                "strokeColor": "orange",
+                "symbolLimit": 5,
+                "symbolStrokeColor": null,
+                "symbolStrokeWidth": 1,
+                "titlePadding": 20
+            },
+            "type": "quantitative"
+        },
+        "size": {
+            "field": "Horsepower",
+            "legend": {
+                "cornerRadius": 5,
+                "fillColor": "pink",
+                "labelAlign": "right",
+                "labelBaseline": "top",
+                "labelColor": "fireBrick",
+                "labelExpr": "'<' + datum.label + '>'",
+                "labelFontSize": 20,
+                "labelFontWeight": 600,
+                "labelOpacity": 0.6,
+                "labelOverlap": "greedy",
+                "padding": 30,
+                "rowPadding": 15,
+                "strokeColor": "orange",
+                "symbolLimit": 5,
+                "symbolStrokeColor": null,
+                "symbolStrokeWidth": 1,
+                "titlePadding": 20
+            },
+            "type": "quantitative"
         },
         "x": {
             "field": "Horsepower",
@@ -84,5 +81,8 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 300,
+    "mark": "circle",
+    "width": 300
 }

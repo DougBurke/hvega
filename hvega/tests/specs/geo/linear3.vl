@@ -1,80 +1,79 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 700,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 500,
     "layer": [
         {
-            "mark": {
-                "strokeWidth": 2,
-                "stroke": "rgb(251,247,238)",
-                "type": "geoshape"
-            },
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json",
                 "format": {
                     "feature": "boroughs",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json"
             },
             "encoding": {
                 "color": {
                     "value": "#ddc"
                 }
+            },
+            "mark": {
+                "stroke": "rgb(251,247,238)",
+                "strokeWidth": 2,
+                "type": "geoshape"
             }
         },
         {
-            "transform": [
-                {
-                    "as": "bLabel",
-                    "calculate": "indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name"
-                }
-            ],
-            "mark": "text",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/londonCentroids.json"
             },
             "encoding": {
+                "latitude": {
+                    "field": "cy",
+                    "type": "quantitative"
+                },
+                "longitude": {
+                    "field": "cx",
+                    "type": "quantitative"
+                },
+                "opacity": {
+                    "value": 0.6
+                },
                 "size": {
                     "value": 8
                 },
                 "text": {
                     "field": "bLabel",
                     "type": "nominal"
-                },
-                "latitude": {
-                    "field": "cy",
-                    "type": "quantitative"
-                },
-                "opacity": {
-                    "value": 0.6
-                },
-                "longitude": {
-                    "field": "cx",
-                    "type": "quantitative"
                 }
-            }
+            },
+            "mark": "text",
+            "transform": [
+                {
+                    "as": "bLabel",
+                    "calculate": "indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name"
+                }
+            ]
         },
         {
-            "mark": {
-                "strokeWidth": 2,
-                "type": "geoshape",
-                "filled": false
-            },
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/londonTubeLines.json",
                 "format": {
                     "feature": "line",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/londonTubeLines.json"
             },
             "encoding": {
                 "color": {
                     "field": "id",
+                    "legend": {
+                        "offset": 0,
+                        "orient": "bottom-right",
+                        "title": null
+                    },
                     "scale": {
                         "domain": [
                             "Bakerloo",
@@ -105,14 +104,15 @@
                             "rgb(106,187,170)"
                         ]
                     },
-                    "type": "nominal",
-                    "legend": {
-                        "offset": 0,
-                        "orient": "bottom-right",
-                        "title": null
-                    }
+                    "type": "nominal"
                 }
+            },
+            "mark": {
+                "filled": false,
+                "strokeWidth": 2,
+                "type": "geoshape"
             }
         }
-    ]
+    ],
+    "width": 700
 }

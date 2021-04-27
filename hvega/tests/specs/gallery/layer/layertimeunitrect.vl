@@ -1,55 +1,55 @@
 {
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Drawing rect bin from the beginning of May to end of July",
     "layer": [
         {
-            "mark": "bar",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
             },
             "encoding": {
                 "x": {
+                    "axis": {
+                        "labelAlign": "left",
+                        "labelExpr": "datum.label[0]"
+                    },
                     "field": "date",
                     "timeUnit": "month",
                     "title": "month",
-                    "type": "temporal",
-                    "axis": {
-                        "labelExpr": "datum.label[0]",
-                        "labelAlign": "left"
-                    }
+                    "type": "temporal"
                 },
                 "y": {
-                    "field": "precipitation",
                     "aggregate": "mean",
+                    "field": "precipitation",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "bar"
         },
         {
-            "mark": {
-                "color": "grey",
-                "opacity": 0.5,
-                "type": "rect"
-            },
             "data": {
                 "values": [
                     {
-                        "date_end": "July 15, 2010",
-                        "date": "May 1, 2010"
+                        "date": "May 1, 2010",
+                        "date_end": "July 15, 2010"
                     }
                 ]
             },
             "encoding": {
-                "x2": {
-                    "field": "date_end",
-                    "timeUnit": "month"
-                },
                 "x": {
                     "field": "date",
                     "timeUnit": "month",
                     "type": "temporal"
+                },
+                "x2": {
+                    "field": "date_end",
+                    "timeUnit": "month"
                 }
+            },
+            "mark": {
+                "color": "grey",
+                "opacity": 0.5,
+                "type": "rect"
             }
         }
-    ],
-    "description": "Drawing rect bin from the beginning of May to end of July"
+    ]
 }

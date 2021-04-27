@@ -1,34 +1,52 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/sp500.csv"
     },
+    "description": "Overview and detail.",
     "vconcat": [
         {
-            "mark": "area",
-            "width": 500,
             "encoding": {
                 "x": {
+                    "axis": {
+                        "title": null
+                    },
                     "field": "date",
                     "scale": {
                         "domain": {
                             "selection": "myBrush"
                         }
                     },
-                    "type": "temporal",
-                    "axis": {
-                        "title": null
-                    }
+                    "type": "temporal"
                 },
                 "y": {
                     "field": "price",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "area",
+            "width": 500
         },
         {
+            "encoding": {
+                "x": {
+                    "axis": {
+                        "format": "%Y"
+                    },
+                    "field": "date",
+                    "type": "temporal"
+                },
+                "y": {
+                    "axis": {
+                        "grid": false,
+                        "tickCount": 3
+                    },
+                    "field": "price",
+                    "type": "quantitative"
+                }
+            },
             "height": 60,
             "mark": "area",
-            "width": 480,
             "selection": {
                 "myBrush": {
                     "encodings": [
@@ -37,25 +55,7 @@
                     "type": "interval"
                 }
             },
-            "encoding": {
-                "x": {
-                    "field": "date",
-                    "type": "temporal",
-                    "axis": {
-                        "format": "%Y"
-                    }
-                },
-                "y": {
-                    "field": "price",
-                    "type": "quantitative",
-                    "axis": {
-                        "tickCount": 3,
-                        "grid": false
-                    }
-                }
-            }
+            "width": 480
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Overview and detail."
+    ]
 }

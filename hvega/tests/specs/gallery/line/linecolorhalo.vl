@@ -1,16 +1,9 @@
 {
-    "transform": [
-        {
-            "groupby": [
-                "date"
-            ],
-            "value": "price",
-            "pivot": "symbol"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
+    "description": "Multi-series Line Chart with Halo. Use pivot and repeat-layer as a workaround to facet groups of lines and their halo strokes. See https://github.com/vega/vega-lite/issues/6192 for more discussion.",
     "repeat": {
         "layer": [
             "AAPL",
@@ -23,11 +16,6 @@
     "spec": {
         "layer": [
             {
-                "mark": {
-                    "strokeWidth": 4,
-                    "stroke": "white",
-                    "type": "line"
-                },
                 "encoding": {
                     "x": {
                         "field": "date",
@@ -40,16 +28,20 @@
                         "title": "price",
                         "type": "quantitative"
                     }
+                },
+                "mark": {
+                    "stroke": "white",
+                    "strokeWidth": 4,
+                    "type": "line"
                 }
             },
             {
-                "mark": "line",
                 "encoding": {
                     "stroke": {
-                        "type": "nominal",
                         "datum": {
                             "repeat": "layer"
-                        }
+                        },
+                        "type": "nominal"
                     },
                     "x": {
                         "field": "date",
@@ -62,10 +54,18 @@
                         "title": "price",
                         "type": "quantitative"
                     }
-                }
+                },
+                "mark": "line"
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Multi-series Line Chart with Halo. Use pivot and repeat-layer as a workaround to facet groups of lines and their halo strokes. See https://github.com/vega/vega-lite/issues/6192 for more discussion."
+    "transform": [
+        {
+            "groupby": [
+                "date"
+            ],
+            "pivot": "symbol",
+            "value": "price"
+        }
+    ]
 }

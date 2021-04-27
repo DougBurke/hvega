@@ -1,11 +1,5 @@
 {
-    "mark": {
-        "x2": 200,
-        "x": 150,
-        "type": "bar",
-        "y2": 200,
-        "y": 150
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -13,5 +7,11 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    "mark": {
+        "type": "bar",
+        "x": 150,
+        "x2": 200,
+        "y": 150,
+        "y2": 200
+    }
 }

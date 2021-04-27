@@ -1,4 +1,38 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "values": [
+            {
+                "country": "USA",
+                "gold": 10,
+                "silver": 20
+            },
+            {
+                "country": "Canada",
+                "gold": 7,
+                "silver": 26
+            }
+        ]
+    },
+    "encoding": {
+        "color": {
+            "field": "country",
+            "type": "nominal"
+        },
+        "column": {
+            "field": "k",
+            "type": "nominal"
+        },
+        "x": {
+            "field": "country",
+            "type": "nominal"
+        },
+        "y": {
+            "field": "v",
+            "type": "quantitative"
+        }
+    },
+    "mark": "bar",
     "transform": [
         {
             "as": [
@@ -10,39 +44,5 @@
                 "silver"
             ]
         }
-    ],
-    "mark": "bar",
-    "data": {
-        "values": [
-            {
-                "silver": 20,
-                "country": "USA",
-                "gold": 10
-            },
-            {
-                "silver": 26,
-                "country": "Canada",
-                "gold": 7
-            }
-        ]
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "color": {
-            "field": "country",
-            "type": "nominal"
-        },
-        "x": {
-            "field": "country",
-            "type": "nominal"
-        },
-        "column": {
-            "field": "k",
-            "type": "nominal"
-        },
-        "y": {
-            "field": "v",
-            "type": "quantitative"
-        }
-    }
+    ]
 }

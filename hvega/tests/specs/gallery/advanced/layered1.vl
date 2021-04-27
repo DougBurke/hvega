@@ -1,77 +1,10 @@
 {
-    "transform": [
-        {
-            "as": "binIMDB_Rating",
-            "field": "IMDB_Rating",
-            "bin": true
-        },
-        {
-            "groupby": [
-                "binIMDB_Rating",
-                "binIMDB_Rating_end"
-            ],
-            "aggregate": [
-                {
-                    "op": "count",
-                    "as": "count"
-                }
-            ]
-        },
-        {
-            "filter": "datum.binIMDB_Rating !== null"
-        },
-        {
-            "window": [
-                {
-                    "op": "sum",
-                    "as": "cumulativeCount",
-                    "field": "count"
-                }
-            ],
-            "sort": [
-                {
-                    "field": "binIMDB_Rating",
-                    "order": "ascending"
-                }
-            ],
-            "frame": [
-                null,
-                0
-            ]
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar",
-            "encoding": {
-                "y": {
-                    "field": "cumulativeCount",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "yellow",
-                "opacity": 0.5,
-                "type": "bar"
-            },
-            "encoding": {
-                "y": {
-                    "field": "count",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "Layered Histogram and Cumulative Histogram",
     "encoding": {
-        "x2": {
-            "field": "binIMDB_Rating_end"
-        },
         "x": {
             "field": "binIMDB_Rating",
             "scale": {
@@ -79,7 +12,74 @@
             },
             "title": "IMDB Rating",
             "type": "quantitative"
+        },
+        "x2": {
+            "field": "binIMDB_Rating_end"
         }
     },
-    "description": "Layered Histogram and Cumulative Histogram"
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "field": "cumulativeCount",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "y": {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "yellow",
+                "opacity": 0.5,
+                "type": "bar"
+            }
+        }
+    ],
+    "transform": [
+        {
+            "as": "binIMDB_Rating",
+            "bin": true,
+            "field": "IMDB_Rating"
+        },
+        {
+            "aggregate": [
+                {
+                    "as": "count",
+                    "op": "count"
+                }
+            ],
+            "groupby": [
+                "binIMDB_Rating",
+                "binIMDB_Rating_end"
+            ]
+        },
+        {
+            "filter": "datum.binIMDB_Rating !== null"
+        },
+        {
+            "frame": [
+                null,
+                0
+            ],
+            "sort": [
+                {
+                    "field": "binIMDB_Rating",
+                    "order": "ascending"
+                }
+            ],
+            "window": [
+                {
+                    "as": "cumulativeCount",
+                    "field": "count",
+                    "op": "sum"
+                }
+            ]
+        }
+    ]
 }

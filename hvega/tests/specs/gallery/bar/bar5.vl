@@ -1,12 +1,15 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Seattle weather stacked bar chart",
     "encoding": {
         "color": {
             "field": "weather",
+            "legend": {
+                "title": "Weather type"
+            },
             "scale": {
                 "domain": [
                     "sun",
@@ -23,23 +26,20 @@
                     "#9467bd"
                 ]
             },
-            "type": "nominal",
-            "legend": {
-                "title": "Weather type"
-            }
+            "type": "nominal"
         },
         "x": {
-            "field": "date",
-            "timeUnit": "month",
-            "type": "ordinal",
             "axis": {
                 "title": "Month of the year"
-            }
+            },
+            "field": "date",
+            "timeUnit": "month",
+            "type": "ordinal"
         },
         "y": {
             "aggregate": "count",
             "type": "quantitative"
         }
     },
-    "description": "Seattle weather stacked bar chart"
+    "mark": "bar"
 }

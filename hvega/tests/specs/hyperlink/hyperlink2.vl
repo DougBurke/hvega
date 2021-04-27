@@ -1,12 +1,8 @@
 {
-    "mark": {
-        "cursor": "pointer",
-        "type": "point"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "href": {
             "value": "http://www.imdb.com"
@@ -19,5 +15,9 @@
             "field": "Rotten_Tomatoes_Rating",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "cursor": "pointer",
+        "type": "point"
     }
 }

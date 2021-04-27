@@ -1,41 +1,33 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "US state capitals overlayed on map of the US",
+    "height": 500,
     "layer": [
         {
-            "mark": "geoshape",
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
                 "format": {
                     "feature": "states",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json"
             },
             "encoding": {
                 "color": {
                     "value": "#ccc"
                 }
-            }
+            },
+            "mark": "geoshape"
         },
         {
-            "mark": "text",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/us-state-capitals.json"
             },
             "encoding": {
-                "text": {
-                    "field": "city",
-                    "type": "nominal"
-                },
                 "latitude": {
                     "field": "lat",
                     "type": "quantitative"
@@ -43,9 +35,17 @@
                 "longitude": {
                     "field": "lon",
                     "type": "quantitative"
+                },
+                "text": {
+                    "field": "city",
+                    "type": "nominal"
                 }
-            }
+            },
+            "mark": "text"
         }
     ],
-    "description": "US state capitals overlayed on map of the US"
+    "projection": {
+        "type": "albersUsa"
+    },
+    "width": 800
 }

@@ -1,21 +1,9 @@
 {
-    "transform": [
-        {
-            "as": "YearOfManufacture",
-            "calculate": "year(datum.Year)"
-        },
-        {
-            "filter": "datum.YearOfManufacture == 1970"
-        }
-    ],
-    "mark": {
-        "type": "point",
-        "filled": true
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Custom-shaped and coloured by origin (should only have a single set of legend items)",
     "encoding": {
         "color": {
             "field": "Origin",
@@ -49,5 +37,17 @@
             "type": "quantitative"
         }
     },
-    "description": "Custom-shaped and coloured by origin (should only have a single set of legend items)"
+    "mark": {
+        "filled": true,
+        "type": "point"
+    },
+    "transform": [
+        {
+            "as": "YearOfManufacture",
+            "calculate": "year(datum.Year)"
+        },
+        {
+            "filter": "datum.YearOfManufacture == 1970"
+        }
+    ]
 }

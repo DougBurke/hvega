@@ -1,26 +1,26 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "continuousHeight": 300,
             "continuousWidth": 500
         }
     },
-    "mark": "geoshape",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/us-10m.json",
         "format": {
             "feature": "counties",
             "type": "topojson"
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/us-10m.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "Default map size with view width and height specified in config.",
     "encoding": {
         "color": {
             "value": "black"
         }
     },
-    "description": "Default map size with view width and height specified in config."
+    "mark": "geoshape",
+    "projection": {
+        "type": "albersUsa"
+    }
 }

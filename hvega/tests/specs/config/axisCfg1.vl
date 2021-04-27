@@ -1,24 +1,17 @@
 {
-    "height": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "axis": {
-            "labelFontStyle": "bold",
-            "titleFont": "serif",
-            "titleFontStyle": "italic",
             "labelFont": "serif",
-            "titleAnchor": "end"
+            "labelFontStyle": "bold",
+            "titleAnchor": "end",
+            "titleFont": "serif",
+            "titleFontStyle": "italic"
         }
-    },
-    "mark": {
-        "size": 100,
-        "type": "point"
     },
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "width": 200,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Car Scatter",
     "encoding": {
         "color": {
             "field": "Cylinders",
@@ -36,5 +29,12 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 200,
+    "mark": {
+        "size": 100,
+        "type": "point"
+    },
+    "title": "Car Scatter",
+    "width": 200
 }

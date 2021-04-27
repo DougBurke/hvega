@@ -1,4 +1,33 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "format": {
+            "parse": {
+                "date": "date:'%Y/%m/%d'"
+            }
+        },
+        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
+    },
+    "encoding": {
+        "x": {
+            "axis": {
+                "format": "%b"
+            },
+            "field": "bimonth",
+            "type": "temporal"
+        },
+        "y": {
+            "aggregate": "max",
+            "field": "maxTemp",
+            "type": "quantitative"
+        }
+    },
+    "mark": {
+        "point": {
+            "fill": "black"
+        },
+        "type": "line"
+    },
     "transform": [
         {
             "as": "sampleDate",
@@ -17,34 +46,5 @@
             }
         }
     ],
-    "mark": {
-        "point": {
-            "fill": "black"
-        },
-        "type": "line"
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv",
-        "format": {
-            "parse": {
-                "date": "date:'%Y/%m/%d'"
-            }
-        }
-    },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "bimonth",
-            "type": "temporal",
-            "axis": {
-                "format": "%b"
-            }
-        },
-        "y": {
-            "field": "maxTemp",
-            "aggregate": "max",
-            "type": "quantitative"
-        }
-    }
+    "width": 400
 }

@@ -1,26 +1,12 @@
 {
-    "transform": [
-        {
-            "as": "col",
-            "calculate": "ceil (datum.id/10)"
-        },
-        {
-            "as": "row",
-            "calculate": "datum.id - datum.col*10"
-        }
-    ],
-    "height": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
-        "view": {
-            "stroke": null
-        },
         "axis": {
             "disable": true
+        },
+        "view": {
+            "stroke": null
         }
-    },
-    "mark": {
-        "type": "point",
-        "filled": true
     },
     "data": {
         "values": [
@@ -326,26 +312,19 @@
             }
         ]
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "highlight": {
-            "type": "interval"
-        }
-    },
     "encoding": {
         "color": {
-            "value": "rgb(167,165,156)",
             "condition": {
-                "value": "rgb(194,81,64)",
-                "selection": "highlight"
-            }
-        },
-        "size": {
-            "value": 90
+                "selection": "highlight",
+                "value": "rgb(194,81,64)"
+            },
+            "value": "rgb(167,165,156)"
         },
         "shape": {
             "value": "M1.7 -1.7h-0.8c0.3 -0.2 0.6 -0.5 0.6 -0.9c0 -0.6 -0.4 -1 -1 -1c-0.6 0 -1 0.4 -1 1c0 0.4 0.2 0.7 0.6 0.9h-0.8c-0.4 0 -0.7 0.3 -0.7 0.6v1.9c0 0.3 0.3 0.6 0.6 0.6h0.2c0 0 0 0.1 0 0.1v1.9c0 0.3 0.2 0.6 0.3 0.6h1.3c0.2 0 0.3 -0.3 0.3 -0.6v-1.8c0 0 0 -0.1 0 -0.1h0.2c0.3 0 0.6 -0.3 0.6 -0.6v-2c0.2 -0.3 -0.1 -0.6 -0.4 -0.6z"
+        },
+        "size": {
+            "value": 90
         },
         "x": {
             "field": "col",
@@ -355,5 +334,26 @@
             "field": "row",
             "type": "ordinal"
         }
-    }
+    },
+    "height": 400,
+    "mark": {
+        "filled": true,
+        "type": "point"
+    },
+    "selection": {
+        "highlight": {
+            "type": "interval"
+        }
+    },
+    "transform": [
+        {
+            "as": "col",
+            "calculate": "ceil (datum.id/10)"
+        },
+        {
+            "as": "row",
+            "calculate": "datum.id - datum.col*10"
+        }
+    ],
+    "width": 400
 }

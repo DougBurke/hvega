@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "repeat": {
         "column": [
             "distance",
@@ -7,18 +8,28 @@
         ]
     },
     "spec": {
-        "transform": [
-            {
-                "as": "time",
-                "calculate": "hours(datum.date)"
-            }
-        ],
         "data": {
-            "url": "https://vega.github.io/vega-lite/data/flights-2k.json",
             "format": {
                 "parse": {
                     "date": "date"
                 }
+            },
+            "url": "https://vega.github.io/vega-lite/data/flights-2k.json"
+        },
+        "description": "Cross-filter.",
+        "encoding": {
+            "x": {
+                "bin": {
+                    "maxbins": 20
+                },
+                "field": {
+                    "repeat": "column"
+                },
+                "type": "quantitative"
+            },
+            "y": {
+                "aggregate": "count",
+                "type": "quantitative"
             }
         },
         "layer": [
@@ -34,37 +45,26 @@
                 }
             },
             {
+                "encoding": {
+                    "color": {
+                        "value": "goldenrod"
+                    }
+                },
+                "mark": "bar",
                 "transform": [
                     {
                         "filter": {
                             "selection": "myBrush"
                         }
                     }
-                ],
-                "mark": "bar",
-                "encoding": {
-                    "color": {
-                        "value": "goldenrod"
-                    }
-                }
+                ]
             }
         ],
-        "encoding": {
-            "x": {
-                "field": {
-                    "repeat": "column"
-                },
-                "bin": {
-                    "maxbins": 20
-                },
-                "type": "quantitative"
-            },
-            "y": {
-                "aggregate": "count",
-                "type": "quantitative"
+        "transform": [
+            {
+                "as": "time",
+                "calculate": "hours(datum.date)"
             }
-        },
-        "description": "Cross-filter."
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+        ]
+    }
 }

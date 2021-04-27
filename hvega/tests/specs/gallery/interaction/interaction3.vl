@@ -1,22 +1,17 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "myBrush": {
-            "type": "interval"
-        }
-    },
+    "description": "Drag out a rectangular brush to highlight points",
     "encoding": {
         "color": {
-            "value": "grey",
             "condition": {
                 "field": "Cylinders",
                 "selection": "myBrush",
                 "type": "ordinal"
-            }
+            },
+            "value": "grey"
         },
         "x": {
             "field": "Horsepower",
@@ -27,5 +22,10 @@
             "type": "quantitative"
         }
     },
-    "description": "Drag out a rectangular brush to highlight points"
+    "mark": "point",
+    "selection": {
+        "myBrush": {
+            "type": "interval"
+        }
+    }
 }

@@ -2,7 +2,6 @@
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "layer": [
         {
-            "mark": "line",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/stocks.csv"
             },
@@ -19,17 +18,10 @@
                     "field": "price",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "line"
         },
         {
-            "mark": {
-                "size": 2,
-                "strokeDash": [
-                    2,
-                    2
-                ],
-                "type": "rule"
-            },
             "data": {
                 "values": {}
             },
@@ -39,6 +31,14 @@
                         "year": 2006
                     }
                 }
+            },
+            "mark": {
+                "size": 2,
+                "strokeDash": [
+                    2,
+                    2
+                ],
+                "type": "rule"
             }
         }
     ]

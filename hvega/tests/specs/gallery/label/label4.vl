@@ -1,99 +1,90 @@
 {
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html",
     "layer": [
         {
             "data": {
                 "values": [
                     {
-                        "Value": 54.8,
-                        "Day": 1
+                        "Day": 1,
+                        "Value": 54.8
                     },
                     {
-                        "Value": 112.1,
-                        "Day": 2
+                        "Day": 2,
+                        "Value": 112.1
                     },
                     {
-                        "Value": 63.6,
-                        "Day": 3
+                        "Day": 3,
+                        "Value": 63.6
                     },
                     {
-                        "Value": 37.6,
-                        "Day": 4
+                        "Day": 4,
+                        "Value": 37.6
                     },
                     {
-                        "Value": 79.7,
-                        "Day": 5
+                        "Day": 5,
+                        "Value": 79.7
                     },
                     {
-                        "Value": 137.9,
-                        "Day": 6
+                        "Day": 6,
+                        "Value": 137.9
                     },
                     {
-                        "Value": 120.1,
-                        "Day": 7
+                        "Day": 7,
+                        "Value": 120.1
                     },
                     {
-                        "Value": 103.3,
-                        "Day": 8
+                        "Day": 8,
+                        "Value": 103.3
                     },
                     {
-                        "Value": 394.8,
-                        "Day": 9
+                        "Day": 9,
+                        "Value": 394.8
                     },
                     {
-                        "Value": 199.5,
-                        "Day": 10
+                        "Day": 10,
+                        "Value": 199.5
                     },
                     {
-                        "Value": 72.3,
-                        "Day": 11
+                        "Day": 11,
+                        "Value": 72.3
                     },
                     {
-                        "Value": 51.1,
-                        "Day": 12
+                        "Day": 12,
+                        "Value": 51.1
                     },
                     {
-                        "Value": 112,
-                        "Day": 13
+                        "Day": 13,
+                        "Value": 112
                     },
                     {
-                        "Value": 174.5,
-                        "Day": 14
+                        "Day": 14,
+                        "Value": 174.5
                     },
                     {
-                        "Value": 130.5,
-                        "Day": 15
+                        "Day": 15,
+                        "Value": 130.5
                     }
                 ]
             },
             "layer": [
                 {
-                    "mark": "bar",
                     "encoding": {
                         "x": {
-                            "field": "Day",
-                            "type": "ordinal",
                             "axis": {
                                 "labelAngle": 0
-                            }
+                            },
+                            "field": "Day",
+                            "type": "ordinal"
                         },
                         "y": {
                             "field": "Value",
                             "type": "quantitative"
                         }
-                    }
+                    },
+                    "mark": "bar"
                 },
                 {
-                    "transform": [
-                        {
-                            "filter": "datum.Value >= 300"
-                        },
-                        {
-                            "as": "baseline",
-                            "calculate": "300"
-                        }
-                    ],
-                    "mark": "bar",
                     "encoding": {
                         "color": {
                             "value": "#e45755"
@@ -102,15 +93,25 @@
                             "field": "Day",
                             "type": "ordinal"
                         },
-                        "y2": {
-                            "field": "Value"
-                        },
                         "y": {
                             "field": "baseline",
                             "title": "PM2.5 Value",
                             "type": "quantitative"
+                        },
+                        "y2": {
+                            "field": "Value"
                         }
-                    }
+                    },
+                    "mark": "bar",
+                    "transform": [
+                        {
+                            "filter": "datum.Value >= 300"
+                        },
+                        {
+                            "as": "baseline",
+                            "calculate": "300"
+                        }
+                    ]
                 }
             ]
         },
@@ -118,28 +119,27 @@
             "data": {
                 "values": {}
             },
+            "encoding": {
+                "y": {
+                    "datum": 300
+                }
+            },
             "layer": [
                 {
                     "mark": "rule"
                 },
                 {
                     "mark": {
+                        "align": "right",
+                        "baseline": "bottom",
                         "dx": -2,
                         "dy": -2,
                         "text": "hazardous",
-                        "align": "right",
-                        "x": "width",
                         "type": "text",
-                        "baseline": "bottom"
+                        "x": "width"
                     }
                 }
-            ],
-            "encoding": {
-                "y": {
-                    "datum": 300
-                }
-            }
+            ]
         }
-    ],
-    "description": "The PM2.5 value of Beijing observed 15 days, highlighting the days when PM2.5 level is hazardous to human health. Data source https://chartaccent.github.io/chartaccent.html"
+    ]
 }

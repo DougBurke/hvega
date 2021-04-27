@@ -1,24 +1,5 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "rank",
-                    "as": "rank"
-                }
-            ],
-            "sort": [
-                {
-                    "field": "score",
-                    "order": "descending"
-                }
-            ]
-        },
-        {
-            "filter": "datum.rank <= 5"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -111,7 +92,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "score",
@@ -120,11 +100,31 @@
         "y": {
             "field": "student",
             "sort": {
-                "op": "mean",
                 "field": "score",
+                "op": "mean",
                 "order": "descending"
             },
             "type": "nominal"
         }
-    }
+    },
+    "mark": "bar",
+    "transform": [
+        {
+            "sort": [
+                {
+                    "field": "score",
+                    "order": "descending"
+                }
+            ],
+            "window": [
+                {
+                    "as": "rank",
+                    "op": "rank"
+                }
+            ]
+        },
+        {
+            "filter": "datum.rank <= 5"
+        }
+    ]
 }

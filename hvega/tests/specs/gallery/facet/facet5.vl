@@ -1,10 +1,14 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/anscombe.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Anscombe's Quartet",
     "encoding": {
+        "column": {
+            "field": "Series",
+            "type": "ordinal"
+        },
         "opacity": {
             "value": 1
         },
@@ -15,10 +19,6 @@
             },
             "type": "quantitative"
         },
-        "column": {
-            "field": "Series",
-            "type": "ordinal"
-        },
         "y": {
             "field": "Y",
             "scale": {
@@ -27,5 +27,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Anscombe's Quartet"
+    "mark": "circle"
 }

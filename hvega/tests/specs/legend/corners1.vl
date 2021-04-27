@@ -1,48 +1,45 @@
 {
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "legend": {
-            "labelOpacity": 0.6,
             "cornerRadius": 5,
-            "symbolStrokeColor": null,
-            "strokeWidth": 2,
             "fillColor": "pink",
-            "labelOverlap": "greedy",
-            "rowPadding": 15,
+            "labelAlign": "right",
+            "labelBaseline": "top",
             "labelColor": "fireBrick",
-            "titlePadding": 20,
-            "symbolStrokeWidth": 1,
+            "labelFontSize": 20,
+            "labelFontWeight": 600,
+            "labelOpacity": 0.6,
+            "labelOverlap": "greedy",
+            "padding": 30,
+            "rowPadding": 15,
+            "strokeColor": "orange",
             "strokeDash": [
                 4,
                 2,
                 6,
                 1
             ],
-            "labelFontWeight": 600,
-            "labelBaseline": "top",
-            "labelFontSize": 20,
-            "labelAlign": "right",
-            "padding": 30,
-            "strokeColor": "orange"
+            "strokeWidth": 2,
+            "symbolStrokeColor": null,
+            "symbolStrokeWidth": 1,
+            "titlePadding": 20
         }
     },
-    "mark": "circle",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "Origin",
             "type": "nominal"
         },
-        "size": {
-            "field": "Horsepower",
-            "type": "quantitative"
-        },
         "opacity": {
             "field": "Weight_in_lbs",
+            "type": "quantitative"
+        },
+        "size": {
+            "field": "Horsepower",
             "type": "quantitative"
         },
         "x": {
@@ -53,5 +50,8 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 300,
+    "mark": "circle",
+    "width": 300
 }

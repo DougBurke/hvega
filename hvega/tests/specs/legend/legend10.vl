@@ -1,20 +1,17 @@
 {
-    "height": 300,
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "Origin",
-            "type": "nominal",
             "legend": {
-                "orient": "none",
+                "legendX": 232,
                 "legendY": 5,
-                "legendX": 232
-            }
+                "orient": "none"
+            },
+            "type": "nominal"
         },
         "x": {
             "field": "Horsepower",
@@ -24,5 +21,8 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 300,
+    "mark": "circle",
+    "width": 300
 }

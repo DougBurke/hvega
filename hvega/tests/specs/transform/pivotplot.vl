@@ -1,4 +1,50 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "values": [
+            {
+                "city": "Bristol",
+                "temp": 12,
+                "year": 2017
+            },
+            {
+                "city": "Bristol",
+                "temp": 14,
+                "year": 2018
+            },
+            {
+                "city": "Sheffield",
+                "temp": 11,
+                "year": 2017
+            },
+            {
+                "city": "Sheffield",
+                "temp": 13,
+                "year": 2018
+            },
+            {
+                "city": "Glasgow",
+                "temp": 7,
+                "year": 2017
+            },
+            {
+                "city": "Glasgow",
+                "temp": 10,
+                "year": 2018
+            }
+        ]
+    },
+    "encoding": {
+        "x": {
+            "field": "2017",
+            "type": "quantitative"
+        },
+        "y": {
+            "field": "City",
+            "type": "nominal"
+        }
+    },
+    "mark": "circle",
     "transform": [
         {
             "as": "Year",
@@ -16,54 +62,8 @@
             "groupby": [
                 "City"
             ],
-            "value": "Temperature",
-            "pivot": "Year"
+            "pivot": "Year",
+            "value": "Temperature"
         }
-    ],
-    "mark": "circle",
-    "data": {
-        "values": [
-            {
-                "temp": 12,
-                "year": 2017,
-                "city": "Bristol"
-            },
-            {
-                "temp": 14,
-                "year": 2018,
-                "city": "Bristol"
-            },
-            {
-                "temp": 11,
-                "year": 2017,
-                "city": "Sheffield"
-            },
-            {
-                "temp": 13,
-                "year": 2018,
-                "city": "Sheffield"
-            },
-            {
-                "temp": 7,
-                "year": 2017,
-                "city": "Glasgow"
-            },
-            {
-                "temp": 10,
-                "year": 2018,
-                "city": "Glasgow"
-            }
-        ]
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "2017",
-            "type": "quantitative"
-        },
-        "y": {
-            "field": "City",
-            "type": "nominal"
-        }
-    }
+    ]
 }

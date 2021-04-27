@@ -1,39 +1,33 @@
 {
-    "height": 200,
-    "mark": {
-        "stroke": "black",
-        "type": "circle"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
                 "cat": "a",
-                "x": 10,
                 "val": 1,
+                "x": 10,
                 "y": 1
             },
             {
                 "cat": "b",
-                "x": 20,
                 "val": 2,
+                "x": 20,
                 "y": 2
             },
             {
                 "cat": "c",
-                "x": 30,
                 "val": 3,
+                "x": 30,
                 "y": 3
             },
             {
                 "cat": "d",
-                "x": 36,
                 "val": 4,
+                "x": 36,
                 "y": 4
             }
         ]
     },
-    "width": 200,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "cat",
@@ -51,5 +45,11 @@
             "field": "y",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 200,
+    "mark": {
+        "stroke": "black",
+        "type": "circle"
+    },
+    "width": 200
 }

@@ -1,94 +1,69 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "rank",
-                    "as": "rank"
-                }
-            ],
-            "groupby": [
-                "matchday"
-            ],
-            "sort": [
-                {
-                    "field": "point",
-                    "order": "descending"
-                }
-            ]
-        }
-    ],
-    "height": 400,
-    "mark": {
-        "orient": "vertical",
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "point": 3,
                 "matchday": 1,
+                "point": 3,
                 "team": "Man Utd"
             },
             {
-                "point": 1,
                 "matchday": 1,
+                "point": 1,
                 "team": "Chelsea"
             },
             {
-                "point": 1,
                 "matchday": 1,
+                "point": 1,
                 "team": "Man City"
             },
             {
-                "point": 0,
                 "matchday": 1,
+                "point": 0,
                 "team": "Spurs"
             },
             {
+                "matchday": 2,
                 "point": 6,
-                "matchday": 2,
                 "team": "Man Utd"
             },
             {
-                "point": 1,
                 "matchday": 2,
+                "point": 1,
                 "team": "Chelsea"
             },
             {
-                "point": 0,
                 "matchday": 2,
+                "point": 0,
                 "team": "Man City"
             },
             {
-                "point": 3,
                 "matchday": 2,
+                "point": 3,
                 "team": "Spurs"
             },
             {
+                "matchday": 3,
                 "point": 9,
-                "matchday": 3,
                 "team": "Man Utd"
             },
             {
-                "point": 1,
                 "matchday": 3,
+                "point": 1,
                 "team": "Chelsea"
             },
             {
-                "point": 0,
                 "matchday": 3,
+                "point": 0,
                 "team": "Man City"
             },
             {
-                "point": 6,
                 "matchday": 3,
+                "point": 6,
                 "team": "Spurs"
             }
         ]
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "team",
@@ -116,5 +91,30 @@
             "field": "rank",
             "type": "ordinal"
         }
-    }
+    },
+    "height": 400,
+    "mark": {
+        "orient": "vertical",
+        "type": "line"
+    },
+    "transform": [
+        {
+            "groupby": [
+                "matchday"
+            ],
+            "sort": [
+                {
+                    "field": "point",
+                    "order": "descending"
+                }
+            ],
+            "window": [
+                {
+                    "as": "rank",
+                    "op": "rank"
+                }
+            ]
+        }
+    ],
+    "width": 400
 }

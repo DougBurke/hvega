@@ -1,22 +1,10 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://gicentre.github.io/data/westMidlands/westMidsCrimesAggregated.tsv"
     },
-    "width": 540,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "mySelection": {
-            "empty": "none",
-            "encodings": [
-                "x"
-            ],
-            "type": "interval"
-        }
-    },
     "encoding": {
         "color": {
-            "value": "black",
             "condition": {
                 "field": "crimeType",
                 "scale": {
@@ -39,14 +27,15 @@
                 },
                 "selection": "mySelection",
                 "type": "nominal"
-            }
+            },
+            "value": "black"
         },
         "opacity": {
-            "value": 0.1,
             "condition": {
-                "value": 1,
-                "selection": "mySelection"
-            }
+                "selection": "mySelection",
+                "value": 1
+            },
+            "value": 0.1
         },
         "x": {
             "field": "month",
@@ -58,5 +47,16 @@
             "title": "Reported crimes",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "circle",
+    "selection": {
+        "mySelection": {
+            "empty": "none",
+            "encodings": [
+                "x"
+            ],
+            "type": "interval"
+        }
+    },
+    "width": 540
 }

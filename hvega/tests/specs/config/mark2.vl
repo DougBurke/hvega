@@ -1,13 +1,28 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "config": {
+        "area": {
+            "filled": false
+        },
+        "bar": {
+            "filled": true
+        },
+        "mark": {
+            "fill": "black",
+            "filled": true,
+            "opacity": 1
+        },
+        "point": {
+            "filled": true,
+            "stroke": "white",
+            "strokeOpacity": 0.2
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
     "hconcat": [
         {
-            "height": 200,
-            "mark": {
-                "size": 100,
-                "type": "point"
-            },
-            "width": 200,
-            "title": "Car Scatter",
             "encoding": {
                 "color": {
                     "field": "Cylinders",
@@ -25,13 +40,16 @@
                     "field": "Miles_per_Gallon",
                     "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": {
+                "size": 100,
+                "type": "point"
+            },
+            "title": "Car Scatter",
+            "width": 200
         },
         {
-            "height": 200,
-            "mark": "bar",
-            "width": 200,
-            "title": "Car Histogram",
             "encoding": {
                 "color": {
                     "field": "Origin",
@@ -45,13 +63,13 @@
                     "aggregate": "count",
                     "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": "bar",
+            "title": "Car Histogram",
+            "width": 200
         },
         {
-            "height": 200,
-            "mark": "area",
-            "width": 200,
-            "title": "Car Streamgraph",
             "encoding": {
                 "color": {
                     "field": "Origin",
@@ -64,39 +82,21 @@
                 },
                 "y": {
                     "aggregate": "count",
-                    "type": "quantitative",
                     "axis": null,
-                    "stack": "center"
+                    "stack": "center",
+                    "type": "quantitative"
                 }
-            }
+            },
+            "height": 200,
+            "mark": "area",
+            "title": "Car Streamgraph",
+            "width": 200
         }
     ],
-    "config": {
-        "area": {
-            "filled": false
-        },
-        "mark": {
-            "opacity": 1,
-            "fill": "black",
-            "filled": true
-        },
-        "point": {
-            "stroke": "white",
-            "strokeOpacity": 0.2,
-            "filled": true
-        },
-        "bar": {
-            "filled": true
-        }
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/cars.json"
-    },
     "resolve": {
         "scale": {
             "color": "independent",
             "shape": "independent"
         }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    }
 }

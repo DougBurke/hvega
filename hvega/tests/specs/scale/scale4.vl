@@ -1,5 +1,5 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -31,18 +31,17 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "b",
-            "scale": {
-                "zero": true,
-                "type": "quantize"
-            },
-            "type": "quantitative",
             "legend": {
                 "title": "Quantize"
-            }
+            },
+            "scale": {
+                "type": "quantize",
+                "zero": true
+            },
+            "type": "quantitative"
         },
         "size": {
             "field": "b",
@@ -52,14 +51,15 @@
             "type": "quantitative"
         },
         "y": {
-            "field": "b",
-            "sort": null,
-            "type": "nominal",
             "axis": {
                 "domain": false,
-                "title": null,
-                "ticks": false
-            }
+                "ticks": false,
+                "title": null
+            },
+            "field": "b",
+            "sort": null,
+            "type": "nominal"
         }
-    }
+    },
+    "mark": "circle"
 }

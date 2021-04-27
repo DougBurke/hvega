@@ -1,8 +1,38 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "values": [
+            {
+                "cat": "a",
+                "value": 10
+            },
+            {
+                "cat": "b",
+                "value": 5
+            },
+            {
+                "cat": "c",
+                "value": 20
+            },
+            {
+                "cat": "d",
+                "value": 8
+            }
+        ]
+    },
+    "encoding": {
+        "x": {
+            "field": "cat",
+            "type": "nominal"
+        },
+        "y": {
+            "field": "value",
+            "type": "quantitative"
+        }
+    },
     "mark": {
         "color": {
-            "x2": 1,
-            "y1": 0,
+            "gradient": "linear",
             "stops": [
                 {
                     "color": "red",
@@ -17,42 +47,12 @@
                     "offset": 1
                 }
             ],
-            "gradient": "linear",
-            "y2": 1,
-            "x1": 1
+            "x1": 1,
+            "x2": 1,
+            "y1": 0,
+            "y2": 1
         },
         "type": "bar"
     },
-    "data": {
-        "values": [
-            {
-                "value": 10,
-                "cat": "a"
-            },
-            {
-                "value": 5,
-                "cat": "b"
-            },
-            {
-                "value": 20,
-                "cat": "c"
-            },
-            {
-                "value": 8,
-                "cat": "d"
-            }
-        ]
-    },
-    "width": 200,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "x": {
-            "field": "cat",
-            "type": "nominal"
-        },
-        "y": {
-            "field": "value",
-            "type": "quantitative"
-        }
-    }
+    "width": 200
 }

@@ -1,11 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "v",
-            "calculate": "sin(datum.data)"
-        }
-    ],
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "sequence": {
             "start": 0,
@@ -13,7 +7,6 @@
             "stop": 12.7
         }
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "data",
@@ -23,5 +16,12 @@
             "field": "v",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line",
+    "transform": [
+        {
+            "as": "v",
+            "calculate": "sin(datum.data)"
+        }
+    ]
 }

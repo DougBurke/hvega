@@ -1,42 +1,42 @@
 {
-    "height": 600,
-    "mark": {
-        "opacity": 0.1,
-        "type": "point"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "width": 600,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "IMDB_Rating",
-            "type": "quantitative",
             "axis": {
-                "tickCount": 20,
-                "gridDash": {
-                    "value": [],
+                "gridColor": {
                     "condition": {
+                        "test": "datum.value <= 7",
+                        "value": "green"
+                    },
+                    "value": "red"
+                },
+                "gridDash": {
+                    "condition": {
+                        "test": "datum.value <= 5",
                         "value": [
                             5,
                             5
-                        ],
-                        "test": "datum.value <= 5"
-                    }
+                        ]
+                    },
+                    "value": []
                 },
-                "gridColor": {
-                    "value": "red",
-                    "condition": {
-                        "value": "green",
-                        "test": "datum.value <= 7"
-                    }
-                }
-            }
+                "tickCount": 20
+            },
+            "field": "IMDB_Rating",
+            "type": "quantitative"
         },
         "y": {
             "field": "Rotten_Tomatoes_Rating",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 600,
+    "mark": {
+        "opacity": 0.1,
+        "type": "point"
+    },
+    "width": 600
 }

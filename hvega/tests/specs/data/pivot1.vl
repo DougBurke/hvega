@@ -1,39 +1,30 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "repeat": [
         "gold",
         "silver"
     ],
     "spec": {
-        "transform": [
-            {
-                "groupby": [
-                    "country"
-                ],
-                "value": "count",
-                "pivot": "medalType"
-            }
-        ],
-        "mark": "bar",
         "data": {
             "values": [
                 {
-                    "country": "USA",
                     "count": 10,
+                    "country": "USA",
                     "medalType": "gold"
                 },
                 {
-                    "country": "USA",
                     "count": 20,
+                    "country": "USA",
                     "medalType": "silver"
                 },
                 {
-                    "country": "Canada",
                     "count": 7,
+                    "country": "Canada",
                     "medalType": "gold"
                 },
                 {
-                    "country": "Canada",
                     "count": 26,
+                    "country": "Canada",
                     "medalType": "silver"
                 }
             ]
@@ -53,7 +44,16 @@
                 },
                 "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+        },
+        "mark": "bar",
+        "transform": [
+            {
+                "groupby": [
+                    "country"
+                ],
+                "pivot": "medalType",
+                "value": "count"
+            }
+        ]
+    }
 }

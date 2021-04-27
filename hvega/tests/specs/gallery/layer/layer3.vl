@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "tick": {
             "thickness": 2
@@ -7,12 +8,12 @@
     "data": {
         "values": [
             {
+                "markers": [
+                    250
+                ],
                 "measures": [
                     220,
                     270
-                ],
-                "markers": [
-                    250
                 ],
                 "ranges": [
                     150,
@@ -22,12 +23,12 @@
                 "title": "Revenue"
             },
             {
+                "markers": [
+                    26
+                ],
                 "measures": [
                     21,
                     23
-                ],
-                "markers": [
-                    26
                 ],
                 "ranges": [
                     20,
@@ -37,12 +38,12 @@
                 "title": "Profit"
             },
             {
+                "markers": [
+                    550
+                ],
                 "measures": [
                     100,
                     320
-                ],
-                "markers": [
-                    550
                 ],
                 "ranges": [
                     350,
@@ -52,12 +53,12 @@
                 "title": "Order size"
             },
             {
+                "markers": [
+                    2100
+                ],
                 "measures": [
                     1000,
                     1650
-                ],
-                "markers": [
-                    2100
                 ],
                 "ranges": [
                     1400,
@@ -67,12 +68,12 @@
                 "title": "New customers"
             },
             {
+                "markers": [
+                    4.4
+                ],
                 "measures": [
                     3.2,
                     4.7
-                ],
-                "markers": [
-                    4.4
                 ],
                 "ranges": [
                     3.5,
@@ -83,96 +84,7 @@
             }
         ]
     },
-    "resolve": {
-        "scale": {
-            "x": "independent"
-        }
-    },
-    "spec": {
-        "layer": [
-            {
-                "mark": {
-                    "color": "#eee",
-                    "type": "bar"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "ranges[2]",
-                        "scale": {
-                            "nice": false
-                        },
-                        "type": "quantitative",
-                        "axis": {
-                            "title": null
-                        }
-                    }
-                }
-            },
-            {
-                "mark": {
-                    "color": "#ddd",
-                    "type": "bar"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "ranges[1]",
-                        "type": "quantitative"
-                    }
-                }
-            },
-            {
-                "mark": {
-                    "color": "#ccc",
-                    "type": "bar"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "ranges[0]",
-                        "type": "quantitative"
-                    }
-                }
-            },
-            {
-                "mark": {
-                    "color": "lightsteelblue",
-                    "size": 10,
-                    "type": "bar"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "measures[1]",
-                        "type": "quantitative"
-                    }
-                }
-            },
-            {
-                "mark": {
-                    "color": "steelblue",
-                    "size": 10,
-                    "type": "bar"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "measures[0]",
-                        "type": "quantitative"
-                    }
-                }
-            },
-            {
-                "mark": {
-                    "color": "black",
-                    "type": "tick"
-                },
-                "encoding": {
-                    "x": {
-                        "field": "markers[0]",
-                        "type": "quantitative"
-                    }
-                }
-            }
-        ]
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Bullet chart",
     "facet": {
         "row": {
             "field": "title",
@@ -183,5 +95,93 @@
             "type": "ordinal"
         }
     },
-    "description": "Bullet chart"
+    "resolve": {
+        "scale": {
+            "x": "independent"
+        }
+    },
+    "spec": {
+        "layer": [
+            {
+                "encoding": {
+                    "x": {
+                        "axis": {
+                            "title": null
+                        },
+                        "field": "ranges[2]",
+                        "scale": {
+                            "nice": false
+                        },
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "#eee",
+                    "type": "bar"
+                }
+            },
+            {
+                "encoding": {
+                    "x": {
+                        "field": "ranges[1]",
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "#ddd",
+                    "type": "bar"
+                }
+            },
+            {
+                "encoding": {
+                    "x": {
+                        "field": "ranges[0]",
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "#ccc",
+                    "type": "bar"
+                }
+            },
+            {
+                "encoding": {
+                    "x": {
+                        "field": "measures[1]",
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "lightsteelblue",
+                    "size": 10,
+                    "type": "bar"
+                }
+            },
+            {
+                "encoding": {
+                    "x": {
+                        "field": "measures[0]",
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "steelblue",
+                    "size": 10,
+                    "type": "bar"
+                }
+            },
+            {
+                "encoding": {
+                    "x": {
+                        "field": "markers[0]",
+                        "type": "quantitative"
+                    }
+                },
+                "mark": {
+                    "color": "black",
+                    "type": "tick"
+                }
+            }
+        ]
+    }
 }

@@ -1,9 +1,9 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Distributions of car engine power for different countries of origin",
     "encoding": {
         "row": {
             "field": "Origin",
@@ -11,10 +11,10 @@
             "type": "ordinal"
         },
         "x": {
-            "field": "Horsepower",
             "bin": {
                 "maxbins": 15
             },
+            "field": "Horsepower",
             "type": "quantitative"
         },
         "y": {
@@ -22,5 +22,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Distributions of car engine power for different countries of origin"
+    "mark": "bar"
 }

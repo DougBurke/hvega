@@ -1,4 +1,49 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "config": {
+        "axis": {
+            "grid": false
+        },
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/population.json"
+    },
+    "encoding": {
+        "color": {
+            "field": "gender",
+            "legend": {
+                "orient": "top",
+                "title": ""
+            },
+            "scale": {
+                "range": [
+                    "#675193",
+                    "#ca8861"
+                ]
+            },
+            "type": "nominal"
+        },
+        "x": {
+            "aggregate": "sum",
+            "axis": {
+                "format": "s",
+                "title": "Population"
+            },
+            "field": "signedPeople",
+            "type": "quantitative"
+        },
+        "y": {
+            "axis": null,
+            "field": "age",
+            "sort": "descending",
+            "type": "ordinal"
+        }
+    },
+    "height": 200,
+    "mark": "bar",
     "transform": [
         {
             "filter": "datum.year == 2000"
@@ -12,50 +57,5 @@
             "calculate": "datum.sex == 2 ? datum.people : -datum.people"
         }
     ],
-    "height": 200,
-    "config": {
-        "view": {
-            "stroke": null
-        },
-        "axis": {
-            "grid": false
-        }
-    },
-    "mark": "bar",
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/population.json"
-    },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "color": {
-            "field": "gender",
-            "scale": {
-                "range": [
-                    "#675193",
-                    "#ca8861"
-                ]
-            },
-            "type": "nominal",
-            "legend": {
-                "orient": "top",
-                "title": ""
-            }
-        },
-        "x": {
-            "field": "signedPeople",
-            "aggregate": "sum",
-            "type": "quantitative",
-            "axis": {
-                "format": "s",
-                "title": "Population"
-            }
-        },
-        "y": {
-            "field": "age",
-            "sort": "descending",
-            "type": "ordinal",
-            "axis": null
-        }
-    }
+    "width": 300
 }

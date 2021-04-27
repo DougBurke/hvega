@@ -1,14 +1,9 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "scale": {
             "bandPaddingInner": 0.2
         }
-    },
-    "mark": {
-        "cursor": "pointer",
-        "stroke": "black",
-        "fill": "#4C78A8",
-        "type": "bar"
     },
     "data": {
         "values": [
@@ -50,23 +45,18 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "highlight": {
-            "empty": "none",
-            "type": "single",
-            "on": "mouseover"
-        },
-        "select": {
-            "type": "multi"
-        }
-    },
+    "description": "A bar chart with highlighting on hover and selecting on click. Inspired by Tableau's interaction style.",
     "encoding": {
+        "fillOpacity": {
+            "condition": {
+                "selection": "select",
+                "value": 1
+            },
+            "value": 0.3
+        },
         "strokeWidth": {
-            "value": 0,
             "condition": [
                 {
-                    "value": 2,
                     "test": {
                         "and": [
                             {
@@ -74,29 +64,39 @@
                             },
                             "length(data(\"select_store\"))"
                         ]
-                    }
+                    },
+                    "value": 2
                 },
                 {
-                    "value": 1,
-                    "selection": "highlight"
+                    "selection": "highlight",
+                    "value": 1
                 }
-            ]
+            ],
+            "value": 0
         },
         "x": {
             "field": "a",
             "type": "ordinal"
-        },
-        "fillOpacity": {
-            "value": 0.3,
-            "condition": {
-                "value": 1,
-                "selection": "select"
-            }
         },
         "y": {
             "field": "b",
             "type": "quantitative"
         }
     },
-    "description": "A bar chart with highlighting on hover and selecting on click. Inspired by Tableau's interaction style."
+    "mark": {
+        "cursor": "pointer",
+        "fill": "#4C78A8",
+        "stroke": "black",
+        "type": "bar"
+    },
+    "selection": {
+        "highlight": {
+            "empty": "none",
+            "on": "mouseover",
+            "type": "single"
+        },
+        "select": {
+            "type": "multi"
+        }
+    }
 }

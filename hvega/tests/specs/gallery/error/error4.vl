@@ -1,11 +1,11 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A scatterplot showing horsepower and miles per gallon for various cars with a global mean and standard deviation overlay.",
     "layer": [
         {
-            "mark": "point",
             "encoding": {
                 "x": {
                     "field": "Horsepower",
@@ -15,24 +15,51 @@
                     "field": "Miles_per_Gallon",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "point"
         },
         {
+            "layer": [
+                {
+                    "encoding": {
+                        "y": {
+                            "field": "mean_MPG",
+                            "type": "quantitative"
+                        }
+                    },
+                    "mark": "rule"
+                },
+                {
+                    "encoding": {
+                        "opacity": {
+                            "value": 0.2
+                        },
+                        "y": {
+                            "field": "lower",
+                            "type": "quantitative"
+                        },
+                        "y2": {
+                            "field": "upper"
+                        }
+                    },
+                    "mark": "rect"
+                }
+            ],
             "transform": [
                 {
-                    "groupby": [],
                     "aggregate": [
                         {
-                            "op": "mean",
                             "as": "mean_MPG",
-                            "field": "Miles_per_Gallon"
+                            "field": "Miles_per_Gallon",
+                            "op": "mean"
                         },
                         {
-                            "op": "stdev",
                             "as": "dev_MPG",
-                            "field": "Miles_per_Gallon"
+                            "field": "Miles_per_Gallon",
+                            "op": "stdev"
                         }
-                    ]
+                    ],
+                    "groupby": []
                 },
                 {
                     "as": "upper",
@@ -42,34 +69,7 @@
                     "as": "lower",
                     "calculate": "datum.mean_MPG-datum.dev_MPG"
                 }
-            ],
-            "layer": [
-                {
-                    "mark": "rule",
-                    "encoding": {
-                        "y": {
-                            "field": "mean_MPG",
-                            "type": "quantitative"
-                        }
-                    }
-                },
-                {
-                    "mark": "rect",
-                    "encoding": {
-                        "opacity": {
-                            "value": 0.2
-                        },
-                        "y2": {
-                            "field": "upper"
-                        },
-                        "y": {
-                            "field": "lower",
-                            "type": "quantitative"
-                        }
-                    }
-                }
             ]
         }
-    ],
-    "description": "A scatterplot showing horsepower and miles per gallon for various cars with a global mean and standard deviation overlay."
+    ]
 }

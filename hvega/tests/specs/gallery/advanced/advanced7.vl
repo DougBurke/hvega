@@ -1,34 +1,34 @@
 {
-    "transform": [
-        {
-            "from": {
-                "data": {
-                    "url": "https://vega.github.io/vega-lite/data/lookup_people.csv"
-                },
-                "key": "name",
-                "fields": [
-                    "age",
-                    "height"
-                ]
-            },
-            "lookup": "person"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/lookup_groups.csv"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Using the lookup transform to combine data",
     "encoding": {
         "x": {
             "field": "group",
             "type": "ordinal"
         },
         "y": {
-            "field": "age",
             "aggregate": "mean",
+            "field": "age",
             "type": "quantitative"
         }
     },
-    "description": "Using the lookup transform to combine data"
+    "mark": "bar",
+    "transform": [
+        {
+            "from": {
+                "data": {
+                    "url": "https://vega.github.io/vega-lite/data/lookup_people.csv"
+                },
+                "fields": [
+                    "age",
+                    "height"
+                ],
+                "key": "name"
+            },
+            "lookup": "person"
+        }
+    ]
 }

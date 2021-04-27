@@ -1,5 +1,5 @@
 {
-    "height": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -88,11 +88,9 @@
             }
         ]
     },
-    "width": 600,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 400,
     "layer": [
         {
-            "mark": "circle",
             "encoding": {
                 "x": {
                     "field": "a",
@@ -102,49 +100,51 @@
                     "field": "b",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "circle"
         },
         {
-            "mark": {
-                "dx": 22,
-                "dy": 4,
-                "type": "text"
-            },
             "encoding": {
                 "color": {
                     "field": "a",
-                    "type": "temporal",
                     "legend": {
                         "format": "%b %Y",
                         "formatType": "time"
-                    }
+                    },
+                    "type": "temporal"
                 },
                 "text": {
                     "field": "a",
                     "format": "%b `%y",
-                    "type": "temporal",
-                    "formatType": "time"
+                    "formatType": "time",
+                    "type": "temporal"
                 },
                 "x": {
-                    "field": "a",
-                    "type": "temporal",
                     "axis": {
                         "format": "%y",
                         "formatType": "time"
-                    }
+                    },
+                    "field": "a",
+                    "type": "temporal"
                 },
                 "y": {
+                    "axis": {
+                        "format": ".2f",
+                        "formatType": "number"
+                    },
                     "field": "b",
                     "scale": {
                         "zero": false
                     },
-                    "type": "quantitative",
-                    "axis": {
-                        "format": ".2f",
-                        "formatType": "number"
-                    }
+                    "type": "quantitative"
                 }
+            },
+            "mark": {
+                "dx": 22,
+                "dy": 4,
+                "type": "text"
             }
         }
-    ]
+    ],
+    "width": 600
 }

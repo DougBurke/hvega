@@ -1,45 +1,35 @@
 {
-    "mark": {
-        "type": "arc",
-        "outerRadius": 80
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
                 "category": "Sky",
-                "value": 75,
-                "order": 3
+                "order": 3,
+                "value": 75
             },
             {
                 "category": "Shady side of a pyramid",
-                "value": 10,
-                "order": 1
+                "order": 1,
+                "value": 10
             },
             {
                 "category": "Sunny side of a pyramid",
-                "value": 15,
-                "order": 2
+                "order": 2,
+                "value": 15
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "view": {
-        "stroke": null
-    },
+    "description": "Reproducing http://robslink.com/SAS/democd91/pyramid_pie.htm",
     "encoding": {
-        "theta": {
-            "field": "value",
-            "scale": {
-                "range": [
-                    2.35619449,
-                    8.639379797
-                ]
-            },
-            "type": "quantitative",
-            "stack": "zero"
-        },
         "color": {
             "field": "category",
+            "legend": {
+                "columns": 1,
+                "legendX": 200,
+                "legendY": 80,
+                "orient": "none",
+                "title": null
+            },
             "scale": {
                 "domain": [
                     "Sky",
@@ -52,18 +42,28 @@
                     "#DEAC58"
                 ]
             },
-            "type": "nominal",
-            "legend": {
-                "orient": "none",
-                "columns": 1,
-                "title": null,
-                "legendY": 80,
-                "legendX": 200
-            }
+            "type": "nominal"
         },
         "order": {
             "field": "order"
+        },
+        "theta": {
+            "field": "value",
+            "scale": {
+                "range": [
+                    2.35619449,
+                    8.639379797
+                ]
+            },
+            "stack": "zero",
+            "type": "quantitative"
         }
     },
-    "description": "Reproducing http://robslink.com/SAS/democd91/pyramid_pie.htm"
+    "mark": {
+        "outerRadius": 80,
+        "type": "arc"
+    },
+    "view": {
+        "stroke": null
+    }
 }

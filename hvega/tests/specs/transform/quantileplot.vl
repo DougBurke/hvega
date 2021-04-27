@@ -1,4 +1,36 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/normal-2d.json"
+    },
+    "hconcat": [
+        {
+            "encoding": {
+                "x": {
+                    "field": "unif",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "v",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "point"
+        },
+        {
+            "encoding": {
+                "x": {
+                    "field": "norm",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "v",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "point"
+        }
+    ],
     "transform": [
         {
             "as": [
@@ -16,37 +48,5 @@
             "as": "norm",
             "calculate": "quantileNormal(datum.p)"
         }
-    ],
-    "hconcat": [
-        {
-            "mark": "point",
-            "encoding": {
-                "x": {
-                    "field": "unif",
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "v",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "point",
-            "encoding": {
-                "x": {
-                    "field": "norm",
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "v",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/normal-2d.json"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    ]
 }

@@ -1,84 +1,41 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "count",
-                    "as": "index"
-                }
-            ]
-        },
-        {
-            "fold": [
-                "petalLength",
-                "petalWidth",
-                "sepalLength",
-                "sepalWidth"
-            ]
-        },
-        {
-            "groupby": [
-                "key"
-            ],
-            "joinaggregate": [
-                {
-                    "op": "min",
-                    "as": "min",
-                    "field": "value"
-                },
-                {
-                    "op": "max",
-                    "as": "max",
-                    "field": "value"
-                }
-            ]
-        },
-        {
-            "as": "normVal",
-            "calculate": "(datum.value - datum.min) / (datum.max-datum.min)"
-        },
-        {
-            "as": "mid",
-            "calculate": "(datum.min + datum.max) / 2"
-        }
-    ],
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
+        "axisX": {
+            "domain": false,
+            "labelAngle": 0,
+            "tickColor": "#ccc"
+        },
         "style": {
+            "label": {
+                "align": "right",
+                "baseline": "middle",
+                "dx": -5,
+                "tooltip": null
+            },
             "tick": {
                 "orient": "horizontal",
                 "tooltip": null
-            },
-            "label": {
-                "dx": -5,
-                "tooltip": null,
-                "align": "right",
-                "baseline": "middle"
             }
         },
         "view": {
             "stroke": null
-        },
-        "axisX": {
-            "labelAngle": 0,
-            "domain": false,
-            "tickColor": "#ccc"
         }
     },
     "data": {
         "url": "https://vega.github.io/vega-lite/data/iris.json"
     },
-    "width": 600,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Parallel coordinates plot with manual generation of parallel axes",
+    "height": 300,
     "layer": [
         {
-            "mark": {
-                "opacity": 0.3,
-                "type": "line"
-            },
             "encoding": {
                 "color": {
                     "field": "species",
+                    "type": "nominal"
+                },
+                "detail": {
+                    "field": "index",
                     "type": "nominal"
                 },
                 "tooltip": [
@@ -103,45 +60,41 @@
                     "field": "key",
                     "type": "nominal"
                 },
-                "detail": {
-                    "field": "index",
-                    "type": "nominal"
-                },
                 "y": {
+                    "axis": null,
                     "field": "normVal",
-                    "type": "quantitative",
-                    "axis": null
+                    "type": "quantitative"
                 }
+            },
+            "mark": {
+                "opacity": 0.3,
+                "type": "line"
             }
         },
         {
-            "mark": {
-                "color": "#ccc",
-                "type": "rule"
-            },
             "encoding": {
-                "x": {
-                    "field": "key",
-                    "type": "nominal",
-                    "axis": {
-                        "title": null
-                    }
-                },
                 "detail": {
                     "aggregate": "count",
                     "type": "quantitative"
+                },
+                "x": {
+                    "axis": {
+                        "title": null
+                    },
+                    "field": "key",
+                    "type": "nominal"
                 }
+            },
+            "mark": {
+                "color": "#ccc",
+                "type": "rule"
             }
         },
         {
-            "mark": {
-                "style": "label",
-                "type": "text"
-            },
             "encoding": {
                 "text": {
-                    "field": "max",
                     "aggregate": "max",
+                    "field": "max",
                     "type": "quantitative"
                 },
                 "x": {
@@ -151,17 +104,17 @@
                 "y": {
                     "value": 0
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "label",
                 "type": "text"
-            },
+            }
+        },
+        {
             "encoding": {
                 "text": {
-                    "field": "mid",
                     "aggregate": "min",
+                    "field": "mid",
                     "type": "quantitative"
                 },
                 "x": {
@@ -171,17 +124,17 @@
                 "y": {
                     "value": 150
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "label",
                 "type": "text"
-            },
+            }
+        },
+        {
             "encoding": {
                 "text": {
-                    "field": "min",
                     "aggregate": "min",
+                    "field": "min",
                     "type": "quantitative"
                 },
                 "x": {
@@ -191,8 +144,55 @@
                 "y": {
                     "value": "height"
                 }
+            },
+            "mark": {
+                "style": "label",
+                "type": "text"
             }
         }
     ],
-    "description": "Parallel coordinates plot with manual generation of parallel axes"
+    "transform": [
+        {
+            "window": [
+                {
+                    "as": "index",
+                    "op": "count"
+                }
+            ]
+        },
+        {
+            "fold": [
+                "petalLength",
+                "petalWidth",
+                "sepalLength",
+                "sepalWidth"
+            ]
+        },
+        {
+            "groupby": [
+                "key"
+            ],
+            "joinaggregate": [
+                {
+                    "as": "min",
+                    "field": "value",
+                    "op": "min"
+                },
+                {
+                    "as": "max",
+                    "field": "value",
+                    "op": "max"
+                }
+            ]
+        },
+        {
+            "as": "normVal",
+            "calculate": "(datum.value - datum.min) / (datum.max-datum.min)"
+        },
+        {
+            "as": "mid",
+            "calculate": "(datum.min + datum.max) / 2"
+        }
+    ],
+    "width": 600
 }

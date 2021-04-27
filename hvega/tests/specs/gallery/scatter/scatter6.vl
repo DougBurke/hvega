@@ -1,9 +1,9 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A bubbleplot showing horsepower on x, miles per gallons on y, and acceleration on size.",
     "encoding": {
         "size": {
             "field": "Acceleration",
@@ -18,5 +18,5 @@
             "type": "quantitative"
         }
     },
-    "description": "A bubbleplot showing horsepower on x, miles per gallons on y, and acceleration on size."
+    "mark": "point"
 }

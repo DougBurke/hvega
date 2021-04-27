@@ -1,9 +1,9 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A scatterplot showing horsepower and miles per gallon with country of origin double encoded by colour and shape.",
     "encoding": {
         "color": {
             "field": "Origin",
@@ -22,5 +22,5 @@
             "type": "quantitative"
         }
     },
-    "description": "A scatterplot showing horsepower and miles per gallon with country of origin double encoded by colour and shape."
+    "mark": "point"
 }

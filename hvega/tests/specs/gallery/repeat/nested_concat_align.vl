@@ -1,16 +1,18 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
-        "countTitle": "Count",
+        "axisX": {
+            "titleLimit": 150
+        },
         "axisY": {
             "minExtent": 40
         },
-        "axisX": {
-            "titleLimit": 150
-        }
+        "countTitle": "Count"
     },
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
+    "description": "Nested concatenation aligned by setting axis minExtent",
     "vconcat": [
         {
             "repeat": {
@@ -20,16 +22,13 @@
                 ]
             },
             "spec": {
-                "height": 50,
-                "mark": "bar",
-                "width": 150,
                 "encoding": {
                     "x": {
-                        "field": {
-                            "repeat": "column"
-                        },
                         "bin": {
                             "maxbins": 20
+                        },
+                        "field": {
+                            "repeat": "column"
                         },
                         "type": "quantitative"
                     },
@@ -37,7 +36,10 @@
                         "aggregate": "count",
                         "type": "quantitative"
                     }
-                }
+                },
+                "height": 50,
+                "mark": "bar",
+                "width": 150
             },
             "title": "Ratings"
         },
@@ -49,16 +51,13 @@
                 ]
             },
             "spec": {
-                "height": 50,
-                "mark": "bar",
-                "width": 150,
                 "encoding": {
                     "x": {
-                        "field": {
-                            "repeat": "column"
-                        },
                         "bin": {
                             "maxbins": 20
+                        },
+                        "field": {
+                            "repeat": "column"
                         },
                         "type": "quantitative"
                     },
@@ -66,11 +65,12 @@
                         "aggregate": "count",
                         "type": "quantitative"
                     }
-                }
+                },
+                "height": 50,
+                "mark": "bar",
+                "width": 150
             },
             "title": "Gross"
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Nested concatenation aligned by setting axis minExtent"
+    ]
 }

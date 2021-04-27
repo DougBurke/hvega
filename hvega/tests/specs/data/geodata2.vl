@@ -1,12 +1,15 @@
 {
-    "height": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "mark": "geoshape",
     "data": {
+        "format": {
+            "property": "features",
+            "type": "json"
+        },
         "values": {
             "features": [
                 {
@@ -37,10 +40,10 @@
                         ],
                         "type": "Polygon"
                     },
-                    "type": "Feature",
                     "properties": {
                         "Region": "Southsville"
-                    }
+                    },
+                    "type": "Feature"
                 },
                 {
                     "geometry": {
@@ -70,31 +73,28 @@
                         ],
                         "type": "Polygon"
                     },
-                    "type": "Feature",
                     "properties": {
                         "Region": "Northerton"
-                    }
+                    },
+                    "type": "Feature"
                 }
             ],
             "type": "FeatureCollection"
-        },
-        "format": {
-            "property": "features",
-            "type": "json"
         }
-    },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "orthographic"
     },
     "encoding": {
         "color": {
             "field": "properties.Region",
-            "type": "nominal",
             "legend": {
                 "title": null
-            }
+            },
+            "type": "nominal"
         }
-    }
+    },
+    "height": 400,
+    "mark": "geoshape",
+    "projection": {
+        "type": "orthographic"
+    },
+    "width": 300
 }

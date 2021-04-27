@@ -1,48 +1,29 @@
 {
-    "transform": [
-        {
-            "joinaggregate": [
-                {
-                    "op": "sum",
-                    "as": "TotalTime",
-                    "field": "Time"
-                }
-            ]
-        },
-        {
-            "as": "PercentOfTotal",
-            "calculate": "datum.Time/datum.TotalTime * 100"
-        }
-    ],
-    "height": {
-        "step": 12
-    },
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "Time": 8,
-                "Activity": "Sleeping"
+                "Activity": "Sleeping",
+                "Time": 8
             },
             {
-                "Time": 2,
-                "Activity": "Eating"
+                "Activity": "Eating",
+                "Time": 2
             },
             {
-                "Time": 4,
-                "Activity": "TV"
+                "Activity": "TV",
+                "Time": 4
             },
             {
-                "Time": 8,
-                "Activity": "Work"
+                "Activity": "Work",
+                "Time": 8
             },
             {
-                "Time": 2,
-                "Activity": "Exercise"
+                "Activity": "Exercise",
+                "Time": 2
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "PercentOfTotal",
@@ -53,5 +34,24 @@
             "field": "Activity",
             "type": "nominal"
         }
-    }
+    },
+    "height": {
+        "step": 12
+    },
+    "mark": "bar",
+    "transform": [
+        {
+            "joinaggregate": [
+                {
+                    "as": "TotalTime",
+                    "field": "Time",
+                    "op": "sum"
+                }
+            ]
+        },
+        {
+            "as": "PercentOfTotal",
+            "calculate": "datum.Time/datum.TotalTime * 100"
+        }
+    ]
 }

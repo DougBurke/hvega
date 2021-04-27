@@ -1,5 +1,5 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -40,28 +40,28 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "value",
             "scale": {
-                "scheme": "redblue",
-                "domainMid": 0
+                "domainMid": 0,
+                "scheme": "redblue"
             },
             "type": "quantitative"
         },
         "x": {
-            "field": "category",
-            "type": "ordinal",
             "axis": {
-                "labelAngle": 0,
                 "domain": false,
+                "labelAngle": 0,
                 "orient": "top"
-            }
+            },
+            "field": "category",
+            "type": "ordinal"
         },
         "y": {
             "field": "value",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }
