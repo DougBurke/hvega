@@ -1,54 +1,54 @@
 {
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "x": 0,
                 "order": 1,
+                "x": 0,
                 "y": 1000
             },
             {
-                "x": 1000,
                 "order": 2,
+                "x": 1000,
                 "y": 1000
             },
             {
-                "x": 1000,
                 "order": 3,
+                "x": 1000,
                 "y": 0
             },
             {
-                "x": 0,
                 "order": 4,
+                "x": 0,
                 "y": 0
             },
             {
-                "x": 0,
                 "order": 5,
+                "x": 0,
                 "y": 1000
             },
             {
-                "x": 1000,
                 "order": 6,
+                "x": 1000,
                 "y": 0
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
-        "x": {
-            "field": "x",
-            "type": "quantitative",
-            "axis": null
-        },
         "order": {
             "field": "order",
             "type": "ordinal"
         },
+        "x": {
+            "axis": null,
+            "field": "x",
+            "type": "quantitative"
+        },
         "y": {
+            "axis": null,
             "field": "y",
-            "type": "quantitative",
-            "axis": null
+            "type": "quantitative"
         }
-    }
+    },
+    "mark": "line"
 }

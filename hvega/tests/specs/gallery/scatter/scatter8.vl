@@ -1,9 +1,9 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A scatterplot showing horsepower and miles per gallon for various cars (via circle marks).",
     "encoding": {
         "x": {
             "field": "Horsepower",
@@ -14,5 +14,5 @@
             "type": "quantitative"
         }
     },
-    "description": "A scatterplot showing horsepower and miles per gallon for various cars (via circle marks)."
+    "mark": "circle"
 }

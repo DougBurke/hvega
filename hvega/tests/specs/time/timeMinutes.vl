@@ -1,13 +1,8 @@
 {
-    "mark": {
-        "strokeWidth": 0.2,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://gicentre.github.io/data/tests/timeTest.tsv"
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "date",
@@ -15,12 +10,17 @@
             "type": "temporal"
         },
         "y": {
+            "aggregate": "mean",
             "field": "temperature",
             "scale": {
                 "zero": false
             },
-            "aggregate": "mean",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": {
+        "strokeWidth": 0.2,
+        "type": "line"
+    },
+    "width": 800
 }

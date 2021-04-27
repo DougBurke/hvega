@@ -1,15 +1,9 @@
 {
-    "transform": [
-        {
-            "as": "url",
-            "calculate": "'https://www.google.com/search?q=' + datum.Name"
-        }
-    ],
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Scatterplot with external links and tooltips",
     "encoding": {
         "color": {
             "field": "Origin",
@@ -32,5 +26,11 @@
             "type": "quantitative"
         }
     },
-    "description": "Scatterplot with external links and tooltips"
+    "mark": "point",
+    "transform": [
+        {
+            "as": "url",
+            "calculate": "'https://www.google.com/search?q=' + datum.Name"
+        }
+    ]
 }

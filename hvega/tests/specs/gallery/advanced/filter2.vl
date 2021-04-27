@@ -1,46 +1,13 @@
 {
-    "transform": [
-        {
-            "groupby": [
-                "Director"
-            ],
-            "aggregate": [
-                {
-                    "op": "mean",
-                    "as": "aggregateGross",
-                    "field": "Worldwide_Gross"
-                }
-            ]
-        },
-        {
-            "window": [
-                {
-                    "op": "row_number",
-                    "as": "rank"
-                }
-            ],
-            "sort": [
-                {
-                    "field": "aggregateGross",
-                    "order": "descending"
-                }
-            ]
-        },
-        {
-            "as": "rankedDirector",
-            "calculate": "datum.rank < 10 ? datum.Director : 'All Others'"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Top Directors by Average Worldwide Gross",
+    "description": "Top-k items with 'others'",
     "encoding": {
         "x": {
-            "field": "aggregateGross",
             "aggregate": "mean",
+            "field": "aggregateGross",
             "title": null,
             "type": "quantitative"
         },
@@ -54,5 +21,38 @@
             "type": "ordinal"
         }
     },
-    "description": "Top-k items with 'others'"
+    "mark": "bar",
+    "title": "Top Directors by Average Worldwide Gross",
+    "transform": [
+        {
+            "aggregate": [
+                {
+                    "as": "aggregateGross",
+                    "field": "Worldwide_Gross",
+                    "op": "mean"
+                }
+            ],
+            "groupby": [
+                "Director"
+            ]
+        },
+        {
+            "sort": [
+                {
+                    "field": "aggregateGross",
+                    "order": "descending"
+                }
+            ],
+            "window": [
+                {
+                    "as": "rank",
+                    "op": "row_number"
+                }
+            ]
+        },
+        {
+            "as": "rankedDirector",
+            "calculate": "datum.rank < 10 ? datum.Director : 'All Others'"
+        }
+    ]
 }

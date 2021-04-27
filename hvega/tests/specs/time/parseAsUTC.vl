@@ -1,5 +1,5 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -10,15 +10,15 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "y": {
-            "field": "date",
-            "timeUnit": "utchours",
-            "type": "ordinal",
             "axis": {
                 "title": "time"
-            }
+            },
+            "field": "date",
+            "timeUnit": "utchours",
+            "type": "ordinal"
         }
-    }
+    },
+    "mark": "point"
 }

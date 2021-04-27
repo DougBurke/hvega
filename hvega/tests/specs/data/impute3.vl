@@ -1,20 +1,5 @@
 {
-    "transform": [
-        {
-            "groupby": [
-                "c"
-            ],
-            "keyvals": {
-                "start": 1,
-                "step": 1,
-                "stop": 4
-            },
-            "value": 100,
-            "key": "a",
-            "impute": "b"
-        }
-    ],
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -54,7 +39,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "c",
@@ -71,5 +55,21 @@
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line",
+    "transform": [
+        {
+            "groupby": [
+                "c"
+            ],
+            "impute": "b",
+            "key": "a",
+            "keyvals": {
+                "start": 1,
+                "step": 1,
+                "stop": 4
+            },
+            "value": 100
+        }
+    ]
 }

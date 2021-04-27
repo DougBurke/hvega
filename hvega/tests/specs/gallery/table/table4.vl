@@ -1,13 +1,13 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/github.csv"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Table bubble plot in the style of a Github punched card.",
     "encoding": {
         "size": {
-            "field": "count",
             "aggregate": "sum",
+            "field": "count",
             "type": "quantitative"
         },
         "x": {
@@ -21,5 +21,5 @@
             "type": "ordinal"
         }
     },
-    "description": "Table bubble plot in the style of a Github punched card."
+    "mark": "circle"
 }

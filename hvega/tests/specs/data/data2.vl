@@ -1,5 +1,5 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -16,7 +16,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "cat",
@@ -26,5 +25,6 @@
             "field": "val",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }

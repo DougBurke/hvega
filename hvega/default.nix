@@ -1,9 +1,6 @@
-# { compiler ? "ghc884" }:
-# { compiler ? "ghc8102" }:
-
 # Looks like release-20.03 doesn't have haskell-language-server so stick
 # with nixpkgs-unstable
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8103" }:
+{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104" }:
 
 let
   # sources = import ../nix/sources.nix;

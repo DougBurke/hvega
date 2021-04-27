@@ -1,43 +1,11 @@
 {
-    "transform": [
-        {
-            "filter": "datum.Miles_per_Gallon !== null"
-        },
-        {
-            "as": "year",
-            "field": "Year",
-            "timeUnit": "year"
-        },
-        {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "Average_MPG",
-                    "field": "Miles_per_Gallon"
-                }
-            ],
-            "sort": [
-                {
-                    "field": "year",
-                    "order": "ascending"
-                }
-            ],
-            "frame": [
-                null,
-                0
-            ],
-            "ignorePeers": false
-        }
-    ],
-    "height": 400,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "width": 500,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 400,
     "layer": [
         {
-            "mark": "circle",
             "encoding": {
                 "x": {
                     "field": "Year",
@@ -48,13 +16,10 @@
                     "field": "Miles_per_Gallon",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "circle"
         },
         {
-            "mark": {
-                "color": "red",
-                "type": "line"
-            },
             "encoding": {
                 "x": {
                     "field": "Year",
@@ -62,13 +27,48 @@
                     "type": "temporal"
                 },
                 "y": {
-                    "field": "Average_MPG",
-                    "type": "quantitative",
                     "axis": {
                         "title": "Miles per gallon"
-                    }
+                    },
+                    "field": "Average_MPG",
+                    "type": "quantitative"
                 }
+            },
+            "mark": {
+                "color": "red",
+                "type": "line"
             }
         }
-    ]
+    ],
+    "transform": [
+        {
+            "filter": "datum.Miles_per_Gallon !== null"
+        },
+        {
+            "as": "year",
+            "field": "Year",
+            "timeUnit": "year"
+        },
+        {
+            "frame": [
+                null,
+                0
+            ],
+            "ignorePeers": false,
+            "sort": [
+                {
+                    "field": "year",
+                    "order": "ascending"
+                }
+            ],
+            "window": [
+                {
+                    "as": "Average_MPG",
+                    "field": "Miles_per_Gallon",
+                    "op": "mean"
+                }
+            ]
+        }
+    ],
+    "width": 500
 }

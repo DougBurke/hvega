@@ -1,30 +1,24 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "row_number",
-                    "as": "rowNumber"
-                }
-            ]
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "config": {
+        "view": {
+            "stroke": null
         }
-    ],
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/cars.json"
+    },
+    "description": "Drag a rectangular brush to show (first 20) selected points in a table.",
     "hconcat": [
         {
-            "mark": "point",
-            "selection": {
-                "brush": {
-                    "type": "interval"
-                }
-            },
             "encoding": {
                 "color": {
-                    "value": "grey",
                     "condition": {
                         "field": "Cylinders",
                         "selection": "brush",
                         "type": "ordinal"
-                    }
+                    },
+                    "value": "grey"
                 },
                 "x": {
                     "field": "Horsepower",
@@ -34,45 +28,28 @@
                     "field": "Miles_per_Gallon",
                     "type": "quantitative"
                 }
+            },
+            "mark": "point",
+            "selection": {
+                "brush": {
+                    "type": "interval"
+                }
             }
         },
         {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "brush"
-                    }
-                },
-                {
-                    "window": [
-                        {
-                            "op": "rank",
-                            "as": "rank"
-                        }
-                    ]
-                },
-                {
-                    "filter": {
-                        "field": "rank",
-                        "lt": 20
-                    }
-                }
-            ],
-            "mark": "text",
-            "title": "Engine power",
             "encoding": {
                 "text": {
                     "field": "Horsepower",
                     "type": "nominal"
                 },
                 "y": {
+                    "axis": null,
                     "field": "rowNumber",
-                    "type": "ordinal",
-                    "axis": null
+                    "type": "ordinal"
                 }
-            }
-        },
-        {
+            },
+            "mark": "text",
+            "title": "Engine power",
             "transform": [
                 {
                     "filter": {
@@ -82,8 +59,8 @@
                 {
                     "window": [
                         {
-                            "op": "rank",
-                            "as": "rank"
+                            "as": "rank",
+                            "op": "rank"
                         }
                     ]
                 },
@@ -93,22 +70,22 @@
                         "lt": 20
                     }
                 }
-            ],
-            "mark": "text",
-            "title": "Efficiency (mpg)",
+            ]
+        },
+        {
             "encoding": {
                 "text": {
                     "field": "Miles_per_Gallon",
                     "type": "nominal"
                 },
                 "y": {
+                    "axis": null,
                     "field": "rowNumber",
-                    "type": "ordinal",
-                    "axis": null
+                    "type": "ordinal"
                 }
-            }
-        },
-        {
+            },
+            "mark": "text",
+            "title": "Efficiency (mpg)",
             "transform": [
                 {
                     "filter": {
@@ -118,8 +95,8 @@
                 {
                     "window": [
                         {
-                            "op": "rank",
-                            "as": "rank"
+                            "as": "rank",
+                            "op": "rank"
                         }
                     ]
                 },
@@ -129,35 +106,58 @@
                         "lt": 20
                     }
                 }
-            ],
-            "mark": "text",
-            "title": "Country of origin",
+            ]
+        },
+        {
             "encoding": {
                 "text": {
                     "field": "Origin",
                     "type": "nominal"
                 },
                 "y": {
+                    "axis": null,
                     "field": "rowNumber",
-                    "type": "ordinal",
-                    "axis": null
+                    "type": "ordinal"
                 }
-            }
+            },
+            "mark": "text",
+            "title": "Country of origin",
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "brush"
+                    }
+                },
+                {
+                    "window": [
+                        {
+                            "as": "rank",
+                            "op": "rank"
+                        }
+                    ]
+                },
+                {
+                    "filter": {
+                        "field": "rank",
+                        "lt": 20
+                    }
+                }
+            ]
         }
     ],
-    "config": {
-        "view": {
-            "stroke": null
-        }
-    },
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/cars.json"
-    },
     "resolve": {
         "legend": {
             "color": "independent"
         }
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Drag a rectangular brush to show (first 20) selected points in a table."
+    "transform": [
+        {
+            "window": [
+                {
+                    "as": "rowNumber",
+                    "op": "row_number"
+                }
+            ]
+        }
+    ]
 }

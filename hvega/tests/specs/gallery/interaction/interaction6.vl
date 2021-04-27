@@ -1,15 +1,9 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "myGrid": {
-            "bind": "scales",
-            "type": "interval"
-        }
-    },
+    "description": "Drag to pan. Zoom in or out with mousewheel/zoom gesture.",
     "encoding": {
         "size": {
             "field": "Cylinders",
@@ -36,5 +30,11 @@
             "type": "quantitative"
         }
     },
-    "description": "Drag to pan. Zoom in or out with mousewheel/zoom gesture."
+    "mark": "circle",
+    "selection": {
+        "myGrid": {
+            "bind": "scales",
+            "type": "interval"
+        }
+    }
 }

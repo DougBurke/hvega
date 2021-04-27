@@ -1,17 +1,11 @@
 {
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 300,
     "layer": [
         {
-            "mark": {
-                "opacity": 0.3,
-                "type": "point",
-                "filled": true
-            },
             "encoding": {
                 "x": {
                     "field": "Rotten_Tomatoes_Rating",
@@ -21,9 +15,28 @@
                     "field": "IMDB_Rating",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "filled": true,
+                "opacity": 0.3,
+                "type": "point"
             }
         },
         {
+            "encoding": {
+                "x": {
+                    "field": "rtRating",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "imdbRating",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "firebrick",
+                "type": "line"
+            },
             "transform": [
                 {
                     "as": "imdbRating",
@@ -39,25 +52,12 @@
                         90
                     ],
                     "method": "poly",
-                    "regression": "imdbRating",
+                    "on": "rtRating",
                     "order": 3,
-                    "on": "rtRating"
+                    "regression": "imdbRating"
                 }
-            ],
-            "mark": {
-                "color": "firebrick",
-                "type": "line"
-            },
-            "encoding": {
-                "x": {
-                    "field": "rtRating",
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "imdbRating",
-                    "type": "quantitative"
-                }
-            }
+            ]
         }
-    ]
+    ],
+    "width": 300
 }

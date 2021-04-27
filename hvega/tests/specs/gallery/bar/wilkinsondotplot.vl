@@ -1,27 +1,9 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "rank",
-                    "as": "id",
-                    "field": "rank"
-                }
-            ],
-            "groupby": [
-                "data"
-            ]
-        }
-    ],
-    "height": 100,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
-    },
-    "mark": {
-        "opacity": 1,
-        "type": "circle"
     },
     "data": {
         "values": [
@@ -90,18 +72,36 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A Wilkinson dot plot",
     "encoding": {
         "x": {
             "field": "data",
             "type": "ordinal"
         },
         "y": {
+            "axis": null,
             "field": "id",
             "sort": "descending",
-            "type": "ordinal",
-            "axis": null
+            "type": "ordinal"
         }
     },
-    "description": "A Wilkinson dot plot"
+    "height": 100,
+    "mark": {
+        "opacity": 1,
+        "type": "circle"
+    },
+    "transform": [
+        {
+            "groupby": [
+                "data"
+            ],
+            "window": [
+                {
+                    "as": "id",
+                    "field": "rank",
+                    "op": "rank"
+                }
+            ]
+        }
+    ]
 }

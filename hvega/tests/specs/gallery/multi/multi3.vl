@@ -1,45 +1,30 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Scatterplot matrix",
     "repeat": {
-        "row": [
-            "Horsepower",
-            "Acceleration",
-            "Miles_per_Gallon"
-        ],
         "column": [
             "Miles_per_Gallon",
             "Acceleration",
             "Horsepower"
+        ],
+        "row": [
+            "Horsepower",
+            "Acceleration",
+            "Miles_per_Gallon"
         ]
     },
     "spec": {
-        "mark": "point",
         "data": {
             "url": "https://vega.github.io/vega-lite/data/cars.json"
         },
-        "selection": {
-            "myBrush": {
-                "resolve": "union",
-                "zoom": "wheel![event.shiftKey]",
-                "type": "interval",
-                "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
-                "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!"
-            },
-            "grid": {
-                "bind": "scales",
-                "resolve": "global",
-                "zoom": "wheel![event.shiftKey]",
-                "type": "interval",
-                "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!"
-            }
-        },
         "encoding": {
             "color": {
-                "value": "grey",
                 "condition": {
                     "field": "Origin",
                     "selection": "myBrush",
                     "type": "nominal"
-                }
+                },
+                "value": "grey"
             },
             "x": {
                 "field": {
@@ -53,8 +38,23 @@
                 },
                 "type": "quantitative"
             }
+        },
+        "mark": "point",
+        "selection": {
+            "grid": {
+                "bind": "scales",
+                "resolve": "global",
+                "translate": "[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+                "type": "interval",
+                "zoom": "wheel![event.shiftKey]"
+            },
+            "myBrush": {
+                "on": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+                "resolve": "union",
+                "translate": "[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+                "type": "interval",
+                "zoom": "wheel![event.shiftKey]"
+            }
         }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Scatterplot matrix"
+    }
 }

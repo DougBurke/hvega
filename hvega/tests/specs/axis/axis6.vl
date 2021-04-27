@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "point": true,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -55,34 +52,37 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "date",
-            "type": "temporal",
             "axis": {
                 "values": [
                     {
                         "date": 4,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     },
                     {
                         "date": 8,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     },
                     {
                         "date": 20,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     }
                 ]
-            }
+            },
+            "field": "date",
+            "type": "temporal"
         },
         "y": {
             "field": "y",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "point": true,
+        "type": "line"
     }
 }

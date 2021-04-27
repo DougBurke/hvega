@@ -1,10 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "y",
-            "calculate": "cos(datum.theta)"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "sequence": {
             "as": "theta",
@@ -13,11 +8,33 @@
             "stop": 6.28
         }
     },
+    "transform": [
+        {
+            "as": "y",
+            "calculate": "cos(datum.theta)"
+        }
+    ],
     "vconcat": [
         {
+            "encoding": {
+                "x": {
+                    "axis": null,
+                    "field": "theta",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "axis": null,
+                    "field": "y",
+                    "type": "quantitative"
+                }
+            },
             "mark": "line",
             "selection": {
                 "brush": {
+                    "encodings": [
+                        "x",
+                        "y"
+                    ],
                     "init": {
                         "x": [
                             0.2,
@@ -28,28 +45,11 @@
                             0.8
                         ]
                     },
-                    "encodings": [
-                        "x",
-                        "y"
-                    ],
                     "type": "interval"
-                }
-            },
-            "encoding": {
-                "x": {
-                    "field": "theta",
-                    "type": "quantitative",
-                    "axis": null
-                },
-                "y": {
-                    "field": "y",
-                    "type": "quantitative",
-                    "axis": null
                 }
             }
         },
         {
-            "mark": "circle",
             "encoding": {
                 "x": {
                     "field": "theta",
@@ -65,14 +65,14 @@
                     "field": "y",
                     "scale": {
                         "domain": {
-                            "selection": "brush",
-                            "encoding": "y"
+                            "encoding": "y",
+                            "selection": "brush"
                         }
                     },
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "circle"
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    ]
 }

@@ -1,45 +1,44 @@
 {
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "predicted": false,
                 "a": "A",
-                "b": 28
+                "b": 28,
+                "predicted": false
             },
             {
-                "predicted": false,
                 "a": "B",
-                "b": 55
+                "b": 55,
+                "predicted": false
             },
             {
-                "predicted": false,
                 "a": "D",
-                "b": 91
+                "b": 91,
+                "predicted": false
             },
             {
-                "predicted": false,
                 "a": "E",
-                "b": 81
+                "b": 81,
+                "predicted": false
             },
             {
-                "predicted": true,
                 "a": "E",
-                "b": 81
+                "b": 81,
+                "predicted": true
             },
             {
-                "predicted": true,
                 "a": "G",
-                "b": 19
+                "b": 19,
+                "predicted": true
             },
             {
-                "predicted": true,
                 "a": "H",
-                "b": 87
+                "b": 87,
+                "predicted": true
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "strokeDash": {
             "field": "predicted",
@@ -53,5 +52,6 @@
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line"
 }

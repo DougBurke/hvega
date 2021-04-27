@@ -1,47 +1,9 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
-    "resolve": {
-        "scale": {
-            "y": "independent"
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar",
-            "encoding": {
-                "y": {
-                    "field": "precipitation",
-                    "aggregate": "mean",
-                    "type": "quantitative",
-                    "axis": {
-                        "grid": false
-                    }
-                }
-            }
-        },
-        {
-            "mark": "line",
-            "encoding": {
-                "color": {
-                    "value": "firebrick"
-                },
-                "y": {
-                    "field": "temp_max",
-                    "scale": {
-                        "zero": false
-                    },
-                    "aggregate": "mean",
-                    "type": "quantitative",
-                    "axis": {
-                        "grid": false
-                    }
-                }
-            }
-        }
-    ],
+    "description": "Layered bar/line chart with dual axes",
     "encoding": {
         "x": {
             "field": "date",
@@ -49,5 +11,43 @@
             "type": "ordinal"
         }
     },
-    "description": "Layered bar/line chart with dual axes"
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "aggregate": "mean",
+                    "axis": {
+                        "grid": false
+                    },
+                    "field": "precipitation",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "color": {
+                    "value": "firebrick"
+                },
+                "y": {
+                    "aggregate": "mean",
+                    "axis": {
+                        "grid": false
+                    },
+                    "field": "temp_max",
+                    "scale": {
+                        "zero": false
+                    },
+                    "type": "quantitative"
+                }
+            },
+            "mark": "line"
+        }
+    ],
+    "resolve": {
+        "scale": {
+            "y": "independent"
+        }
+    }
 }

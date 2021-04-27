@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -23,10 +24,8 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "layer": [
         {
-            "mark": "bar",
             "encoding": {
                 "x": {
                     "field": "a",
@@ -36,14 +35,15 @@
                     "field": "b",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "bar"
         },
         {
+            "data": null,
             "mark": {
                 "text": "Test",
                 "type": "text"
-            },
-            "data": null
+            }
         }
     ]
 }

@@ -1,4 +1,41 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "config": {
+        "range": {
+            "heatmap": {
+                "scheme": "greenblue"
+            }
+        },
+        "view": {
+            "stroke": null
+        }
+    },
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "description": "'Binned heatmap' comparing movie ratings.",
+    "encoding": {
+        "color": {
+            "aggregate": "count",
+            "type": "quantitative"
+        },
+        "x": {
+            "bin": {
+                "maxbins": 60
+            },
+            "field": "IMDB_Rating",
+            "type": "quantitative"
+        },
+        "y": {
+            "bin": {
+                "maxbins": 40
+            },
+            "field": "Rotten_Tomatoes_Rating",
+            "type": "quantitative"
+        }
+    },
+    "height": 200,
+    "mark": "rect",
     "transform": [
         {
             "filter": {
@@ -15,42 +52,5 @@
             }
         }
     ],
-    "height": 200,
-    "config": {
-        "range": {
-            "heatmap": {
-                "scheme": "greenblue"
-            }
-        },
-        "view": {
-            "stroke": null
-        }
-    },
-    "mark": "rect",
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/movies.json"
-    },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "encoding": {
-        "color": {
-            "aggregate": "count",
-            "type": "quantitative"
-        },
-        "x": {
-            "field": "IMDB_Rating",
-            "bin": {
-                "maxbins": 60
-            },
-            "type": "quantitative"
-        },
-        "y": {
-            "field": "Rotten_Tomatoes_Rating",
-            "bin": {
-                "maxbins": 40
-            },
-            "type": "quantitative"
-        }
-    },
-    "description": "'Binned heatmap' comparing movie ratings."
+    "width": 300
 }

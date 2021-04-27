@@ -1,74 +1,73 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "distance": 1,
-                "date": "Sun, 01 Jan 2012 00:00:00"
+                "date": "Sun, 01 Jan 2012 00:00:00",
+                "distance": 1
             },
             {
-                "distance": 1,
-                "date": "Sun, 01 Jan 2012 00:01:00"
+                "date": "Sun, 01 Jan 2012 00:01:00",
+                "distance": 1
             },
             {
-                "distance": 2,
-                "date": "Sun, 01 Jan 2012 00:02:00"
+                "date": "Sun, 01 Jan 2012 00:02:00",
+                "distance": 2
             },
             {
-                "distance": 1,
-                "date": "Sun, 01 Jan 2012 00:03:00"
+                "date": "Sun, 01 Jan 2012 00:03:00",
+                "distance": 1
             },
             {
-                "distance": 4,
-                "date": "Sun, 01 Jan 2012 00:04:00"
+                "date": "Sun, 01 Jan 2012 00:04:00",
+                "distance": 4
             },
             {
-                "distance": 2,
-                "date": "Sun, 01 Jan 2012 00:05:00"
+                "date": "Sun, 01 Jan 2012 00:05:00",
+                "distance": 2
             },
             {
-                "distance": 5,
-                "date": "Sun, 01 Jan 2012 00:06:00"
+                "date": "Sun, 01 Jan 2012 00:06:00",
+                "distance": 5
             },
             {
-                "distance": 2,
-                "date": "Sun, 01 Jan 2012 00:07:00"
+                "date": "Sun, 01 Jan 2012 00:07:00",
+                "distance": 2
             },
             {
-                "distance": 6,
-                "date": "Sun, 01 Jan 2012 00:08:00"
+                "date": "Sun, 01 Jan 2012 00:08:00",
+                "distance": 6
             },
             {
-                "distance": 4,
-                "date": "Sun, 01 Jan 2012 00:09:00"
+                "date": "Sun, 01 Jan 2012 00:09:00",
+                "distance": 4
             },
             {
-                "distance": 1,
-                "date": "Sun, 01 Jan 2012 00:10:00"
+                "date": "Sun, 01 Jan 2012 00:10:00",
+                "distance": 1
             },
             {
-                "distance": 1,
-                "date": "Sun, 01 Jan 2012 00:11:00"
+                "date": "Sun, 01 Jan 2012 00:11:00",
+                "distance": 1
             },
             {
-                "distance": 3,
-                "date": "Sun, 01 Jan 2012 00:12:00"
+                "date": "Sun, 01 Jan 2012 00:12:00",
+                "distance": 3
             },
             {
-                "distance": 0,
-                "date": "Sun, 01 Jan 2012 00:13:00"
+                "date": "Sun, 01 Jan 2012 00:13:00",
+                "distance": 0
             },
             {
-                "distance": 2,
-                "date": "Sun, 01 Jan 2012 00:14:00"
+                "date": "Sun, 01 Jan 2012 00:14:00",
+                "distance": 2
             },
             {
-                "distance": 3,
-                "date": "Sun, 01 Jan 2012 00:15:00"
+                "date": "Sun, 01 Jan 2012 00:15:00",
+                "distance": 3
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "date",
@@ -79,9 +78,10 @@
             "type": "temporal"
         },
         "y": {
-            "field": "distance",
             "aggregate": "sum",
+            "field": "distance",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }

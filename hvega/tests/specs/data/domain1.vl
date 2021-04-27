@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "point": true,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -23,7 +20,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "x",
@@ -36,5 +32,9 @@
             },
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "point": true,
+        "type": "line"
     }
 }

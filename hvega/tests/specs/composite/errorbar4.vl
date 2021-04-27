@@ -1,39 +1,36 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "yieldError2": -10.55,
-                "yieldError": 7.55,
                 "variety": "Glabron",
-                "yield": 32.4
+                "yield": 32.4,
+                "yieldError": 7.55,
+                "yieldError2": -10.55
             },
             {
-                "yieldError2": -3.98,
-                "yieldError": 6.98,
                 "variety": "Manchuria",
-                "yield": 30.97
+                "yield": 30.97,
+                "yieldError": 6.98,
+                "yieldError2": -3.98
             },
             {
-                "yieldError2": -0.92,
-                "yieldError": 3.92,
                 "variety": "No. 457",
-                "yield": 33.96
+                "yield": 33.96,
+                "yieldError": 3.92,
+                "yieldError2": -0.92
             },
             {
-                "yieldError2": -15.97,
-                "yieldError": 11.97,
                 "variety": "No. 462",
-                "yield": 30.45
+                "yield": 30.45,
+                "yieldError": 11.97,
+                "yieldError2": -15.97
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Symetric error bars encoded with xError channel",
     "layer": [
         {
-            "mark": {
-                "type": "errorbar",
-                "ticks": true
-            },
             "encoding": {
                 "x": {
                     "field": "yield",
@@ -49,14 +46,13 @@
                     "field": "variety",
                     "type": "ordinal"
                 }
+            },
+            "mark": {
+                "ticks": true,
+                "type": "errorbar"
             }
         },
         {
-            "mark": {
-                "color": "black",
-                "type": "point",
-                "filled": true
-            },
             "encoding": {
                 "x": {
                     "field": "yield",
@@ -66,8 +62,12 @@
                     "field": "variety",
                     "type": "ordinal"
                 }
+            },
+            "mark": {
+                "color": "black",
+                "filled": true,
+                "type": "point"
             }
         }
-    ],
-    "description": "Symetric error bars encoded with xError channel"
+    ]
 }

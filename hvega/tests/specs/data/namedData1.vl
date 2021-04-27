@@ -1,6 +1,7 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
+        "name": "source",
         "values": [
             {
                 "a": "A",
@@ -38,10 +39,8 @@
                 "a": "I",
                 "b": 52
             }
-        ],
-        "name": "source"
+        ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "a",
@@ -51,5 +50,6 @@
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }

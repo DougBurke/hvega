@@ -1,30 +1,14 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
+    "description": "A dashboard with cross-highlighting",
+    "title": "Seattle Weather, 2012-2015",
     "vconcat": [
         {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "myClick"
-                    }
-                }
-            ],
-            "height": 300,
-            "mark": "point",
-            "width": 600,
-            "selection": {
-                "myBrush": {
-                    "encodings": [
-                        "x"
-                    ],
-                    "type": "interval"
-                }
-            },
             "encoding": {
                 "color": {
-                    "value": "#cfdebe",
                     "condition": {
                         "field": "weather",
                         "scale": {
@@ -46,7 +30,8 @@
                         "selection": "myBrush",
                         "title": "Weather",
                         "type": "nominal"
-                    }
+                    },
+                    "value": "#cfdebe"
                 },
                 "size": {
                     "field": "precipitation",
@@ -59,15 +44,18 @@
                     "type": "quantitative"
                 },
                 "x": {
-                    "field": "date",
-                    "timeUnit": "monthdate",
-                    "type": "temporal",
                     "axis": {
                         "format": "%b",
                         "title": "Date"
-                    }
+                    },
+                    "field": "date",
+                    "timeUnit": "monthdate",
+                    "type": "temporal"
                 },
                 "y": {
+                    "axis": {
+                        "title": "Maximum Daily Temperature (C)"
+                    },
                     "field": "temp_max",
                     "scale": {
                         "domain": [
@@ -75,34 +63,31 @@
                             40
                         ]
                     },
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Maximum Daily Temperature (C)"
-                    }
+                    "type": "quantitative"
                 }
-            }
-        },
-        {
+            },
+            "height": 300,
+            "mark": "point",
+            "selection": {
+                "myBrush": {
+                    "encodings": [
+                        "x"
+                    ],
+                    "type": "interval"
+                }
+            },
             "transform": [
                 {
                     "filter": {
-                        "selection": "myBrush"
+                        "selection": "myClick"
                     }
                 }
             ],
-            "mark": "bar",
-            "width": 600,
-            "selection": {
-                "myClick": {
-                    "encodings": [
-                        "color"
-                    ],
-                    "type": "multi"
-                }
-            },
+            "width": 600
+        },
+        {
             "encoding": {
                 "color": {
-                    "value": "#acbf98",
                     "condition": {
                         "field": "weather",
                         "scale": {
@@ -123,7 +108,8 @@
                         },
                         "selection": "myClick",
                         "type": "nominal"
-                    }
+                    },
+                    "value": "#acbf98"
                 },
                 "x": {
                     "aggregate": "count",
@@ -133,10 +119,24 @@
                     "field": "weather",
                     "type": "nominal"
                 }
-            }
+            },
+            "mark": "bar",
+            "selection": {
+                "myClick": {
+                    "encodings": [
+                        "color"
+                    ],
+                    "type": "multi"
+                }
+            },
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "myBrush"
+                    }
+                }
+            ],
+            "width": 600
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Seattle Weather, 2012-2015",
-    "description": "A dashboard with cross-highlighting"
+    ]
 }

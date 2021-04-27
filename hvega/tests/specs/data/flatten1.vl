@@ -1,45 +1,32 @@
 {
-    "transform": [
-        {
-            "as": [
-                "quant",
-                "cat"
-            ],
-            "flatten": [
-                "foo",
-                "bar"
-            ]
-        }
-    ],
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
+                "bar": [
+                    "A",
+                    "B"
+                ],
                 "foo": [
                     1,
                     2
                 ],
-                "key": "alpha",
-                "bar": [
-                    "A",
-                    "B"
-                ]
+                "key": "alpha"
             },
             {
+                "bar": [
+                    "C",
+                    "D"
+                ],
                 "foo": [
                     3,
                     4,
                     5
                 ],
-                "key": "beta",
-                "bar": [
-                    "C",
-                    "D"
-                ]
+                "key": "beta"
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "key",
@@ -53,5 +40,18 @@
             "field": "cat",
             "type": "nominal"
         }
-    }
+    },
+    "mark": "circle",
+    "transform": [
+        {
+            "as": [
+                "quant",
+                "cat"
+            ],
+            "flatten": [
+                "foo",
+                "bar"
+            ]
+        }
+    ]
 }

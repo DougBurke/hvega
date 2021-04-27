@@ -1,13 +1,54 @@
 {
-    "config": {
-        "line": {
-            "strokeWidth": 1,
-            "color": "orange",
-            "opacity": 0.6
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "concat": [
+        {
+            "encoding": {
+                "strokeDash": {
+                    "field": "cat",
+                    "type": "nominal"
+                },
+                "x": {
+                    "field": "x",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "y",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "line",
+            "title": "Nominal",
+            "width": 200
         },
+        {
+            "encoding": {
+                "strokeDash": {
+                    "field": "cat",
+                    "type": "ordinal"
+                },
+                "x": {
+                    "field": "x",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "field": "y",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "line",
+            "title": "Ordinal",
+            "width": 200
+        }
+    ],
+    "config": {
         "axis": {
             "grid": false,
             "title": null
+        },
+        "line": {
+            "color": "orange",
+            "opacity": 0.6,
+            "strokeWidth": 1
         }
     },
     "data": {
@@ -118,46 +159,5 @@
         "scale": {
             "strokeDash": "independent"
         }
-    },
-    "concat": [
-        {
-            "mark": "line",
-            "width": 200,
-            "title": "Nominal",
-            "encoding": {
-                "strokeDash": {
-                    "field": "cat",
-                    "type": "nominal"
-                },
-                "x": {
-                    "field": "x",
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "y",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "line",
-            "width": 200,
-            "title": "Ordinal",
-            "encoding": {
-                "strokeDash": {
-                    "field": "cat",
-                    "type": "ordinal"
-                },
-                "x": {
-                    "field": "x",
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "y",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    }
 }

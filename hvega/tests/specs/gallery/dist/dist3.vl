@@ -1,32 +1,73 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
+    },
+    "description": "A layered histogram and cumulative histogram.",
+    "encoding": {
+        "x": {
+            "axis": {
+                "title": "IMDB rating"
+            },
+            "field": "bin_IMDB_Rating",
+            "scale": {
+                "zero": false
+            },
+            "type": "quantitative"
+        },
+        "x2": {
+            "field": "bin_IMDB_Rating_end"
+        }
+    },
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "field": "cumulativeCount",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "y": {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "yellow",
+                "opacity": 0.5,
+                "type": "bar"
+            }
+        }
+    ],
     "transform": [
         {
             "as": "bin_IMDB_Rating",
-            "field": "IMDB_Rating",
-            "bin": true
+            "bin": true,
+            "field": "IMDB_Rating"
         },
         {
+            "aggregate": [
+                {
+                    "as": "count",
+                    "op": "count"
+                }
+            ],
             "groupby": [
                 "bin_IMDB_Rating",
                 "bin_IMDB_Rating_end"
-            ],
-            "aggregate": [
-                {
-                    "op": "count",
-                    "as": "count"
-                }
             ]
         },
         {
             "filter": "datum.bin_IMDB_Rating !== null"
         },
         {
-            "window": [
-                {
-                    "op": "sum",
-                    "as": "cumulativeCount",
-                    "field": "count"
-                }
+            "frame": [
+                null,
+                0
             ],
             "sort": [
                 {
@@ -34,54 +75,13 @@
                     "order": "ascending"
                 }
             ],
-            "frame": [
-                null,
-                0
+            "window": [
+                {
+                    "as": "cumulativeCount",
+                    "field": "count",
+                    "op": "sum"
+                }
             ]
         }
-    ],
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/movies.json"
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar",
-            "encoding": {
-                "y": {
-                    "field": "cumulativeCount",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "yellow",
-                "opacity": 0.5,
-                "type": "bar"
-            },
-            "encoding": {
-                "y": {
-                    "field": "count",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
-    "encoding": {
-        "x2": {
-            "field": "bin_IMDB_Rating_end"
-        },
-        "x": {
-            "field": "bin_IMDB_Rating",
-            "scale": {
-                "zero": false
-            },
-            "type": "quantitative",
-            "axis": {
-                "title": "IMDB rating"
-            }
-        }
-    },
-    "description": "A layered histogram and cumulative histogram."
+    ]
 }

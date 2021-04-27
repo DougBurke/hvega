@@ -1,23 +1,26 @@
 {
-    "height": 200,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/weather.json"
     },
-    "width": 250,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": {
-        "text": [
-            "Weekly Weather",
-            "Observations and Predictions"
-        ],
-        "frame": "group"
+    "description": "A layered bar chart with floating bars representing weekly weather data",
+    "encoding": {
+        "x": {
+            "axis": {
+                "domain": false,
+                "labels": false,
+                "orient": "top",
+                "ticks": false,
+                "title": null,
+                "titlePadding": 25
+            },
+            "field": "id",
+            "type": "ordinal"
+        }
     },
+    "height": 200,
     "layer": [
         {
-            "mark": {
-                "style": "box",
-                "type": "bar"
-            },
             "encoding": {
                 "color": {
                     "value": "#ccc"
@@ -25,10 +28,10 @@
                 "size": {
                     "value": 20
                 },
-                "y2": {
-                    "field": "record.high"
-                },
                 "y": {
+                    "axis": {
+                        "title": "Temperature (F)"
+                    },
                     "field": "record.low",
                     "scale": {
                         "domain": [
@@ -36,18 +39,18 @@
                             70
                         ]
                     },
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Temperature (F)"
-                    }
+                    "type": "quantitative"
+                },
+                "y2": {
+                    "field": "record.high"
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "box",
                 "type": "bar"
-            },
+            }
+        },
+        {
             "encoding": {
                 "color": {
                     "value": "#999"
@@ -55,41 +58,41 @@
                 "size": {
                     "value": 20
                 },
-                "y2": {
-                    "field": "normal.high"
-                },
                 "y": {
                     "field": "normal.low",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "normal.high"
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "box",
                 "type": "bar"
-            },
+            }
+        },
+        {
             "encoding": {
                 "color": {
                     "value": "#000"
                 },
                 "size": {
                     "value": 12
-                },
-                "y2": {
-                    "field": "actual.high"
                 },
                 "y": {
                     "field": "actual.low",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "actual.high"
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "box",
                 "type": "bar"
-            },
+            }
+        },
+        {
             "encoding": {
                 "color": {
                     "value": "#000"
@@ -97,20 +100,20 @@
                 "size": {
                     "value": 12
                 },
-                "y2": {
-                    "field": "forecast.low.high"
-                },
                 "y": {
                     "field": "forecast.low.low",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "forecast.low.high"
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "box",
                 "type": "bar"
-            },
+            }
+        },
+        {
             "encoding": {
                 "color": {
                     "value": "#000"
@@ -118,20 +121,20 @@
                 "size": {
                     "value": 3
                 },
-                "y2": {
-                    "field": "forecast.high.low"
-                },
                 "y": {
                     "field": "forecast.low.high",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "forecast.high.low"
                 }
-            }
-        },
-        {
+            },
             "mark": {
                 "style": "box",
                 "type": "bar"
-            },
+            }
+        },
+        {
             "encoding": {
                 "color": {
                     "value": "#000"
@@ -139,43 +142,40 @@
                 "size": {
                     "value": 12
                 },
-                "y2": {
-                    "field": "forecast.high.high"
-                },
                 "y": {
                     "field": "forecast.high.low",
                     "type": "quantitative"
+                },
+                "y2": {
+                    "field": "forecast.high.high"
                 }
+            },
+            "mark": {
+                "style": "box",
+                "type": "bar"
             }
         },
         {
-            "mark": {
-                "align": "center",
-                "type": "text",
-                "baseline": "bottom",
-                "y": -5
-            },
             "encoding": {
                 "text": {
                     "field": "day",
                     "type": "nominal"
                 }
+            },
+            "mark": {
+                "align": "center",
+                "baseline": "bottom",
+                "type": "text",
+                "y": -5
             }
         }
     ],
-    "encoding": {
-        "x": {
-            "field": "id",
-            "type": "ordinal",
-            "axis": {
-                "domain": false,
-                "orient": "top",
-                "titlePadding": 25,
-                "labels": false,
-                "title": null,
-                "ticks": false
-            }
-        }
+    "title": {
+        "frame": "group",
+        "text": [
+            "Weekly Weather",
+            "Observations and Predictions"
+        ]
     },
-    "description": "A layered bar chart with floating bars representing weekly weather data"
+    "width": 250
 }

@@ -1,72 +1,72 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "format": {
+            "parse": {
+                "date": "date"
+            }
+        },
+        "url": "https://vega.github.io/vega-lite/data/flights-5k.json"
+    },
     "transform": [
         {
             "as": "time",
             "calculate": "hours(datum.date) + minutes(datum.date) / 60"
         }
     ],
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/flights-5k.json",
-        "format": {
-            "parse": {
-                "date": "date"
-            }
-        }
-    },
     "vconcat": [
         {
+            "encoding": {
+                "x": {
+                    "bin": {
+                        "maxbins": 30
+                    },
+                    "field": "time",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "aggregate": "count",
+                    "type": "quantitative"
+                }
+            },
             "height": 100,
             "mark": "bar",
-            "width": 963,
             "selection": {
                 "brush": {
+                    "encodings": [
+                        "x"
+                    ],
                     "init": {
                         "x": [
                             6,
                             12
                         ]
                     },
-                    "encodings": [
-                        "x"
-                    ],
                     "type": "interval"
                 }
             },
-            "encoding": {
-                "x": {
-                    "field": "time",
-                    "bin": {
-                        "maxbins": 30
-                    },
-                    "type": "quantitative"
-                },
-                "y": {
-                    "aggregate": "count",
-                    "type": "quantitative"
-                }
-            }
+            "width": 963
         },
         {
-            "height": 100,
-            "mark": "bar",
-            "width": 963,
             "encoding": {
                 "x": {
-                    "field": "time",
                     "bin": {
-                        "maxbins": 30,
                         "extent": {
                             "selection": "brush"
-                        }
+                        },
+                        "maxbins": 30
                     },
+                    "field": "time",
                     "type": "quantitative"
                 },
                 "y": {
                     "aggregate": "count",
                     "type": "quantitative"
                 }
-            }
+            },
+            "height": 100,
+            "mark": "bar",
+            "width": 963
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    ]
 }

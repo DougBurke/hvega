@@ -1,28 +1,28 @@
 {
-    "height": 200,
-    "mark": "area",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/unemployment-across-industries.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Unemployment over time (area chart)",
     "encoding": {
         "x": {
-            "field": "date",
-            "timeUnit": "yearmonth",
-            "type": "temporal",
             "axis": {
                 "format": "%Y"
-            }
+            },
+            "field": "date",
+            "timeUnit": "yearmonth",
+            "type": "temporal"
         },
         "y": {
-            "field": "count",
             "aggregate": "sum",
-            "type": "quantitative",
             "axis": {
                 "title": "Count"
-            }
+            },
+            "field": "count",
+            "type": "quantitative"
         }
     },
-    "description": "Unemployment over time (area chart)"
+    "height": 200,
+    "mark": "area",
+    "width": 300
 }

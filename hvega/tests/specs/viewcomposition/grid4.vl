@@ -1,4 +1,6 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "columns": 3,
     "repeat": [
         "Horsepower",
         "Miles_per_Gallon",
@@ -7,7 +9,6 @@
         "Weight_in_lbs"
     ],
     "spec": {
-        "mark": "bar",
         "data": {
             "url": "https://vega.github.io/vega-lite/data/cars.json"
         },
@@ -17,18 +18,17 @@
                 "type": "nominal"
             },
             "x": {
+                "bin": true,
                 "field": {
                     "repeat": "repeat"
                 },
-                "bin": true,
                 "type": "quantitative"
             },
             "y": {
                 "aggregate": "count",
                 "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "columns": 3
+        },
+        "mark": "bar"
+    }
 }

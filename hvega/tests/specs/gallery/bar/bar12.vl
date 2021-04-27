@@ -1,10 +1,11 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "style": {
             "label": {
-                "dx": 3,
                 "align": "left",
-                "baseline": "middle"
+                "baseline": "middle",
+                "dx": 3
             }
         }
     },
@@ -24,24 +25,7 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar"
-        },
-        {
-            "mark": {
-                "style": "label",
-                "type": "text"
-            },
-            "encoding": {
-                "text": {
-                    "field": "b",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "A simple bar chart with embedded data labels.",
     "encoding": {
         "x": {
             "field": "b",
@@ -52,5 +36,21 @@
             "type": "ordinal"
         }
     },
-    "description": "A simple bar chart with embedded data labels."
+    "layer": [
+        {
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "text": {
+                    "field": "b",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "style": "label",
+                "type": "text"
+            }
+        }
+    ]
 }

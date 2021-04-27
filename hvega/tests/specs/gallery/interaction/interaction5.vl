@@ -1,23 +1,16 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "selection": {
-        "myPaintbrush": {
-            "nearest": true,
-            "type": "multi",
-            "on": "mouseover"
-        }
-    },
+    "description": "Mouse over individual points or select multiple points with the shift key",
     "encoding": {
         "size": {
-            "value": 50,
             "condition": {
-                "value": 300,
-                "selection": "myPaintbrush"
-            }
+                "selection": "myPaintbrush",
+                "value": 300
+            },
+            "value": 50
         },
         "x": {
             "field": "Horsepower",
@@ -28,5 +21,12 @@
             "type": "quantitative"
         }
     },
-    "description": "Mouse over individual points or select multiple points with the shift key"
+    "mark": "point",
+    "selection": {
+        "myPaintbrush": {
+            "nearest": true,
+            "on": "mouseover",
+            "type": "multi"
+        }
+    }
 }

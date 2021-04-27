@@ -1,35 +1,11 @@
 {
-    "transform": [
-        {
-            "as": "countyID",
-            "calculate": "datum.id"
-        },
-        {
-            "from": {
-                "data": {
-                    "url": "https://vega.github.io/vega-lite/data/unemployment.tsv"
-                },
-                "key": "id",
-                "fields": [
-                    "rate"
-                ]
-            },
-            "lookup": "countyID"
-        }
-    ],
-    "height": 300,
-    "mark": "geoshape",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/us-10m.json",
         "format": {
             "feature": "counties",
             "type": "topojson"
-        }
-    },
-    "width": 500,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
+        },
+        "url": "https://vega.github.io/vega-lite/data/us-10m.json"
     },
     "encoding": {
         "color": {
@@ -43,5 +19,29 @@
             },
             "type": "quantitative"
         }
-    }
+    },
+    "height": 300,
+    "mark": "geoshape",
+    "projection": {
+        "type": "albersUsa"
+    },
+    "transform": [
+        {
+            "as": "countyID",
+            "calculate": "datum.id"
+        },
+        {
+            "from": {
+                "data": {
+                    "url": "https://vega.github.io/vega-lite/data/unemployment.tsv"
+                },
+                "fields": [
+                    "rate"
+                ],
+                "key": "id"
+            },
+            "lookup": "countyID"
+        }
+    ],
+    "width": 500
 }

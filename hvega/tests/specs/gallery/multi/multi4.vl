@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "range": {
             "heatmap": {
@@ -9,6 +10,7 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
+    "description": "A dashboard with cross-highlighting",
     "resolve": {
         "legend": {
             "color": "independent",
@@ -17,65 +19,84 @@
     },
     "vconcat": [
         {
+            "encoding": {
+                "x": {
+                    "bin": {
+                        "maxbins": 10
+                    },
+                    "field": "IMDB_Rating",
+                    "type": "quantitative"
+                },
+                "y": {
+                    "bin": {
+                        "maxbins": 10
+                    },
+                    "field": "Rotten_Tomatoes_Rating",
+                    "type": "quantitative"
+                }
+            },
             "layer": [
                 {
-                    "mark": "rect",
                     "encoding": {
                         "color": {
                             "aggregate": "count",
-                            "type": "quantitative",
                             "legend": {
                                 "direction": "horizontal",
                                 "gradientLength": 120,
                                 "title": "All Movies"
-                            }
+                            },
+                            "type": "quantitative"
                         }
-                    }
+                    },
+                    "mark": "rect"
                 },
                 {
-                    "transform": [
-                        {
-                            "filter": {
-                                "selection": "myPts"
-                            }
-                        }
-                    ],
-                    "mark": "point",
                     "encoding": {
                         "color": {
                             "value": "#666"
                         },
                         "size": {
                             "aggregate": "count",
-                            "type": "quantitative",
                             "legend": {
                                 "title": "In Selected Category"
+                            },
+                            "type": "quantitative"
+                        }
+                    },
+                    "mark": "point",
+                    "transform": [
+                        {
+                            "filter": {
+                                "selection": "myPts"
                             }
                         }
-                    }
+                    ]
                 }
-            ],
-            "encoding": {
-                "x": {
-                    "field": "IMDB_Rating",
-                    "bin": {
-                        "maxbins": 10
-                    },
-                    "type": "quantitative"
-                },
-                "y": {
-                    "field": "Rotten_Tomatoes_Rating",
-                    "bin": {
-                        "maxbins": 10
-                    },
-                    "type": "quantitative"
-                }
-            }
+            ]
         },
         {
+            "encoding": {
+                "color": {
+                    "condition": {
+                        "selection": "myPts",
+                        "value": "steelblue"
+                    },
+                    "value": "grey"
+                },
+                "x": {
+                    "axis": {
+                        "labelAngle": -40
+                    },
+                    "field": "Major_Genre",
+                    "type": "nominal"
+                },
+                "y": {
+                    "aggregate": "count",
+                    "type": "quantitative"
+                }
+            },
             "height": 120,
             "mark": "bar",
-            "width": 330,
             "selection": {
                 "myPts": {
                     "encodings": [
@@ -84,28 +105,7 @@
                     "type": "single"
                 }
             },
-            "encoding": {
-                "color": {
-                    "value": "grey",
-                    "condition": {
-                        "value": "steelblue",
-                        "selection": "myPts"
-                    }
-                },
-                "x": {
-                    "field": "Major_Genre",
-                    "type": "nominal",
-                    "axis": {
-                        "labelAngle": -40
-                    }
-                },
-                "y": {
-                    "aggregate": "count",
-                    "type": "quantitative"
-                }
-            }
+            "width": 330
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "A dashboard with cross-highlighting"
+    ]
 }

@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -35,44 +36,7 @@
             }
         ]
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "bar",
-            "encoding": {
-                "color": {
-                    "field": "count",
-                    "title": "Number of fruit",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": {
-                "aria": false,
-                "align": "right",
-                "xOffset": -4,
-                "type": "text"
-            },
-            "encoding": {
-                "color": {
-                    "value": "black",
-                    "condition": {
-                        "value": "white",
-                        "test": {
-                            "field": "count",
-                            "gt": 10
-                        }
-                    }
-                },
-                "text": {
-                    "field": "count",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "Vega-Lite version of bar chart from https://observablehq.com/@d3/learn-d3-scales.",
     "encoding": {
         "x": {
             "field": "count",
@@ -89,5 +53,41 @@
             "type": "ordinal"
         }
     },
-    "description": "Vega-Lite version of bar chart from https://observablehq.com/@d3/learn-d3-scales."
+    "layer": [
+        {
+            "encoding": {
+                "color": {
+                    "field": "count",
+                    "title": "Number of fruit",
+                    "type": "quantitative"
+                }
+            },
+            "mark": "bar"
+        },
+        {
+            "encoding": {
+                "color": {
+                    "condition": {
+                        "test": {
+                            "field": "count",
+                            "gt": 10
+                        },
+                        "value": "white"
+                    },
+                    "value": "black"
+                },
+                "text": {
+                    "field": "count",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "align": "right",
+                "aria": false,
+                "type": "text",
+                "xOffset": -4
+            }
+        }
+    ],
+    "width": 400
 }

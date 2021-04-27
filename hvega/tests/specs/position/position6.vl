@@ -1,13 +1,10 @@
 {
-    "mark": {
-        "width": 20,
-        "type": "bar"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "empty": 0,
                 "cat": 1,
+                "empty": 0,
                 "val": 10
             },
             {
@@ -28,8 +25,6 @@
             }
         ]
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "cat",
@@ -39,5 +34,10 @@
             "field": "val",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": {
+        "type": "bar",
+        "width": 20
+    },
+    "width": 300
 }

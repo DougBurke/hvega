@@ -1,5 +1,5 @@
 {
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -24,22 +24,22 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
+            "axis": {
+                "labelAngle": 15
+            },
             "field": "date",
             "scale": {
                 "type": "utc"
             },
             "timeUnit": "yearmonthdatehoursminutes",
-            "type": "temporal",
-            "axis": {
-                "labelAngle": 15
-            }
+            "type": "temporal"
         },
         "y": {
             "field": "price",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line"
 }

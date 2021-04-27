@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "axisY": {
             "minExtent": 30
@@ -7,53 +8,7 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": {
-                "color": "orange",
-                "type": "line"
-            },
-            "encoding": {
-                "y": {
-                    "field": "temp_max",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "red",
-                "type": "line"
-            },
-            "encoding": {
-                "y": {
-                    "field": "temp_min",
-                    "type": "quantitative"
-                }
-            }
-        },
-        {
-            "mark": "rule",
-            "selection": {
-                "hover": {
-                    "empty": "none",
-                    "type": "single",
-                    "on": "mouseover"
-                }
-            },
-            "encoding": {
-                "color": {
-                    "condition": {
-                        "value": "transparent",
-                        "selection": {
-                            "not": "hover"
-                        }
-                    }
-                }
-            }
-        }
-    ],
+    "description": "Multi Series Line Chart with Tooltip",
     "encoding": {
         "tooltip": [
             {
@@ -76,5 +31,50 @@
             "type": "temporal"
         }
     },
-    "description": "Multi Series Line Chart with Tooltip"
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "field": "temp_max",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "orange",
+                "type": "line"
+            }
+        },
+        {
+            "encoding": {
+                "y": {
+                    "field": "temp_min",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "red",
+                "type": "line"
+            }
+        },
+        {
+            "encoding": {
+                "color": {
+                    "condition": {
+                        "selection": {
+                            "not": "hover"
+                        },
+                        "value": "transparent"
+                    }
+                }
+            },
+            "mark": "rule",
+            "selection": {
+                "hover": {
+                    "empty": "none",
+                    "on": "mouseover",
+                    "type": "single"
+                }
+            }
+        }
+    ]
 }

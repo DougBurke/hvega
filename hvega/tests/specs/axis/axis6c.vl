@@ -1,35 +1,32 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
+        "axisQuantitative": {
+            "domainColor": "orange",
+            "gridColor": "seagreen",
+            "labelFont": "Comic Sans MS",
+            "labelOffset": 10,
+            "tickOffset": 10
+        },
         "axisTemporal": {
             "domainColor": "brown",
-            "labelColor": "purple",
-            "grid": false,
             "domainDash": [
                 4,
                 2
-            ]
-        },
-        "axisQuantitative": {
-            "domainColor": "orange",
-            "tickOffset": 10,
-            "labelOffset": 10,
-            "gridColor": "seagreen",
-            "labelFont": "Comic Sans MS"
+            ],
+            "grid": false,
+            "labelColor": "purple"
         },
         "line": {
-            "strokeWidth": 2,
-            "stroke": "gray"
+            "stroke": "gray",
+            "strokeWidth": 2
         },
         "point": {
-            "strokeWidth": 1,
-            "stroke": "black",
             "fill": "yellow",
-            "strokeOpacity": 0.4
+            "stroke": "black",
+            "strokeOpacity": 0.4,
+            "strokeWidth": 1
         }
-    },
-    "mark": {
-        "point": true,
-        "type": "line"
     },
     "data": {
         "values": [
@@ -83,34 +80,37 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "date",
-            "type": "temporal",
             "axis": {
                 "values": [
                     {
                         "date": 4,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     },
                     {
                         "date": 8,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     },
                     {
                         "date": 20,
-                        "year": 2019,
-                        "month": "Jan"
+                        "month": "Jan",
+                        "year": 2019
                     }
                 ]
-            }
+            },
+            "field": "date",
+            "type": "temporal"
         },
         "y": {
             "field": "y",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "point": true,
+        "type": "line"
     }
 }

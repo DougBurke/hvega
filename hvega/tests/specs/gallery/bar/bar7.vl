@@ -1,21 +1,9 @@
 {
-    "transform": [
-        {
-            "filter": "datum.year == 2000"
-        },
-        {
-            "as": "gender",
-            "calculate": "datum.sex == 2 ? 'Female' : 'Male'"
-        }
-    ],
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
-    "width": {
-        "step": 17
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Population structure as a normalised stacked bar chart.",
     "encoding": {
         "color": {
             "field": "gender",
@@ -32,14 +20,26 @@
             "type": "ordinal"
         },
         "y": {
-            "field": "people",
             "aggregate": "sum",
-            "type": "quantitative",
             "axis": {
                 "title": "Population"
             },
-            "stack": "normalize"
+            "field": "people",
+            "stack": "normalize",
+            "type": "quantitative"
         }
     },
-    "description": "Population structure as a normalised stacked bar chart."
+    "mark": "bar",
+    "transform": [
+        {
+            "filter": "datum.year == 2000"
+        },
+        {
+            "as": "gender",
+            "calculate": "datum.sex == 2 ? 'Female' : 'Male'"
+        }
+    ],
+    "width": {
+        "step": 17
+    }
 }

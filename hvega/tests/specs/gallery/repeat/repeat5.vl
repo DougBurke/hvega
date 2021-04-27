@@ -1,4 +1,6 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "bounds": "flush",
     "config": {
         "range": {
             "heatmap": {
@@ -12,85 +14,83 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
+    "description": "Marginal histograms show the counts along the x and y dimension",
+    "spacing": 15,
     "vconcat": [
         {
-            "height": 60,
-            "mark": "bar",
             "encoding": {
                 "x": {
-                    "field": "IMDB_Rating",
+                    "axis": null,
                     "bin": true,
-                    "type": "quantitative",
-                    "axis": null
+                    "field": "IMDB_Rating",
+                    "type": "quantitative"
                 },
                 "y": {
+                    "aggregate": "count",
+                    "axis": {
+                        "title": null
+                    },
                     "scale": {
                         "domain": [
                             0,
                             1000
                         ]
                     },
-                    "aggregate": "count",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": null
-                    }
+                    "type": "quantitative"
                 }
-            }
+            },
+            "height": 60,
+            "mark": "bar"
         },
         {
+            "bounds": "flush",
             "hconcat": [
                 {
-                    "mark": "rect",
                     "encoding": {
                         "color": {
                             "aggregate": "count",
                             "type": "quantitative"
                         },
                         "x": {
-                            "field": "IMDB_Rating",
                             "bin": true,
+                            "field": "IMDB_Rating",
                             "type": "quantitative"
                         },
                         "y": {
-                            "field": "Rotten_Tomatoes_Rating",
                             "bin": true,
+                            "field": "Rotten_Tomatoes_Rating",
                             "type": "quantitative"
                         }
-                    }
+                    },
+                    "mark": "rect"
                 },
                 {
-                    "mark": "bar",
-                    "width": 60,
                     "encoding": {
                         "x": {
+                            "aggregate": "count",
+                            "axis": {
+                                "title": null
+                            },
                             "scale": {
                                 "domain": [
                                     0,
                                     1000
                                 ]
                             },
-                            "aggregate": "count",
-                            "type": "quantitative",
-                            "axis": {
-                                "title": null
-                            }
+                            "type": "quantitative"
                         },
                         "y": {
-                            "field": "Rotten_Tomatoes_Rating",
+                            "axis": null,
                             "bin": true,
-                            "type": "quantitative",
-                            "axis": null
+                            "field": "Rotten_Tomatoes_Rating",
+                            "type": "quantitative"
                         }
-                    }
+                    },
+                    "mark": "bar",
+                    "width": 60
                 }
             ],
-            "spacing": 15,
-            "bounds": "flush"
+            "spacing": 15
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Marginal histograms show the counts along the x and y dimension",
-    "spacing": 15,
-    "bounds": "flush"
+    ]
 }

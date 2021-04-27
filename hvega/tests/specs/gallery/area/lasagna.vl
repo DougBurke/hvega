@@ -1,66 +1,66 @@
 {
-    "transform": [
-        {
-            "filter": "datum.symbol !== 'GOOG'"
-        }
-    ],
-    "height": 100,
-    "mark": "rect",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
-            "field": "price",
             "aggregate": "sum",
+            "field": "price",
             "title": "Price",
             "type": "quantitative"
         },
         "x": {
+            "axis": {
+                "format": "%Y",
+                "labelAngle": 0,
+                "labelColor": {
+                    "condition": {
+                        "test": {
+                            "equal": {
+                                "date": 1,
+                                "month": 1
+                            },
+                            "field": "value",
+                            "timeUnit": "monthdate"
+                        },
+                        "value": "black"
+                    },
+                    "value": null
+                },
+                "labelOverlap": false,
+                "tickColor": {
+                    "condition": {
+                        "test": {
+                            "equal": {
+                                "date": 1,
+                                "month": 1
+                            },
+                            "field": "value",
+                            "timeUnit": "monthdate"
+                        },
+                        "value": "black"
+                    },
+                    "value": null
+                }
+            },
             "field": "date",
             "timeUnit": "yearmonthdate",
             "title": "Time",
-            "type": "ordinal",
-            "axis": {
-                "labelAngle": 0,
-                "labelOverlap": false,
-                "format": "%Y",
-                "labelColor": {
-                    "value": null,
-                    "condition": {
-                        "value": "black",
-                        "test": {
-                            "equal": {
-                                "date": 1,
-                                "month": 1
-                            },
-                            "field": "value",
-                            "timeUnit": "monthdate"
-                        }
-                    }
-                },
-                "tickColor": {
-                    "value": null,
-                    "condition": {
-                        "value": "black",
-                        "test": {
-                            "equal": {
-                                "date": 1,
-                                "month": 1
-                            },
-                            "field": "value",
-                            "timeUnit": "monthdate"
-                        }
-                    }
-                }
-            }
+            "type": "ordinal"
         },
         "y": {
             "field": "symbol",
             "title": null,
             "type": "nominal"
         }
-    }
+    },
+    "height": 100,
+    "mark": "rect",
+    "transform": [
+        {
+            "filter": "datum.symbol !== 'GOOG'"
+        }
+    ],
+    "width": 300
 }

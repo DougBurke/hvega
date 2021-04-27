@@ -1,37 +1,19 @@
 {
-    "height": 300,
-    "width": 300,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "orthographic",
-        "rotate": [
-            -42,
-            -30,
-            0
-        ]
-    },
+    "height": 300,
     "layer": [
         {
+            "data": {
+                "sphere": true
+            },
             "mark": {
                 "fill": "aliceblue",
                 "type": "geoshape"
-            },
-            "data": {
-                "sphere": true
             }
         },
         {
-            "mark": {
-                "strokeWidth": 0.3,
-                "type": "geoshape",
-                "filled": false
-            },
             "data": {
                 "graticule": {
-                    "stepMinor": [
-                        2,
-                        2
-                    ],
                     "extentMajor": [
                         [
                             0,
@@ -51,9 +33,27 @@
                             90,
                             75.01
                         ]
+                    ],
+                    "stepMinor": [
+                        2,
+                        2
                     ]
                 }
+            },
+            "mark": {
+                "filled": false,
+                "strokeWidth": 0.3,
+                "type": "geoshape"
             }
         }
-    ]
+    ],
+    "projection": {
+        "rotate": [
+            -42,
+            -30,
+            0
+        ],
+        "type": "orthographic"
+    },
+    "width": 300
 }

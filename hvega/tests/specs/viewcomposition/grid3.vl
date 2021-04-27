@@ -1,401 +1,401 @@
 {
-    "transform": [
-        {
-            "as": "index",
-            "calculate": "datum.row * 1000 + datum.col"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "columns": 0,
     "config": {
-        "header": {
-            "labelFontSize": 0.1
-        },
-        "view": {
-            "strokeWidth": 2,
-            "continuousHeight": 120,
-            "stroke": "black",
-            "fill": "gray",
-            "fillOpacity": 0.2
+        "axis": {
+            "disable": true
         },
         "facet": {
             "spacing": 80
         },
-        "axis": {
-            "disable": true
+        "header": {
+            "labelFontSize": 0.1
+        },
+        "view": {
+            "continuousHeight": 120,
+            "fill": "gray",
+            "fillOpacity": 0.2,
+            "stroke": "black",
+            "strokeWidth": 2
         }
     },
     "data": {
         "values": [
             {
                 "cat": 1,
-                "row": 1,
                 "col": 1,
+                "row": 1,
                 "val": 30
             },
             {
                 "cat": 2,
-                "row": 1,
                 "col": 1,
+                "row": 1,
                 "val": 15
             },
             {
                 "cat": 3,
-                "row": 1,
                 "col": 1,
+                "row": 1,
                 "val": 12
             },
             {
                 "cat": 1,
-                "row": 1,
                 "col": 2,
+                "row": 1,
                 "val": 25
             },
             {
                 "cat": 2,
-                "row": 1,
                 "col": 2,
+                "row": 1,
                 "val": 30
             },
             {
                 "cat": 3,
-                "row": 1,
                 "col": 2,
+                "row": 1,
                 "val": 25
             },
             {
                 "cat": 1,
-                "row": 1,
                 "col": 3,
+                "row": 1,
                 "val": 10
             },
             {
                 "cat": 2,
-                "row": 1,
                 "col": 3,
+                "row": 1,
                 "val": 28
             },
             {
                 "cat": 3,
-                "row": 1,
                 "col": 3,
+                "row": 1,
                 "val": 11
             },
             {
                 "cat": 1,
-                "row": 1,
                 "col": 4,
+                "row": 1,
                 "val": 18
             },
             {
                 "cat": 2,
-                "row": 1,
                 "col": 4,
+                "row": 1,
                 "val": 24
             },
             {
                 "cat": 3,
-                "row": 1,
                 "col": 4,
+                "row": 1,
                 "val": 16
             },
             {
                 "cat": 1,
-                "row": 1,
                 "col": 5,
+                "row": 1,
                 "val": 10
             },
             {
                 "cat": 2,
-                "row": 1,
                 "col": 5,
+                "row": 1,
                 "val": 10
             },
             {
                 "cat": 3,
-                "row": 1,
                 "col": 5,
+                "row": 1,
                 "val": 10
             },
             {
                 "cat": 1,
-                "row": 2,
                 "col": 1,
+                "row": 2,
                 "val": 8
             },
             {
                 "cat": 2,
-                "row": 2,
                 "col": 1,
+                "row": 2,
                 "val": 8
             },
             {
                 "cat": 3,
-                "row": 2,
                 "col": 1,
+                "row": 2,
                 "val": 29
             },
             {
                 "cat": 1,
-                "row": 2,
                 "col": 2,
+                "row": 2,
                 "val": 11
             },
             {
                 "cat": 2,
-                "row": 2,
                 "col": 2,
+                "row": 2,
                 "val": 24
             },
             {
                 "cat": 3,
-                "row": 2,
                 "col": 2,
+                "row": 2,
                 "val": 12
             },
             {
                 "cat": 1,
-                "row": 2,
                 "col": 3,
+                "row": 2,
                 "val": 26
             },
             {
                 "cat": 2,
-                "row": 2,
                 "col": 3,
+                "row": 2,
                 "val": 32
             },
             {
                 "cat": 3,
-                "row": 2,
                 "col": 3,
+                "row": 2,
                 "val": 9
             },
             {
                 "cat": 1,
-                "row": 2,
                 "col": 4,
+                "row": 2,
                 "val": 8
             },
             {
                 "cat": 2,
-                "row": 2,
                 "col": 4,
+                "row": 2,
                 "val": 18
             },
             {
                 "cat": 3,
-                "row": 2,
                 "col": 4,
+                "row": 2,
                 "val": 28
             },
             {
                 "cat": 1,
-                "row": 2,
                 "col": 5,
+                "row": 2,
                 "val": 8
             },
             {
                 "cat": 2,
-                "row": 2,
                 "col": 5,
+                "row": 2,
                 "val": 20
             },
             {
                 "cat": 3,
-                "row": 2,
                 "col": 5,
+                "row": 2,
                 "val": 24
             },
             {
                 "cat": 1,
-                "row": 3,
                 "col": 1,
+                "row": 3,
                 "val": 21
             },
             {
                 "cat": 2,
-                "row": 3,
                 "col": 1,
+                "row": 3,
                 "val": 15
             },
             {
                 "cat": 3,
-                "row": 3,
                 "col": 1,
+                "row": 3,
                 "val": 20
             },
             {
                 "cat": 1,
-                "row": 3,
                 "col": 2,
+                "row": 3,
                 "val": 4
             },
             {
                 "cat": 2,
-                "row": 3,
                 "col": 2,
+                "row": 3,
                 "val": 13
             },
             {
                 "cat": 3,
-                "row": 3,
                 "col": 2,
+                "row": 3,
                 "val": 12
             },
             {
                 "cat": 1,
-                "row": 3,
                 "col": 3,
+                "row": 3,
                 "val": 27
             },
             {
                 "cat": 2,
-                "row": 3,
                 "col": 3,
+                "row": 3,
                 "val": 21
             },
             {
                 "cat": 3,
-                "row": 3,
                 "col": 3,
+                "row": 3,
                 "val": 14
             },
             {
                 "cat": 1,
-                "row": 3,
                 "col": 4,
+                "row": 3,
                 "val": 5
             },
             {
                 "cat": 2,
-                "row": 3,
                 "col": 4,
+                "row": 3,
                 "val": 1
             },
             {
                 "cat": 3,
-                "row": 3,
                 "col": 4,
+                "row": 3,
                 "val": 2
             },
             {
                 "cat": 1,
-                "row": 3,
                 "col": 5,
+                "row": 3,
                 "val": 11
             },
             {
                 "cat": 2,
-                "row": 3,
                 "col": 5,
+                "row": 3,
                 "val": 2
             },
             {
                 "cat": 3,
-                "row": 3,
                 "col": 5,
+                "row": 3,
                 "val": 5
             },
             {
                 "cat": 1,
-                "row": 4,
                 "col": 1,
+                "row": 4,
                 "val": 14
             },
             {
                 "cat": 2,
-                "row": 4,
                 "col": 1,
+                "row": 4,
                 "val": 20
             },
             {
                 "cat": 3,
-                "row": 4,
                 "col": 1,
+                "row": 4,
                 "val": 24
             },
             {
                 "cat": 1,
-                "row": 4,
                 "col": 2,
+                "row": 4,
                 "val": 20
             },
             {
                 "cat": 2,
-                "row": 4,
                 "col": 2,
+                "row": 4,
                 "val": 2
             },
             {
                 "cat": 3,
-                "row": 4,
                 "col": 2,
+                "row": 4,
                 "val": 9
             },
             {
                 "cat": 1,
-                "row": 4,
                 "col": 3,
+                "row": 4,
                 "val": 15
             },
             {
                 "cat": 2,
-                "row": 4,
                 "col": 3,
+                "row": 4,
                 "val": 14
             },
             {
                 "cat": 3,
-                "row": 4,
                 "col": 3,
+                "row": 4,
                 "val": 13
             },
             {
                 "cat": 1,
-                "row": 4,
                 "col": 4,
+                "row": 4,
                 "val": 22
             },
             {
                 "cat": 2,
-                "row": 4,
                 "col": 4,
+                "row": 4,
                 "val": 30
             },
             {
                 "cat": 3,
-                "row": 4,
                 "col": 4,
+                "row": 4,
                 "val": 30
             },
             {
                 "cat": 1,
-                "row": 4,
                 "col": 5,
+                "row": 4,
                 "val": 10
             },
             {
                 "cat": 2,
-                "row": 4,
                 "col": 5,
+                "row": 4,
                 "val": 8
             },
             {
                 "cat": 3,
-                "row": 4,
                 "col": 5,
+                "row": 4,
                 "val": 12
             }
         ]
     },
+    "facet": {
+        "field": "index",
+        "header": {
+            "title": null
+        },
+        "type": "ordinal"
+    },
     "spec": {
-        "height": 120,
-        "mark": "bar",
-        "width": 120,
         "encoding": {
             "color": {
                 "field": "cat",
-                "type": "nominal",
-                "legend": null
+                "legend": null,
+                "type": "nominal"
             },
             "x": {
                 "field": "cat",
@@ -405,15 +405,15 @@
                 "field": "val",
                 "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "columns": 0,
-    "facet": {
-        "field": "index",
-        "header": {
-            "title": null
         },
-        "type": "ordinal"
-    }
+        "height": 120,
+        "mark": "bar",
+        "width": 120
+    },
+    "transform": [
+        {
+            "as": "index",
+            "calculate": "datum.row * 1000 + datum.col"
+        }
+    ]
 }

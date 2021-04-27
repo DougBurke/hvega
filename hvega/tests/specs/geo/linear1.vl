@@ -1,22 +1,22 @@
 {
-    "height": 500,
-    "mark": {
-        "type": "geoshape",
-        "filled": false
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/londonTubeLines.json",
         "format": {
             "feature": "line",
             "type": "topojson"
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/londonTubeLines.json"
     },
-    "width": 700,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "id",
             "type": "nominal"
         }
-    }
+    },
+    "height": 500,
+    "mark": {
+        "filled": false,
+        "type": "geoshape"
+    },
+    "width": 700
 }

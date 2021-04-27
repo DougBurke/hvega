@@ -1,185 +1,186 @@
 {
-    "height": {
-        "step": 8
-    },
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "p": "0.14",
                 "a": "a1",
                 "b": "b1",
-                "c": "x"
+                "c": "x",
+                "p": "0.14"
             },
             {
-                "p": "0.60",
                 "a": "a1",
                 "b": "b1",
-                "c": "y"
+                "c": "y",
+                "p": "0.60"
             },
             {
-                "p": "0.03",
                 "a": "a1",
                 "b": "b1",
-                "c": "z"
+                "c": "z",
+                "p": "0.03"
             },
             {
-                "p": "0.80",
                 "a": "a1",
                 "b": "b2",
-                "c": "x"
+                "c": "x",
+                "p": "0.80"
             },
             {
-                "p": "0.38",
                 "a": "a1",
                 "b": "b2",
-                "c": "y"
+                "c": "y",
+                "p": "0.38"
             },
             {
-                "p": "0.55",
                 "a": "a1",
                 "b": "b2",
-                "c": "z"
+                "c": "z",
+                "p": "0.55"
             },
             {
-                "p": "0.11",
                 "a": "a1",
                 "b": "b3",
-                "c": "x"
+                "c": "x",
+                "p": "0.11"
             },
             {
-                "p": "0.58",
                 "a": "a1",
                 "b": "b3",
-                "c": "y"
+                "c": "y",
+                "p": "0.58"
             },
             {
-                "p": "0.79",
                 "a": "a1",
                 "b": "b3",
-                "c": "z"
+                "c": "z",
+                "p": "0.79"
             },
             {
-                "p": "0.83",
                 "a": "a2",
                 "b": "b1",
-                "c": "x"
+                "c": "x",
+                "p": "0.83"
             },
             {
-                "p": "0.87",
                 "a": "a2",
                 "b": "b1",
-                "c": "y"
+                "c": "y",
+                "p": "0.87"
             },
             {
-                "p": "0.67",
                 "a": "a2",
                 "b": "b1",
-                "c": "z"
+                "c": "z",
+                "p": "0.67"
             },
             {
-                "p": "0.97",
                 "a": "a2",
                 "b": "b2",
-                "c": "x"
+                "c": "x",
+                "p": "0.97"
             },
             {
-                "p": "0.84",
                 "a": "a2",
                 "b": "b2",
-                "c": "y"
+                "c": "y",
+                "p": "0.84"
             },
             {
-                "p": "0.90",
                 "a": "a2",
                 "b": "b2",
-                "c": "z"
+                "c": "z",
+                "p": "0.90"
             },
             {
-                "p": "0.74",
                 "a": "a2",
                 "b": "b3",
-                "c": "x"
+                "c": "x",
+                "p": "0.74"
             },
             {
-                "p": "0.64",
                 "a": "a2",
                 "b": "b3",
-                "c": "y"
+                "c": "y",
+                "p": "0.64"
             },
             {
-                "p": "0.19",
                 "a": "a2",
                 "b": "b3",
-                "c": "z"
+                "c": "z",
+                "p": "0.19"
             },
             {
-                "p": "0.57",
                 "a": "a3",
                 "b": "b1",
-                "c": "x"
+                "c": "x",
+                "p": "0.57"
             },
             {
-                "p": "0.35",
                 "a": "a3",
                 "b": "b1",
-                "c": "y"
+                "c": "y",
+                "p": "0.35"
             },
             {
-                "p": "0.49",
                 "a": "a3",
                 "b": "b1",
-                "c": "z"
+                "c": "z",
+                "p": "0.49"
             },
             {
-                "p": "0.91",
                 "a": "a3",
                 "b": "b2",
-                "c": "x"
+                "c": "x",
+                "p": "0.91"
             },
             {
-                "p": "0.38",
                 "a": "a3",
                 "b": "b2",
-                "c": "y"
+                "c": "y",
+                "p": "0.38"
             },
             {
-                "p": "0.91",
                 "a": "a3",
                 "b": "b2",
-                "c": "z"
+                "c": "z",
+                "p": "0.91"
             },
             {
-                "p": "0.99",
                 "a": "a3",
                 "b": "b3",
-                "c": "x"
+                "c": "x",
+                "p": "0.99"
             },
             {
-                "p": "0.80",
                 "a": "a3",
                 "b": "b3",
-                "c": "y"
+                "c": "y",
+                "p": "0.80"
             },
             {
-                "p": "0.37",
                 "a": "a3",
                 "b": "b3",
-                "c": "z"
+                "c": "z",
+                "p": "0.37"
             }
         ]
     },
-    "width": 60,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A simple grid of bar charts to compare performance data.",
     "encoding": {
         "color": {
             "field": "c",
-            "title": "settings",
-            "type": "nominal",
             "legend": {
                 "orient": "bottom",
                 "titleOrient": "left"
-            }
+            },
+            "title": "settings",
+            "type": "nominal"
+        },
+        "column": {
+            "field": "b",
+            "title": "Factor B",
+            "type": "nominal"
         },
         "row": {
             "field": "a",
@@ -190,24 +191,23 @@
             "type": "nominal"
         },
         "x": {
-            "field": "p",
-            "title": null,
-            "type": "quantitative",
             "axis": {
                 "format": "%"
-            }
-        },
-        "column": {
-            "field": "b",
-            "title": "Factor B",
-            "type": "nominal"
+            },
+            "field": "p",
+            "title": null,
+            "type": "quantitative"
         },
         "y": {
+            "axis": null,
             "field": "c",
-            "type": "nominal",
-            "axis": null
+            "type": "nominal"
         }
     },
-    "description": "A simple grid of bar charts to compare performance data.",
-    "spacing": 5
+    "height": {
+        "step": 8
+    },
+    "mark": "bar",
+    "spacing": 5,
+    "width": 60
 }

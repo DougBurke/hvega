@@ -1,45 +1,44 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "url": "https://vega.github.io/vega",
-                "label": "Vega"
+                "label": "Vega",
+                "url": "https://vega.github.io/vega"
             },
             {
-                "url": "https://vega.github.io/vega-lite",
-                "label": "Vega-Lite"
+                "label": "Vega-Lite",
+                "url": "https://vega.github.io/vega-lite"
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "layer": [
         {
-            "mark": {
-                "cursor": "pointer",
-                "type": "circle"
-            },
             "encoding": {
                 "color": {
                     "field": "label",
-                    "type": "nominal",
-                    "legend": null
-                },
-                "size": {
-                    "value": 8000
+                    "legend": null,
+                    "type": "nominal"
                 },
                 "href": {
                     "field": "url",
                     "type": "nominal"
                 },
+                "size": {
+                    "value": 8000
+                },
                 "x": {
+                    "axis": null,
                     "field": "label",
-                    "type": "nominal",
-                    "axis": null
+                    "type": "nominal"
                 }
+            },
+            "mark": {
+                "cursor": "pointer",
+                "type": "circle"
             }
         },
         {
-            "mark": "text",
             "encoding": {
                 "color": {
                     "value": "white"
@@ -52,11 +51,12 @@
                     "type": "nominal"
                 },
                 "x": {
+                    "axis": null,
                     "field": "label",
-                    "type": "nominal",
-                    "axis": null
+                    "type": "nominal"
                 }
-            }
+            },
+            "mark": "text"
         }
     ]
 }

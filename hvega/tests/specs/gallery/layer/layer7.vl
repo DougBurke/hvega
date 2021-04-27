@@ -1,55 +1,35 @@
 {
-    "transform": [
-        {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "rolling_mean",
-                    "field": "temp_max"
-                }
-            ],
-            "frame": [
-                -15,
-                15
-            ]
-        }
-    ],
-    "height": 300,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-weather.csv"
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Plot showing a 30 day rolling average with raw values in the background.",
+    "height": 300,
     "layer": [
         {
-            "mark": {
-                "opacity": 0.3,
-                "type": "point"
-            },
             "encoding": {
                 "x": {
+                    "axis": {
+                        "gridColor": "orange",
+                        "gridOpacity": 0.8,
+                        "zindex": 1
+                    },
                     "field": "date",
                     "title": "Date",
-                    "type": "temporal",
-                    "axis": {
-                        "zindex": 1,
-                        "gridColor": "orange",
-                        "gridOpacity": 0.8
-                    }
+                    "type": "temporal"
                 },
                 "y": {
                     "field": "temp_max",
                     "title": "Max Temperature",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "opacity": 0.3,
+                "type": "point"
             }
         },
         {
-            "mark": {
-                "color": "red",
-                "size": 3,
-                "type": "line"
-            },
             "encoding": {
                 "x": {
                     "field": "date",
@@ -59,8 +39,28 @@
                     "field": "rolling_mean",
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "color": "red",
+                "size": 3,
+                "type": "line"
             }
         }
     ],
-    "description": "Plot showing a 30 day rolling average with raw values in the background."
+    "transform": [
+        {
+            "frame": [
+                -15,
+                15
+            ],
+            "window": [
+                {
+                    "as": "rolling_mean",
+                    "field": "temp_max",
+                    "op": "mean"
+                }
+            ]
+        }
+    ],
+    "width": 400
 }

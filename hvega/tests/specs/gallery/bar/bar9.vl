@@ -1,22 +1,22 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "color": "red",
-                "b": 28
+                "b": 28,
+                "color": "red"
             },
             {
-                "color": "green",
-                "b": 55
+                "b": 55,
+                "color": "green"
             },
             {
-                "color": "blue",
-                "b": 43
+                "b": 43,
+                "color": "blue"
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A bar chart that directly encodes color names in the data.",
     "encoding": {
         "color": {
             "field": "color",
@@ -32,5 +32,5 @@
             "type": "quantitative"
         }
     },
-    "description": "A bar chart that directly encodes color names in the data."
+    "mark": "bar"
 }

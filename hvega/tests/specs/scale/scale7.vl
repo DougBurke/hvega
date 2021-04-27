@@ -1,5 +1,5 @@
 {
-    "mark": "point",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -34,10 +34,10 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "size": {
             "field": "r",
+            "legend": null,
             "scale": {
                 "exponent": 2,
                 "range": [
@@ -46,8 +46,8 @@
                 ],
                 "type": "pow"
             },
-            "type": "quantitative",
-            "legend": null
+            "type": "quantitative"
         }
-    }
+    },
+    "mark": "point"
 }

@@ -1,5 +1,5 @@
 {
-    "mark": "arc",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -28,19 +28,19 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "view": {
-        "stroke": null
-    },
+    "description": "A simple pie chart with embedded data.",
     "encoding": {
-        "theta": {
-            "field": "value",
-            "type": "quantitative"
-        },
         "color": {
             "field": "category",
             "type": "nominal"
+        },
+        "theta": {
+            "field": "value",
+            "type": "quantitative"
         }
     },
-    "description": "A simple pie chart with embedded data."
+    "mark": "arc",
+    "view": {
+        "stroke": null
+    }
 }

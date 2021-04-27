@@ -1,19 +1,5 @@
 {
-    "transform": [
-        {
-            "filter": "datum.symbol === 'GOOG'"
-        },
-        {
-            "filter": {
-                "field": "date",
-                "timeUnit": "year",
-                "range": [
-                    2006,
-                    null
-                ]
-            }
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "axis": {
             "domainColor": "#ddd",
@@ -21,23 +7,37 @@
         },
         "lineBreak": " "
     },
-    "mark": "line",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "date",
-            "type": "temporal",
             "axis": {
                 "format": "%m %Y"
-            }
+            },
+            "field": "date",
+            "type": "temporal"
         },
         "y": {
             "field": "price",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "line",
+    "transform": [
+        {
+            "filter": "datum.symbol === 'GOOG'"
+        },
+        {
+            "filter": {
+                "field": "date",
+                "range": [
+                    2006,
+                    null
+                ],
+                "timeUnit": "year"
+            }
+        }
+    ],
+    "width": 400
 }

@@ -1,15 +1,16 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "data": {
+        "url": "https://vega.github.io/vega-lite/data/weather.csv"
+    },
+    "description": "Two vertically concatenated charts that show a histogram of precipitation in Seattle and the relationship between min and max temperature",
     "transform": [
         {
             "filter": "datum.location === 'Seattle'"
         }
     ],
-    "data": {
-        "url": "https://vega.github.io/vega-lite/data/weather.csv"
-    },
     "vconcat": [
         {
-            "mark": "bar",
             "encoding": {
                 "x": {
                     "field": "date",
@@ -17,32 +18,31 @@
                     "type": "ordinal"
                 },
                 "y": {
-                    "field": "precipitation",
                     "aggregate": "mean",
+                    "field": "precipitation",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "bar"
         },
         {
-            "mark": "point",
             "encoding": {
                 "size": {
                     "aggregate": "count",
                     "type": "quantitative"
                 },
                 "x": {
-                    "field": "temp_min",
                     "bin": true,
+                    "field": "temp_min",
                     "type": "quantitative"
                 },
                 "y": {
-                    "field": "temp_max",
                     "bin": true,
+                    "field": "temp_max",
                     "type": "quantitative"
                 }
-            }
+            },
+            "mark": "point"
         }
-    ],
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "description": "Two vertically concatenated charts that show a histogram of precipitation in Seattle and the relationship between min and max temperature"
+    ]
 }

@@ -1,10 +1,5 @@
 {
-    "mark": {
-        "size": 200,
-        "x": 150,
-        "type": "circle",
-        "y": 150
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -12,5 +7,10 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    "mark": {
+        "size": 200,
+        "type": "circle",
+        "x": 150,
+        "y": 150
+    }
 }

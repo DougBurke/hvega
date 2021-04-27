@@ -1,17 +1,13 @@
 {
-    "mark": {
-        "type": "trail",
-        "order": false
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/driving.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "size": {
             "field": "year",
-            "type": "temporal",
-            "legend": null
+            "legend": null,
+            "type": "temporal"
         },
         "x": {
             "field": "miles",
@@ -27,5 +23,9 @@
             },
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "order": false,
+        "type": "trail"
     }
 }

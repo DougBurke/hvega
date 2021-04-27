@@ -1,25 +1,17 @@
 {
-    "transform": [
-        {
-            "filter": "datum.year == 2000"
-        }
-    ],
-    "height": {
-        "step": 17
-    },
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/population.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A bar chart showing the US population distribution of age groups in 2000.",
     "encoding": {
         "x": {
-            "field": "people",
             "aggregate": "sum",
-            "type": "quantitative",
             "axis": {
                 "title": "population"
-            }
+            },
+            "field": "people",
+            "type": "quantitative"
         },
         "y": {
             "field": "age",
@@ -27,5 +19,13 @@
             "type": "ordinal"
         }
     },
-    "description": "A bar chart showing the US population distribution of age groups in 2000."
+    "height": {
+        "step": 17
+    },
+    "mark": "bar",
+    "transform": [
+        {
+            "filter": "datum.year == 2000"
+        }
+    ]
 }

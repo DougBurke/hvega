@@ -1,17 +1,17 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Barley crop yields as a horizontal stacked bar chart",
     "encoding": {
         "color": {
             "field": "site",
             "type": "nominal"
         },
         "x": {
-            "field": "yield",
             "aggregate": "sum",
+            "field": "yield",
             "type": "quantitative"
         },
         "y": {
@@ -19,5 +19,5 @@
             "type": "nominal"
         }
     },
-    "description": "Barley crop yields as a horizontal stacked bar chart"
+    "mark": "bar"
 }

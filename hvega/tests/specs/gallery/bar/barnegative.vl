@@ -1,5 +1,5 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -40,31 +40,31 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "A bar chart with negative values. We can hide the axis domain line, and instead use a conditional grid color to draw a zero baseline.",
     "encoding": {
         "x": {
-            "field": "a",
-            "type": "ordinal",
             "axis": {
-                "labelAngle": 0,
                 "domain": false,
+                "labelAngle": 0,
                 "labelPadding": 4,
                 "ticks": false
-            }
+            },
+            "field": "a",
+            "type": "ordinal"
         },
         "y": {
-            "field": "b",
-            "type": "quantitative",
             "axis": {
                 "gridColor": {
-                    "value": "#ddd",
                     "condition": {
-                        "value": "black",
-                        "test": "datum.value === 0"
-                    }
+                        "test": "datum.value === 0",
+                        "value": "black"
+                    },
+                    "value": "#ddd"
                 }
-            }
+            },
+            "field": "b",
+            "type": "quantitative"
         }
     },
-    "description": "A bar chart with negative values. We can hide the axis domain line, and instead use a conditional grid color to draw a zero baseline."
+    "mark": "bar"
 }

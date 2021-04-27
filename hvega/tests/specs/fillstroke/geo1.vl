@@ -1,6 +1,5 @@
 {
-    "height": 300,
-    "mark": "geoshape",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": {
             "features": [
@@ -58,6 +57,7 @@
             "type": "FeatureCollection"
         }
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    "height": 300,
+    "mark": "geoshape",
+    "width": 300
 }

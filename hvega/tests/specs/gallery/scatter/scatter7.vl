@@ -1,21 +1,21 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "mark": {
             "invalid": null
         }
     },
-    "mark": "point",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Scatterplot with Null values in grey",
     "encoding": {
         "color": {
-            "value": "rgb(76,120,168)",
             "condition": {
-                "value": "#ddd",
-                "test": "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null"
-            }
+                "test": "datum.IMDB_Rating === null || datum.Rotten_Tomatoes_Rating === null",
+                "value": "#ddd"
+            },
+            "value": "rgb(76,120,168)"
         },
         "x": {
             "field": "IMDB_Rating",
@@ -26,5 +26,5 @@
             "type": "quantitative"
         }
     },
-    "description": "Scatterplot with Null values in grey"
+    "mark": "point"
 }

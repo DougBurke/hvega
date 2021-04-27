@@ -1,23 +1,33 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "columns": 2,
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "spec": {
-        "height": {
-            "step": 12
+    "description": "The Trellis display by Becker et al. helped establish small multiples as a 'powerful mechanism for understanding interactions in studies of how a response depends on explanatory variables'",
+    "facet": {
+        "field": "site",
+        "header": {
+            "title": null
         },
-        "mark": "point",
+        "sort": {
+            "field": "yield",
+            "op": "median"
+        },
+        "type": "ordinal"
+    },
+    "spec": {
         "encoding": {
             "color": {
                 "field": "year",
                 "type": "nominal"
             },
             "x": {
+                "aggregate": "median",
                 "field": "yield",
                 "scale": {
                     "zero": false
                 },
-                "aggregate": "median",
                 "type": "quantitative"
             },
             "y": {
@@ -28,20 +38,10 @@
                 },
                 "type": "ordinal"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "columns": 2,
-    "facet": {
-        "field": "site",
-        "header": {
-            "title": null
         },
-        "sort": {
-            "op": "median",
-            "field": "yield"
+        "height": {
+            "step": 12
         },
-        "type": "ordinal"
-    },
-    "description": "The Trellis display by Becker et al. helped establish small multiples as a 'powerful mechanism for understanding interactions in studies of how a response depends on explanatory variables'"
+        "mark": "point"
+    }
 }

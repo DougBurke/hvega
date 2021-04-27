@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -35,81 +36,80 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": {
-                "stroke": "black",
-                "type": "bar"
-            },
-            "encoding": {
-                "y": {
-                    "field": "ys",
-                    "aggregate": "sum",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Y"
-                    }
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "brown",
-                "type": "line"
-            },
-            "encoding": {
-                "y": {
-                    "field": "ys",
-                    "aggregate": "product",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Y"
-                    }
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "orange",
-                "type": "point"
-            },
-            "encoding": {
-                "y": {
-                    "field": "ys",
-                    "aggregate": "max",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Y"
-                    }
-                }
-            }
-        },
-        {
-            "mark": {
-                "color": "cyan",
-                "type": "square"
-            },
-            "encoding": {
-                "y": {
-                    "field": "ys",
-                    "aggregate": "distinct",
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "Y"
-                    }
-                }
-            }
-        }
-    ],
     "encoding": {
         "x": {
-            "field": "xs",
-            "type": "ordinal",
             "axis": {
                 "labelAngle": 0,
                 "title": "X"
+            },
+            "field": "xs",
+            "type": "ordinal"
+        }
+    },
+    "layer": [
+        {
+            "encoding": {
+                "y": {
+                    "aggregate": "sum",
+                    "axis": {
+                        "title": "Y"
+                    },
+                    "field": "ys",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "stroke": "black",
+                "type": "bar"
+            }
+        },
+        {
+            "encoding": {
+                "y": {
+                    "aggregate": "product",
+                    "axis": {
+                        "title": "Y"
+                    },
+                    "field": "ys",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "brown",
+                "type": "line"
+            }
+        },
+        {
+            "encoding": {
+                "y": {
+                    "aggregate": "max",
+                    "axis": {
+                        "title": "Y"
+                    },
+                    "field": "ys",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "orange",
+                "type": "point"
+            }
+        },
+        {
+            "encoding": {
+                "y": {
+                    "aggregate": "distinct",
+                    "axis": {
+                        "title": "Y"
+                    },
+                    "field": "ys",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "color": "cyan",
+                "type": "square"
             }
         }
-    }
+    ]
 }

@@ -1,42 +1,35 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "Line drawn between airports in the U.S. simulating a flight itinerary",
+    "height": 500,
     "layer": [
         {
-            "mark": "geoshape",
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
                 "format": {
                     "feature": "states",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json"
             },
             "encoding": {
                 "color": {
                     "value": "#eee"
                 }
-            }
+            },
+            "mark": "geoshape"
         },
         {
-            "mark": "circle",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/airports.csv"
             },
             "encoding": {
                 "color": {
                     "value": "gray"
-                },
-                "size": {
-                    "value": 5
                 },
                 "latitude": {
                     "field": "latitude",
@@ -45,26 +38,14 @@
                 "longitude": {
                     "field": "longitude",
                     "type": "quantitative"
+                },
+                "size": {
+                    "value": 5
                 }
-            }
+            },
+            "mark": "circle"
         },
         {
-            "transform": [
-                {
-                    "from": {
-                        "data": {
-                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
-                        },
-                        "key": "iata",
-                        "fields": [
-                            "latitude",
-                            "longitude"
-                        ]
-                    },
-                    "lookup": "airport"
-                }
-            ],
-            "mark": "line",
             "data": {
                 "values": [
                     {
@@ -117,8 +98,27 @@
                 "order": {
                     "field": "order"
                 }
-            }
+            },
+            "mark": "line",
+            "transform": [
+                {
+                    "from": {
+                        "data": {
+                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
+                        },
+                        "fields": [
+                            "latitude",
+                            "longitude"
+                        ],
+                        "key": "iata"
+                    },
+                    "lookup": "airport"
+                }
+            ]
         }
     ],
-    "description": "Line drawn between airports in the U.S. simulating a flight itinerary"
+    "projection": {
+        "type": "albersUsa"
+    },
+    "width": 800
 }

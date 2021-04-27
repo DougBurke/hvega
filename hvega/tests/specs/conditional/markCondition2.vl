@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "size": 800,
-        "type": "circle"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -25,29 +22,32 @@
             }
         ]
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
-            "value": "black",
             "condition": [
                 {
-                    "value": "blue",
-                    "test": "datum.value < 40"
+                    "test": "datum.value < 40",
+                    "value": "blue"
                 },
                 {
-                    "value": "red",
-                    "test": "datum.value < 50"
+                    "test": "datum.value < 50",
+                    "value": "red"
                 },
                 {
-                    "value": "yellow",
-                    "test": "datum.value < 60"
+                    "test": "datum.value < 60",
+                    "value": "yellow"
                 }
-            ]
+            ],
+            "value": "black"
         },
         "x": {
             "field": "value",
             "type": "ordinal"
         }
-    }
+    },
+    "mark": {
+        "size": 800,
+        "type": "circle"
+    },
+    "width": 400
 }

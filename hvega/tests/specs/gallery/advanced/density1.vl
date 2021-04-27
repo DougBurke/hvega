@@ -1,32 +1,8 @@
 {
-    "transform": [
-        {
-            "as": [
-                "organ",
-                "value"
-            ],
-            "fold": [
-                "petalWidth",
-                "petalLength",
-                "sepalWidth",
-                "sepalLength"
-            ]
-        },
-        {
-            "groupby": [
-                "organ"
-            ],
-            "bandwidth": 0.3,
-            "density": "value"
-        }
-    ],
-    "height": 50,
-    "mark": "area",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/iris.json"
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "row": {
             "field": "organ",
@@ -41,5 +17,29 @@
             "field": "density",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 50,
+    "mark": "area",
+    "transform": [
+        {
+            "as": [
+                "organ",
+                "value"
+            ],
+            "fold": [
+                "petalWidth",
+                "petalLength",
+                "sepalWidth",
+                "sepalLength"
+            ]
+        },
+        {
+            "bandwidth": 0.3,
+            "density": "value",
+            "groupby": [
+                "organ"
+            ]
+        }
+    ],
+    "width": 300
 }

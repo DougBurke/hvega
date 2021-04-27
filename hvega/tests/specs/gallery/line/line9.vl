@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "point": true,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -35,7 +32,7 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Line chart with markers and invalid values.",
     "encoding": {
         "x": {
             "field": "x",
@@ -46,5 +43,8 @@
             "type": "quantitative"
         }
     },
-    "description": "Line chart with markers and invalid values."
+    "mark": {
+        "point": true,
+        "type": "line"
+    }
 }

@@ -1,14 +1,10 @@
 {
-    "height": 300,
-    "mark": {
-        "height": 20,
-        "type": "bar"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "empty": 0,
                 "cat": 1,
+                "empty": 0,
                 "val": 10
             },
             {
@@ -29,7 +25,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "val",
@@ -39,5 +34,10 @@
             "field": "cat",
             "type": "ordinal"
         }
+    },
+    "height": 300,
+    "mark": {
+        "height": 20,
+        "type": "bar"
     }
 }

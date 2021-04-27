@@ -1,63 +1,63 @@
 {
-    "height": 250,
-    "width": 500,
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "height": 250,
     "layer": [
         {
+            "data": {
+                "format": {
+                    "feature": "globe",
+                    "type": "topojson"
+                },
+                "url": "data/globe.json"
+            },
             "mark": {
                 "color": "#c1e7f5",
                 "type": "geoshape"
             },
-            "data": {
-                "url": "data/globe.json",
-                "format": {
-                    "feature": "globe",
-                    "type": "topojson"
-                }
-            },
             "projection": {
-                "reflectY": true,
                 "reflectX": true,
+                "reflectY": true,
                 "type": "identity"
             }
         },
         {
-            "mark": {
-                "strokeWidth": 0.1,
-                "stroke": "#411",
-                "type": "geoshape",
-                "fillOpacity": 1.0e-2
-            },
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/graticule.json",
                 "format": {
                     "feature": "graticule",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/graticule.json"
+            },
+            "mark": {
+                "fillOpacity": 1.0e-2,
+                "stroke": "#411",
+                "strokeWidth": 0.1,
+                "type": "geoshape"
             },
             "projection": {
-                "reflectY": true,
                 "reflectX": true,
+                "reflectY": true,
                 "type": "identity"
             }
         },
         {
+            "data": {
+                "format": {
+                    "feature": "countries",
+                    "type": "topojson"
+                },
+                "url": "https://vega.github.io/vega-lite/data/world-110m.json"
+            },
             "mark": {
                 "color": "#708E71",
                 "type": "geoshape"
             },
-            "data": {
-                "url": "https://vega.github.io/vega-lite/data/world-110m.json",
-                "format": {
-                    "feature": "countries",
-                    "type": "topojson"
-                }
-            },
             "projection": {
-                "reflectY": true,
                 "reflectX": true,
+                "reflectY": true,
                 "type": "identity"
             }
         }
-    ]
+    ],
+    "width": 500
 }

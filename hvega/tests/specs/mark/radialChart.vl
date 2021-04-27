@@ -1,4 +1,5 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -21,41 +22,12 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "view": {
-        "stroke": null
-    },
-    "layer": [
-        {
-            "mark": {
-                "stroke": "#fff",
-                "type": "arc",
-                "innerRadius": 20
-            }
-        },
-        {
-            "mark": {
-                "radiusOffset": 10,
-                "type": "text"
-            },
-            "encoding": {
-                "text": {
-                    "field": "data",
-                    "type": "quantitative"
-                }
-            }
-        }
-    ],
+    "description": "A simple radial chart with embedded data.",
     "encoding": {
-        "theta": {
-            "field": "data",
-            "type": "quantitative",
-            "stack": "zero"
-        },
         "color": {
             "field": "data",
-            "type": "nominal",
-            "legend": null
+            "legend": null,
+            "type": "nominal"
         },
         "radius": {
             "field": "data",
@@ -64,11 +36,39 @@
                     20,
                     100
                 ],
-                "zero": true,
-                "type": "sqrt"
+                "type": "sqrt",
+                "zero": true
             },
+            "type": "quantitative"
+        },
+        "theta": {
+            "field": "data",
+            "stack": "zero",
             "type": "quantitative"
         }
     },
-    "description": "A simple radial chart with embedded data."
+    "layer": [
+        {
+            "mark": {
+                "innerRadius": 20,
+                "stroke": "#fff",
+                "type": "arc"
+            }
+        },
+        {
+            "encoding": {
+                "text": {
+                    "field": "data",
+                    "type": "quantitative"
+                }
+            },
+            "mark": {
+                "radiusOffset": 10,
+                "type": "text"
+            }
+        }
+    ],
+    "view": {
+        "stroke": null
+    }
 }

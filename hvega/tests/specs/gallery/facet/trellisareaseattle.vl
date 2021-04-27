@@ -1,10 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "order",
-            "calculate": "(hours(datum.date) + 18) % 24"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "axis": {
             "domain": false,
@@ -14,56 +9,61 @@
     "data": {
         "url": "https://vega.github.io/vega-lite/data/seattle-temps.csv"
     },
+    "description": "Average temps in Seattle, by hour",
+    "facet": {
+        "row": {
+            "field": "date",
+            "header": {
+                "labelAlign": "left",
+                "labelAngle": 0,
+                "labelExpr": "hours(datum.value) == 0 ? 'Midnight' : hours(datum.value) == 12 ? 'Noon' : timeFormat(datum.value, '%I:%M %p')",
+                "labelPadding": 2,
+                "titlePadding": -4
+            },
+            "sort": {
+                "field": "order",
+                "op": "max"
+            },
+            "timeUnit": "hours",
+            "type": "nominal"
+        }
+    },
+    "spacing": 1,
     "spec": {
-        "height": 25,
-        "mark": "area",
-        "width": 800,
-        "view": {
-            "stroke": null
-        },
         "encoding": {
             "x": {
-                "field": "date",
-                "title": "Month",
-                "type": "temporal",
                 "axis": {
                     "format": "%b"
-                }
+                },
+                "field": "date",
+                "title": "Month",
+                "type": "temporal"
             },
             "y": {
+                "axis": {
+                    "labels": false,
+                    "ticks": false,
+                    "title": null
+                },
                 "field": "temp",
                 "scale": {
                     "zero": false
                 },
-                "type": "quantitative",
-                "axis": {
-                    "labels": false,
-                    "title": null,
-                    "ticks": false
-                }
+                "type": "quantitative"
             }
-        }
-    },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "facet": {
-        "row": {
-            "field": "date",
-            "timeUnit": "hours",
-            "header": {
-                "labelAngle": 0,
-                "labelExpr": "hours(datum.value) == 0 ? 'Midnight' : hours(datum.value) == 12 ? 'Noon' : timeFormat(datum.value, '%I:%M %p')",
-                "titlePadding": -4,
-                "labelPadding": 2,
-                "labelAlign": "left"
-            },
-            "sort": {
-                "op": "max",
-                "field": "order"
-            },
-            "type": "nominal"
-        }
+        },
+        "height": 25,
+        "mark": "area",
+        "view": {
+            "stroke": null
+        },
+        "width": 800
     },
     "title": "Seattle Annual Temperatures",
-    "description": "Average temps in Seattle, by hour",
-    "spacing": 1
+    "transform": [
+        {
+            "as": "order",
+            "calculate": "(hours(datum.date) + 18) % 24"
+        }
+    ]
 }

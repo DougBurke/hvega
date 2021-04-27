@@ -1,5 +1,5 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -36,19 +36,19 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
-            "field": "bin_start",
             "bin": {
-                "step": 2,
-                "binned": true
+                "binned": true,
+                "step": 2
             },
+            "field": "bin_start",
             "type": "quantitative"
         },
         "y": {
             "field": "count",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }

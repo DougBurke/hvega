@@ -1,24 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "y0",
-            "calculate": "abs(sin(datum.x0+random()))"
-        },
-        {
-            "as": "x",
-            "calculate": "datum.x0 %10"
-        },
-        {
-            "as": "cat",
-            "calculate": "floor(datum.x0 / 10)"
-        },
-        {
-            "as": "y",
-            "calculate": "datum.y0 + datum.cat"
-        }
-    ],
-    "height": 300,
-    "mark": "line",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "sequence": {
             "as": "x0",
@@ -27,9 +8,6 @@
             "stop": 100
         }
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "title": "Dash scale 1.0",
     "encoding": {
         "strokeDash": {
             "field": "cat",
@@ -94,18 +72,40 @@
             "type": "ordinal"
         },
         "x": {
-            "field": "x",
-            "type": "quantitative",
             "axis": {
                 "grid": false
-            }
+            },
+            "field": "x",
+            "type": "quantitative"
         },
         "y": {
-            "field": "y",
-            "type": "quantitative",
             "axis": {
                 "grid": false
-            }
+            },
+            "field": "y",
+            "type": "quantitative"
         }
-    }
+    },
+    "height": 300,
+    "mark": "line",
+    "title": "Dash scale 1.0",
+    "transform": [
+        {
+            "as": "y0",
+            "calculate": "abs(sin(datum.x0+random()))"
+        },
+        {
+            "as": "x",
+            "calculate": "datum.x0 %10"
+        },
+        {
+            "as": "cat",
+            "calculate": "floor(datum.x0 / 10)"
+        },
+        {
+            "as": "y",
+            "calculate": "datum.y0 + datum.cat"
+        }
+    ],
+    "width": 300
 }

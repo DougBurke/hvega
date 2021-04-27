@@ -1,77 +1,9 @@
 {
-    "transform": [
-        {
-            "as": "Year",
-            "calculate": "year(datum.Year)"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "layer": [
-        {
-            "mark": "circle",
-            "selection": {
-                "CylYr": {
-                    "init": {
-                        "Cylinders": 4,
-                        "Year": 1977
-                    },
-                    "bind": {
-                        "Cylinders": {
-                            "max": 8,
-                            "input": "range",
-                            "name": "Cylinders ",
-                            "step": 1,
-                            "min": 3
-                        },
-                        "Year": {
-                            "max": 1981,
-                            "input": "range",
-                            "name": "Year ",
-                            "step": 1,
-                            "min": 1969
-                        }
-                    },
-                    "type": "single",
-                    "fields": [
-                        "Cylinders",
-                        "Year"
-                    ]
-                }
-            },
-            "encoding": {
-                "color": {
-                    "value": "grey",
-                    "condition": {
-                        "field": "Origin",
-                        "selection": "CylYr",
-                        "type": "nominal"
-                    }
-                }
-            }
-        },
-        {
-            "transform": [
-                {
-                    "filter": {
-                        "selection": "CylYr"
-                    }
-                }
-            ],
-            "mark": "circle",
-            "encoding": {
-                "color": {
-                    "field": "Origin",
-                    "type": "nominal"
-                },
-                "size": {
-                    "value": 100
-                }
-            }
-        }
-    ],
+    "description": "Drag the sliders to highlight points",
     "encoding": {
         "x": {
             "field": "Horsepower",
@@ -82,5 +14,73 @@
             "type": "quantitative"
         }
     },
-    "description": "Drag the sliders to highlight points"
+    "layer": [
+        {
+            "encoding": {
+                "color": {
+                    "condition": {
+                        "field": "Origin",
+                        "selection": "CylYr",
+                        "type": "nominal"
+                    },
+                    "value": "grey"
+                }
+            },
+            "mark": "circle",
+            "selection": {
+                "CylYr": {
+                    "bind": {
+                        "Cylinders": {
+                            "input": "range",
+                            "max": 8,
+                            "min": 3,
+                            "name": "Cylinders ",
+                            "step": 1
+                        },
+                        "Year": {
+                            "input": "range",
+                            "max": 1981,
+                            "min": 1969,
+                            "name": "Year ",
+                            "step": 1
+                        }
+                    },
+                    "fields": [
+                        "Cylinders",
+                        "Year"
+                    ],
+                    "init": {
+                        "Cylinders": 4,
+                        "Year": 1977
+                    },
+                    "type": "single"
+                }
+            }
+        },
+        {
+            "encoding": {
+                "color": {
+                    "field": "Origin",
+                    "type": "nominal"
+                },
+                "size": {
+                    "value": 100
+                }
+            },
+            "mark": "circle",
+            "transform": [
+                {
+                    "filter": {
+                        "selection": "CylYr"
+                    }
+                }
+            ]
+        }
+    ],
+    "transform": [
+        {
+            "as": "Year",
+            "calculate": "year(datum.Year)"
+        }
+    ]
 }

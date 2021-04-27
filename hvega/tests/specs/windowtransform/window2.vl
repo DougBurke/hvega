@@ -1,58 +1,58 @@
 {
-    "transform": [
-        {
-            "filter": "datum.IMDB_Rating != null"
-        },
-        {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "AverageRating",
-                    "field": "IMDB_Rating"
-                }
-            ],
-            "frame": [
-                null,
-                null
-            ]
-        },
-        {
-            "filter": "(datum.IMDB_Rating - datum.AverageRating) > 2.5"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "layer": [
         {
-            "mark": "bar",
             "encoding": {
                 "x": {
-                    "field": "IMDB_Rating",
-                    "type": "quantitative",
                     "axis": {
                         "title": "IMDB Rating"
-                    }
+                    },
+                    "field": "IMDB_Rating",
+                    "type": "quantitative"
                 },
                 "y": {
                     "field": "Title",
                     "type": "ordinal"
                 }
-            }
+            },
+            "mark": "bar"
         },
         {
+            "encoding": {
+                "x": {
+                    "aggregate": "mean",
+                    "field": "AverageRating",
+                    "type": "quantitative"
+                }
+            },
             "mark": {
                 "color": "red",
                 "type": "rule"
-            },
-            "encoding": {
-                "x": {
-                    "field": "AverageRating",
-                    "aggregate": "mean",
-                    "type": "quantitative"
-                }
             }
+        }
+    ],
+    "transform": [
+        {
+            "filter": "datum.IMDB_Rating != null"
+        },
+        {
+            "frame": [
+                null,
+                null
+            ],
+            "window": [
+                {
+                    "as": "AverageRating",
+                    "field": "IMDB_Rating",
+                    "op": "mean"
+                }
+            ]
+        },
+        {
+            "filter": "(datum.IMDB_Rating - datum.AverageRating) > 2.5"
         }
     ]
 }

@@ -1,31 +1,52 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 900,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "One dot per airport in the US overlayed on geoshape",
+    "height": 500,
     "layer": [
         {
-            "mark": {
-                "stroke": "#fff",
-                "fill": "#ddd",
-                "type": "geoshape"
-            },
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
                 "format": {
                     "feature": "states",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json"
+            },
+            "mark": {
+                "fill": "#ddd",
+                "stroke": "#fff",
+                "type": "geoshape"
             }
         },
         {
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
+            },
+            "encoding": {
+                "latitude": {
+                    "field": "o.latitude",
+                    "type": "quantitative"
+                },
+                "latitude2": {
+                    "field": "d.latitude"
+                },
+                "longitude": {
+                    "field": "o.longitude",
+                    "type": "quantitative"
+                },
+                "longitude2": {
+                    "field": "d.longitude"
+                }
+            },
+            "mark": {
+                "color": "black",
+                "opacity": 0.35,
+                "type": "rule"
+            },
             "transform": [
                 {
                     "filter": {
@@ -52,98 +73,16 @@
                     },
                     "lookup": "destination"
                 }
-            ],
-            "mark": {
-                "color": "black",
-                "opacity": 0.35,
-                "type": "rule"
-            },
-            "data": {
-                "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
-            },
-            "encoding": {
-                "latitude": {
-                    "field": "o.latitude",
-                    "type": "quantitative"
-                },
-                "latitude2": {
-                    "field": "d.latitude"
-                },
-                "longitude": {
-                    "field": "o.longitude",
-                    "type": "quantitative"
-                },
-                "longitude2": {
-                    "field": "d.longitude"
-                }
-            }
+            ]
         },
         {
-            "transform": [
-                {
-                    "groupby": [
-                        "origin"
-                    ],
-                    "aggregate": [
-                        {
-                            "op": "count",
-                            "as": "routes"
-                        }
-                    ]
-                },
-                {
-                    "from": {
-                        "data": {
-                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
-                        },
-                        "key": "iata",
-                        "fields": [
-                            "name",
-                            "state",
-                            "latitude",
-                            "longitude"
-                        ]
-                    },
-                    "lookup": "origin"
-                },
-                {
-                    "filter": "datum.state !== 'PR' && datum.state !== 'VI'"
-                }
-            ],
-            "mark": "circle",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
             },
-            "selection": {
-                "mySelection": {
-                    "nearest": true,
-                    "empty": "none",
-                    "type": "single",
-                    "on": "mouseover",
-                    "fields": [
-                        "origin"
-                    ]
-                }
-            },
             "encoding": {
-                "size": {
-                    "field": "routes",
-                    "scale": {
-                        "range": [
-                            0,
-                            1000
-                        ]
-                    },
-                    "type": "quantitative",
-                    "legend": null
-                },
                 "latitude": {
                     "field": "latitude",
                     "type": "quantitative"
-                },
-                "tooltip": {
-                    "field": "name",
-                    "type": "nominal"
                 },
                 "longitude": {
                     "field": "longitude",
@@ -153,9 +92,70 @@
                     "field": "routes",
                     "sort": "descending",
                     "type": "quantitative"
+                },
+                "size": {
+                    "field": "routes",
+                    "legend": null,
+                    "scale": {
+                        "range": [
+                            0,
+                            1000
+                        ]
+                    },
+                    "type": "quantitative"
+                },
+                "tooltip": {
+                    "field": "name",
+                    "type": "nominal"
                 }
-            }
+            },
+            "mark": "circle",
+            "selection": {
+                "mySelection": {
+                    "empty": "none",
+                    "fields": [
+                        "origin"
+                    ],
+                    "nearest": true,
+                    "on": "mouseover",
+                    "type": "single"
+                }
+            },
+            "transform": [
+                {
+                    "aggregate": [
+                        {
+                            "as": "routes",
+                            "op": "count"
+                        }
+                    ],
+                    "groupby": [
+                        "origin"
+                    ]
+                },
+                {
+                    "from": {
+                        "data": {
+                            "url": "https://vega.github.io/vega-lite/data/airports.csv"
+                        },
+                        "fields": [
+                            "name",
+                            "state",
+                            "latitude",
+                            "longitude"
+                        ],
+                        "key": "iata"
+                    },
+                    "lookup": "origin"
+                },
+                {
+                    "filter": "datum.state !== 'PR' && datum.state !== 'VI'"
+                }
+            ]
         }
     ],
-    "description": "One dot per airport in the US overlayed on geoshape"
+    "projection": {
+        "type": "albersUsa"
+    },
+    "width": 900
 }

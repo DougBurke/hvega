@@ -1,64 +1,35 @@
 {
-    "transform": [
-        {
-            "filter": "isValid(datum.IMDB_Rating)"
-        },
-        {
-            "as": "year",
-            "field": "Release_Date",
-            "timeUnit": "year"
-        },
-        {
-            "window": [
-                {
-                    "op": "mean",
-                    "as": "AverageYearRating",
-                    "field": "IMDB_Rating"
-                }
-            ],
-            "groupby": [
-                "year"
-            ],
-            "frame": [
-                null,
-                null
-            ]
-        },
-        {
-            "filter": "(datum.IMDB_Rating - datum.AverageYearRating) > 2.5"
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/movies.json",
         "format": {
             "parse": {
                 "Release_Date": "date:'%d-%b-%y'"
             }
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Calculation of difference from annual average",
     "layer": [
         {
-            "mark": {
-                "type": "bar",
-                "clip": true
-            },
             "encoding": {
                 "x": {
-                    "field": "IMDB_Rating",
-                    "type": "quantitative",
                     "axis": {
                         "title": "IMDB Rating"
-                    }
+                    },
+                    "field": "IMDB_Rating",
+                    "type": "quantitative"
                 },
                 "y": {
                     "field": "Title",
                     "type": "ordinal"
                 }
+            },
+            "mark": {
+                "clip": true,
+                "type": "bar"
             }
         },
         {
-            "mark": "tick",
             "encoding": {
                 "color": {
                     "value": "red"
@@ -71,8 +42,37 @@
                     "field": "Title",
                     "type": "ordinal"
                 }
-            }
+            },
+            "mark": "tick"
         }
     ],
-    "description": "Calculation of difference from annual average"
+    "transform": [
+        {
+            "filter": "isValid(datum.IMDB_Rating)"
+        },
+        {
+            "as": "year",
+            "field": "Release_Date",
+            "timeUnit": "year"
+        },
+        {
+            "frame": [
+                null,
+                null
+            ],
+            "groupby": [
+                "year"
+            ],
+            "window": [
+                {
+                    "as": "AverageYearRating",
+                    "field": "IMDB_Rating",
+                    "op": "mean"
+                }
+            ]
+        },
+        {
+            "filter": "(datum.IMDB_Rating - datum.AverageYearRating) > 2.5"
+        }
+    ]
 }

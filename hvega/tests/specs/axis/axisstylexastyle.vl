@@ -1,26 +1,25 @@
 {
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
+        "axisX": {
+            "style": "x-style"
+        },
         "style": {
             "x-style": {
                 "domainColor": "orange",
-                "labelExpr": "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)",
-                "gridColor": "lightgreen"
+                "gridColor": "lightgreen",
+                "labelExpr": "if (datum.value <= 100, 'low:' + datum.label, 'high:' + datum.label)"
             }
-        },
-        "axisX": {
-            "style": "x-style"
         }
     },
-    "mark": "point",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "Origin",
-            "type": "nominal",
-            "legend": null
+            "legend": null,
+            "type": "nominal"
         },
         "x": {
             "field": "Horsepower",
@@ -30,5 +29,6 @@
             "field": "Miles_per_Gallon",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "point"
 }

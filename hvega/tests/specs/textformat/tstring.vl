@@ -1,6 +1,5 @@
 {
-    "height": 100,
-    "mark": "text",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -17,8 +16,6 @@
             }
         ]
     },
-    "width": 100,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "text": {
             "value": "🐕"
@@ -31,5 +28,8 @@
             "field": "y",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 100,
+    "mark": "text",
+    "width": 100
 }

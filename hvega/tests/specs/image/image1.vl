@@ -1,9 +1,5 @@
 {
-    "mark": {
-        "height": 25,
-        "width": 25,
-        "type": "image"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -20,7 +16,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "url": {
             "value": "https://vega.github.io/vega-lite/data/ffox.png"
@@ -33,5 +28,10 @@
             "field": "y",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "height": 25,
+        "type": "image",
+        "width": 25
     }
 }

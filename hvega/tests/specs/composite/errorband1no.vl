@@ -1,14 +1,8 @@
 {
-    "mark": {
-        "borders": false,
-        "extent": "ci",
-        "interpolate": "monotone",
-        "type": "errorband"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "Year",
@@ -23,5 +17,11 @@
             "title": "Miles per Gallon (95% CI)",
             "type": "quantitative"
         }
+    },
+    "mark": {
+        "borders": false,
+        "extent": "ci",
+        "interpolate": "monotone",
+        "type": "errorband"
     }
 }

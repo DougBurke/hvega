@@ -1,14 +1,8 @@
 {
-    "mark": {
-        "strokeWidth": 1,
-        "opacity": 0.6,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/stocks.csv"
     },
-    "width": 350,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "strokeDash": {
             "field": "symbol",
@@ -22,5 +16,11 @@
             "field": "price",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": {
+        "opacity": 0.6,
+        "strokeWidth": 1,
+        "type": "line"
+    },
+    "width": 350
 }

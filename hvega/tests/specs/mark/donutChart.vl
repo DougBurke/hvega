@@ -1,8 +1,5 @@
 {
-    "mark": {
-        "type": "arc",
-        "innerRadius": 50
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -31,19 +28,22 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "view": {
-        "stroke": null
-    },
+    "description": "A simple donut chart with embedded data.",
     "encoding": {
-        "theta": {
-            "field": "value",
-            "type": "quantitative"
-        },
         "color": {
             "field": "category",
             "type": "nominal"
+        },
+        "theta": {
+            "field": "value",
+            "type": "quantitative"
         }
     },
-    "description": "A simple donut chart with embedded data."
+    "mark": {
+        "innerRadius": 50,
+        "type": "arc"
+    },
+    "view": {
+        "stroke": null
+    }
 }

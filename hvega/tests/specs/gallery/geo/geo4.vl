@@ -1,42 +1,35 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "width": 800,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
-    "projection": {
-        "type": "albersUsa"
-    },
+    "description": "Rules (line segments) connecting SEA to every airport reachable via direct flight",
+    "height": 500,
     "layer": [
         {
-            "mark": "geoshape",
             "data": {
-                "url": "https://vega.github.io/vega-lite/data/us-10m.json",
                 "format": {
                     "feature": "states",
                     "type": "topojson"
-                }
+                },
+                "url": "https://vega.github.io/vega-lite/data/us-10m.json"
             },
             "encoding": {
                 "color": {
                     "value": "#eee"
                 }
-            }
+            },
+            "mark": "geoshape"
         },
         {
-            "mark": "circle",
             "data": {
                 "url": "https://vega.github.io/vega-lite/data/airports.csv"
             },
             "encoding": {
                 "color": {
                     "value": "gray"
-                },
-                "size": {
-                    "value": 5
                 },
                 "latitude": {
                     "field": "latitude",
@@ -45,10 +38,34 @@
                 "longitude": {
                     "field": "longitude",
                     "type": "quantitative"
+                },
+                "size": {
+                    "value": 5
                 }
-            }
+            },
+            "mark": "circle"
         },
         {
+            "data": {
+                "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
+            },
+            "encoding": {
+                "latitude": {
+                    "field": "o.latitude",
+                    "type": "quantitative"
+                },
+                "latitude2": {
+                    "field": "d.latitude"
+                },
+                "longitude": {
+                    "field": "o.longitude",
+                    "type": "quantitative"
+                },
+                "longitude2": {
+                    "field": "d.longitude"
+                }
+            },
+            "mark": "rule",
             "transform": [
                 {
                     "filter": {
@@ -76,28 +93,11 @@
                     },
                     "lookup": "destination"
                 }
-            ],
-            "mark": "rule",
-            "data": {
-                "url": "https://vega.github.io/vega-lite/data/flights-airport.csv"
-            },
-            "encoding": {
-                "latitude": {
-                    "field": "o.latitude",
-                    "type": "quantitative"
-                },
-                "latitude2": {
-                    "field": "d.latitude"
-                },
-                "longitude": {
-                    "field": "o.longitude",
-                    "type": "quantitative"
-                },
-                "longitude2": {
-                    "field": "d.longitude"
-                }
-            }
+            ]
         }
     ],
-    "description": "Rules (line segments) connecting SEA to every airport reachable via direct flight"
+    "projection": {
+        "type": "albersUsa"
+    },
+    "width": 800
 }

@@ -1,5 +1,5 @@
 {
-    "mark": "circle",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -31,10 +31,12 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "b",
+            "legend": {
+                "title": "Threshold"
+            },
             "scale": {
                 "domain": [
                     30,
@@ -43,10 +45,7 @@
                 "scheme": "viridis",
                 "type": "threshold"
             },
-            "type": "quantitative",
-            "legend": {
-                "title": "Threshold"
-            }
+            "type": "quantitative"
         },
         "size": {
             "field": "b",
@@ -65,14 +64,15 @@
             "type": "quantitative"
         },
         "y": {
-            "field": "b",
-            "sort": null,
-            "type": "nominal",
             "axis": {
                 "domain": false,
-                "title": null,
-                "ticks": false
-            }
+                "ticks": false,
+                "title": null
+            },
+            "field": "b",
+            "sort": null,
+            "type": "nominal"
         }
-    }
+    },
+    "mark": "circle"
 }

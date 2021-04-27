@@ -1,27 +1,27 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/barley.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Barley crop yields in 1931 and 1932 shown as stacked bar charts",
     "encoding": {
         "color": {
             "field": "site",
             "type": "nominal"
         },
-        "x": {
-            "field": "yield",
-            "aggregate": "sum",
-            "type": "quantitative"
-        },
         "column": {
             "field": "year",
             "type": "ordinal"
+        },
+        "x": {
+            "aggregate": "sum",
+            "field": "yield",
+            "type": "quantitative"
         },
         "y": {
             "field": "variety",
             "type": "nominal"
         }
     },
-    "description": "Barley crop yields in 1931 and 1932 shown as stacked bar charts"
+    "mark": "bar"
 }

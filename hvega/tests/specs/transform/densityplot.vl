@@ -1,27 +1,8 @@
 {
-    "transform": [
-        {
-            "filter": "datum.IMDB_Rating != null"
-        },
-        {
-            "bandwidth": 0.3,
-            "density": "IMDB_Rating"
-        }
-    ],
-    "height": 400,
-    "mark": {
-        "strokeWidth": 2,
-        "stroke": "firebrick",
-        "fill": "teal",
-        "strokeOpacity": 0.7,
-        "type": "area",
-        "fillOpacity": 0.8
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "width": 400,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "x": {
             "field": "value",
@@ -32,5 +13,24 @@
             "field": "density",
             "type": "quantitative"
         }
-    }
+    },
+    "height": 400,
+    "mark": {
+        "fill": "teal",
+        "fillOpacity": 0.8,
+        "stroke": "firebrick",
+        "strokeOpacity": 0.7,
+        "strokeWidth": 2,
+        "type": "area"
+    },
+    "transform": [
+        {
+            "filter": "datum.IMDB_Rating != null"
+        },
+        {
+            "bandwidth": 0.3,
+            "density": "IMDB_Rating"
+        }
+    ],
+    "width": 400
 }

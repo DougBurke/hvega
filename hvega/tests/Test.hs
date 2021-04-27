@@ -25,7 +25,8 @@ the key/value pairs of dictionaries get displayed in the same order).
 
 import qualified Data.ByteString.Lazy.Char8 as BL8
 
-import Data.Aeson.Encode.Pretty (encodePretty)
+import Data.Aeson (Value)
+import Data.Aeson.Encode.Pretty (Config(confCompare), encodePretty', defConfig)
 
 import System.FilePath ((</>), (<.>))
 
@@ -84,6 +85,20 @@ import qualified Gallery.Multi as GM
 import qualified Gallery.Repeat as GR
 import qualified Gallery.Scatter as GS
 import qualified Gallery.Table as GTBL
+
+
+-- Ensure we have a repeatable ordering for the output.
+-- Hopefully this is repeatable enough (brought on by
+-- changes in hashable 0.3.1.0 but it makes sense to
+-- do this here as I hadn't realised that the default
+-- encodePretty didn't actually apply any sorting to
+-- the keys).
+--
+encodePretty :: Value -> BL8.ByteString
+encodePretty = encodePretty' config
+  where
+    config = defConfig { confCompare = compare }
+
 
 -- The "golden" output is "tests/specs/<label>/<name>.vl"
 -- where label can now itself contain sub-directories, so should

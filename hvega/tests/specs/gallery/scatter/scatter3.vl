@@ -1,9 +1,9 @@
 {
-    "mark": "tick",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/cars.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Shows the relationship between horsepower and the number of cylinders using tick marks.",
     "encoding": {
         "x": {
             "field": "Horsepower",
@@ -14,5 +14,5 @@
             "type": "ordinal"
         }
     },
-    "description": "Shows the relationship between horsepower and the number of cylinders using tick marks."
+    "mark": "tick"
 }

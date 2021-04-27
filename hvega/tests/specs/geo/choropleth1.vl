@@ -1,27 +1,27 @@
 {
-    "height": 500,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "mark": {
-        "strokeOpacity": 0,
-        "type": "geoshape"
-    },
     "data": {
-        "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json",
         "format": {
             "feature": "boroughs",
             "type": "topojson"
-        }
+        },
+        "url": "https://vega.github.io/vega-lite/data/londonBoroughs.json"
     },
-    "width": 900,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "id",
             "type": "nominal"
         }
-    }
+    },
+    "height": 500,
+    "mark": {
+        "strokeOpacity": 0,
+        "type": "geoshape"
+    },
+    "width": 900
 }

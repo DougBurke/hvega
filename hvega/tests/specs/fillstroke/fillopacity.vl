@@ -1,5 +1,5 @@
 {
-    "mark": "bar",
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -12,22 +12,22 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
-        "x": {
-            "field": "a",
-            "type": "ordinal",
-            "axis": {
-                "labelAngle": 0
-            }
-        },
         "fillOpacity": {
             "field": "b",
             "type": "quantitative"
+        },
+        "x": {
+            "axis": {
+                "labelAngle": 0
+            },
+            "field": "a",
+            "type": "ordinal"
         },
         "y": {
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": "bar"
 }

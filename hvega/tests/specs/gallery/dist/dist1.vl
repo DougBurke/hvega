@@ -1,16 +1,13 @@
 {
-    "mark": {
-        "binSpacing": 0,
-        "type": "bar"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "url": "https://vega.github.io/vega-lite/data/movies.json"
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Simple histogram of IMDB ratings.",
     "encoding": {
         "x": {
-            "field": "IMDB_Rating",
             "bin": true,
+            "field": "IMDB_Rating",
             "type": "quantitative"
         },
         "y": {
@@ -18,5 +15,8 @@
             "type": "quantitative"
         }
     },
-    "description": "Simple histogram of IMDB ratings."
+    "mark": {
+        "binSpacing": 0,
+        "type": "bar"
+    }
 }

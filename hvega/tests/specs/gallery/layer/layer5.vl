@@ -1,9 +1,9 @@
 {
-    "height": 50,
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "area": {
-            "orient": "vertical",
-            "interpolate": "monotone"
+            "interpolate": "monotone",
+            "orient": "vertical"
         }
     },
     "data": {
@@ -90,14 +90,20 @@
             }
         ]
     },
-    "width": 300,
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "description": "Horizon chart with 2 layers. (See https://idl.cs.washington.edu/papers/horizon/ for more details on horizon charts.)",
+    "encoding": {
+        "x": {
+            "field": "x",
+            "scale": {
+                "nice": false,
+                "zero": false
+            },
+            "type": "quantitative"
+        }
+    },
+    "height": 50,
     "layer": [
         {
-            "mark": {
-                "type": "area",
-                "clip": true
-            },
             "encoding": {
                 "opacity": {
                     "value": 0.6
@@ -112,24 +118,21 @@
                     },
                     "type": "quantitative"
                 }
+            },
+            "mark": {
+                "clip": true,
+                "type": "area"
             }
         },
         {
-            "transform": [
-                {
-                    "as": "ny",
-                    "calculate": "datum.y - 50"
-                }
-            ],
-            "mark": {
-                "type": "area",
-                "clip": true
-            },
             "encoding": {
                 "opacity": {
                     "value": 0.3
                 },
                 "y": {
+                    "axis": {
+                        "title": "y"
+                    },
                     "field": "ny",
                     "scale": {
                         "domain": [
@@ -137,23 +140,20 @@
                             50
                         ]
                     },
-                    "type": "quantitative",
-                    "axis": {
-                        "title": "y"
-                    }
+                    "type": "quantitative"
                 }
-            }
+            },
+            "mark": {
+                "clip": true,
+                "type": "area"
+            },
+            "transform": [
+                {
+                    "as": "ny",
+                    "calculate": "datum.y - 50"
+                }
+            ]
         }
     ],
-    "encoding": {
-        "x": {
-            "field": "x",
-            "scale": {
-                "zero": false,
-                "nice": false
-            },
-            "type": "quantitative"
-        }
-    },
-    "description": "Horizon chart with 2 layers. (See https://idl.cs.washington.edu/papers/horizon/ for more details on horizon charts.)"
+    "width": 300
 }

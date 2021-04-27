@@ -1,40 +1,5 @@
 {
-    "transform": [
-        {
-            "as": "a",
-            "calculate": "datum.A"
-        },
-        {
-            "as": "b",
-            "calculate": "datum.B"
-        },
-        {
-            "as": "c",
-            "calculate": "datum.C"
-        },
-        {
-            "groupby": [
-                "c"
-            ],
-            "key": "a",
-            "method": "mean",
-            "frame": [
-                -2,
-                2
-            ],
-            "impute": "b"
-        }
-    ],
-    "mark": {
-        "strokeWidth": 2,
-        "strokeDash": [
-            5,
-            10,
-            5
-        ],
-        "strokeOpacity": 0.5,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
@@ -74,7 +39,6 @@
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
         "color": {
             "field": "c",
@@ -88,5 +52,41 @@
             "field": "b",
             "type": "quantitative"
         }
-    }
+    },
+    "mark": {
+        "strokeDash": [
+            5,
+            10,
+            5
+        ],
+        "strokeOpacity": 0.5,
+        "strokeWidth": 2,
+        "type": "line"
+    },
+    "transform": [
+        {
+            "as": "a",
+            "calculate": "datum.A"
+        },
+        {
+            "as": "b",
+            "calculate": "datum.B"
+        },
+        {
+            "as": "c",
+            "calculate": "datum.C"
+        },
+        {
+            "frame": [
+                -2,
+                2
+            ],
+            "groupby": [
+                "c"
+            ],
+            "impute": "b",
+            "key": "a",
+            "method": "mean"
+        }
+    ]
 }

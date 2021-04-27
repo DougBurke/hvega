@@ -1,124 +1,124 @@
 {
-    "hconcat": [
-        {
-            "height": 300,
-            "width": 300,
-            "projection": {
-                "type": "orthographic"
-            },
-            "layer": [
-                {
-                    "mark": {
-                        "strokeWidth": 0.1,
-                        "stroke": "#411",
-                        "type": "geoshape",
-                        "filled": false
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
-                        "format": {
-                            "feature": "graticule",
-                            "type": "topojson"
-                        }
-                    }
-                },
-                {
-                    "mark": {
-                        "fill": "black",
-                        "type": "geoshape",
-                        "fillOpacity": 0.7
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
-                        "format": {
-                            "feature": "land",
-                            "type": "topojson"
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "height": 300,
-            "width": 300,
-            "projection": {
-                "type": "orthographic"
-            },
-            "layer": [
-                {
-                    "mark": {
-                        "strokeWidth": 0.1,
-                        "stroke": "#411",
-                        "type": "geoshape",
-                        "filled": false
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
-                        "format": {
-                            "feature": "graticule",
-                            "type": "topojson"
-                        }
-                    }
-                },
-                {
-                    "mark": {
-                        "fill": "black",
-                        "type": "geoshape",
-                        "fillOpacity": 0.7
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
-                        "format": {
-                            "feature": "land",
-                            "type": "topojson"
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "height": 300,
-            "width": 300,
-            "projection": {
-                "type": "orthographic"
-            },
-            "layer": [
-                {
-                    "mark": {
-                        "strokeWidth": 0.1,
-                        "stroke": "#411",
-                        "type": "geoshape",
-                        "filled": false
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/graticule.json",
-                        "format": {
-                            "feature": "graticule",
-                            "type": "topojson"
-                        }
-                    }
-                },
-                {
-                    "mark": {
-                        "fill": "black",
-                        "type": "geoshape",
-                        "fillOpacity": 0.7
-                    },
-                    "data": {
-                        "url": "https://vega.github.io/vega-lite/data/world-110m.json",
-                        "format": {
-                            "feature": "land",
-                            "type": "topojson"
-                        }
-                    }
-                }
-            ]
-        }
-    ],
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "config": {
         "view": {
             "stroke": null
         }
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json"
+    "hconcat": [
+        {
+            "height": 300,
+            "layer": [
+                {
+                    "data": {
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json"
+                    },
+                    "mark": {
+                        "filled": false,
+                        "stroke": "#411",
+                        "strokeWidth": 0.1,
+                        "type": "geoshape"
+                    }
+                },
+                {
+                    "data": {
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json"
+                    },
+                    "mark": {
+                        "fill": "black",
+                        "fillOpacity": 0.7,
+                        "type": "geoshape"
+                    }
+                }
+            ],
+            "projection": {
+                "type": "orthographic"
+            },
+            "width": 300
+        },
+        {
+            "height": 300,
+            "layer": [
+                {
+                    "data": {
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json"
+                    },
+                    "mark": {
+                        "filled": false,
+                        "stroke": "#411",
+                        "strokeWidth": 0.1,
+                        "type": "geoshape"
+                    }
+                },
+                {
+                    "data": {
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json"
+                    },
+                    "mark": {
+                        "fill": "black",
+                        "fillOpacity": 0.7,
+                        "type": "geoshape"
+                    }
+                }
+            ],
+            "projection": {
+                "type": "orthographic"
+            },
+            "width": 300
+        },
+        {
+            "height": 300,
+            "layer": [
+                {
+                    "data": {
+                        "format": {
+                            "feature": "graticule",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/graticule.json"
+                    },
+                    "mark": {
+                        "filled": false,
+                        "stroke": "#411",
+                        "strokeWidth": 0.1,
+                        "type": "geoshape"
+                    }
+                },
+                {
+                    "data": {
+                        "format": {
+                            "feature": "land",
+                            "type": "topojson"
+                        },
+                        "url": "https://vega.github.io/vega-lite/data/world-110m.json"
+                    },
+                    "mark": {
+                        "fill": "black",
+                        "fillOpacity": 0.7,
+                        "type": "geoshape"
+                    }
+                }
+            ],
+            "projection": {
+                "type": "orthographic"
+            },
+            "width": 300
+        }
+    ]
 }

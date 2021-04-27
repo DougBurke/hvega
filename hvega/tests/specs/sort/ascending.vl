@@ -1,47 +1,47 @@
 {
-    "height": 300,
-    "mark": {
-        "strokeWidth": 0.5,
-        "type": "line"
-    },
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "data": {
         "values": [
             {
-                "Weight_in_lbs": 19,
-                "Horsepower": 1
+                "Horsepower": 1,
+                "Weight_in_lbs": 19
             },
             {
-                "Weight_in_lbs": 21,
-                "Horsepower": 5
+                "Horsepower": 5,
+                "Weight_in_lbs": 21
             },
             {
-                "Weight_in_lbs": 58,
-                "Horsepower": 2
+                "Horsepower": 2,
+                "Weight_in_lbs": 58
             },
             {
-                "Weight_in_lbs": 12,
-                "Horsepower": 3
+                "Horsepower": 3,
+                "Weight_in_lbs": 12
             },
             {
-                "Weight_in_lbs": 13,
-                "Horsepower": 4
+                "Horsepower": 4,
+                "Weight_in_lbs": 13
             }
         ]
     },
-    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "encoding": {
+        "order": {
+            "field": "Horsepower",
+            "type": "ordinal"
+        },
         "x": {
             "field": "Horsepower",
             "sort": "ascending",
             "type": "quantitative"
         },
-        "order": {
-            "field": "Horsepower",
-            "type": "ordinal"
-        },
         "y": {
             "field": "Horsepower",
             "type": "quantitative"
         }
+    },
+    "height": 300,
+    "mark": {
+        "strokeWidth": 0.5,
+        "type": "line"
     }
 }
