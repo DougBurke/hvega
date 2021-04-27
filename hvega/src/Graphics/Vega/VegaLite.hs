@@ -1,6 +1,6 @@
 {-|
 Module      : Graphics.Vega.VegaLite
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -859,6 +859,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Version 0.11
          --
+         -- $update01101
          -- $update01100
 
          -- ** Version 0.10
@@ -1266,6 +1267,11 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01101
+-- The @0.11.0.1@ release is purely to support testing with @hashable@ 0.3.1.0.
+-- There are no changes to the module.
+--
 
 -- $update01100
 -- The @0.11.0.0@ release updates @hvega@ to support version 4.15 of
