@@ -28,7 +28,8 @@ jobs:
         ghc:
           - "8.4.4"
           - "8.6.5"
-          - "8.8.4"
+          # - "8.8.4"  why has this disappeared?
+          - "8.8.3"
           - "8.10.5"
           - "9.0.1"
         exclude:
@@ -37,13 +38,13 @@ jobs:
           - os: macOS-latest
             ghc: 8.6.5
           - os: macOS-latest
-            ghc: 8.8.4
+            ghc: 8.8.3
           - os: windows-latest
             ghc: 8.4.4
           - os: windows-latest
             ghc: 8.6.5
           - os: windows-latest
-            ghc: 8.8.4
+            ghc: 8.8.3
 
     steps:
     - uses: actions/checkout@v2
@@ -92,14 +93,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        stack: ["2.3.1"]
-        ghc: ["8.8.4"]
+        stack: ["latest"]
+        ghc: ["8.10.4"]
 
     steps:
     - uses: actions/checkout@v2
       if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/main'
 
-    - uses: actions/setup-haskell@v1.1.4
+    - uses: haskell/actions/setup@v1
       name: Setup Haskell Stack
       with:
         ghc-version: ${{ matrix.ghc }}
