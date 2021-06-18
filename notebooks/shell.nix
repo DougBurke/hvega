@@ -15,23 +15,17 @@ let
     packages = p: with p; [ numpy ];
   };
 
-  # I haven't released the updated ihaskell-vega yet, so need to grab
-  # it from GitHub. Why am I not just using the on-disk source?
-  #
-  # hvegaSource = builtins.fetchGit {
-  #   url = https://github.com/DougBurke/hvega;
-  #   rev = "";
-  # };
-  hvegaSource = ../.;
+  gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ../.gitignore ];
 
+  hvegaSource = ../.;
   hvegaDir = hvegaSource + "/hvega";
   ihaskellvegaDir = hvegaSource + "/ihaskell-hvega";
 
   haskellPackages = pkgs.haskellPackages.override (old: {
     overrides = pkgs.lib.composeExtensions old.overrides
       (self: ps: {
-        hvega = ps.callCabal2nix "hvega" hvegaDir {};
-        ihaskell-hvega = ps.callCabal2nix "ihaskell-hvega" ihaskellvegaDir {};
+        hvega = ps.callCabal2nix "hvega" (gitignore hvegaDir) {};
+        ihaskell-hvega = ps.callCabal2nix "ihaskell-hvega" (gitignore ihaskellvegaDir) {};
       });
     });
 
@@ -53,8 +47,8 @@ let
   jupyterEnvironment =
     jupyter.jupyterlabWith {
       # kernels = [ iPython iHaskell ];
-      # kernels = [ iHaskell ];
-      kernels = [ iHaskellWork ];
+      kernels = [ iHaskell ];
+      # kernels = [ iHaskellWork ];
     };
 in
   jupyterEnvironment.env
