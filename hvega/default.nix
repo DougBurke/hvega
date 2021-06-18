@@ -1,13 +1,9 @@
-# Looks like release-20.03 doesn't have haskell-language-server so stick
-# with nixpkgs-unstable
-{ nixpkgs ? import <nixpkgs> {}, compiler ? "ghc8104" }:
+{ sources ? import ../nix/sources.nix
+, pkgs ? import sources.nixpkgs {}
+, compiler ? "ghc8104"
+}:
 
 let
-  # sources = import ../nix/sources.nix;
-  # pkgs = import sources.nixpkgs {};
-
-  inherit (nixpkgs) pkgs;
-
   # since we are in a sub-directory
   # gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
   gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ../.gitignore ];
@@ -32,7 +28,7 @@ let
     withHoogle = true;
   };
 
-  # exe = pkgs.haskell.lib.justStaticExecutables (myHaskellPackages."{{cookiecutter.project_name}}");
+  # exe = pkgs.haskell.lib.justStaticExecutables (myHaskellPackages."hvega");
 
   # docker = pkgs.dockerTools.buildImage {
   #   name = "{{cookiecutter.project_name}}";
