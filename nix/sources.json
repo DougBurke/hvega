@@ -1,4 +1,16 @@
 {
+    "IHaskell": {
+        "branch": "master",
+        "description": "A Haskell kernel for IPython.",
+        "homepage": null,
+        "owner": "gibiansky",
+        "repo": "IHaskell",
+        "rev": "4e1a2a132c165e1669faaeac355eb853e1f628a3",
+        "sha256": "12h77j73wmznplkm5m4mmgj1qzm7f3mjyk7xmr9h1rw37m6xp72f",
+        "type": "tarball",
+        "url": "https://github.com/gibiansky/IHaskell/archive/4e1a2a132c165e1669faaeac355eb853e1f628a3.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
     "niv": {
         "branch": "master",
         "description": "Easy dependency management for Nix projects",
