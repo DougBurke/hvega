@@ -15,6 +15,27 @@ City University of London. The two have diverged somewhat since (mainly
 that `hvega` still uses data types as its primary control structure
 whilst the Elm version has moved to functions).
 
+# How do I create a visualization?
+
+The `hvega` package allows you to create a visualization but this is
+just a JSON file - you still need a way to view it. There are a number
+of ways:
+
+- view it in the [Vega Editor](https://vega.github.io/editor/)
+- embed the file into a HTML page and use the [Vega Embed](https://github.com/vega/vega-embed)
+  Javascript library to view it
+- the `hvega` package contains helper routines that will create a
+  HTML page that includes `Vega Embed` for viewing in a web browser
+  (see [toHtmlFile](https://hackage.haskell.org/package/hvega/docs/Graphics-Vega-VegaLite.html#v:toHtml)
+  and related routines)
+- use a "Vega viewer" - I have a Haskell-based solution at
+  [Vega View](https://hackage.haskell.org/package/vega-view) but there are
+  alternatives, such as 
+  [vega desktop](https://github.com/vega/vega-desktop).
+
+The [Vega-Lite ecosystem](https://vega.github.io/vega-lite/ecosystem.html)
+page contains a miriad useful links.
+
 # Installation
 
 The packages are available on [hackage](https://hackage.haskell.org/):
@@ -24,10 +45,21 @@ The packages are available on [hackage](https://hackage.haskell.org/):
 
 There is a top-level `stack.yaml` which builds both `hvega` and
 `ihaskell-hvega` using [Stack](https://docs.haskellstack.org/en/stable/README/).
-There is also a `shell.nix` file for development with
-[Nix](https://nixos.org/nix/). At the present time (Devember 2019)
-I don't make any guarantees about either method (in particular
-for `ihaskell-vega`).
+There is also a `default.nix` file for development with
+[Nix](https://nixos.org/nix/) - you can try
+
+```bash
+% nix-build
+... wait an indeterminite time
+% ./result/bin/ihaskell-notebook --notebook-dir notebooks
+```
+
+but it (currently) doesn't use the on-disk versions of `hvega` and
+`ihaskell-hvega`.  The `notebooks/shell.nix` file contains a version
+that uses [Tweag I/O's jupyterWith
+environment](https://github.com/tweag/jupyterWith) environment but
+that unfortunately seems to be using "old" versions of IHaskell and
+ghc.
 
 # Testing
 
