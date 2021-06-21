@@ -17,8 +17,8 @@ let
 in import "${sources.IHaskell}/release.nix" {
   compiler = "ghc8104";
   nixpkgs = pkgs;
-  packages = p: [ hvega ihaskell-hvega ];
-  # packages = p: [ hvega ihaskell-hvega p.aeson p.aeson-pretty p.Frames p.foldl p.formatting p.microlens ];
+  # packages = p: [ hvega ihaskell-hvega ];
+  packages = p: [ hvega ihaskell-hvega p.aeson p.aeson-pretty p.Frames p.foldl p.formatting p.microlens ];
   # packages = self: with self; [ hvega ihaskell-hvega ];
   # systemPackages = self: with self; [ graphviz ];
 }
