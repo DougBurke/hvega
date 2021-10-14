@@ -66,11 +66,9 @@ import Graphics.Vega.VegaLite.Foundation
   -- , field_
   , fromT
   , allowNull
-  , (.=~), toObject
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
-  , LabelledSpec
   , TransformSpec(..)
   , SelectionLabel
   )
@@ -197,11 +195,11 @@ operationSpec Variance = "variance"
 operationSpec VarianceP = "variancep"
 
 
-aggregate_ :: Operation -> LabelledSpec
-aggregate_ op = "aggregate" .=~ operationSpec op
+aggregate_ :: Operation -> Pair
+aggregate_ op = "aggregate" .= operationSpec op
 
-op_ :: Operation -> LabelledSpec
-op_ op = "op" .=~ operationSpec op
+op_ :: Operation -> Pair
+op_ op = "op" .= operationSpec op
 
 
 -- | Window transformations.
@@ -342,26 +340,26 @@ data BinProperty
       -- ^ Pick the step size from this list.
 
 
-binProperty :: BinProperty -> LabelledSpec
-binProperty (AlreadyBinned b) = "binned" .=~ b
-binProperty (BinAnchor x) = "anchor" .=~ x
-binProperty (Base x) = "base" .=~ x
-binProperty (Divide xs) = "divide" .=~ xs
-binProperty (Extent mn mx) = "extent" .=~ [ mn, mx ]
-binProperty (SelectionExtent s) = "extent" .=~ object [ "selection" .= s ]
-binProperty (MaxBins n) = "maxbins" .=~ n
-binProperty (MinStep x) = "minstep" .=~ x
-binProperty (Nice b) = "nice" .=~ b
-binProperty (Step x) = "step" .=~ x
-binProperty (Steps xs) = "steps" .=~ xs
+binProperty :: BinProperty -> Pair
+binProperty (AlreadyBinned b) = "binned" .= b
+binProperty (BinAnchor x) = "anchor" .= x
+binProperty (Base x) = "base" .= x
+binProperty (Divide xs) = "divide" .= xs
+binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
+binProperty (SelectionExtent s) = "extent" .= object [ "selection" .= s ]
+binProperty (MaxBins n) = "maxbins" .= n
+binProperty (MinStep x) = "minstep" .= x
+binProperty (Nice b) = "nice" .= b
+binProperty (Step x) = "step" .= x
+binProperty (Steps xs) = "steps" .= xs
 
 
-bin :: [BinProperty] -> LabelledSpec
-bin [] = "bin" .=~ True
-bin xs = "bin" .=~ toObject (map binProperty xs)
+bin :: [BinProperty] -> Pair
+bin [] = "bin" .= True
+bin xs = "bin" .= object (map binProperty xs)
 
-binned_ :: LabelledSpec
-binned_ = "bin" .=~ fromT "binned"
+binned_ :: Pair
+binned_ = "bin" .= fromT "binned"
 
 
 -- | Properties for a window transform.
@@ -499,8 +497,8 @@ imputePropertySpecValue (ImNewValue dVal) = Just (dataValueSpec dVal)
 imputePropertySpecValue _ = Nothing
 
 
-impute_ :: [ImputeProperty] -> LabelledSpec
-impute_ ips = "impute" .=~ object (map imputeProperty ips)
+impute_ :: [ImputeProperty] -> Pair
+impute_ ips = "impute" .= object (map imputeProperty ips)
 
 
 imputeTS ::

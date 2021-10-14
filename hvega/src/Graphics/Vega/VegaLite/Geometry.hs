@@ -54,12 +54,11 @@ import Graphics.Vega.VegaLite.Data
   )
 import Graphics.Vega.VegaLite.Foundation
   ( fromT
-  , (.=~), toObject
+  , toObject
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLProjection)
   , VLSpec
-  , LabelledSpec
   , PropertySpec
   )
 import Graphics.Vega.VegaLite.Input
@@ -291,30 +290,30 @@ data ProjectionProperty
       -- ^ @Satellite@ map projection tilt.
 
 
-projectionProperty :: ProjectionProperty -> LabelledSpec
-projectionProperty (PrType proj) = "type" .=~ projectionLabel proj
-projectionProperty (PrClipAngle numOrNull) = "clipAngle" .=~ maybe A.Null toJSON numOrNull
+projectionProperty :: ProjectionProperty -> Pair
+projectionProperty (PrType proj) = "type" .= projectionLabel proj
+projectionProperty (PrClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
 projectionProperty (PrClipExtent rClip) =
   ("clipExtent", case rClip of
     NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
-projectionProperty (PrCenter lon lat) = "center" .=~ [lon, lat]
-projectionProperty (PrScale sc) = "scale" .=~ sc
-projectionProperty (PrTranslate tx ty) = "translate" .=~ [tx, ty]
-projectionProperty (PrRotate lambda phi gamma) = "rotate" .=~ [lambda, phi, gamma]
-projectionProperty (PrPrecision pr) = "precision" .=~ pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
-projectionProperty (PrReflectX b) = "reflectX" .=~ b
-projectionProperty (PrReflectY b) = "reflectY" .=~ b
-projectionProperty (PrCoefficient x) = "coefficient" .=~ x
-projectionProperty (PrDistance x) = "distance" .=~ x
-projectionProperty (PrFraction x) = "fraction" .=~ x
-projectionProperty (PrLobes n) = "lobes" .=~ n
-projectionProperty (PrParallel x) = "parallel" .=~ x
-projectionProperty (PrRadius x) = "radius" .=~ x
-projectionProperty (PrRatio x) = "ratio" .=~ x
-projectionProperty (PrSpacing x) = "spacing" .=~ x
-projectionProperty (PrTilt x) = "tilt" .=~ x
+projectionProperty (PrCenter lon lat) = "center" .= [lon, lat]
+projectionProperty (PrScale sc) = "scale" .= sc
+projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
+projectionProperty (PrRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
+projectionProperty (PrPrecision pr) = "precision" .= pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
+projectionProperty (PrReflectX b) = "reflectX" .= b
+projectionProperty (PrReflectY b) = "reflectY" .= b
+projectionProperty (PrCoefficient x) = "coefficient" .= x
+projectionProperty (PrDistance x) = "distance" .= x
+projectionProperty (PrFraction x) = "fraction" .= x
+projectionProperty (PrLobes n) = "lobes" .= n
+projectionProperty (PrParallel x) = "parallel" .= x
+projectionProperty (PrRadius x) = "radius" .= x
+projectionProperty (PrRatio x) = "ratio" .= x
+projectionProperty (PrSpacing x) = "spacing" .= x
+projectionProperty (PrTilt x) = "tilt" .= x
 
 
 {-|
@@ -329,7 +328,7 @@ This is useful when using the 'Graphics.Vega.VegaLite.Geoshape' mark. For furthe
 @
 -}
 projection :: [ProjectionProperty] -> PropertySpec
-projection pProps = (VLProjection, toObject (map projectionProperty pProps))
+projection pProps = (VLProjection, object (map projectionProperty pProps))
 
 
 {-|

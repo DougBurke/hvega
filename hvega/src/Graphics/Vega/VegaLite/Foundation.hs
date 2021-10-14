@@ -182,15 +182,15 @@ toObject :: [LabelledSpec] -> VLSpec
 toObject = object . toKeys
 
 
-field_ :: FieldName -> LabelledSpec
-field_ f = "field" .=~ f
+field_ :: FieldName -> Pair
+field_ f = "field" .= f
 
 header_ :: T.Text -> [HeaderProperty] -> LabelledSpec
 header_ extra hps = ("header" <> extra, object (map headerProperty hps))
 
 -- could restrict to ascending/descending
-order_ :: T.Text -> LabelledSpec
-order_ o = "order" .=~ o
+order_ :: T.Text -> Pair
+order_ o = "order" .= o
 
 
 -- allowNull :: A.ToJSON a => Maybe a -> VLSpec
@@ -857,8 +857,8 @@ data SortField
 
 
 sortFieldSpec :: SortField -> VLSpec
-sortFieldSpec (WAscending f) = toObject [field_ f, order_ "ascending"]
-sortFieldSpec (WDescending f) = toObject [field_ f, order_ "descending"]
+sortFieldSpec (WAscending f) = object [field_ f, order_ "ascending"]
+sortFieldSpec (WDescending f) = object [field_ f, order_ "descending"]
 
 
 {-|
@@ -1113,8 +1113,8 @@ stackOffsetSpec StNormalize = "normalize"
 stackOffsetSpec StCenter = "center"
 stackOffsetSpec NoStack = A.Null
 
-stackOffset :: StackOffset -> LabelledSpec
-stackOffset so = "stack" .=~ stackOffsetSpec so
+stackOffset :: StackOffset -> Pair
+stackOffset so = "stack" .= stackOffsetSpec so
 
 stackPropertySpecOffset , stackPropertySpecSort:: StackProperty -> Maybe VLSpec
 stackPropertySpecOffset (StOffset op) = Just (stackOffsetSpec op)
@@ -1396,15 +1396,15 @@ data Autosize
       -- ^ Recalculate autosizing on every view update.
 
 
-autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad = "type" .=~ fromT "pad"
-autosizeProperty AFit = "type" .=~ fromT "fit"
-autosizeProperty AFitX = "type" .=~ fromT "fit-x"
-autosizeProperty AFitY = "type" .=~ fromT "fit-y"
-autosizeProperty ANone = "type" .=~ fromT "none"
-autosizeProperty AResize = "resize" .=~ True
-autosizeProperty AContent = "contains" .=~ fromT "content"
-autosizeProperty APadding = "contains" .=~ fromT "padding"
+autosizeProperty :: Autosize -> Pair
+autosizeProperty APad = "type" .= fromT "pad"
+autosizeProperty AFit = "type" .= fromT "fit"
+autosizeProperty AFitX = "type" .= fromT "fit-x"
+autosizeProperty AFitY = "type" .= fromT "fit-y"
+autosizeProperty ANone = "type" .= fromT "none"
+autosizeProperty AResize = "resize" .= True
+autosizeProperty AContent = "contains" .= fromT "content"
+autosizeProperty APadding = "contains" .= fromT "padding"
 
 
 {-|
@@ -1420,10 +1420,10 @@ data RepeatFields
     | LayerFields [FieldName]
       -- ^ @since 0.9.0.0
 
-repeatFieldsProperty :: RepeatFields -> LabelledSpec
-repeatFieldsProperty (RowFields fs) = "row" .=~ fs
-repeatFieldsProperty (ColumnFields fs) = "column" .=~ fs
-repeatFieldsProperty (LayerFields fs) = "layer" .=~ fs
+repeatFieldsProperty :: RepeatFields -> Pair
+repeatFieldsProperty (RowFields fs) = "row" .= fs
+repeatFieldsProperty (ColumnFields fs) = "column" .= fs
+repeatFieldsProperty (LayerFields fs) = "layer" .= fs
 
 {-|
 
@@ -1539,23 +1539,23 @@ data ViewBackground
     -- ^ The mitre limit at which to bevel the line around the background, if drawn.
 
 
-viewBackgroundSpec :: ViewBackground -> LabelledSpec
-viewBackgroundSpec (VBStyle [style]) = "style" .=~ style  -- special case singleton
-viewBackgroundSpec (VBStyle styles) = "style" .=~ styles
-viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .=~ r
-viewBackgroundSpec (VBFill s) = "fill" .=~ s
-viewBackgroundSpec VBNoFill = "fill" .=~ A.Null
-viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .=~ x
-viewBackgroundSpec (VBOpacity x) = "opacity" .=~ x
-viewBackgroundSpec (VBStroke s) = "stroke" .=~ s
-viewBackgroundSpec VBNoStroke = "stroke" .=~ A.Null
-viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .=~ x
-viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .=~ strokeCapLabel cap
-viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .=~ strokeJoinLabel jn
-viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .=~ x
-viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .=~ fromDS xs
-viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .=~ x
-viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .=~ x
+viewBackgroundSpec :: ViewBackground -> Pair
+viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
+viewBackgroundSpec (VBStyle styles) = "style" .= styles
+viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
+viewBackgroundSpec (VBFill s) = "fill" .= s
+viewBackgroundSpec VBNoFill = "fill" .= A.Null
+viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
+viewBackgroundSpec (VBOpacity x) = "opacity" .= x
+viewBackgroundSpec (VBStroke s) = "stroke" .= s
+viewBackgroundSpec VBNoStroke = "stroke" .= A.Null
+viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
+viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
+viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
+viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .= x
+viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= fromDS xs
+viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .= x
+viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
 
 
 {-|

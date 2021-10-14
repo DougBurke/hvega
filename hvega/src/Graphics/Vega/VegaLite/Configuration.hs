@@ -99,7 +99,7 @@ import Graphics.Vega.VegaLite.Foundation
   , autosizeProperty
   , viewBackgroundSpec
   , cursorLabel
-  , (.=~), toKeys, toObject
+  , (.=~), toObject
   )
 import Graphics.Vega.VegaLite.Geometry
   ( ProjectionProperty
@@ -113,7 +113,7 @@ import Graphics.Vega.VegaLite.Legend
   )
 import Graphics.Vega.VegaLite.Mark
   ( MarkProperty
-  , mprops_
+  , oldMprops_
   )
 import Graphics.Vega.VegaLite.Scale
   ( ScaleNice
@@ -541,14 +541,14 @@ toAxisChoice AxX lbl = toAxis ("X" <> lbl)
 toAxisChoice AxY lbl = toAxis ("Y" <> lbl)
 
 aprops_ :: T.Text -> [AxisProperty] -> LabelledSpec
-aprops_ f mps = f .=~ toObject (map axisProperty mps)
+aprops_ f mps = f .=~ object (map axisProperty mps)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
-configProperty (ArcStyle mps) = mprops_ "arc" mps
-configProperty (AreaStyle mps) = mprops_ "area" mps
+configProperty (ArcStyle mps) = oldMprops_ "arc" mps
+configProperty (AreaStyle mps) = oldMprops_ "area" mps
 configProperty (AriaStyle b) = "aria" .=~ b
-configProperty (AutosizeStyle aus) = "autosize" .=~ toObject (map autosizeProperty aus)
+configProperty (AutosizeStyle aus) = "autosize" .=~ object (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
 configProperty (AxisBand c acs) = toAxisChoice c "Band" acs
 configProperty (AxisBottom acs) = toAxis "Bottom" acs
@@ -568,71 +568,71 @@ configProperty (AxisNamedStyles styles) =
   in "style" .=~ toObject (map toStyle styles)
 
 configProperty (BackgroundStyle bg) = "background" .=~ bg
-configProperty (BarStyle mps) = mprops_ "bar" mps
-configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
-configProperty (CircleStyle mps) = mprops_ "circle" mps
+configProperty (BarStyle mps) = oldMprops_ "bar" mps
+configProperty (BoxplotStyle mps) = oldMprops_ "boxplot" mps
+configProperty (CircleStyle mps) = oldMprops_ "circle" mps
 configProperty (ConcatStyle cps) = "concat" .=~ object (map compConfigProperty cps)
 configProperty (CountTitleStyle ttl) = "countTitle" .=~ ttl
 configProperty (CustomFormatStyle b) = "customFormatTypes" .=~ b
-configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
-configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
+configProperty (ErrorBandStyle mps) = oldMprops_ "errorband" mps
+configProperty (ErrorBarStyle mps) = oldMprops_ "errorbar" mps
 configProperty (FacetStyle cps) = "facet" .=~ object (map compConfigProperty cps)
 configProperty (FieldTitleStyle ftp) = "fieldTitle" .=~ fieldTitleLabel ftp
 configProperty (FontStyle font) = "font" .=~ font
-configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
+configProperty (GeoshapeStyle mps) = oldMprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
 configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
 configProperty (HeaderRowStyle hps) = header_ "Row" hps
-configProperty (ImageStyle mps) = mprops_ "image" mps
+configProperty (ImageStyle mps) = oldMprops_ "image" mps
 configProperty (LegendStyle lcs) = "legend" .=~ object (map legendConfigProperty lcs)
-configProperty (LineStyle mps) = mprops_ "line" mps
+configProperty (LineStyle mps) = oldMprops_ "line" mps
 
 configProperty (LineBreakStyle s) = "lineBreak" .=~ s
 
-configProperty (MarkStyle mps) = mprops_ "mark" mps
+configProperty (MarkStyle mps) = oldMprops_ "mark" mps
 -- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .=~ object [mprops_ nme mps]
 configProperty (MarkNamedStyles styles) =
-  let toStyle = uncurry mprops_
+  let toStyle = uncurry oldMprops_
   in "style" .=~ toObject (map toStyle styles)
 
 configProperty (NumberFormatStyle fmt) = "numberFormat" .=~ fmt
 configProperty (PaddingStyle pad) = "padding" .=~ paddingSpec pad
-configProperty (PointStyle mps) = mprops_ "point" mps
-configProperty (ProjectionStyle pps) = "projection" .=~ toObject (map projectionProperty pps)
+configProperty (PointStyle mps) = oldMprops_ "point" mps
+configProperty (ProjectionStyle pps) = "projection" .=~ object (map projectionProperty pps)
 configProperty (RangeStyle rcs) = "range" .=~ object (map rangeConfigProperty rcs)
-configProperty (RectStyle mps) = mprops_ "rect" mps
+configProperty (RectStyle mps) = oldMprops_ "rect" mps
 configProperty (RepeatStyle cps) = "repeat" .=~ object (map compConfigProperty cps)
-configProperty (RuleStyle mps) = mprops_ "rule" mps
+configProperty (RuleStyle mps) = oldMprops_ "rule" mps
 configProperty (ScaleStyle scs) = scaleConfig_ scs
 configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) = selectionLabel sel .=~ toObject (concatMap selectionProperties sps)
+  let selProp (sel, sps) = selectionLabel sel .=~ object (concatMap selectionProperties sps)
   in "selection" .=~ toObject (map selProp selConfig)
-configProperty (SquareStyle mps) = mprops_ "square" mps
-configProperty (TextStyle mps) = mprops_ "text" mps
-configProperty (TickStyle mps) = mprops_ "tick" mps
+configProperty (SquareStyle mps) = oldMprops_ "square" mps
+configProperty (TextStyle mps) = oldMprops_ "text" mps
+configProperty (TickStyle mps) = oldMprops_ "tick" mps
 configProperty (TimeFormatStyle fmt) = "timeFormat" .=~ fmt
 configProperty (TitleStyle tcs) = "title" .=~ object (map titleConfigSpec tcs)
-configProperty (TrailStyle mps) = mprops_ "trail" mps
+configProperty (TrailStyle mps) = oldMprops_ "trail" mps
 configProperty (ViewStyle vcs) = "view" .=~ object (concatMap viewConfigProperties vcs)
 
 -- deprecated aliases
-configProperty (Autosize aus) = "autosize" .=~ toObject (map autosizeProperty aus)
+configProperty (Autosize aus) = "autosize" .=~ object (map autosizeProperty aus)
 configProperty (Background bg) = "background" .=~ bg
 configProperty (CountTitle ttl) = "countTitle" .=~ ttl
 configProperty (FieldTitle ftp) = "fieldTitle" .=~ fieldTitleLabel ftp
 configProperty (Legend lcs) = "legend" .=~ object (map legendConfigProperty lcs)
 configProperty (NumberFormat fmt) = "numberFormat" .=~ fmt
 configProperty (Padding pad) = "padding" .=~ paddingSpec pad
-configProperty (Projection pps) = "projection" .=~ toObject (map projectionProperty pps)
+configProperty (Projection pps) = "projection" .=~ object (map projectionProperty pps)
 configProperty (Range rcs) = "range" .=~ object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
 configProperty (TimeFormat fmt) = "timeFormat" .=~ fmt
 configProperty (View vcs) = "view" .=~ object (concatMap viewConfigProperties vcs)
 
-configProperty (NamedStyle nme mps) = "style" .=~ toObject [mprops_ nme mps]
+configProperty (NamedStyle nme mps) = "style" .=~ toObject [oldMprops_ nme mps]
 configProperty (NamedStyles styles) =
-  let toStyle = uncurry mprops_
+  let toStyle = uncurry oldMprops_
   in "style" .=~ toObject (map toStyle styles)
 
 {-|
@@ -1082,7 +1082,7 @@ legendConfigProperty (LeLabelOpacity x) = "labelOpacity" .= x
 legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
 legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
 legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
-legendConfigProperty (LeLayout ll) = "layout" .= toObject (map legendLayoutSpec ll)
+legendConfigProperty (LeLayout ll) = "layout" .= object (map legendLayoutSpec ll)
 legendConfigProperty (LeLeX x) = "legendX" .= x
 legendConfigProperty (LeLeY x) = "legendY" .= x
 legendConfigProperty (LeOffset x) = "offset" .= x
@@ -1153,7 +1153,7 @@ rangeConfigProperty rangeCfg =
         RRamp nme -> ("ramp", nme)
         RSymbol nme -> ("symbol", nme)
 
-  in l .= toObject [schemeProperty n []]
+  in l .= object [schemeProperty n []]
 
 
 scaleConfigProperty :: ScaleConfig -> Pair
@@ -1310,7 +1310,7 @@ data ViewConfig
 
 
 viewConfigProperties :: ViewConfig -> [Pair]
-viewConfigProperties (ViewBackgroundStyle bs) = toKeys (map viewBackgroundSpec bs)
+viewConfigProperties (ViewBackgroundStyle bs) = map viewBackgroundSpec bs
 viewConfigProperties (ViewClip b) = ["clip" .= b]
 viewConfigProperties (ViewWidth x) = ["continuousWidth" .= x]
 viewConfigProperties (ViewHeight x) = ["continuousHeight" .= x]

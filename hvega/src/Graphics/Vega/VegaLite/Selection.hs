@@ -61,7 +61,6 @@ import Graphics.Vega.VegaLite.Foundation
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
-  , LabelledSpec
   , SelectSpec(..)
   , BuildSelectSpecs
   , SelectionLabel
@@ -240,32 +239,32 @@ data SelectionProperty
       --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
 
 
-selectionProperties :: SelectionProperty -> [LabelledSpec]
-selectionProperties (Fields fNames) = ["fields" .=~ fNames]
-selectionProperties (Encodings channels) = ["encodings" .=~ map channelLabel channels]
-selectionProperties (SInit iVals) = ["init" .=~ toObject (map (second dataValueSpec) iVals)]
+selectionProperties :: SelectionProperty -> [Pair]
+selectionProperties (Fields fNames) = ["fields" .= fNames]
+selectionProperties (Encodings channels) = ["encodings" .= map channelLabel channels]
+selectionProperties (SInit iVals) = ["init" .= toObject (map (second dataValueSpec) iVals)]
 selectionProperties (SInitInterval Nothing Nothing) = []
 selectionProperties (SInitInterval mx my) =
   let conv (_, Nothing) = Nothing
       conv (lbl, Just (lo, hi)) = Just (lbl .= [ dataValueSpec lo, dataValueSpec hi ])
 
-  in ["init" .=~ object (mapMaybe conv (zip ["x", "y"] [mx, my]))]
+  in ["init" .= object (mapMaybe conv (zip ["x", "y"] [mx, my]))]
 
-selectionProperties (On e) = ["on" .=~ e]
+selectionProperties (On e) = ["on" .= e]
 selectionProperties (Clear e) =
   let t = T.strip e
-  in ["clear" .=~ if T.null t then toJSON False else toJSON t]
+  in ["clear" .= if T.null t then toJSON False else toJSON t]
 
-selectionProperties Empty = ["empty" .=~ fromT "none"]
-selectionProperties (ResolveSelections res) = ["resolve" .=~ selectionResolutionLabel res]
-selectionProperties (SelectionMark markProps) = ["mark" .=~ object (map selectionMarkProperty markProps)]
-selectionProperties BindScales = ["bind" .=~ fromT "scales"]
+selectionProperties Empty = ["empty" .= fromT "none"]
+selectionProperties (ResolveSelections res) = ["resolve" .= selectionResolutionLabel res]
+selectionProperties (SelectionMark markProps) = ["mark" .= object (map selectionMarkProperty markProps)]
+selectionProperties BindScales = ["bind" .= fromT "scales"]
 selectionProperties (BindLegend blp) = bindLegendProperty blp
-selectionProperties (Bind binds) = ["bind" .=~ object (map bindingSpec binds)]
-selectionProperties (Nearest b) = ["nearest" .=~ b]
-selectionProperties (Toggle expr) = ["toggle" .=~ expr]
-selectionProperties (Translate e) = ["translate" .=~ if T.null e then toJSON False else toJSON e]
-selectionProperties (Zoom e) = ["zoom" .=~ if T.null e then toJSON False else toJSON e]
+selectionProperties (Bind binds) = ["bind" .= object (map bindingSpec binds)]
+selectionProperties (Nearest b) = ["nearest" .= b]
+selectionProperties (Toggle expr) = ["toggle" .= expr]
+selectionProperties (Translate e) = ["translate" .= if T.null e then toJSON False else toJSON e]
+selectionProperties (Zoom e) = ["zoom" .= if T.null e then toJSON False else toJSON e]
 
 
 {-|
@@ -467,23 +466,23 @@ data BindLegendProperty
     --   that should trigger the selection.
 
 
-bindLegendProperty :: BindLegendProperty -> [LabelledSpec]
+bindLegendProperty :: BindLegendProperty -> [Pair]
 bindLegendProperty (BLField f) = [ toLBind Nothing
-                                 , "fields" .=~ [f]
+                                 , "fields" .= [f]
                                  ]
 bindLegendProperty (BLChannel ch) = [ toLBind Nothing
-                                    , "encodings" .=~ [channelLabel ch]
+                                    , "encodings" .= [channelLabel ch]
                                     ]
 bindLegendProperty (BLFieldEvent f es) = [ toLBind (Just es)
-                                         , "fields" .=~ [f]
+                                         , "fields" .= [f]
                                          ]
 bindLegendProperty (BLChannelEvent ch es) = [ toLBind (Just es)
-                                            , "encodings" .=~ [channelLabel ch]
+                                            , "encodings" .= [channelLabel ch]
                                             ]
 
-toLBind :: Maybe T.Text -> LabelledSpec
-toLBind Nothing = "bind" .=~ fromT "legend"
-toLBind (Just es) = "bind" .=~ object ["legend" .= es]
+toLBind :: Maybe T.Text -> Pair
+toLBind Nothing = "bind" .= fromT "legend"
+toLBind (Just es) = "bind" .= object ["legend" .= es]
 
 
 {-|
@@ -536,5 +535,5 @@ select ::
   -- ^ Prior to @0.5.0.0@ this was @BuildLabelledSpecs@.
 select nme sType options ols =
   -- TODO: elm filters out those properties that are set to A.Null
-  let selProps = ("type" .=~ selectionLabel sType) : concatMap selectionProperties options
-  in S (nme .=~ toObject selProps) : ols
+  let selProps = ("type" .= selectionLabel sType) : concatMap selectionProperties options
+  in S (nme .=~ object selProps) : ols
