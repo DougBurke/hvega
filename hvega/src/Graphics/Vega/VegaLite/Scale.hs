@@ -26,11 +26,9 @@ module Graphics.Vega.VegaLite.Scale
        , scaleNiceSpec
        ) where
 
-import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
-import Data.Aeson.Types (ToJSON)
 
 
 import Graphics.Vega.VegaLite.Foundation
@@ -38,6 +36,7 @@ import Graphics.Vega.VegaLite.Foundation
   , FieldName
   , fromT
   , channelLabel
+  , (.=~)
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
@@ -49,10 +48,6 @@ import Graphics.Vega.VegaLite.Time
   , dateTimeSpec
   )
 
-
--- see Foundation.hs
-(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
-a .=~ b = (a, toJSON b)
 
 {-|
 

@@ -1,4 +1,3 @@
-{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
@@ -8,7 +7,7 @@ License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : CPP, OverloadedStrings
+Portability : OverloadedStrings
 
 This provides the functionality of the VegaLite module but is
 not directly exported to the user.
@@ -39,18 +38,9 @@ module Graphics.Vega.VegaLite.Mark
 
 import qualified Data.Aeson as A
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import qualified Data.Aeson.Key as Key
-#endif
-
 import qualified Data.Text as T
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import Control.Arrow (first)
-#endif
-
 import Data.Aeson ((.=), object, toJSON)
-import Data.Aeson.Types (Pair, ToJSON)
 import Data.List (sortOn)
 
 
@@ -82,28 +72,12 @@ import Graphics.Vega.VegaLite.Foundation
   , ttContentLabel
   , hAlignLabel
   , vAlignLabel
+  , (.=~), toObject
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
   , LabelledSpec
   )
-
--- see Foundation.hs
-(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
-a .=~ b = (a, toJSON b)
-
-toKey :: LabelledSpec -> Pair
-#if MIN_VERSION_aeson(2, 0, 0)
-toKey = first Key.fromText
-#else
-toKey = id
-#endif
-
-toKeys :: [LabelledSpec] -> [Pair]
-toKeys = map toKey
-
-toObject :: [LabelledSpec] -> VLSpec
-toObject = object . toKeys
 
 
 -- As of version 0.6.0.0, an empty list is mapped to True

@@ -41,18 +41,10 @@ module Graphics.Vega.VegaLite.Input
 
 import qualified Data.Aeson as A
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import qualified Data.Aeson.Key as Key
-#endif
-
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import Control.Arrow (first, second)
-#else
 import Control.Arrow (second)
-#endif
 
 import Data.Aeson ((.=), Value, decode, encode, object, toJSON)
 import Data.Aeson.Types (Pair)
@@ -69,6 +61,7 @@ import Graphics.Vega.VegaLite.Data
   )
 import Graphics.Vega.VegaLite.Foundation
   ( FieldName
+  , toObject
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLDatasets)
@@ -76,21 +69,6 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   )
 import Graphics.Vega.VegaLite.Time (dateTimeSpec)
-
-
--- see Foundation.hs
-toKey :: LabelledSpec -> Pair
-#if MIN_VERSION_aeson(2, 0, 0)
-toKey = first Key.fromText
-#else
-toKey = id
-#endif
-
-toKeys :: [LabelledSpec] -> [Pair]
-toKeys = map toKey
-
-toObject :: [LabelledSpec] -> VLSpec
-toObject = object . toKeys
 
 
 {-|

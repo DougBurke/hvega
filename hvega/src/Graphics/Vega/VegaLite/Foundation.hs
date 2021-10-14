@@ -112,6 +112,12 @@ module Graphics.Vega.VegaLite.Foundation
        , header_
        , order_
        , allowNull
+
+       -- aeson 2.0 support
+       , (.=~)
+       , toKey
+       , toKeys
+       , toObject
        )
     where
 

@@ -36,20 +36,12 @@ module Graphics.Vega.VegaLite.Geometry
 
 import qualified Data.Aeson as A
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import qualified Data.Aeson.Key as Key
-#endif
-
 import qualified Data.Text as T
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import Control.Arrow (first, second)
-#else
 import Control.Arrow (second)
-#endif
 
 import Data.Aeson ((.=), object, toJSON)
-import Data.Aeson.Types (Pair, ToJSON)
+import Data.Aeson.Types (Pair)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -60,7 +52,10 @@ import Graphics.Vega.VegaLite.Data
   ( DataValue
   , dataValueSpec
   )
-import Graphics.Vega.VegaLite.Foundation (fromT)
+import Graphics.Vega.VegaLite.Foundation
+  ( fromT
+  , (.=~), toObject
+  )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLProjection)
   , VLSpec
@@ -70,24 +65,6 @@ import Graphics.Vega.VegaLite.Specification
 import Graphics.Vega.VegaLite.Input
   ( Data
   )
-
-
--- see Foundation.hs
-(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
-a .=~ b = (a, toJSON b)
-
-toKey :: LabelledSpec -> Pair
-#if MIN_VERSION_aeson(2, 0, 0)
-toKey = first Key.fromText
-#else
-toKey = id
-#endif
-
-toKeys :: [LabelledSpec] -> [Pair]
-toKeys = map toKey
-
-toObject :: [LabelledSpec] -> VLSpec
-toObject = object . toKeys
 
 
 type_ :: T.Text -> Pair

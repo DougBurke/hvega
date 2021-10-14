@@ -175,18 +175,10 @@ import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import qualified Data.Aeson.Key as Key
-#endif
-
 import qualified Data.Text as T
 
-#if MIN_VERSION_aeson(2, 0, 0)
-import Control.Arrow (first)
-#endif
-
 import Data.Aeson (object, toJSON, (.=))
-import Data.Aeson.Types (Pair, ToJSON)
+import Data.Aeson.Types (Pair)
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -269,6 +261,7 @@ import Graphics.Vega.VegaLite.Foundation
   , cInterpolateSpec
   , viewBackgroundSpec
   , symbolLabel
+  , (.=~), toObject, toKey
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -329,24 +322,6 @@ import Graphics.Vega.VegaLite.Transform
   , joinAggregateTS
   , imputeTS
   )
-
-
--- see Foundation.hs
-(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
-a .=~ b = (a, toJSON b)
-
-toKey :: LabelledSpec -> Pair
-#if MIN_VERSION_aeson(2, 0, 0)
-toKey = first Key.fromText
-#else
-toKey = id
-#endif
-
-toKeys :: [LabelledSpec] -> [Pair]
-toKeys = map toKey
-
-toObject :: [LabelledSpec] -> VLSpec
-toObject = object . toKeys
 
 
 --- helpers

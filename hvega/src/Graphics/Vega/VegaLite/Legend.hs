@@ -32,7 +32,7 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
-import Data.Aeson.Types (Pair, ToJSON)
+import Data.Aeson.Types (Pair)
 
 
 import Graphics.Vega.VegaLite.Foundation
@@ -67,6 +67,8 @@ import Graphics.Vega.VegaLite.Foundation
   , fromColor
   , fromDS
   , splitOnNewline
+
+  , (.=~)
   )
 import Graphics.Vega.VegaLite.Scale
   ( ScaleNice
@@ -77,11 +79,6 @@ import Graphics.Vega.VegaLite.Time
   ( DateTime
   , dateTimeSpec
   )
-
-
--- see Foundation.hs
-(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
-a .=~ b = (a, toJSON b)
 
 
 -- | Indicates the type of legend to create. It is used with 'LType'.
