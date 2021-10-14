@@ -1,13 +1,14 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
 Module      : Graphics.Vega.VegaLite.Mark
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 This provides the functionality of the VegaLite module but is
 not directly exported to the user.
@@ -37,9 +38,19 @@ module Graphics.Vega.VegaLite.Mark
        ) where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first)
+#endif
+
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
 import Data.List (sortOn)
 
 
@@ -77,11 +88,28 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   )
 
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
+
 
 -- As of version 0.6.0.0, an empty list is mapped to True
 mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
-mprops_ f [] = f .= True
-mprops_ f mps = f .= object (map markProperty mps)
+mprops_ f [] = f .=~ True
+mprops_ f mps = f .=~ toObject (map markProperty mps)
 
 
 -- | Type of visual mark used to represent data in the visualization.
@@ -717,147 +745,147 @@ markProperty :: MarkProperty -> LabelledSpec
 
 -- special case the gradients
 markProperty (MColorGradient dir stops opts) =
-  "color" .= gradientSpec dir stops opts
+  "color" .=~ gradientSpec dir stops opts
 markProperty (MFillGradient dir stops opts) =
-  "fill" .= gradientSpec dir stops opts
+  "fill" .=~ gradientSpec dir stops opts
 markProperty (MStrokeGradient dir stops opts) =
-  "stroke" .= gradientSpec dir stops opts
+  "stroke" .=~ gradientSpec dir stops opts
 
 -- where are these defined?
-markProperty (MContinuousBandSize x) = "continuousBandSize" .= x
-markProperty (MDiscreteBandSize x) = "discreteBandSize" .= x
+markProperty (MContinuousBandSize x) = "continuousBandSize" .=~ x
+markProperty (MDiscreteBandSize x) = "discreteBandSize" .=~ x
 
-markProperty (MAlign algn) = "align" .= hAlignLabel algn
-markProperty (MAngle x) = "angle" .= x
+markProperty (MAlign algn) = "align" .=~ hAlignLabel algn
+markProperty (MAngle x) = "angle" .=~ x
 
-markProperty (MAria b) = "aria" .= b
-markProperty (MAriaDescription t) = "description" .= t
-markProperty (MAriaRole t) = "ariaRole" .= t
-markProperty (MAriaRoleDescription t) = "ariaRoleDescription" .= t
+markProperty (MAria b) = "aria" .=~ b
+markProperty (MAriaDescription t) = "description" .=~ t
+markProperty (MAriaRole t) = "ariaRole" .=~ t
+markProperty (MAriaRoleDescription t) = "ariaRoleDescription" .=~ t
 
-markProperty (MAspect b) = "aspect" .= b
-markProperty (MBaseline va) = "baseline" .= vAlignLabel va
+markProperty (MAspect b) = "aspect" .=~ b
+markProperty (MBaseline va) = "baseline" .=~ vAlignLabel va
 
 -- only available in TickConfig
-markProperty (MBandSize x) = "bandSize" .= x
+markProperty (MBandSize x) = "bandSize" .=~ x
 
-markProperty (MBinSpacing x) = "binSpacing" .= x
+markProperty (MBinSpacing x) = "binSpacing" .=~ x
 
 -- only available in AreaConfig, BarConfig, LineConfig, MarkConfig,
 --                   MarkDef, OverlayMarkDef, RectConfig, TickConfig
-markProperty (MBlend bl) = "blend" .= blendModeSpec bl
+markProperty (MBlend bl) = "blend" .=~ blendModeSpec bl
 
 -- only available in ErrorBand[Config|Def], PartsMixins<ErrorBandPart>
-markProperty MNoBorders = "borders" .= False
+markProperty MNoBorders = "borders" .=~ False
 markProperty (MBorders mps) = mprops_ "borders" mps
 
 -- BoxPlot[Config|Deg], PartsMixins<BoxPlotPart>
-markProperty MNoBox = "box" .= False
+markProperty MNoBox = "box" .=~ False
 markProperty (MBox mps) = mprops_ "box" mps
 
-markProperty (MClip b) = "clip" .= b
-markProperty (MColor col) = "color" .= fromColor col
-markProperty (MCornerRadius x) = "cornerRadius" .= x
-markProperty (MCornerRadiusEnd x) = "cornerRadiusEnd" .= x
-markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .= x
-markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .= x
-markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .= x
-markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .= x
-markProperty (MCursor cur) = "cursor" .= cursorLabel cur
-markProperty (MDir td) = "dir" .= textdirLabel td
-markProperty (MdX dx) = "dx" .= dx
-markProperty (MdY dy) = "dy" .= dy
-markProperty (MEllipsis s) = "ellipsis" .= s
+markProperty (MClip b) = "clip" .=~ b
+markProperty (MColor col) = "color" .=~ fromColor col
+markProperty (MCornerRadius x) = "cornerRadius" .=~ x
+markProperty (MCornerRadiusEnd x) = "cornerRadiusEnd" .=~ x
+markProperty (MCornerRadiusTL x) = "cornerRadiusTopLeft" .=~ x
+markProperty (MCornerRadiusTR x) = "cornerRadiusTopRight" .=~ x
+markProperty (MCornerRadiusBL x) = "cornerRadiusBottomLeft" .=~ x
+markProperty (MCornerRadiusBR x) = "cornerRadiusBottomRight" .=~ x
+markProperty (MCursor cur) = "cursor" .=~ cursorLabel cur
+markProperty (MDir td) = "dir" .=~ textdirLabel td
+markProperty (MdX dx) = "dx" .=~ dx
+markProperty (MdY dy) = "dy" .=~ dy
+markProperty (MEllipsis s) = "ellipsis" .=~ s
 
 -- combo of BoxPlot[Config|Def], ErrorBand[Config|Def], ErrorBar[Config|Def]
 markProperty (MExtent mee) = markErrorExtentLSpec mee
 
-markProperty (MFill col) = "fill" .= fromColor col
-markProperty (MFilled b) = "filled" .= b
-markProperty (MFillOpacity x) = "fillOpacity" .= x
-markProperty (MFont fnt) = "font" .= fnt
-markProperty (MFontSize x) = "fontSize" .= x
-markProperty (MFontStyle fSty) = "fontStyle" .= fSty
-markProperty (MFontWeight w) = "fontWeight" .= fontWeightSpec w
-markProperty (MHeight x) = "height" .= x
-markProperty (MHRef s) = "href" .= s
-markProperty (MInnerRadius r) = "innerRadius" .= r
-markProperty (MInterpolate interp) = "interpolate" .= markInterpolationLabel interp
-markProperty (MRemoveInvalid b) = "invalid" .= if b then "filter" else A.Null
-markProperty (MLimit x) = "limit" .= x
-markProperty (MLine lm) = "line" .= lineMarkerSpec lm
-markProperty (MLineBreak s) = "lineBreak" .= s
-markProperty (MLineHeight x) = "lineHeight" .= x
+markProperty (MFill col) = "fill" .=~ fromColor col
+markProperty (MFilled b) = "filled" .=~ b
+markProperty (MFillOpacity x) = "fillOpacity" .=~ x
+markProperty (MFont fnt) = "font" .=~ fnt
+markProperty (MFontSize x) = "fontSize" .=~ x
+markProperty (MFontStyle fSty) = "fontStyle" .=~ fSty
+markProperty (MFontWeight w) = "fontWeight" .=~ fontWeightSpec w
+markProperty (MHeight x) = "height" .=~ x
+markProperty (MHRef s) = "href" .=~ s
+markProperty (MInnerRadius r) = "innerRadius" .=~ r
+markProperty (MInterpolate interp) = "interpolate" .=~ markInterpolationLabel interp
+markProperty (MRemoveInvalid b) = "invalid" .=~ if b then "filter" else A.Null
+markProperty (MLimit x) = "limit" .=~ x
+markProperty (MLine lm) = "line" .=~ lineMarkerSpec lm
+markProperty (MLineBreak s) = "lineBreak" .=~ s
+markProperty (MLineHeight x) = "lineHeight" .=~ x
 
 -- BoxPlot[Config|Def] possibly others
-markProperty MNoMedian = "median" .= False
+markProperty MNoMedian = "median" .=~ False
 markProperty (MMedian mps) = mprops_ "median" mps
 
-markProperty (MOpacity x) = "opacity" .= x
-markProperty (MOrder b) = "order" .= b
-markProperty (MOrient orient) = "orient" .= orientationSpec orient
+markProperty (MOpacity x) = "opacity" .=~ x
+markProperty (MOrder b) = "order" .=~ b
+markProperty (MOrient orient) = "orient" .=~ orientationSpec orient
 
-markProperty (MOuterRadius r) = "outerRadius" .= r
+markProperty (MOuterRadius r) = "outerRadius" .=~ r
 
 -- what uses this?
-markProperty MNoOutliers = "outliers" .= False
+markProperty MNoOutliers = "outliers" .=~ False
 markProperty (MOutliers mps) = mprops_ "outliers" mps
 
-markProperty (MPadAngle x) = "padAngle" .= x
+markProperty (MPadAngle x) = "padAngle" .=~ x
 
-markProperty (MPoint pm) = "point" .= pointMarkerSpec pm
-markProperty (MRadius x) = "radius" .= x
-markProperty (MRadius2 x) = "radius2" .= x
-markProperty (MRadiusOffset x) = "radiusOffset" .= x
-markProperty (MRadius2Offset x) = "radius2Offset" .= x
+markProperty (MPoint pm) = "point" .=~ pointMarkerSpec pm
+markProperty (MRadius x) = "radius" .=~ x
+markProperty (MRadius2 x) = "radius2" .=~ x
+markProperty (MRadiusOffset x) = "radiusOffset" .=~ x
+markProperty (MRadius2Offset x) = "radius2Offset" .=~ x
 
 -- what uses this?
-markProperty MNoRule = "rule" .= False
+markProperty MNoRule = "rule" .=~ False
 markProperty (MRule mps) = mprops_ "rule" mps
 
-markProperty (MShape sym) = "shape" .= symbolLabel sym
-markProperty (MSize x) = "size" .= x
-markProperty (MStroke t) = "stroke" .= fromColor t
-markProperty (MStrokeCap sc) = "strokeCap" .= strokeCapLabel sc
-markProperty (MStrokeDash xs) = "strokeDash" .= fromDS xs
-markProperty (MStrokeDashOffset x) = "strokeDashOffset" .= x
-markProperty (MStrokeJoin sj) = "strokeJoin" .= strokeJoinLabel sj
-markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .= x
-markProperty (MStrokeOpacity x) = "strokeOpacity" .= x
-markProperty (MStrokeWidth w) = "strokeWidth" .= w
-markProperty (MStyle [style]) = "style" .= style  -- special case singleton
-markProperty (MStyle styles) = "style" .= styles
-markProperty (MTension x) = "tension" .= x
-markProperty (MText t) = "text" .= t
-markProperty (MTexts ts) = "text" .= ts
-markProperty (MTheta x) = "theta" .= x
-markProperty (MTheta2 x) = "theta2" .= x
-markProperty (MThetaOffset x) = "thetaOffset" .= x
-markProperty (MTheta2Offset x) = "theta2Offset" .= x
-markProperty (MThickness x) = "thickness" .= x
+markProperty (MShape sym) = "shape" .=~ symbolLabel sym
+markProperty (MSize x) = "size" .=~ x
+markProperty (MStroke t) = "stroke" .=~ fromColor t
+markProperty (MStrokeCap sc) = "strokeCap" .=~ strokeCapLabel sc
+markProperty (MStrokeDash xs) = "strokeDash" .=~ fromDS xs
+markProperty (MStrokeDashOffset x) = "strokeDashOffset" .=~ x
+markProperty (MStrokeJoin sj) = "strokeJoin" .=~ strokeJoinLabel sj
+markProperty (MStrokeMiterLimit x) = "strokeMiterLimit" .=~ x
+markProperty (MStrokeOpacity x) = "strokeOpacity" .=~ x
+markProperty (MStrokeWidth w) = "strokeWidth" .=~ w
+markProperty (MStyle [style]) = "style" .=~ style  -- special case singleton
+markProperty (MStyle styles) = "style" .=~ styles
+markProperty (MTension x) = "tension" .=~ x
+markProperty (MText t) = "text" .=~ t
+markProperty (MTexts ts) = "text" .=~ ts
+markProperty (MTheta x) = "theta" .=~ x
+markProperty (MTheta2 x) = "theta2" .=~ x
+markProperty (MThetaOffset x) = "thetaOffset" .=~ x
+markProperty (MTheta2Offset x) = "theta2Offset" .=~ x
+markProperty (MThickness x) = "thickness" .=~ x
 
 -- what uses this?
-markProperty MNoTicks = "ticks" .= False
+markProperty MNoTicks = "ticks" .=~ False
 markProperty (MTicks mps) = mprops_ "ticks" mps
 
-markProperty (MTimeUnitBand x) = "timeUnitBand" .= x
-markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .= x
-markProperty (MTooltip TTNone) = "tooltip" .= A.Null
-markProperty (MTooltip tc) = "tooltip" .= object ["content" .= ttContentLabel tc]
-markProperty (MWidth x) = "width" .= x
-markProperty (MX x) = "x" .= x
-markProperty (MY x) = "y" .= x
-markProperty (MX2 x) = "x2" .= x
-markProperty (MY2 x) = "y2" .= x
-markProperty (MXOffset x) = "xOffset" .= x
-markProperty (MYOffset x) = "yOffset" .= x
-markProperty (MX2Offset x) = "x2Offset" .= x
-markProperty (MY2Offset x) = "y2Offset" .= x
+markProperty (MTimeUnitBand x) = "timeUnitBand" .=~ x
+markProperty (MTimeUnitBandPosition x) = "timeUnitBandPosition" .=~ x
+markProperty (MTooltip TTNone) = "tooltip" .=~ A.Null
+markProperty (MTooltip tc) = "tooltip" .=~ toObject ["content" .=~ ttContentLabel tc]
+markProperty (MWidth x) = "width" .=~ x
+markProperty (MX x) = "x" .=~ x
+markProperty (MY x) = "y" .=~ x
+markProperty (MX2 x) = "x2" .=~ x
+markProperty (MY2 x) = "y2" .=~ x
+markProperty (MXOffset x) = "xOffset" .=~ x
+markProperty (MYOffset x) = "yOffset" .=~ x
+markProperty (MX2Offset x) = "x2Offset" .=~ x
+markProperty (MY2Offset x) = "y2Offset" .=~ x
 
-markProperty MXWidth = "x" .= fromT "width"
-markProperty MX2Width = "x2" .= fromT "width"
-markProperty MYHeight = "y" .= fromT "height"
-markProperty MY2Height = "y2" .= fromT "height"
+markProperty MXWidth = "x" .=~ fromT "width"
+markProperty MX2Width = "x2" .=~ fromT "width"
+markProperty MYHeight = "y" .=~ fromT "height"
+markProperty MY2Height = "y2" .=~ fromT "height"
 
 -- unlike elm, need to sort the stops list since we don't have a
 -- smart constructor (although it's not obvious this is actually needed,
@@ -866,9 +894,9 @@ markProperty MY2Height = "y2" .= fromT "height"
 gradientSpec :: ColorGradient -> GradientStops -> [GradientProperty] -> VLSpec
 gradientSpec dir stops props =
   let sortedStops = sortOn fst stops
-  in object ([ "gradient" .= colorGradientLabel dir
-             , "stops" .= map stopSpec sortedStops ]
-             ++ map gradientProperty props)
+  in toObject ([ "gradient" .=~ colorGradientLabel dir
+               , "stops" .=~ map stopSpec sortedStops ]
+               ++ map gradientProperty props)
 
 
 {-|
@@ -954,7 +982,7 @@ pointMarkerSpec :: PointMarker -> VLSpec
 pointMarkerSpec PMTransparent = "transparent"
 pointMarkerSpec PMNone = toJSON False
 pointMarkerSpec (PMMarker []) = toJSON True
-pointMarkerSpec (PMMarker mps) = object (map markProperty mps)
+pointMarkerSpec (PMMarker mps) = toObject (map markProperty mps)
 
 
 {-|
@@ -982,7 +1010,7 @@ data LineMarker
 lineMarkerSpec :: LineMarker -> VLSpec
 lineMarkerSpec LMNone = toJSON False
 lineMarkerSpec (LMMarker []) = toJSON True
-lineMarkerSpec (LMMarker mps) = object (map markProperty mps)
+lineMarkerSpec (LMMarker mps) = toObject (map markProperty mps)
 
 
 {-|
@@ -1025,7 +1053,7 @@ data MarkErrorExtent
 -- make sure the scale factor was encoded as a number not a string.
 --
 extent_ :: T.Text -> LabelledSpec
-extent_ v = "extent" .= v
+extent_ v = "extent" .=~ v
 
 markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
 markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
@@ -1033,7 +1061,7 @@ markErrorExtentLSpec StdErr             = extent_ "stderr"
 markErrorExtentLSpec StdDev             = extent_ "stdev"
 markErrorExtentLSpec Iqr                = extent_ "iqr"
 markErrorExtentLSpec ExRange            = extent_ "min-max"
-markErrorExtentLSpec (IqrScale sc)      = "extent" .= sc
+markErrorExtentLSpec (IqrScale sc)      = "extent" .=~ sc
 
 
 {-|
@@ -1130,12 +1158,12 @@ data GradientProperty
 
 
 gradientProperty :: GradientProperty -> LabelledSpec
-gradientProperty (GrX1 x) = "x1" .= x
-gradientProperty (GrX2 x) = "x2" .= x
-gradientProperty (GrY1 x) = "y1" .= x
-gradientProperty (GrY2 x) = "y2" .= x
-gradientProperty (GrR1 x) = "r1" .= x
-gradientProperty (GrR2 x) = "r2" .= x
+gradientProperty (GrX1 x) = "x1" .=~ x
+gradientProperty (GrX2 x) = "x2" .=~ x
+gradientProperty (GrY1 x) = "y1" .=~ x
+gradientProperty (GrY2 x) = "y2" .=~ x
+gradientProperty (GrR1 x) = "r1" .=~ x
+gradientProperty (GrR2 x) = "r2" .=~ x
 
 
 {-|

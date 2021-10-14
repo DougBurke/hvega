@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Foundation
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -116,9 +116,19 @@ module Graphics.Vega.VegaLite.Foundation
     where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first)
+#endif
+
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -135,15 +145,46 @@ import Graphics.Vega.VegaLite.Specification
   )
 
 
+{-
+Similar to the Aeson .= version, but retains the Text,Value pairing as
+this matches LabelledSpec. Ideally we'd change LabelledSpec to match
+Pair (aka Key,Value) but then we'd have different types depending on
+the version of aeson in use, which is less-than-ideal. The current
+thinking is that we can bump the minimum aeson value to 2.0 at some
+point and make the change then.
+
+It does leave a number of "internal" routines in place that return
+LabelledSpec rather than Pair, since they have been made available for
+use, which means a confusing set of "this function can use .= and this
+one has to use .=~".
+-}
+
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
+
+
 field_ :: FieldName -> LabelledSpec
-field_ f = "field" .= f
+field_ f = "field" .=~ f
 
 header_ :: T.Text -> [HeaderProperty] -> LabelledSpec
-header_ extra hps = ("header" <> extra) .= object (map headerProperty hps)
+header_ extra hps = ("header" <> extra, object (map headerProperty hps))
 
 -- could restrict to ascending/descending
 order_ :: T.Text -> LabelledSpec
-order_ o = "order" .= o
+order_ o = "order" .=~ o
 
 
 -- allowNull :: A.ToJSON a => Maybe a -> VLSpec
@@ -810,8 +851,8 @@ data SortField
 
 
 sortFieldSpec :: SortField -> VLSpec
-sortFieldSpec (WAscending f) = object [field_ f, order_ "ascending"]
-sortFieldSpec (WDescending f) = object [field_ f, order_ "descending"]
+sortFieldSpec (WAscending f) = toObject [field_ f, order_ "ascending"]
+sortFieldSpec (WDescending f) = toObject [field_ f, order_ "descending"]
 
 
 {-|
@@ -1067,8 +1108,7 @@ stackOffsetSpec StCenter = "center"
 stackOffsetSpec NoStack = A.Null
 
 stackOffset :: StackOffset -> LabelledSpec
-stackOffset so = "stack" .= stackOffsetSpec so
-
+stackOffset so = "stack" .=~ stackOffsetSpec so
 
 stackPropertySpecOffset , stackPropertySpecSort:: StackProperty -> Maybe VLSpec
 stackPropertySpecOffset (StOffset op) = Just (stackOffsetSpec op)
@@ -1247,8 +1287,8 @@ resolveProperty res =
         RLegend chRules -> ("legend", chRules)
         RScale chRules -> ("scale", chRules)
 
-      ans = map (\(ch, rule) -> channelLabel ch .= resolutionLabel rule) rls
-  in RS (nme, object ans)
+      ans = map (\(ch, rule) -> channelLabel ch .=~ resolutionLabel rule) rls
+  in RS (nme, toObject ans)
 
 
 -- | This is used with 'Graphics.Vega.VegaLite.bounds' to define the extent of a sub plot.
@@ -1351,14 +1391,14 @@ data Autosize
 
 
 autosizeProperty :: Autosize -> LabelledSpec
-autosizeProperty APad = "type" .= fromT "pad"
-autosizeProperty AFit = "type" .= fromT "fit"
-autosizeProperty AFitX = "type" .= fromT "fit-x"
-autosizeProperty AFitY = "type" .= fromT "fit-y"
-autosizeProperty ANone = "type" .= fromT "none"
-autosizeProperty AResize = "resize" .= True
-autosizeProperty AContent = "contains" .= fromT "content"
-autosizeProperty APadding = "contains" .= fromT "padding"
+autosizeProperty APad = "type" .=~ fromT "pad"
+autosizeProperty AFit = "type" .=~ fromT "fit"
+autosizeProperty AFitX = "type" .=~ fromT "fit-x"
+autosizeProperty AFitY = "type" .=~ fromT "fit-y"
+autosizeProperty ANone = "type" .=~ fromT "none"
+autosizeProperty AResize = "resize" .=~ True
+autosizeProperty AContent = "contains" .=~ fromT "content"
+autosizeProperty APadding = "contains" .=~ fromT "padding"
 
 
 {-|
@@ -1375,10 +1415,9 @@ data RepeatFields
       -- ^ @since 0.9.0.0
 
 repeatFieldsProperty :: RepeatFields -> LabelledSpec
-repeatFieldsProperty (RowFields fs) = "row" .= fs
-repeatFieldsProperty (ColumnFields fs) = "column" .= fs
-repeatFieldsProperty (LayerFields fs) = "layer" .= fs
-
+repeatFieldsProperty (RowFields fs) = "row" .=~ fs
+repeatFieldsProperty (ColumnFields fs) = "column" .=~ fs
+repeatFieldsProperty (LayerFields fs) = "layer" .=~ fs
 
 {-|
 
@@ -1414,8 +1453,13 @@ data CInterpolate
 -- Need to tie down some types as things are too polymorphic,
 -- particularly in the presence of OverloadedStrings.
 --
-pairT :: T.Text -> T.Text -> (T.Text, A.Value)
+#if MIN_VERSION_aeson(2, 0, 0)
+pairT :: Key.Key -> T.Text -> Pair
 pairT a b = a .= b
+#else
+pairT :: T.Text -> T.Text -> Pair
+pairT a b = a .= b
+#endif
 
 
 cInterpolateSpec :: CInterpolate -> VLSpec
@@ -1490,22 +1534,22 @@ data ViewBackground
 
 
 viewBackgroundSpec :: ViewBackground -> LabelledSpec
-viewBackgroundSpec (VBStyle [style]) = "style" .= style  -- special case singleton
-viewBackgroundSpec (VBStyle styles) = "style" .= styles
-viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .= r
-viewBackgroundSpec (VBFill s) = "fill" .= s
-viewBackgroundSpec VBNoFill = "fill" .= A.Null
-viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .= x
-viewBackgroundSpec (VBOpacity x) = "opacity" .= x
-viewBackgroundSpec (VBStroke s) = "stroke" .= s
-viewBackgroundSpec VBNoStroke = "stroke" .= A.Null
-viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .= x
-viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .= strokeCapLabel cap
-viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .= strokeJoinLabel jn
-viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .= x
-viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .= fromDS xs
-viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .= x
-viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .= x
+viewBackgroundSpec (VBStyle [style]) = "style" .=~ style  -- special case singleton
+viewBackgroundSpec (VBStyle styles) = "style" .=~ styles
+viewBackgroundSpec (VBCornerRadius r) = "cornerRadius" .=~ r
+viewBackgroundSpec (VBFill s) = "fill" .=~ s
+viewBackgroundSpec VBNoFill = "fill" .=~ A.Null
+viewBackgroundSpec (VBFillOpacity x) = "fillOpacity" .=~ x
+viewBackgroundSpec (VBOpacity x) = "opacity" .=~ x
+viewBackgroundSpec (VBStroke s) = "stroke" .=~ s
+viewBackgroundSpec VBNoStroke = "stroke" .=~ A.Null
+viewBackgroundSpec (VBStrokeOpacity x) = "strokeOpacity" .=~ x
+viewBackgroundSpec (VBStrokeCap cap) = "strokeCap" .=~ strokeCapLabel cap
+viewBackgroundSpec (VBStrokeJoin jn) = "strokeJoin" .=~ strokeJoinLabel jn
+viewBackgroundSpec (VBStrokeWidth x) = "strokeWidth" .=~ x
+viewBackgroundSpec (VBStrokeDash xs) = "strokeDash" .=~ fromDS xs
+viewBackgroundSpec (VBStrokeDashOffset x) = "strokeDashOffset" .=~ x
+viewBackgroundSpec (VBStrokeMiterLimit x) = "strokeMiterLimit" .=~ x
 
 
 {-|
@@ -1693,7 +1737,7 @@ data HeaderProperty
       -- @since 0.4.0.0
 
 
-headerProperty :: HeaderProperty -> LabelledSpec
+headerProperty :: HeaderProperty -> Pair
 headerProperty (HFormat fmt) = "format" .= fmt
 headerProperty HFormatAsNum = "formatType" .= fromT "number"
 headerProperty HFormatAsTemporal = "formatType" .= fromT "time"

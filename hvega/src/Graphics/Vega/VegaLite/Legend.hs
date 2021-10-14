@@ -32,6 +32,8 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
+
 
 import Graphics.Vega.VegaLite.Foundation
   ( APosition
@@ -75,6 +77,11 @@ import Graphics.Vega.VegaLite.Time
   ( DateTime
   , dateTimeSpec
   )
+
+
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
 
 
 -- | Indicates the type of legend to create. It is used with 'LType'.
@@ -166,20 +173,20 @@ data LegendLayout
 
 
 legendLayoutSpec :: LegendLayout -> LabelledSpec
-legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
-legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
-legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
-legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .= toBLSpec bl
-legendLayoutSpec (LeLBounds bnds) = "bounds" .= boundsSpec bnds
-legendLayoutSpec (LeLCenter b) = "center" .= b
-legendLayoutSpec (LeLDirection o) = "direction" .= orientationSpec o
-legendLayoutSpec (LeLLeft bl) = "left" .= toBLSpec bl
-legendLayoutSpec (LeLMargin x) = "margin" .= x
-legendLayoutSpec (LeLOffset x) = "offset" .= x
-legendLayoutSpec (LeLRight bl) = "right" .= toBLSpec bl
-legendLayoutSpec (LeLTop bl) = "top" .= toBLSpec bl
-legendLayoutSpec (LeLTopLeft bl) = "top-left" .= toBLSpec bl
-legendLayoutSpec (LeLTopRight bl) = "top-right" .= toBLSpec bl
+legendLayoutSpec (LeLAnchor anc) = "anchor" .=~ anchorLabel anc
+legendLayoutSpec (LeLBottom bl) = "bottom" .=~ toBLSpec bl
+legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .=~ toBLSpec bl
+legendLayoutSpec (LeLBottomRight bl) = "bottom-right" .=~ toBLSpec bl
+legendLayoutSpec (LeLBounds bnds) = "bounds" .=~ boundsSpec bnds
+legendLayoutSpec (LeLCenter b) = "center" .=~ b
+legendLayoutSpec (LeLDirection o) = "direction" .=~ orientationSpec o
+legendLayoutSpec (LeLLeft bl) = "left" .=~ toBLSpec bl
+legendLayoutSpec (LeLMargin x) = "margin" .=~ x
+legendLayoutSpec (LeLOffset x) = "offset" .=~ x
+legendLayoutSpec (LeLRight bl) = "right" .=~ toBLSpec bl
+legendLayoutSpec (LeLTop bl) = "top" .=~ toBLSpec bl
+legendLayoutSpec (LeLTopLeft bl) = "top-left" .=~ toBLSpec bl
+legendLayoutSpec (LeLTopRight bl) = "top-right" .=~ toBLSpec bl
 
 
 {- |
@@ -210,7 +217,7 @@ data BaseLegendLayout
 toBLSpec :: [BaseLegendLayout] -> VLSpec
 toBLSpec = object . map baseLegendLayoutSpec
 
-baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
+baseLegendLayoutSpec :: BaseLegendLayout -> Pair
 baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
 baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
 baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
@@ -490,7 +497,7 @@ data LegendProperty
     | LZIndex ZIndex
       -- ^ The z-index at which to draw the legend.
 
-legendProperty :: LegendProperty -> LabelledSpec
+legendProperty :: LegendProperty -> Pair
 legendProperty (LAria b) = "aria" .= b
 legendProperty (LAriaDescription t) = "description" .= t
 legendProperty (LClipHeight x) = "clipHeight" .= x
@@ -570,8 +577,8 @@ legendProperty (LZIndex z) = "zindex" .= z
 
 
 legendProp_ :: [LegendProperty] -> LabelledSpec
-legendProp_ [] = "legend" .= A.Null
-legendProp_ lps = "legend" .= object (map legendProperty lps)
+legendProp_ [] = "legend" .=~ A.Null
+legendProp_ lps = "legend" .=~ object (map legendProperty lps)
 
 
 -- | A list of data values suitable for setting legend values, used with

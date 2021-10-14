@@ -4,7 +4,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Core
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -174,9 +174,19 @@ module Graphics.Vega.VegaLite.Core
 import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first)
+#endif
+
 import Data.Aeson (object, toJSON, (.=))
+import Data.Aeson.Types (Pair, ToJSON)
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -320,6 +330,25 @@ import Graphics.Vega.VegaLite.Transform
   , imputeTS
   )
 
+
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
+
+
 --- helpers
 
 -- This could be extended to any Ord type but specialize for now to Double
@@ -334,40 +363,40 @@ clamped ::
 clamped xmin xmax x = max xmin (min xmax x)
 
 
-repeat_ :: Arrangement -> LabelledSpec
+repeat_ :: Arrangement -> Pair
 repeat_ arr = "repeat" .= arrangementLabel arr
 
-sort_ :: [SortProperty] -> LabelledSpec
+sort_ :: [SortProperty] -> Pair
 sort_ ops = "sort" .= sortPropertySpec ops
 
 mchan_ :: T.Text -> [MarkChannel] -> EncodingSpec
-mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
+mchan_ f ms = ES (f .=~ object (concatMap markChannelProperty ms))
 
-mtype_ :: Measurement -> LabelledSpec
+mtype_ :: Measurement -> Pair
 mtype_ m = "type" .= measurementLabel m
 
-timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ :: TimeUnit -> Pair
 timeUnit_ tu = "timeUnit" .= timeUnitSpec tu
 
 -- The assumption at the moment is that it's always correct to
 -- replace the empty list by null.
 --
-scaleProp_ :: [ScaleProperty] -> LabelledSpec
+scaleProp_ :: [ScaleProperty] -> Pair
 scaleProp_ [] = "scale" .= A.Null
 scaleProp_ sps = "scale" .= object (map scaleProperty sps)
 
 
-value_ :: T.Text -> LabelledSpec
+value_ :: T.Text -> Pair
 value_ v = "value" .= v
 
 
-selCond_ :: (a -> [LabelledSpec]) -> BooleanOp -> [a] -> [a] -> [LabelledSpec]
+selCond_ :: (a -> [Pair]) -> BooleanOp -> [a] -> [a] -> [Pair]
 selCond_ getProps selName ifClause elseClause =
   let h = ("condition", hkey)
       toProps = concatMap getProps
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hkey = object (toKey ("selection", booleanOpSpec selName) : toProps ifClause)
       hs = toProps elseClause
-  in h : hs
+  in (h : hs)
 
 -- Special case the single-condition check, so that I don't get false
 -- positives when comparing against the Vega-Lite specification. There
@@ -380,7 +409,7 @@ selCond_ getProps selName ifClause elseClause =
 --      selection: xxx
 -- which happens for the Selection operator.
 --
-dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
+dataCond_ :: (a -> [Pair]) -> [(BooleanOp, [a])] -> [a] -> [Pair]
 dataCond_ getProps tests elseClause =
   let h = ("condition", condClause)
       condClause = case conds of
@@ -390,10 +419,10 @@ dataCond_ getProps tests elseClause =
       testClause (Selection sel, ifClause) =
         object (("selection" .= sel) : toProps ifClause)
       testClause (predicate, ifClause) =
-        object (("test", booleanOpSpec predicate) : toProps ifClause)
+        object (toKey ("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap getProps
       hs = toProps elseClause
-  in h : hs
+  in (h : hs)
 
 
 
@@ -427,9 +456,9 @@ opAs ::
 -- semantic difference here.
 --
 opAs Count _ label =
-  object [ op_ Count, "as" .= label ]
+  toObject [ op_ Count, "as" .=~ label ]
 opAs op field label =
-  object [ op_ op, field_ field, "as" .= label ]
+  toObject [ op_ op, field_ field, "as" .=~ label ]
 
 
 {-|
@@ -455,7 +484,7 @@ mark mrk props =
   let jsName = toJSON (markLabel mrk)
       vals = if null props
              then jsName
-             else object (("type" .= jsName) : map markProperty props)
+             else toObject (("type" .=~ jsName) : map markProperty props)
 
   in (VLMark, vals)
 
@@ -577,22 +606,22 @@ data MarkChannel
       --
       --   @since 0.6.0.0
 
-markChannelProperty :: MarkChannel -> [LabelledSpec]
-markChannelProperty (MName s) = [field_ s]
+markChannelProperty :: MarkChannel -> [Pair]
+markChannelProperty (MName s) = ["field" .= s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
 markChannelProperty (MRepeatDatum arr) = ["datum" .= object [repeat_ arr]]
 markChannelProperty (MmType t) = [mtype_ t]
 markChannelProperty (MScale sps) = [scaleProp_ sps]
-markChannelProperty (MLegend lps) = [legendProp_ lps]
-markChannelProperty (MBin bps) = [bin bps]
-markChannelProperty MBinned = [binned_]
+markChannelProperty (MLegend lps) = [toKey (legendProp_ lps)]
+markChannelProperty (MBin bps) = [toKey (bin bps)]
+markChannelProperty MBinned = [toKey binned_]
 markChannelProperty (MSort ops) = [sort_ ops]
 markChannelProperty (MSelectionCondition selName ifClause elseClause) =
   selCond_ markChannelProperty selName ifClause elseClause
 markChannelProperty (MDataCondition tests elseClause) =
   dataCond_ markChannelProperty tests elseClause
 markChannelProperty (MTimeUnit tu) = [timeUnit_ tu]
-markChannelProperty (MAggregate op) = [aggregate_ op]
+markChannelProperty (MAggregate op) = [toKey (aggregate_ op)]
 markChannelProperty (MPath s) = ["value" .= s]
 markChannelProperty (MDatum d) = ["datum" .= dataValueSpec d]
 markChannelProperty (MNumber x) = ["value" .= x]
@@ -636,7 +665,7 @@ encoding ::
   --
   --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
-encoding channels = (VLEncoding, object (map unES channels))
+encoding channels = (VLEncoding, toObject (map unES channels))
 
 
 {-|
@@ -823,7 +852,7 @@ data ScaleProperty
       --   channel.
 
 
-scaleProperty :: ScaleProperty -> LabelledSpec
+scaleProperty :: ScaleProperty -> Pair
 scaleProperty (SType sType) = "type" .= scaleLabel sType
 scaleProperty (SAlign c) = "align" .= clamped 0 1 c
 scaleProperty (SBase x) = "base" .= x
@@ -832,7 +861,7 @@ scaleProperty (SClamp b) = "clamp" .= b
 scaleProperty (SConstant x) = "constant" .= x
 scaleProperty (SDomain dl) = "domain" .= domainLimitsSpec dl
 scaleProperty (SDomainMid x) = "domainMid" .= x
-scaleProperty (SDomainOpt sd) = scaleDomainProperty sd
+scaleProperty (SDomainOpt sd) = toKey (scaleDomainProperty sd)
 scaleProperty (SExponent x) = "exponent" .= x
 scaleProperty (SInterpolate interp) = "interpolate" .= cInterpolateSpec interp
 scaleProperty (SNice ni) = "nice" .= scaleNiceSpec ni
@@ -851,7 +880,7 @@ scaleProperty (SRange (RStrings ss)) = "range" .= ss
 scaleProperty (SRange (RName s)) = "range" .= s
 scaleProperty (SReverse b) = "reverse" .= b
 scaleProperty (SRound b) = "round" .= b
-scaleProperty (SScheme nme extent) = schemeProperty nme extent
+scaleProperty (SScheme nme extent) = toKey (schemeProperty nme extent)
 scaleProperty (SZero b) = "zero" .= b
 
 
@@ -860,10 +889,10 @@ scaleProperty (SZero b) = "zero" .= b
 -- based on schema 3.3.0 #/definitions/SchemeParams
 
 schemeProperty :: T.Text -> [Double] -> LabelledSpec
-schemeProperty nme [n] = "scheme" .= object ["name" .= nme, "count" .= n]
-schemeProperty nme [mn, mx] = "scheme" .= object ["name" .= nme, "extent" .= [mn, mx]]
-schemeProperty nme [n, mn, mx] = "scheme" .= object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
-schemeProperty nme _ = "scheme" .= nme
+schemeProperty nme [n] = "scheme" .=~ object ["name" .= nme, "count" .= n]
+schemeProperty nme [mn, mx] = "scheme" .=~ object ["name" .= nme, "extent" .= [mn, mx]]
+schemeProperty nme [n, mn, mx] = "scheme" .=~ object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
+schemeProperty nme _ = "scheme" .=~ nme
 
 
 {-|
@@ -919,12 +948,12 @@ data SortProperty
       --   @since 0.4.0.0
 
 
-sortProperty :: SortProperty -> [LabelledSpec]
-sortProperty Ascending = [order_ "ascending"]
-sortProperty Descending = [order_ "descending"]
+sortProperty :: SortProperty -> [Pair]
+sortProperty Ascending = [toKey (order_ "ascending")]
+sortProperty Descending = [toKey (order_ "descending")]
 sortProperty (ByChannel ch) = ["encoding" .= channelLabel ch]
-sortProperty (ByFieldOp field op) = [field_ field, op_ op]
-sortProperty (ByRepeatOp arr op) = ["field" .= object [repeat_ arr], op_ op]
+sortProperty (ByFieldOp field op) = ["field" .= field, toKey (op_ op)]
+sortProperty (ByRepeatOp arr op) = ["field" .= object [repeat_ arr], toKey (op_ op)]
 sortProperty (CustomSort _) = []
 
 
@@ -1103,12 +1132,12 @@ data PositionChannel
       --
       --   @since 0.5.0.0
 
-positionChannelProperty :: PositionChannel -> LabelledSpec
-positionChannelProperty (PName s) = field_ s
+positionChannelProperty :: PositionChannel -> Pair
+positionChannelProperty (PName s) = "field" .= s
 positionChannelProperty (PmType m) = mtype_ m
-positionChannelProperty (PBin b) = bin b
-positionChannelProperty PBinned = binned_
-positionChannelProperty (PAggregate op) = aggregate_ op
+positionChannelProperty (PBin b) = toKey (bin b)
+positionChannelProperty PBinned = toKey binned_
+positionChannelProperty (PAggregate op) = toKey (aggregate_ op)
 positionChannelProperty (PTimeUnit tu) = timeUnit_ tu
 positionChannelProperty (PTitle s) = "title" .= splitOnNewline s
 positionChannelProperty PNoTitle = "title" .= A.Null
@@ -1117,16 +1146,16 @@ positionChannelProperty (PScale sps) = scaleProp_ sps
 positionChannelProperty (PAxis aps) =
   let js = if null aps
            then A.Null
-           else object (map axisProperty aps)
+           else toObject (map axisProperty aps)
   in "axis" .= js
-positionChannelProperty (PStack so) = stackOffset so
+positionChannelProperty (PStack so) = toKey (stackOffset so)
 positionChannelProperty (PRepeat arr) = "field" .= object [repeat_ arr]
 positionChannelProperty (PRepeatDatum arr) = "datum" .= object [repeat_ arr]
 positionChannelProperty PHeight = value_ "height"
 positionChannelProperty PWidth = value_ "width"
 positionChannelProperty (PDatum d) = "datum" .= dataValueSpec d
 positionChannelProperty (PNumber x) = "value" .= x
-positionChannelProperty (PImpute ips) = impute_ ips
+positionChannelProperty (PImpute ips) = toKey (impute_ ips)
 positionChannelProperty (PBand x) = "band" .= x
 
 
@@ -1637,104 +1666,104 @@ data AxisProperty
 
 
 axisProperty :: AxisProperty -> LabelledSpec
-axisProperty (AxStyle [s]) = "style" .= s
-axisProperty (AxStyle s) = "style" .= s
+axisProperty (AxStyle [s]) = "style" .=~ s
+axisProperty (AxStyle s) = "style" .=~ s
 
-axisProperty (AxAria b) = "aria" .= b
-axisProperty (AxAriaDescription t) = "description" .= t
+axisProperty (AxAria b) = "aria" .=~ b
+axisProperty (AxAriaDescription t) = "description" .=~ t
 
-axisProperty (AxBandPosition x) = "bandPosition" .= x
+axisProperty (AxBandPosition x) = "bandPosition" .=~ x
 axisProperty (AxDataCondition predicate cap) =
   let (ifAxProp, elseAxProp) = conditionalAxisProperty cap
       (axKey, ifProp) = axisProperty ifAxProp
       (_, elseProp) = axisProperty elseAxProp
-  in axKey .= object [ "condition" .= object [ "test" .= booleanOpSpec predicate
-                                             , "value" .= ifProp
-                                             ]
-                     , "value" .= elseProp]
-axisProperty (AxDomain b) = "domain" .= b
-axisProperty (AxDomainCap c) = "domainCap" .= strokeCapLabel c
-axisProperty (AxDomainColor s) = "domainColor" .= fromColor s
-axisProperty (AxDomainDash ds) = "domainDash" .= fromDS ds
-axisProperty (AxDomainDashOffset x) = "domainDashOffset" .= x
-axisProperty (AxDomainOpacity x) = "domainOpacity" .= x
-axisProperty (AxDomainWidth x) = "domainWidth" .= x
-axisProperty (AxFormat fmt) = "format" .= fmt
-axisProperty AxFormatAsNum = "formatType" .= fromT "number"
-axisProperty AxFormatAsTemporal = "formatType" .= fromT "time"
-axisProperty (AxFormatAsCustom c) = "formatType" .= c
-axisProperty (AxGrid b) = "grid" .= b
-axisProperty (AxGridCap c) = "gridCap" .= strokeCapLabel c
-axisProperty (AxGridColor s) = "gridColor" .= fromColor s
-axisProperty (AxGridDash ds) = "gridDash" .= fromDS ds
-axisProperty (AxGridDashOffset x) = "gridDashOffset" .= x
-axisProperty (AxGridOpacity x) = "gridOpacity" .= x
-axisProperty (AxGridWidth x) = "gridWidth" .= x
-axisProperty (AxLabels b) = "labels" .= b
-axisProperty (AxLabelAlign ha) = "labelAlign" .= hAlignLabel ha
-axisProperty (AxLabelAngle a) = "labelAngle" .= a
-axisProperty (AxLabelBaseline va) = "labelBaseline" .= vAlignLabel va
-axisProperty AxLabelNoBound = "labelBound" .= False
-axisProperty AxLabelBound = "labelBound" .= True
-axisProperty (AxLabelBoundValue x) = "labelBound" .= x
-axisProperty (AxLabelColor s) = "labelColor" .= fromColor s
-axisProperty (AxLabelExpr e) = "labelExpr" .= e
-axisProperty AxLabelNoFlush = "labelFlush" .= False
-axisProperty AxLabelFlush = "labelFlush" .= True
-axisProperty (AxLabelFlushValue x) = "labelFlush" .= x
-axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .= x
-axisProperty (AxLabelFont s) = "labelFont" .= s
-axisProperty (AxLabelFontSize x) = "labelFontSize" .= x
-axisProperty (AxLabelFontStyle s) = "labelFontStyle" .= s
-axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .= fontWeightSpec fw
-axisProperty (AxLabelLimit x) = "labelLimit" .= x
-axisProperty (AxLabelLineHeight x) = "labelLineHeight" .= x
-axisProperty (AxLabelOffset x) = "labelOffset" .= x
-axisProperty (AxLabelOpacity x) = "labelOpacity" .= x
-axisProperty (AxLabelOverlap s) = "labelOverlap" .= overlapStrategyLabel s
-axisProperty (AxLabelPadding x) = "labelPadding" .= x
-axisProperty (AxLabelSeparation x) = "labelSeparation" .= x
-axisProperty (AxMaxExtent n) = "maxExtent" .= n
-axisProperty (AxMinExtent n) = "minExtent" .= n
-axisProperty (AxOffset n) = "offset" .= n
-axisProperty (AxOrient side) = "orient" .= sideLabel side
-axisProperty (AxPosition n) = "position" .= n
-axisProperty (AxTicks b) = "ticks" .= b
-axisProperty (AxTickBand bnd) = "tickBand" .= bandAlignLabel bnd
-axisProperty (AxTickCap c) = "tickCap" .= strokeCapLabel c
-axisProperty (AxTickColor s) = "tickColor" .= fromColor s
-axisProperty (AxTickCount n) = "tickCount" .= n
-axisProperty (AxTickCountTime sn) = "tickCount" .= scaleNiceSpec sn
-axisProperty (AxTickDash ds) = "tickDash" .= fromDS ds
-axisProperty (AxTickDashOffset x) = "tickDashOffset" .= x
-axisProperty (AxTickExtra b) = "tickExtra" .= b
-axisProperty (AxTickMinStep x) = "tickMinStep" .= x
-axisProperty (AxTickOffset x) = "tickOffset" .= x
-axisProperty (AxTickOpacity x) = "tickOpacity" .= x
-axisProperty (AxTickRound b) = "tickRound" .= b
-axisProperty (AxTickSize x) = "tickSize" .= x
-axisProperty (AxTickWidth x) = "tickWidth" .= x
-axisProperty (AxTitle ttl) = "title" .= splitOnNewline ttl
-axisProperty AxNoTitle = "title" .= A.Null
-axisProperty (AxTitleAlign ha) = "titleAlign" .= hAlignLabel ha
-axisProperty (AxTitleAnchor a) = "titleAnchor" .= anchorLabel a
-axisProperty (AxTitleAngle x) = "titleAngle" .= x
-axisProperty (AxTitleBaseline va) = "titleBaseline" .= vAlignLabel va
-axisProperty (AxTitleColor s) = "titleColor" .= fromColor s
-axisProperty (AxTitleFont s) = "titleFont" .= s
-axisProperty (AxTitleFontSize x) = "titleFontSize" .= x
-axisProperty (AxTitleFontStyle s) = "titleFontStyle" .= s
-axisProperty (AxTitleFontWeight fw) = "titleFontWeight" .= fontWeightSpec fw
-axisProperty (AxTitleLimit x) = "titleLimit" .= x
-axisProperty (AxTitleLineHeight x) = "titleLineHeight" .= x
-axisProperty (AxTitleOpacity x) = "titleOpacity" .= x
-axisProperty (AxTitlePadding pad) = "titlePadding" .= pad
-axisProperty (AxTitleX x) = "titleX" .= x
-axisProperty (AxTitleY x) = "titleY" .= x
-axisProperty (AxTranslateOffset x) = "translate" .= x
-axisProperty (AxValues vals) = "values" .= dataValuesSpecs vals
-axisProperty (AxDates dtss) = "values" .= map dateTimeSpec dtss
-axisProperty (AxZIndex z) = "zindex" .= z
+  in axKey .=~ object [ "condition" .= object [ "test" .= booleanOpSpec predicate
+                                              , "value" .= ifProp
+                                              ]
+                      , "value" .= elseProp]
+axisProperty (AxDomain b) = "domain" .=~ b
+axisProperty (AxDomainCap c) = "domainCap" .=~ strokeCapLabel c
+axisProperty (AxDomainColor s) = "domainColor" .=~ fromColor s
+axisProperty (AxDomainDash ds) = "domainDash" .=~ fromDS ds
+axisProperty (AxDomainDashOffset x) = "domainDashOffset" .=~ x
+axisProperty (AxDomainOpacity x) = "domainOpacity" .=~ x
+axisProperty (AxDomainWidth x) = "domainWidth" .=~ x
+axisProperty (AxFormat fmt) = "format" .=~ fmt
+axisProperty AxFormatAsNum = "formatType" .=~ fromT "number"
+axisProperty AxFormatAsTemporal = "formatType" .=~ fromT "time"
+axisProperty (AxFormatAsCustom c) = "formatType" .=~ c
+axisProperty (AxGrid b) = "grid" .=~ b
+axisProperty (AxGridCap c) = "gridCap" .=~ strokeCapLabel c
+axisProperty (AxGridColor s) = "gridColor" .=~ fromColor s
+axisProperty (AxGridDash ds) = "gridDash" .=~ fromDS ds
+axisProperty (AxGridDashOffset x) = "gridDashOffset" .=~ x
+axisProperty (AxGridOpacity x) = "gridOpacity" .=~ x
+axisProperty (AxGridWidth x) = "gridWidth" .=~ x
+axisProperty (AxLabels b) = "labels" .=~ b
+axisProperty (AxLabelAlign ha) = "labelAlign" .=~ hAlignLabel ha
+axisProperty (AxLabelAngle a) = "labelAngle" .=~ a
+axisProperty (AxLabelBaseline va) = "labelBaseline" .=~ vAlignLabel va
+axisProperty AxLabelNoBound = "labelBound" .=~ False
+axisProperty AxLabelBound = "labelBound" .=~ True
+axisProperty (AxLabelBoundValue x) = "labelBound" .=~ x
+axisProperty (AxLabelColor s) = "labelColor" .=~ fromColor s
+axisProperty (AxLabelExpr e) = "labelExpr" .=~ e
+axisProperty AxLabelNoFlush = "labelFlush" .=~ False
+axisProperty AxLabelFlush = "labelFlush" .=~ True
+axisProperty (AxLabelFlushValue x) = "labelFlush" .=~ x
+axisProperty (AxLabelFlushOffset x) = "labelFlushOffset" .=~ x
+axisProperty (AxLabelFont s) = "labelFont" .=~ s
+axisProperty (AxLabelFontSize x) = "labelFontSize" .=~ x
+axisProperty (AxLabelFontStyle s) = "labelFontStyle" .=~ s
+axisProperty (AxLabelFontWeight fw) = "labelFontWeight" .=~ fontWeightSpec fw
+axisProperty (AxLabelLimit x) = "labelLimit" .=~ x
+axisProperty (AxLabelLineHeight x) = "labelLineHeight" .=~ x
+axisProperty (AxLabelOffset x) = "labelOffset" .=~ x
+axisProperty (AxLabelOpacity x) = "labelOpacity" .=~ x
+axisProperty (AxLabelOverlap s) = "labelOverlap" .=~ overlapStrategyLabel s
+axisProperty (AxLabelPadding x) = "labelPadding" .=~ x
+axisProperty (AxLabelSeparation x) = "labelSeparation" .=~ x
+axisProperty (AxMaxExtent n) = "maxExtent" .=~ n
+axisProperty (AxMinExtent n) = "minExtent" .=~ n
+axisProperty (AxOffset n) = "offset" .=~ n
+axisProperty (AxOrient side) = "orient" .=~ sideLabel side
+axisProperty (AxPosition n) = "position" .=~ n
+axisProperty (AxTicks b) = "ticks" .=~ b
+axisProperty (AxTickBand bnd) = "tickBand" .=~ bandAlignLabel bnd
+axisProperty (AxTickCap c) = "tickCap" .=~ strokeCapLabel c
+axisProperty (AxTickColor s) = "tickColor" .=~ fromColor s
+axisProperty (AxTickCount n) = "tickCount" .=~ n
+axisProperty (AxTickCountTime sn) = "tickCount" .=~ scaleNiceSpec sn
+axisProperty (AxTickDash ds) = "tickDash" .=~ fromDS ds
+axisProperty (AxTickDashOffset x) = "tickDashOffset" .=~ x
+axisProperty (AxTickExtra b) = "tickExtra" .=~ b
+axisProperty (AxTickMinStep x) = "tickMinStep" .=~ x
+axisProperty (AxTickOffset x) = "tickOffset" .=~ x
+axisProperty (AxTickOpacity x) = "tickOpacity" .=~ x
+axisProperty (AxTickRound b) = "tickRound" .=~ b
+axisProperty (AxTickSize x) = "tickSize" .=~ x
+axisProperty (AxTickWidth x) = "tickWidth" .=~ x
+axisProperty (AxTitle ttl) = "title" .=~ splitOnNewline ttl
+axisProperty AxNoTitle = "title" .=~ A.Null
+axisProperty (AxTitleAlign ha) = "titleAlign" .=~ hAlignLabel ha
+axisProperty (AxTitleAnchor a) = "titleAnchor" .=~ anchorLabel a
+axisProperty (AxTitleAngle x) = "titleAngle" .=~ x
+axisProperty (AxTitleBaseline va) = "titleBaseline" .=~ vAlignLabel va
+axisProperty (AxTitleColor s) = "titleColor" .=~ fromColor s
+axisProperty (AxTitleFont s) = "titleFont" .=~ s
+axisProperty (AxTitleFontSize x) = "titleFontSize" .=~ x
+axisProperty (AxTitleFontStyle s) = "titleFontStyle" .=~ s
+axisProperty (AxTitleFontWeight fw) = "titleFontWeight" .=~ fontWeightSpec fw
+axisProperty (AxTitleLimit x) = "titleLimit" .=~ x
+axisProperty (AxTitleLineHeight x) = "titleLineHeight" .=~ x
+axisProperty (AxTitleOpacity x) = "titleOpacity" .=~ x
+axisProperty (AxTitlePadding pad) = "titlePadding" .=~ pad
+axisProperty (AxTitleX x) = "titleX" .=~ x
+axisProperty (AxTitleY x) = "titleY" .=~ x
+axisProperty (AxTranslateOffset x) = "translate" .=~ x
+axisProperty (AxValues vals) = "values" .=~ dataValuesSpecs vals
+axisProperty (AxDates dtss) = "values" .=~ map dateTimeSpec dtss
+axisProperty (AxZIndex z) = "zindex" .=~ z
 
 
 {-|
@@ -1842,7 +1871,7 @@ for details.
 @
 -}
 autosize :: [Autosize] -> PropertySpec
-autosize aus = (VLAutosize, object (map autosizeProperty aus))
+autosize aus = (VLAutosize, toObject (map autosizeProperty aus))
 
 
 -- | The background style of a single view or layer in a view composition.
@@ -1850,7 +1879,7 @@ autosize aus = (VLAutosize, object (map autosizeProperty aus))
 --   @since 0.4.0.0
 
 viewBackground :: [ViewBackground] -> PropertySpec
-viewBackground vbs = (VLViewBackground, object (map viewBackgroundSpec vbs))
+viewBackground vbs = (VLViewBackground, toObject (map viewBackgroundSpec vbs))
 
 
 {-|
@@ -2036,10 +2065,11 @@ data Filter
       --   @since 0.4.0.0
 
 
-fop_ :: FieldName -> T.Text -> DataValue -> [LabelledSpec]
-fop_ field label val = [field_ field, label .= dataValueSpec val]
+fop_ :: FieldName -> T.Text -> DataValue -> [Pair]
+fop_ field label val = ["field" .= field,
+                        toKey (label .=~ dataValueSpec val)]
 
-filterProperty :: Filter -> [LabelledSpec]
+filterProperty :: Filter -> [Pair]
 
 filterProperty (FEqual field val) = fop_ field "equal" val
 filterProperty (FLessThan field val) = fop_ field "lt" val
@@ -2059,7 +2089,7 @@ filterProperty (FRange field vals) =
       process [] = A.Null
       process dts = dateTimeSpec dts
 
-  in [field_ field, "range" .= ans]
+  in ["field" .= field, "range" .= ans]
 
 filterProperty (FOneOf field vals) =
   let ans = case vals of
@@ -2068,9 +2098,9 @@ filterProperty (FOneOf field vals) =
               Strings ss -> map toJSON ss
               Booleans bs -> map toJSON bs
 
-  in [field_ field, "oneOf" .= ans]
+  in ["field" .= field, "oneOf" .= ans]
 
-filterProperty (FValid field) = [field_ field, "valid" .= True]
+filterProperty (FValid field) = ["field" .= field, "valid" .= True]
 filterProperty _ = []  -- ignore FExpr and FCompose
 
 
@@ -2189,14 +2219,14 @@ data HyperlinkChannel
       --
       --   @since 0.9.0.0
 
-hyperlinkChannelProperty :: HyperlinkChannel -> [LabelledSpec]
-hyperlinkChannelProperty (HName s) = [field_ s]
+hyperlinkChannelProperty :: HyperlinkChannel -> [Pair]
+hyperlinkChannelProperty (HName s) = ["field" .= s]
 hyperlinkChannelProperty (HRepeat arr) = ["field" .= object [repeat_ arr]]
 hyperlinkChannelProperty (HmType t) = [mtype_ t]
-hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
+hyperlinkChannelProperty (HAggregate op) = [toKey (aggregate_ op)]
 hyperlinkChannelProperty (HyBand x) = ["band" .= x]
-hyperlinkChannelProperty (HBin bps) = [bin bps]
-hyperlinkChannelProperty HBinned = [binned_]
+hyperlinkChannelProperty (HBin bps) = [toKey (bin bps)]
+hyperlinkChannelProperty HBinned = [toKey binned_]
 hyperlinkChannelProperty (HSelectionCondition selName ifClause elseClause) =
   selCond_ hyperlinkChannelProperty selName ifClause elseClause
 hyperlinkChannelProperty (HDataCondition tests elseClause) =
@@ -2271,14 +2301,14 @@ data AriaDescriptionChannel
       -- ^ Display no title.
 
 
-ariaDescriptionChannelProperty :: AriaDescriptionChannel -> [LabelledSpec]
-ariaDescriptionChannelProperty (ADName s) = [field_ s]
+ariaDescriptionChannelProperty :: AriaDescriptionChannel -> [Pair]
+ariaDescriptionChannelProperty (ADName s) = ["field" .= s]
 ariaDescriptionChannelProperty (ADRepeat arr) = ["field" .= object [repeat_ arr]]
 ariaDescriptionChannelProperty (ADmType t) = [mtype_ t]
-ariaDescriptionChannelProperty (ADAggregate op) = [aggregate_ op]
+ariaDescriptionChannelProperty (ADAggregate op) = [toKey (aggregate_ op)]
 ariaDescriptionChannelProperty (ADBand x) = ["band" .= x]
-ariaDescriptionChannelProperty (ADBin bps) = [bin bps]
-ariaDescriptionChannelProperty ADBinned = [binned_]
+ariaDescriptionChannelProperty (ADBin bps) = [toKey (bin bps)]
+ariaDescriptionChannelProperty ADBinned = [toKey binned_]
 ariaDescriptionChannelProperty (ADSelectionCondition selName ifClause elseClause) =
   selCond_ ariaDescriptionChannelProperty selName ifClause elseClause
 ariaDescriptionChannelProperty (ADDataCondition tests elseClause) =
@@ -2406,14 +2436,14 @@ data FacetChannel
       --
       -- @since 0.4.0.0
 
-facetChannelProperty :: FacetChannel -> LabelledSpec
-facetChannelProperty (FName s) = field_ s
+facetChannelProperty :: FacetChannel -> Pair
+facetChannelProperty (FName s) = "field" .= s
 facetChannelProperty (FmType measure) = mtype_ measure
 facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
-facetChannelProperty (FAggregate op) = aggregate_ op
-facetChannelProperty (FBin bps) = bin bps
+facetChannelProperty (FAggregate op) = toKey (aggregate_ op)
+facetChannelProperty (FBin bps) = toKey (bin bps)
 facetChannelProperty (FCenter b) = "center" .= b
-facetChannelProperty (FHeader hps) = header_ "" hps
+facetChannelProperty (FHeader hps) = toKey (header_ "" hps)
 facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s
@@ -2527,15 +2557,15 @@ data TextChannel
       --
       --   @since 0.4.0.0
 
-textChannelProperty :: TextChannel -> [LabelledSpec]
-textChannelProperty (TName s) = [field_  s]
+textChannelProperty :: TextChannel -> [Pair]
+textChannelProperty (TName s) = ["field" .= s]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
 textChannelProperty (TRepeatDatum arr) = ["datum" .= object [repeat_ arr]]
 textChannelProperty (TmType measure) = [mtype_ measure]
-textChannelProperty (TAggregate op) = [aggregate_ op]
+textChannelProperty (TAggregate op) = [toKey (aggregate_ op)]
 textChannelProperty (TBand x) = ["band" .= x]
-textChannelProperty (TBin bps) = [bin bps]
-textChannelProperty TBinned = [binned_]
+textChannelProperty (TBin bps) = [toKey (bin bps)]
+textChannelProperty TBinned = [toKey binned_]
 textChannelProperty (TDataCondition tests elseClause) =
   dataCond_ textChannelProperty tests elseClause
 textChannelProperty (TSelectionCondition selName ifClause elseClause) =
@@ -2625,11 +2655,11 @@ data OrderChannel
       --
       --   @since 0.11.0.0
 
-orderChannelProperty :: OrderChannel -> [LabelledSpec]
-orderChannelProperty (OAggregate op) = [aggregate_ op]
+orderChannelProperty :: OrderChannel -> [Pair]
+orderChannelProperty (OAggregate op) = [toKey (aggregate_ op)]
 orderChannelProperty (OBand x) = ["band" .= x]
-orderChannelProperty (OBin bps) = [bin bps]
-orderChannelProperty (OName s) = [field_ s]
+orderChannelProperty (OBin bps) = [toKey (bin bps)]
+orderChannelProperty (OName s) = ["field" .= s]
 orderChannelProperty (ORepeat arr) = ["field" .= object [repeat_ arr]]
 orderChannelProperty (OSort ops) = [sort_ ops]
 orderChannelProperty (OTimeUnit tu) = [timeUnit_ tu]
@@ -2658,12 +2688,12 @@ data DetailChannel
       -- ^ How should the detail field be aggregated?
 
 
-detailChannelProperty :: DetailChannel -> LabelledSpec
-detailChannelProperty (DName s) = field_ s
+detailChannelProperty :: DetailChannel -> Pair
+detailChannelProperty (DName s) = "field" .= s  -- field_ s
 detailChannelProperty (DmType t) = mtype_ t
-detailChannelProperty (DBin bps) = bin bps
+detailChannelProperty (DBin bps) = toKey (bin bps)
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
-detailChannelProperty (DAggregate op) = aggregate_ op
+detailChannelProperty (DAggregate op) = toKey (aggregate_ op)
 
 
 {-|
@@ -2677,7 +2707,7 @@ data FacetMapping
     | RowBy [FacetChannel]
 
 
-facetMappingProperty :: FacetMapping -> LabelledSpec
+facetMappingProperty :: FacetMapping -> Pair
 facetMappingProperty (RowBy fFields) =
   "row" .= object (map facetChannelProperty fFields)
 facetMappingProperty (ColumnBy fFields) =
@@ -2710,7 +2740,7 @@ configure ::
   --
   --    Prior to version @0.5.0.0@ this was @[LabelledSpec]@.
   -> PropertySpec
-configure configs = (VLConfig, object (map unCS configs))
+configure configs = (VLConfig, toObject (map unCS configs))
 
 
 -- | Alignment to apply to grid rows and columns generated by a composition
@@ -3069,7 +3099,7 @@ See also 'repeatFlow'.
 -}
 
 repeat :: [RepeatFields] -> PropertySpec
-repeat fields = (VLRepeat, object (map repeatFieldsProperty fields))
+repeat fields = (VLRepeat, toObject (map repeatFieldsProperty fields))
 
 
 {-|
@@ -3149,7 +3179,7 @@ resolve ::
   --
   --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
-resolve res = (VLResolve, object (map unRS res))
+resolve res = (VLResolve, toObject (map unRS res))
 
 
 {-|
@@ -3993,7 +4023,7 @@ binAs bProps field label ols =
                , "field" .= field
                , "as" .= label ]
 
-      binObj = object (map binProperty bProps)
+      binObj = toObject (map binProperty bProps)
 
  in TS (object fields) : ols
 
@@ -5088,4 +5118,4 @@ tooltips ::
   -- ^ A separate list of properties for each channel.
   -> BuildEncodingSpecs
 tooltips tDefs ols =
-  ES ("tooltip" .= map (object . concatMap textChannelProperty) tDefs) : ols
+  ES ("tooltip" .=~ map (object . concatMap textChannelProperty) tDefs) : ols

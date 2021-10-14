@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 --
@@ -13,7 +14,11 @@ import Graphics.Vega.VegaLite
 import Prelude hiding (filter, repeat)
 
 import Data.Aeson (Value(Object))
+#if MIN_VERSION_aeson(2, 0, 0)
+import Data.Aeson.KeyMap (empty)
+#else
 import Data.HashMap.Strict (empty)
+#endif
 
 
 testSpecs :: [(String, VegaLite)]

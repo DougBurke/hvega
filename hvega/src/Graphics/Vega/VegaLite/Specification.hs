@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Specification
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -50,6 +50,10 @@ module Graphics.Vega.VegaLite.Specification
        )
     where
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 -- VegaLite uses these symbols.
 import Prelude hiding (filter, lookup, repeat)
 
@@ -58,7 +62,12 @@ import qualified Data.Text as T
 import Control.Arrow (first)
 
 -- Aeson's Value type conflicts with the Number type
+#if MIN_VERSION_aeson(2, 0, 0)
+import Data.Aeson (Value, object, toJSON)
+#else
 import Data.Aeson (Value, object, (.=))
+#endif
+
 import Data.Maybe (catMaybes, fromMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -232,7 +241,11 @@ fromVL ::
   --   JSON representation of the visualization (noting that @VLSpec@ is
   --   an alias for @Value@).
 fromVL (VL (schema, specs)) =
+#if MIN_VERSION_aeson(2, 0, 0)
+  let kvals = map (first Key.fromText) (("$schema", toJSON schema) : specs)
+#else
   let kvals = ("$schema" .= schema) : specs
+#endif
   in object kvals
 
 
@@ -249,8 +262,11 @@ spec1 = asSpec [ enc1 [], 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.
 @
 -}
 asSpec :: [PropertySpec] -> VLSpec
+#if MIN_VERSION_aeson(2, 0, 0)
+asSpec = object . map (first Key.fromText) . unProperty
+#else
 asSpec = object . unProperty
-
+#endif
 
 {-|
 

@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Scale
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -26,9 +26,11 @@ module Graphics.Vega.VegaLite.Scale
        , scaleNiceSpec
        ) where
 
+import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (ToJSON)
 
 
 import Graphics.Vega.VegaLite.Foundation
@@ -47,6 +49,10 @@ import Graphics.Vega.VegaLite.Time
   , dateTimeSpec
   )
 
+
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
 
 {-|
 
@@ -153,20 +159,20 @@ data DomainLimits
 
 scaleDomainProperty :: ScaleDomain -> LabelledSpec
 
-scaleDomainProperty (DMax x) = "domainMax" .= x
-scaleDomainProperty (DMaxTime dts) = "domainMax" .= dateTimeSpec dts
-scaleDomainProperty (DMid x) = "domainMid" .= x
-scaleDomainProperty (DMin x) = "domainMin" .= x
-scaleDomainProperty (DMinTime dts) = "domainMin" .= dateTimeSpec dts
+scaleDomainProperty (DMax x) = "domainMax" .=~ x
+scaleDomainProperty (DMaxTime dts) = "domainMax" .=~ dateTimeSpec dts
+scaleDomainProperty (DMid x) = "domainMid" .=~ x
+scaleDomainProperty (DMin x) = "domainMin" .=~ x
+scaleDomainProperty (DMinTime dts) = "domainMin" .=~ dateTimeSpec dts
 
 
-scaleDomainProperty (DSelection selName) = "domain" .= object ["selection" .= selName]
-scaleDomainProperty (DSelectionField selName field) = "domain" .= object [ "selection" .= selName
-                                                                         , "field" .= field ]
-scaleDomainProperty (DSelectionChannel selName ch) = "domain" .= object [ "selection" .= selName
-                                                                        , "encoding" .= channelLabel ch ]
-scaleDomainProperty (DUnionWith sd) = "domain" .= object ["unionWith" .= domainLimitsSpec sd]
-scaleDomainProperty Unaggregated = "domain" .= fromT "unaggregated"
+scaleDomainProperty (DSelection selName) = "domain" .=~ object ["selection" .= selName]
+scaleDomainProperty (DSelectionField selName field) = "domain" .=~ object [ "selection" .= selName
+                                                                          , "field" .= field ]
+scaleDomainProperty (DSelectionChannel selName ch) = "domain" .=~ object [ "selection" .= selName
+                                                                         , "encoding" .= channelLabel ch ]
+scaleDomainProperty (DUnionWith sd) = "domain" .=~ object ["unionWith" .= domainLimitsSpec sd]
+scaleDomainProperty Unaggregated = "domain" .=~ fromT "unaggregated"
 
 
 domainLimitsSpec :: DomainLimits -> VLSpec

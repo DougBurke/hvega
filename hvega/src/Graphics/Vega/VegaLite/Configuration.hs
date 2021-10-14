@@ -3,12 +3,12 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Configuration
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 Top-level configuration options. As this can configure most
 of a visualization, it needs to import most of the other
@@ -38,9 +38,19 @@ module Graphics.Vega.VegaLite.Configuration
 
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
-import Data.Aeson ((.=), object)
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first)
+#endif
+
+import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -130,6 +140,24 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   , PropertySpec
   )
+
+
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
 
 
 {-|
@@ -530,7 +558,7 @@ data AxisChoice
 
 
 toAxis :: T.Text -> [AxisConfig] -> LabelledSpec
-toAxis lbl acs = ("axis" <> lbl) .= object (map axisConfigProperty acs)
+toAxis lbl acs = ("axis" <> lbl) .=~ object (map axisConfigProperty acs)
 
 toAxisChoice :: AxisChoice -> T.Text -> [AxisConfig] -> LabelledSpec
 toAxisChoice AxXY lbl = toAxis lbl
@@ -538,14 +566,14 @@ toAxisChoice AxX lbl = toAxis ("X" <> lbl)
 toAxisChoice AxY lbl = toAxis ("Y" <> lbl)
 
 aprops_ :: T.Text -> [AxisProperty] -> LabelledSpec
-aprops_ f mps = f .= object (map axisProperty mps)
+aprops_ f mps = f .=~ toObject (map axisProperty mps)
 
 -- easier to turn into a ConfigSpec in config than here
 configProperty :: ConfigurationProperty -> LabelledSpec
 configProperty (ArcStyle mps) = mprops_ "arc" mps
 configProperty (AreaStyle mps) = mprops_ "area" mps
-configProperty (AriaStyle b) = "aria" .= b
-configProperty (AutosizeStyle aus) = "autosize" .= object (map autosizeProperty aus)
+configProperty (AriaStyle b) = "aria" .=~ b
+configProperty (AutosizeStyle aus) = "autosize" .=~ toObject (map autosizeProperty aus)
 configProperty (Axis acs) = toAxis "" acs
 configProperty (AxisBand c acs) = toAxisChoice c "Band" acs
 configProperty (AxisBottom acs) = toAxis "Bottom" acs
@@ -559,78 +587,78 @@ configProperty (AxisTop acs) = toAxis "Top" acs
 configProperty (AxisX acs) = toAxis "X" acs
 configProperty (AxisY acs) = toAxis "Y" acs
 
--- configProperty (AxisNamedStyles [(nme, mps)]) = "style" .= object [aprops_ nme mps]
+-- configProperty (AxisNamedStyles [(nme, mps)]) = "style" .=~ object [aprops_ nme mps]
 configProperty (AxisNamedStyles styles) =
   let toStyle = uncurry aprops_
-  in "style" .= object (map toStyle styles)
+  in "style" .=~ toObject (map toStyle styles)
 
-configProperty (BackgroundStyle bg) = "background" .= bg
+configProperty (BackgroundStyle bg) = "background" .=~ bg
 configProperty (BarStyle mps) = mprops_ "bar" mps
 configProperty (BoxplotStyle mps) = mprops_ "boxplot" mps
 configProperty (CircleStyle mps) = mprops_ "circle" mps
-configProperty (ConcatStyle cps) = "concat" .= object (map compConfigProperty cps)
-configProperty (CountTitleStyle ttl) = "countTitle" .= ttl
-configProperty (CustomFormatStyle b) = "customFormatTypes" .= b
+configProperty (ConcatStyle cps) = "concat" .=~ object (map compConfigProperty cps)
+configProperty (CountTitleStyle ttl) = "countTitle" .=~ ttl
+configProperty (CustomFormatStyle b) = "customFormatTypes" .=~ b
 configProperty (ErrorBandStyle mps) = mprops_ "errorband" mps
 configProperty (ErrorBarStyle mps) = mprops_ "errorbar" mps
-configProperty (FacetStyle cps) = "facet" .= object (map compConfigProperty cps)
-configProperty (FieldTitleStyle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (FontStyle font) = "font" .= font
+configProperty (FacetStyle cps) = "facet" .=~ object (map compConfigProperty cps)
+configProperty (FieldTitleStyle ftp) = "fieldTitle" .=~ fieldTitleLabel ftp
+configProperty (FontStyle font) = "font" .=~ font
 configProperty (GeoshapeStyle mps) = mprops_ "geoshape" mps
 configProperty (HeaderStyle hps) = header_ "" hps
 configProperty (HeaderColumnStyle hps) = header_ "Column" hps
 configProperty (HeaderFacetStyle hps) = header_ "Facet" hps
 configProperty (HeaderRowStyle hps) = header_ "Row" hps
 configProperty (ImageStyle mps) = mprops_ "image" mps
-configProperty (LegendStyle lcs) = "legend" .= object (map legendConfigProperty lcs)
+configProperty (LegendStyle lcs) = "legend" .=~ object (map legendConfigProperty lcs)
 configProperty (LineStyle mps) = mprops_ "line" mps
 
-configProperty (LineBreakStyle s) = "lineBreak" .= s
+configProperty (LineBreakStyle s) = "lineBreak" .=~ s
 
 configProperty (MarkStyle mps) = mprops_ "mark" mps
--- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .= object [mprops_ nme mps]
+-- configProperty (MarkNamedStyles [(nme, mps)]) = "style" .=~ object [mprops_ nme mps]
 configProperty (MarkNamedStyles styles) =
   let toStyle = uncurry mprops_
-  in "style" .= object (map toStyle styles)
+  in "style" .=~ toObject (map toStyle styles)
 
-configProperty (NumberFormatStyle fmt) = "numberFormat" .= fmt
-configProperty (PaddingStyle pad) = "padding" .= paddingSpec pad
+configProperty (NumberFormatStyle fmt) = "numberFormat" .=~ fmt
+configProperty (PaddingStyle pad) = "padding" .=~ paddingSpec pad
 configProperty (PointStyle mps) = mprops_ "point" mps
-configProperty (ProjectionStyle pps) = "projection" .= object (map projectionProperty pps)
-configProperty (RangeStyle rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (ProjectionStyle pps) = "projection" .=~ toObject (map projectionProperty pps)
+configProperty (RangeStyle rcs) = "range" .=~ object (map rangeConfigProperty rcs)
 configProperty (RectStyle mps) = mprops_ "rect" mps
-configProperty (RepeatStyle cps) = "repeat" .= object (map compConfigProperty cps)
+configProperty (RepeatStyle cps) = "repeat" .=~ object (map compConfigProperty cps)
 configProperty (RuleStyle mps) = mprops_ "rule" mps
 configProperty (ScaleStyle scs) = scaleConfig_ scs
 configProperty (SelectionStyle selConfig) =
-  let selProp (sel, sps) = selectionLabel sel .= object (concatMap selectionProperties sps)
-  in "selection" .= object (map selProp selConfig)
+  let selProp (sel, sps) = selectionLabel sel .=~ toObject (concatMap selectionProperties sps)
+  in "selection" .=~ toObject (map selProp selConfig)
 configProperty (SquareStyle mps) = mprops_ "square" mps
 configProperty (TextStyle mps) = mprops_ "text" mps
 configProperty (TickStyle mps) = mprops_ "tick" mps
-configProperty (TimeFormatStyle fmt) = "timeFormat" .= fmt
-configProperty (TitleStyle tcs) = "title" .= object (map titleConfigSpec tcs)
+configProperty (TimeFormatStyle fmt) = "timeFormat" .=~ fmt
+configProperty (TitleStyle tcs) = "title" .=~ object (map titleConfigSpec tcs)
 configProperty (TrailStyle mps) = mprops_ "trail" mps
-configProperty (ViewStyle vcs) = "view" .= object (concatMap viewConfigProperties vcs)
+configProperty (ViewStyle vcs) = "view" .=~ object (concatMap viewConfigProperties vcs)
 
 -- deprecated aliases
-configProperty (Autosize aus) = "autosize" .= object (map autosizeProperty aus)
-configProperty (Background bg) = "background" .= bg
-configProperty (CountTitle ttl) = "countTitle" .= ttl
-configProperty (FieldTitle ftp) = "fieldTitle" .= fieldTitleLabel ftp
-configProperty (Legend lcs) = "legend" .= object (map legendConfigProperty lcs)
-configProperty (NumberFormat fmt) = "numberFormat" .= fmt
-configProperty (Padding pad) = "padding" .= paddingSpec pad
-configProperty (Projection pps) = "projection" .= object (map projectionProperty pps)
-configProperty (Range rcs) = "range" .= object (map rangeConfigProperty rcs)
+configProperty (Autosize aus) = "autosize" .=~ toObject (map autosizeProperty aus)
+configProperty (Background bg) = "background" .=~ bg
+configProperty (CountTitle ttl) = "countTitle" .=~ ttl
+configProperty (FieldTitle ftp) = "fieldTitle" .=~ fieldTitleLabel ftp
+configProperty (Legend lcs) = "legend" .=~ object (map legendConfigProperty lcs)
+configProperty (NumberFormat fmt) = "numberFormat" .=~ fmt
+configProperty (Padding pad) = "padding" .=~ paddingSpec pad
+configProperty (Projection pps) = "projection" .=~ toObject (map projectionProperty pps)
+configProperty (Range rcs) = "range" .=~ object (map rangeConfigProperty rcs)
 configProperty (Scale scs) = scaleConfig_ scs
-configProperty (TimeFormat fmt) = "timeFormat" .= fmt
-configProperty (View vcs) = "view" .= object (concatMap viewConfigProperties vcs)
+configProperty (TimeFormat fmt) = "timeFormat" .=~ fmt
+configProperty (View vcs) = "view" .=~ object (concatMap viewConfigProperties vcs)
 
-configProperty (NamedStyle nme mps) = "style" .= object [mprops_ nme mps]
+configProperty (NamedStyle nme mps) = "style" .=~ toObject [mprops_ nme mps]
 configProperty (NamedStyles styles) =
   let toStyle = uncurry mprops_
-  in "style" .= object (map toStyle styles)
+  in "style" .=~ toObject (map toStyle styles)
 
 {-|
 
@@ -705,7 +733,7 @@ data ScaleConfig
 
 scaleConfig_ :: [ScaleConfig] -> LabelledSpec
 -- scaleConfig_ [] = "scale" .= A.Null  -- not sure here
-scaleConfig_ scs = "scale" .= object (map scaleConfigProperty scs)
+scaleConfig_ scs = "scale" .=~ object (map scaleConfigProperty scs)
 
 
 -- | Indicates the style in which field names are displayed.
@@ -1043,7 +1071,7 @@ data LegendConfig
       --
       --   @since 0.9.0.0
 
-legendConfigProperty :: LegendConfig -> LabelledSpec
+legendConfigProperty :: LegendConfig -> Pair
 legendConfigProperty (LeAria b) = "bool" .= b
 legendConfigProperty (LeAriaDescription t) = "description" .= t
 legendConfigProperty (LeClipHeight x) = "clipHeight" .= x
@@ -1079,7 +1107,7 @@ legendConfigProperty (LeLabelOpacity x) = "labelOpacity" .= x
 legendConfigProperty (LeLabelOverlap olap) = "labelOverlap" .= overlapStrategyLabel olap
 legendConfigProperty (LeLabelPadding x) = "labelPadding" .= x
 legendConfigProperty (LeLabelSeparation x) = "labelSeparation" .= x
-legendConfigProperty (LeLayout ll) = "layout" .= object (map legendLayoutSpec ll)
+legendConfigProperty (LeLayout ll) = "layout" .= toObject (map legendLayoutSpec ll)
 legendConfigProperty (LeLeX x) = "legendX" .= x
 legendConfigProperty (LeLeY x) = "legendY" .= x
 legendConfigProperty (LeOffset x) = "offset" .= x
@@ -1140,7 +1168,7 @@ data RangeConfig
     | RSymbol T.Text
 
 
-rangeConfigProperty :: RangeConfig -> LabelledSpec
+rangeConfigProperty :: RangeConfig -> Pair
 rangeConfigProperty rangeCfg =
   let (l, n) = case rangeCfg of
         RCategory nme -> ("category", nme)
@@ -1150,10 +1178,10 @@ rangeConfigProperty rangeCfg =
         RRamp nme -> ("ramp", nme)
         RSymbol nme -> ("symbol", nme)
 
-  in l .= object [schemeProperty n []]
+  in l .= toObject [schemeProperty n []]
 
 
-scaleConfigProperty :: ScaleConfig -> LabelledSpec
+scaleConfigProperty :: ScaleConfig -> Pair
 scaleConfigProperty (SCBandPaddingInner x) = "bandPaddingInner" .= x
 scaleConfigProperty (SCBandPaddingOuter x) = "bandPaddingOuter" .= x
 scaleConfigProperty (SCBarBandPaddingInner x) = "barBandPaddingInner" .= x
@@ -1306,8 +1334,8 @@ data ViewConfig
       --   be used instead.
 
 
-viewConfigProperties :: ViewConfig -> [LabelledSpec]
-viewConfigProperties (ViewBackgroundStyle bs) = map viewBackgroundSpec bs
+viewConfigProperties :: ViewConfig -> [Pair]
+viewConfigProperties (ViewBackgroundStyle bs) = toKeys (map viewBackgroundSpec bs)
 viewConfigProperties (ViewClip b) = ["clip" .= b]
 viewConfigProperties (ViewWidth x) = ["continuousWidth" .= x]
 viewConfigProperties (ViewHeight x) = ["continuousHeight" .= x]
@@ -1674,7 +1702,7 @@ data AxisConfig
       --   @since 0.5.0.0
 
 
-axisConfigProperty :: AxisConfig -> LabelledSpec
+axisConfigProperty :: AxisConfig -> Pair
 axisConfigProperty (AStyle [s]) = "style" .= s
 axisConfigProperty (AStyle s) = "style" .= s
 
@@ -1899,7 +1927,7 @@ data TitleConfig
       --   @since 0.4.0.0
 
 
-titleConfigSpec :: TitleConfig -> LabelledSpec
+titleConfigSpec :: TitleConfig -> Pair
 titleConfigSpec (TAlign ha) = "align" .= hAlignLabel ha
 titleConfigSpec (TAnchor an) = "anchor" .= anchorLabel an
 titleConfigSpec (TAngle x) = "angle" .= x
@@ -1954,7 +1982,7 @@ data CompositionConfig
       --   Prior to @0.6.0.0@ this was either @ConcatSpacing@ or @FSpacing@.
 
 
-compConfigProperty :: CompositionConfig -> LabelledSpec
+compConfigProperty :: CompositionConfig -> Pair
 compConfigProperty (CompColumns n) = "columns" .= n
 compConfigProperty (CompSpacing x) = "spacing" .= x
 

@@ -1,6 +1,12 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.12.0.0
+
+Support aeson version 2.0. There is currently no significant change to
+the API but it is expected that in a future release there will be when
+we wil require a minimum version of 2.0 for aeson.
+
 ## 0.11.0.1
 
 There is no change in the code, only the tests, which should now

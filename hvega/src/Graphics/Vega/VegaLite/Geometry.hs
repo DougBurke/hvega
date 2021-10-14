@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Geometry
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -35,10 +35,21 @@ module Graphics.Vega.VegaLite.Geometry
        ) where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first, second)
+#else
 import Control.Arrow (second)
+#endif
+
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -61,7 +72,25 @@ import Graphics.Vega.VegaLite.Input
   )
 
 
-type_ :: T.Text -> LabelledSpec
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
+
+
+type_ :: T.Text -> Pair
 type_ t = "type" .= t
 
 
@@ -286,29 +315,29 @@ data ProjectionProperty
 
 
 projectionProperty :: ProjectionProperty -> LabelledSpec
-projectionProperty (PrType proj) = "type" .= projectionLabel proj
-projectionProperty (PrClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
+projectionProperty (PrType proj) = "type" .=~ projectionLabel proj
+projectionProperty (PrClipAngle numOrNull) = "clipAngle" .=~ maybe A.Null toJSON numOrNull
 projectionProperty (PrClipExtent rClip) =
   ("clipExtent", case rClip of
     NoClip -> A.Null
     LTRB l t r b -> toJSON (map toJSON [l, t, r, b])
   )
-projectionProperty (PrCenter lon lat) = "center" .= [lon, lat]
-projectionProperty (PrScale sc) = "scale" .= sc
-projectionProperty (PrTranslate tx ty) = "translate" .= [tx, ty]
-projectionProperty (PrRotate lambda phi gamma) = "rotate" .= [lambda, phi, gamma]
-projectionProperty (PrPrecision pr) = "precision" .= pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
-projectionProperty (PrReflectX b) = "reflectX" .= b
-projectionProperty (PrReflectY b) = "reflectY" .= b
-projectionProperty (PrCoefficient x) = "coefficient" .= x
-projectionProperty (PrDistance x) = "distance" .= x
-projectionProperty (PrFraction x) = "fraction" .= x
-projectionProperty (PrLobes n) = "lobes" .= n
-projectionProperty (PrParallel x) = "parallel" .= x
-projectionProperty (PrRadius x) = "radius" .= x
-projectionProperty (PrRatio x) = "ratio" .= x
-projectionProperty (PrSpacing x) = "spacing" .= x
-projectionProperty (PrTilt x) = "tilt" .= x
+projectionProperty (PrCenter lon lat) = "center" .=~ [lon, lat]
+projectionProperty (PrScale sc) = "scale" .=~ sc
+projectionProperty (PrTranslate tx ty) = "translate" .=~ [tx, ty]
+projectionProperty (PrRotate lambda phi gamma) = "rotate" .=~ [lambda, phi, gamma]
+projectionProperty (PrPrecision pr) = "precision" .=~ pr  -- the 3.3.0 spec says this is a string, but that's wrong,  See https://github.com/vega/vega-lite/issues/5190
+projectionProperty (PrReflectX b) = "reflectX" .=~ b
+projectionProperty (PrReflectY b) = "reflectY" .=~ b
+projectionProperty (PrCoefficient x) = "coefficient" .=~ x
+projectionProperty (PrDistance x) = "distance" .=~ x
+projectionProperty (PrFraction x) = "fraction" .=~ x
+projectionProperty (PrLobes n) = "lobes" .=~ n
+projectionProperty (PrParallel x) = "parallel" .=~ x
+projectionProperty (PrRadius x) = "radius" .=~ x
+projectionProperty (PrRatio x) = "ratio" .=~ x
+projectionProperty (PrSpacing x) = "spacing" .=~ x
+projectionProperty (PrTilt x) = "tilt" .=~ x
 
 
 {-|
@@ -323,7 +352,7 @@ This is useful when using the 'Graphics.Vega.VegaLite.Geoshape' mark. For furthe
 @
 -}
 projection :: [ProjectionProperty] -> PropertySpec
-projection pProps = (VLProjection, object (map projectionProperty pProps))
+projection pProps = (VLProjection, toObject (map projectionProperty pProps))
 
 
 {-|
@@ -366,7 +395,7 @@ geometry gType properties =
           <> if null properties
              then []
              else [("properties",
-                    object (map (second dataValueSpec) properties))]
+                    toObject (map (second dataValueSpec) properties))]
          )
 
 
@@ -477,7 +506,7 @@ data GraticuleProperty
     --   The default is @2.5@.
 
 
-graticuleProperty :: GraticuleProperty -> LabelledSpec
+graticuleProperty :: GraticuleProperty -> Pair
 graticuleProperty (GrExtent (lng1, lat1) (lng2, lat2)) =
   "extent" .= [[lng1, lat1], [lng2, lat2]]
 graticuleProperty (GrExtentMajor (lng1, lat1) (lng2, lat2)) =

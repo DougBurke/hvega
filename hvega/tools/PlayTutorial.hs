@@ -44,7 +44,6 @@ module Main where
 
 import qualified Data.Aeson.Encode.Pretty as AP
 import qualified Data.ByteString.Lazy.Char8 as BL
-import qualified Data.Text as T
 
 import qualified Graphics.Vega.Tutorials.VegaLite as VL
 
@@ -252,7 +251,7 @@ run outdir = forM_ vl $ \(name, spec) -> do
       specFile = prefix <> ".vg.json"
       prefix = outdir </> name
 
-      opts = object [T.pack "downloadFileName" .= name]
+      opts = object ["downloadFileName" .= name]
 
   toHtmlFileWith (Just opts) htmlFile spec
   BL.writeFile specFile (AP.encodePretty (fromVL spec))

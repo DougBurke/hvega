@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Transform
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -43,9 +43,19 @@ module Graphics.Vega.VegaLite.Transform
        ) where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first)
+#endif
+
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair, ToJSON)
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -62,7 +72,7 @@ import Graphics.Vega.VegaLite.Foundation
   ( FieldName
   , SortField
   , sortFieldSpec
-  , field_
+  -- , field_
   , fromT
   , allowNull
   )
@@ -72,6 +82,24 @@ import Graphics.Vega.VegaLite.Specification
   , TransformSpec(..)
   , SelectionLabel
   )
+
+
+-- see Foundation.hs
+(.=~) :: ToJSON a => T.Text -> a -> (T.Text, A.Value)
+a .=~ b = (a, toJSON b)
+
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
 
 
 {-|
@@ -196,10 +224,10 @@ operationSpec VarianceP = "variancep"
 
 
 aggregate_ :: Operation -> LabelledSpec
-aggregate_ op = "aggregate" .= operationSpec op
+aggregate_ op = "aggregate" .=~ operationSpec op
 
 op_ :: Operation -> LabelledSpec
-op_ op = "op" .= operationSpec op
+op_ op = "op" .=~ operationSpec op
 
 
 -- | Window transformations.
@@ -219,11 +247,11 @@ data Window
       --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
 
 
-windowFieldProperty :: Window -> LabelledSpec
+windowFieldProperty :: Window -> Pair
 windowFieldProperty (WAggregateOp op) = "op" .= operationSpec op
 windowFieldProperty (WOp op) = "op" .= wOperationLabel op
 windowFieldProperty (WParam n) = "param" .= n
-windowFieldProperty (WField f) = field_ f
+windowFieldProperty (WField f) = "field" .= f  -- was "field_ f"
 
 
 -- | Window-specific operation for transformations (for use with 'WOp').
@@ -341,25 +369,25 @@ data BinProperty
 
 
 binProperty :: BinProperty -> LabelledSpec
-binProperty (AlreadyBinned b) = "binned" .= b
-binProperty (BinAnchor x) = "anchor" .= x
-binProperty (Base x) = "base" .= x
-binProperty (Divide xs) = "divide" .= xs
-binProperty (Extent mn mx) = "extent" .= [ mn, mx ]
-binProperty (SelectionExtent s) = "extent" .= object [ "selection" .= s ]
-binProperty (MaxBins n) = "maxbins" .= n
-binProperty (MinStep x) = "minstep" .= x
-binProperty (Nice b) = "nice" .= b
-binProperty (Step x) = "step" .= x
-binProperty (Steps xs) = "steps" .= xs
+binProperty (AlreadyBinned b) = "binned" .=~ b
+binProperty (BinAnchor x) = "anchor" .=~ x
+binProperty (Base x) = "base" .=~ x
+binProperty (Divide xs) = "divide" .=~ xs
+binProperty (Extent mn mx) = "extent" .=~ [ mn, mx ]
+binProperty (SelectionExtent s) = "extent" .=~ object [ "selection" .= s ]
+binProperty (MaxBins n) = "maxbins" .=~ n
+binProperty (MinStep x) = "minstep" .=~ x
+binProperty (Nice b) = "nice" .=~ b
+binProperty (Step x) = "step" .=~ x
+binProperty (Steps xs) = "steps" .=~ xs
 
 
 bin :: [BinProperty] -> LabelledSpec
-bin [] = "bin" .= True
-bin xs = "bin" .= object (map binProperty xs)
+bin [] = "bin" .=~ True
+bin xs = "bin" .=~ toObject (map binProperty xs)
 
 binned_ :: LabelledSpec
-binned_ = "bin" .= fromT "binned"
+binned_ = "bin" .=~ fromT "binned"
 
 
 -- | Properties for a window transform.
@@ -462,7 +490,7 @@ data ImputeProperty
       -- ^ The replacement value (when using @ImMethod 'ImValue'@).
 
 
-imputeProperty :: ImputeProperty -> LabelledSpec
+imputeProperty :: ImputeProperty -> Pair
 imputeProperty (ImFrame m1 m2) = "frame" .= map allowNull [m1, m2]
 imputeProperty (ImKeyVals dVals) = "keyvals" .= dataValuesSpecs dVals
 imputeProperty (ImKeyValSequence start stop step) =
@@ -498,7 +526,7 @@ imputePropertySpecValue _ = Nothing
 
 
 impute_ :: [ImputeProperty] -> LabelledSpec
-impute_ ips = "impute" .= object (map imputeProperty ips)
+impute_ ips = "impute" .=~ object (map imputeProperty ips)
 
 
 imputeTS ::

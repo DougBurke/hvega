@@ -4,7 +4,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Input
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -40,12 +40,22 @@ module Graphics.Vega.VegaLite.Input
        ) where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Text as T
 
+#if MIN_VERSION_aeson(2, 0, 0)
+import Control.Arrow (first, second)
+#else
 import Control.Arrow (second)
+#endif
 
 import Data.Aeson ((.=), Value, decode, encode, object, toJSON)
+import Data.Aeson.Types (Pair)
 import Data.Maybe (fromMaybe, mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -66,6 +76,21 @@ import Graphics.Vega.VegaLite.Specification
   , LabelledSpec
   )
 import Graphics.Vega.VegaLite.Time (dateTimeSpec)
+
+
+-- see Foundation.hs
+toKey :: LabelledSpec -> Pair
+#if MIN_VERSION_aeson(2, 0, 0)
+toKey = first Key.fromText
+#else
+toKey = id
+#endif
+
+toKeys :: [LabelledSpec] -> [Pair]
+toKeys = map toKey
+
+toObject :: [LabelledSpec] -> VLSpec
+toObject = object . toKeys
 
 
 {-|
@@ -177,7 +202,7 @@ but kept separate to help better-document code.
 type Data = (VLProperty, VLSpec)
 
 
-formatProperty :: Format -> [LabelledSpec]
+formatProperty :: Format -> [Pair]
 formatProperty (JSON js) =
   let ps = [("type", "json")]
            <> if T.null (T.strip js) then [] else [("property", js)]
@@ -194,7 +219,7 @@ formatProperty (TopojsonMesh os) = [("type", "topojson")
                                    , "mesh" .= os
                                    ]
 formatProperty (Parse fmts) =
-  let pObj = object (map (second dataTypeSpec) fmts)
+  let pObj = toObject (map (second dataTypeSpec) fmts)
   in [("parse", pObj)]
 
 
@@ -222,7 +247,7 @@ This is expected to be used with 'dataFromRows'.
 @
 -}
 dataRow :: [(FieldName, DataValue)] -> [DataRow] -> [DataRow]
-dataRow rw = (object (map (second dataValueSpec) rw) :)
+dataRow rw = (toObject (map (second dataValueSpec) rw) :)
 
 
 {-|
@@ -271,7 +296,7 @@ datasets namedData =
 
         in fromMaybe din (convert din >>= extract')
 
-  in (VLDatasets, object specs)
+  in (VLDatasets, toObject specs)
 
 
 -- | This is for composed specifications, and it tells the visualization to
@@ -317,7 +342,7 @@ dataName s odata@(_, dataSpec) =
       -- a relatively easy conversion. The type annotation isn't needed
       -- but left in for reference.
       --
-      convert :: Maybe [(T.Text, Value)]
+      convert :: Maybe [Pair]
       convert = HM.toList <$> decode (encode dataSpec)
 
       extract [v] = Just v
@@ -359,7 +384,7 @@ dataFromColumns ::
   --   calls to 'dataColumn'.
   -> Data
 dataFromColumns fmts cols =
-  let dataArray = map object (transpose cols)
+  let dataArray = map toObject (transpose cols)
 
       vals = [("values", toJSON dataArray)]
              <> if null fmts
