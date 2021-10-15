@@ -14,14 +14,10 @@ University of London. It was originally based on version @2.2.1@ but
 it has been updated to match later versions.  This module allows users
 to create a Vega-Lite specification, targeting __version 4__ of the
 <https://vega.github.io/schema/vega-lite/v4.json JSON schema>.
-Version 0.11 of @hvega@ supports version 4.15 of the Vega-Lite specification.
+Version 0.12 of @hvega@ supports version 4.15 of the Vega-Lite specification.
 
-Although this is based on the Elm module, there are differences, such
-as using type constructors rather than functions for many properties -
-such as @'VL.PName' \"HorsePower\"@ rather than @pName \"HorsePower\"@ -
-and the return value of 'VL.toVegaLite'. The intention is to keep close
-to the Elm module, but it is more a guide than an absolute
-requirement!
+Although this was based on the Elm module, there have been a number of
+changes - on both sides.
 
 Please see "Graphics.Vega.Tutorials.VegaLite" for an introduction
 to using @hvega@ to create visualizations. The
@@ -857,6 +853,10 @@ module Graphics.Vega.VegaLite
          --
          -- $update
 
+         -- ** Version 0.12
+         --
+         -- $update01200
+         
          -- ** Version 0.11
          --
          -- $update01101
@@ -1267,6 +1267,17 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01200
+-- The @0.12.0.0@ release allows @hvega@ to be built with version 2.0 of the
+-- [aeson package](https://hackage.haskell.org/package/aeson). There are
+-- no changes to the API of @hvega@, but it does mean that you may need
+-- to update code that directly creates JSON, such as 'VL.dataFromJson'.
+-- It is likely that 'VL.LabelledSpec' type and the related
+-- @toXXXSpec/fromXXXSpec@ functions, such as 'VL.fromSelectSpec' and
+-- 'VL.toSelectSpec', will be updated once we can drop
+-- support for versions of @aeson@ prior to 2.0.
+--
 
 -- $update01101
 -- The @0.11.0.1@ release is purely to support testing with @hashable@ 0.3.1.0.

@@ -2720,7 +2720,7 @@ configure ::
   [ConfigureSpec]
   -- ^ The configuration options, created with 'Graphics.Vega.VegaLite.configuration'.
   --
-  --    Prior to version @0.5.0.0@ this was @[LabelledSpec]@.
+  --    Prior to version @0.5.0.0@ this was @['LabelledSpec']@.
   -> PropertySpec
 configure configs = (VLConfig, toObject (map unCS configs))
 
