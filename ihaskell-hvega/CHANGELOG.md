@@ -1,6 +1,12 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.4.0.0
+
+Bump to support version hvega-0.12.0.0 and version 2.0 of aeson,
+although it will need updates to IHaskell components such as
+ipython-kernel before you can combine all the pieces.
+
 ## 0.3.2.0
 
 Bump to support version hvega-0.11.0.0.
