@@ -35,6 +35,7 @@ import qualified Data.Text as T
 import Control.Arrow (second)
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 import Data.Maybe (mapMaybe)
 
 
@@ -55,11 +56,11 @@ import Graphics.Vega.VegaLite.Foundation
   , fromColor
   , fromDS
   , cursorLabel
+  , (.=~), toKey, toObject
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLSelection)
   , PropertySpec
-  , LabelledSpec
   , SelectSpec(..)
   , BuildSelectSpecs
   , SelectionLabel
@@ -238,10 +239,10 @@ data SelectionProperty
       --   [Vega-Lite toggle documentation](https://vega.github.io/vega-lite/docs/toggle.html).
 
 
-selectionProperties :: SelectionProperty -> [LabelledSpec]
+selectionProperties :: SelectionProperty -> [Pair]
 selectionProperties (Fields fNames) = ["fields" .= fNames]
 selectionProperties (Encodings channels) = ["encodings" .= map channelLabel channels]
-selectionProperties (SInit iVals) = ["init" .= object (map (second dataValueSpec) iVals)]
+selectionProperties (SInit iVals) = ["init" .= toObject (map (second dataValueSpec) iVals)]
 selectionProperties (SInitInterval Nothing Nothing) = []
 selectionProperties (SInitInterval mx my) =
   let conv (_, Nothing) = Nothing
@@ -321,7 +322,7 @@ data SelectionMarkProperty
       -- ^ The offset at which to start the dash pattern.
 
 
-selectionMarkProperty :: SelectionMarkProperty -> LabelledSpec
+selectionMarkProperty :: SelectionMarkProperty -> Pair
 selectionMarkProperty (SMCursor c) = "cursor" .= cursorLabel c
 selectionMarkProperty (SMFill colour) = "fill" .= fromColor colour
 selectionMarkProperty (SMFillOpacity x) = "fillOpacity" .= x
@@ -373,10 +374,10 @@ data InputProperty
       -- ^ The initial text for input elements such as text fields.
 
 
-inputProperty :: InputProperty -> LabelledSpec
+inputProperty :: InputProperty -> Pair
 inputProperty (Debounce x) = "debounce" .= x
 inputProperty (Element el) = "element" .= el -- #/definitions/Element
-inputProperty (InOptions opts) = "options" .= map toJSON opts
+inputProperty (InOptions opts) = "options" .= map toJSON opts  -- don't need the map
 inputProperty (InMin x) = "min" .= x
 inputProperty (InMax x) = "max" .= x
 inputProperty (InName s) = "name" .= s
@@ -421,7 +422,7 @@ data Binding
       -- ^ Color input element that can bound to a named field value.
 
 
-bindingSpec :: Binding -> LabelledSpec
+bindingSpec :: Binding -> Pair
 bindingSpec bnd =
   let (lbl, input, ps) = case bnd of
         IRange label props -> (label, fromT "range", props)
@@ -438,7 +439,7 @@ bindingSpec bnd =
         ITel label props -> (label, "tel", props)
         IColor label props -> (label, "color", props)
 
-  in (lbl, object (("input" .= input) : map inputProperty ps))
+  in toKey (lbl, object (("input" .= input) : map inputProperty ps))
 
 
 {-|
@@ -465,7 +466,7 @@ data BindLegendProperty
     --   that should trigger the selection.
 
 
-bindLegendProperty :: BindLegendProperty -> [LabelledSpec]
+bindLegendProperty :: BindLegendProperty -> [Pair]
 bindLegendProperty (BLField f) = [ toLBind Nothing
                                  , "fields" .= [f]
                                  ]
@@ -479,7 +480,7 @@ bindLegendProperty (BLChannelEvent ch es) = [ toLBind (Just es)
                                             , "encodings" .= [channelLabel ch]
                                             ]
 
-toLBind :: Maybe T.Text -> LabelledSpec
+toLBind :: Maybe T.Text -> Pair
 toLBind Nothing = "bind" .= fromT "legend"
 toLBind (Just es) = "bind" .= object ["legend" .= es]
 
@@ -506,7 +507,7 @@ selection ::
   --
   --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
-selection sels = (VLSelection, object (map unS sels))
+selection sels = (VLSelection, toObject (map unS sels))
 
 
 {-|
@@ -535,4 +536,4 @@ select ::
 select nme sType options ols =
   -- TODO: elm filters out those properties that are set to A.Null
   let selProps = ("type" .= selectionLabel sType) : concatMap selectionProperties options
-  in S (nme .= object selProps) : ols
+  in S (nme .=~ object selProps) : ols

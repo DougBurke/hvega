@@ -4,7 +4,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Core
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -174,9 +174,15 @@ module Graphics.Vega.VegaLite.Core
 import Prelude hiding (filter, lookup, repeat)
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
 import Data.Aeson (object, toJSON, (.=))
+import Data.Aeson.Types (Pair)
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -259,6 +265,7 @@ import Graphics.Vega.VegaLite.Foundation
   , cInterpolateSpec
   , viewBackgroundSpec
   , symbolLabel
+  , (.=~), toObject, toKey
   )
 import Graphics.Vega.VegaLite.Input
   ( Data
@@ -286,7 +293,6 @@ import Graphics.Vega.VegaLite.Specification
   ( VLProperty(..)
   , VLSpec
   , PropertySpec
-  , LabelledSpec
   , EncodingSpec(..)
   , BuildEncodingSpecs
   , TransformSpec(..)
@@ -320,6 +326,7 @@ import Graphics.Vega.VegaLite.Transform
   , imputeTS
   )
 
+
 --- helpers
 
 -- This could be extended to any Ord type but specialize for now to Double
@@ -334,40 +341,40 @@ clamped ::
 clamped xmin xmax x = max xmin (min xmax x)
 
 
-repeat_ :: Arrangement -> LabelledSpec
+repeat_ :: Arrangement -> Pair
 repeat_ arr = "repeat" .= arrangementLabel arr
 
-sort_ :: [SortProperty] -> LabelledSpec
+sort_ :: [SortProperty] -> Pair
 sort_ ops = "sort" .= sortPropertySpec ops
 
 mchan_ :: T.Text -> [MarkChannel] -> EncodingSpec
-mchan_ f ms = ES (f .= object (concatMap markChannelProperty ms))
+mchan_ f ms = ES (f .=~ object (concatMap markChannelProperty ms))
 
-mtype_ :: Measurement -> LabelledSpec
+mtype_ :: Measurement -> Pair
 mtype_ m = "type" .= measurementLabel m
 
-timeUnit_ :: TimeUnit -> LabelledSpec
+timeUnit_ :: TimeUnit -> Pair
 timeUnit_ tu = "timeUnit" .= timeUnitSpec tu
 
 -- The assumption at the moment is that it's always correct to
 -- replace the empty list by null.
 --
-scaleProp_ :: [ScaleProperty] -> LabelledSpec
+scaleProp_ :: [ScaleProperty] -> Pair
 scaleProp_ [] = "scale" .= A.Null
 scaleProp_ sps = "scale" .= object (map scaleProperty sps)
 
 
-value_ :: T.Text -> LabelledSpec
+value_ :: T.Text -> Pair
 value_ v = "value" .= v
 
 
-selCond_ :: (a -> [LabelledSpec]) -> BooleanOp -> [a] -> [a] -> [LabelledSpec]
+selCond_ :: (a -> [Pair]) -> BooleanOp -> [a] -> [a] -> [Pair]
 selCond_ getProps selName ifClause elseClause =
   let h = ("condition", hkey)
       toProps = concatMap getProps
-      hkey = object (("selection", booleanOpSpec selName) : toProps ifClause)
+      hkey = object (toKey ("selection", booleanOpSpec selName) : toProps ifClause)
       hs = toProps elseClause
-  in h : hs
+  in (h : hs)
 
 -- Special case the single-condition check, so that I don't get false
 -- positives when comparing against the Vega-Lite specification. There
@@ -380,7 +387,7 @@ selCond_ getProps selName ifClause elseClause =
 --      selection: xxx
 -- which happens for the Selection operator.
 --
-dataCond_ :: (a -> [LabelledSpec]) -> [(BooleanOp, [a])] -> [a] -> [LabelledSpec]
+dataCond_ :: (a -> [Pair]) -> [(BooleanOp, [a])] -> [a] -> [Pair]
 dataCond_ getProps tests elseClause =
   let h = ("condition", condClause)
       condClause = case conds of
@@ -390,10 +397,10 @@ dataCond_ getProps tests elseClause =
       testClause (Selection sel, ifClause) =
         object (("selection" .= sel) : toProps ifClause)
       testClause (predicate, ifClause) =
-        object (("test", booleanOpSpec predicate) : toProps ifClause)
+        object (toKey ("test", booleanOpSpec predicate) : toProps ifClause)
       toProps = concatMap getProps
       hs = toProps elseClause
-  in h : hs
+  in (h : hs)
 
 
 
@@ -577,8 +584,8 @@ data MarkChannel
       --
       --   @since 0.6.0.0
 
-markChannelProperty :: MarkChannel -> [LabelledSpec]
-markChannelProperty (MName s) = [field_ s]
+markChannelProperty :: MarkChannel -> [Pair]
+markChannelProperty (MName s) = ["field" .= s]
 markChannelProperty (MRepeat arr) = ["field" .= object [repeat_ arr]]
 markChannelProperty (MRepeatDatum arr) = ["datum" .= object [repeat_ arr]]
 markChannelProperty (MmType t) = [mtype_ t]
@@ -636,7 +643,7 @@ encoding ::
   --
   --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
-encoding channels = (VLEncoding, object (map unES channels))
+encoding channels = (VLEncoding, toObject (map unES channels))
 
 
 {-|
@@ -823,7 +830,7 @@ data ScaleProperty
       --   channel.
 
 
-scaleProperty :: ScaleProperty -> LabelledSpec
+scaleProperty :: ScaleProperty -> Pair
 scaleProperty (SType sType) = "type" .= scaleLabel sType
 scaleProperty (SAlign c) = "align" .= clamped 0 1 c
 scaleProperty (SBase x) = "base" .= x
@@ -859,7 +866,7 @@ scaleProperty (SZero b) = "zero" .= b
 --
 -- based on schema 3.3.0 #/definitions/SchemeParams
 
-schemeProperty :: T.Text -> [Double] -> LabelledSpec
+schemeProperty :: T.Text -> [Double] -> Pair
 schemeProperty nme [n] = "scheme" .= object ["name" .= nme, "count" .= n]
 schemeProperty nme [mn, mx] = "scheme" .= object ["name" .= nme, "extent" .= [mn, mx]]
 schemeProperty nme [n, mn, mx] = "scheme" .= object ["name" .= nme, "count" .= n, "extent" .= [mn, mx]]
@@ -919,11 +926,11 @@ data SortProperty
       --   @since 0.4.0.0
 
 
-sortProperty :: SortProperty -> [LabelledSpec]
+sortProperty :: SortProperty -> [Pair]
 sortProperty Ascending = [order_ "ascending"]
 sortProperty Descending = [order_ "descending"]
 sortProperty (ByChannel ch) = ["encoding" .= channelLabel ch]
-sortProperty (ByFieldOp field op) = [field_ field, op_ op]
+sortProperty (ByFieldOp field op) = ["field" .= field, op_ op]
 sortProperty (ByRepeatOp arr op) = ["field" .= object [repeat_ arr], op_ op]
 sortProperty (CustomSort _) = []
 
@@ -1103,8 +1110,8 @@ data PositionChannel
       --
       --   @since 0.5.0.0
 
-positionChannelProperty :: PositionChannel -> LabelledSpec
-positionChannelProperty (PName s) = field_ s
+positionChannelProperty :: PositionChannel -> Pair
+positionChannelProperty (PName s) = "field" .= s
 positionChannelProperty (PmType m) = mtype_ m
 positionChannelProperty (PBin b) = bin b
 positionChannelProperty PBinned = binned_
@@ -1636,7 +1643,7 @@ data AxisProperty
       -- ^ The z-index of the axis, relative to the chart marks.
 
 
-axisProperty :: AxisProperty -> LabelledSpec
+axisProperty :: AxisProperty -> Pair
 axisProperty (AxStyle [s]) = "style" .= s
 axisProperty (AxStyle s) = "style" .= s
 
@@ -2036,10 +2043,15 @@ data Filter
       --   @since 0.4.0.0
 
 
-fop_ :: FieldName -> T.Text -> DataValue -> [LabelledSpec]
-fop_ field label val = [field_ field, label .= dataValueSpec val]
+#if MIN_VERSION_aeson(2, 0, 0)
+fop_ :: FieldName -> Key.Key -> DataValue -> [Pair]
+#else
+fop_ :: FieldName -> T.Text -> DataValue -> [Pair]
+#endif
+fop_ field label val = ["field" .= field,
+                        label .= dataValueSpec val]
 
-filterProperty :: Filter -> [LabelledSpec]
+filterProperty :: Filter -> [Pair]
 
 filterProperty (FEqual field val) = fop_ field "equal" val
 filterProperty (FLessThan field val) = fop_ field "lt" val
@@ -2059,7 +2071,7 @@ filterProperty (FRange field vals) =
       process [] = A.Null
       process dts = dateTimeSpec dts
 
-  in [field_ field, "range" .= ans]
+  in ["field" .= field, "range" .= ans]
 
 filterProperty (FOneOf field vals) =
   let ans = case vals of
@@ -2068,9 +2080,9 @@ filterProperty (FOneOf field vals) =
               Strings ss -> map toJSON ss
               Booleans bs -> map toJSON bs
 
-  in [field_ field, "oneOf" .= ans]
+  in ["field" .= field, "oneOf" .= ans]
 
-filterProperty (FValid field) = [field_ field, "valid" .= True]
+filterProperty (FValid field) = ["field" .= field, "valid" .= True]
 filterProperty _ = []  -- ignore FExpr and FCompose
 
 
@@ -2189,8 +2201,8 @@ data HyperlinkChannel
       --
       --   @since 0.9.0.0
 
-hyperlinkChannelProperty :: HyperlinkChannel -> [LabelledSpec]
-hyperlinkChannelProperty (HName s) = [field_ s]
+hyperlinkChannelProperty :: HyperlinkChannel -> [Pair]
+hyperlinkChannelProperty (HName s) = ["field" .= s]
 hyperlinkChannelProperty (HRepeat arr) = ["field" .= object [repeat_ arr]]
 hyperlinkChannelProperty (HmType t) = [mtype_ t]
 hyperlinkChannelProperty (HAggregate op) = [aggregate_ op]
@@ -2271,8 +2283,8 @@ data AriaDescriptionChannel
       -- ^ Display no title.
 
 
-ariaDescriptionChannelProperty :: AriaDescriptionChannel -> [LabelledSpec]
-ariaDescriptionChannelProperty (ADName s) = [field_ s]
+ariaDescriptionChannelProperty :: AriaDescriptionChannel -> [Pair]
+ariaDescriptionChannelProperty (ADName s) = ["field" .= s]
 ariaDescriptionChannelProperty (ADRepeat arr) = ["field" .= object [repeat_ arr]]
 ariaDescriptionChannelProperty (ADmType t) = [mtype_ t]
 ariaDescriptionChannelProperty (ADAggregate op) = [aggregate_ op]
@@ -2406,14 +2418,14 @@ data FacetChannel
       --
       -- @since 0.4.0.0
 
-facetChannelProperty :: FacetChannel -> LabelledSpec
-facetChannelProperty (FName s) = field_ s
+facetChannelProperty :: FacetChannel -> Pair
+facetChannelProperty (FName s) = "field" .= s
 facetChannelProperty (FmType measure) = mtype_ measure
 facetChannelProperty (FAlign algn) = "align" .= compositionAlignmentSpec algn
 facetChannelProperty (FAggregate op) = aggregate_ op
 facetChannelProperty (FBin bps) = bin bps
 facetChannelProperty (FCenter b) = "center" .= b
-facetChannelProperty (FHeader hps) = header_ "" hps
+facetChannelProperty (FHeader hps) = toKey (header_ "" hps)
 facetChannelProperty (FSort sps) = sort_ sps
 facetChannelProperty (FSpacing x) = "spacing" .= x
 facetChannelProperty (FTitle s) = "title" .= s
@@ -2527,8 +2539,8 @@ data TextChannel
       --
       --   @since 0.4.0.0
 
-textChannelProperty :: TextChannel -> [LabelledSpec]
-textChannelProperty (TName s) = [field_  s]
+textChannelProperty :: TextChannel -> [Pair]
+textChannelProperty (TName s) = ["field" .= s]
 textChannelProperty (TRepeat arr) = ["field" .= object [repeat_ arr]]
 textChannelProperty (TRepeatDatum arr) = ["datum" .= object [repeat_ arr]]
 textChannelProperty (TmType measure) = [mtype_ measure]
@@ -2625,11 +2637,11 @@ data OrderChannel
       --
       --   @since 0.11.0.0
 
-orderChannelProperty :: OrderChannel -> [LabelledSpec]
+orderChannelProperty :: OrderChannel -> [Pair]
 orderChannelProperty (OAggregate op) = [aggregate_ op]
 orderChannelProperty (OBand x) = ["band" .= x]
 orderChannelProperty (OBin bps) = [bin bps]
-orderChannelProperty (OName s) = [field_ s]
+orderChannelProperty (OName s) = ["field" .= s]
 orderChannelProperty (ORepeat arr) = ["field" .= object [repeat_ arr]]
 orderChannelProperty (OSort ops) = [sort_ ops]
 orderChannelProperty (OTimeUnit tu) = [timeUnit_ tu]
@@ -2658,8 +2670,8 @@ data DetailChannel
       -- ^ How should the detail field be aggregated?
 
 
-detailChannelProperty :: DetailChannel -> LabelledSpec
-detailChannelProperty (DName s) = field_ s
+detailChannelProperty :: DetailChannel -> Pair
+detailChannelProperty (DName s) = "field" .= s  -- field_ s
 detailChannelProperty (DmType t) = mtype_ t
 detailChannelProperty (DBin bps) = bin bps
 detailChannelProperty (DTimeUnit tu) = timeUnit_ tu
@@ -2677,7 +2689,7 @@ data FacetMapping
     | RowBy [FacetChannel]
 
 
-facetMappingProperty :: FacetMapping -> LabelledSpec
+facetMappingProperty :: FacetMapping -> Pair
 facetMappingProperty (RowBy fFields) =
   "row" .= object (map facetChannelProperty fFields)
 facetMappingProperty (ColumnBy fFields) =
@@ -2708,9 +2720,9 @@ configure ::
   [ConfigureSpec]
   -- ^ The configuration options, created with 'Graphics.Vega.VegaLite.configuration'.
   --
-  --    Prior to version @0.5.0.0@ this was @[LabelledSpec]@.
+  --    Prior to version @0.5.0.0@ this was @['LabelledSpec']@.
   -> PropertySpec
-configure configs = (VLConfig, object (map unCS configs))
+configure configs = (VLConfig, toObject (map unCS configs))
 
 
 -- | Alignment to apply to grid rows and columns generated by a composition
@@ -3149,7 +3161,7 @@ resolve ::
   --
   --   Prior to @0.5.0.0@ this argument was @['LabelledSpec']@.
   -> PropertySpec
-resolve res = (VLResolve, object (map unRS res))
+resolve res = (VLResolve, toObject (map unRS res))
 
 
 {-|
@@ -5088,4 +5100,4 @@ tooltips ::
   -- ^ A separate list of properties for each channel.
   -> BuildEncodingSpecs
 tooltips tDefs ols =
-  ES ("tooltip" .= map (object . concatMap textChannelProperty) tDefs) : ols
+  ES ("tooltip" .=~ map (object . concatMap textChannelProperty) tDefs) : ols

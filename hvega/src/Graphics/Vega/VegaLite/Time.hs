@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Time
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -30,6 +30,7 @@ module Graphics.Vega.VegaLite.Time
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -38,7 +39,7 @@ import Data.Monoid ((<>))
 -- added in base 4.8.0.0 / ghc 7.10.1
 import Numeric.Natural (Natural)
 
-import Graphics.Vega.VegaLite.Specification (LabelledSpec, VLSpec)
+import Graphics.Vega.VegaLite.Specification (VLSpec)
 
 
 {-|
@@ -364,7 +365,7 @@ baseTimeUnitLabel MinutesSeconds = "minutesseconds"
 baseTimeUnitLabel SecondsMilliseconds = "secondsmilliseconds"
 
 
-dateTimeProperty :: DateTime -> LabelledSpec
+dateTimeProperty :: DateTime -> Pair
 dateTimeProperty (DTYear y) = "year" .= y
 dateTimeProperty (DTQuarter q) = "quarter" .= q
 dateTimeProperty (DTMonth mon) = "month" .= monthNameLabel mon
@@ -382,7 +383,6 @@ dateTimeProperty (DTMilliseconds ms) = "milliseconds" .= ms
 
 dateTimeSpec :: [DateTime] -> VLSpec
 dateTimeSpec = object . map dateTimeProperty
-
 
 dayLabel :: DayName -> T.Text
 dayLabel Mon = "Mon"

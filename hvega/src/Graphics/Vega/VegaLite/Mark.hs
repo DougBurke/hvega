@@ -1,13 +1,14 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 {-|
 Module      : Graphics.Vega.VegaLite.Mark
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
 Stability   : unstable
-Portability : OverloadedStrings
+Portability : CPP, OverloadedStrings
 
 This provides the functionality of the VegaLite module but is
 not directly exported to the user.
@@ -29,7 +30,7 @@ module Graphics.Vega.VegaLite.Mark
        , BlendMode(..)
 
          -- not for external export
-       , mprops_
+       , oldMprops_
 
        , markLabel
        , markProperty
@@ -37,9 +38,15 @@ module Graphics.Vega.VegaLite.Mark
        ) where
 
 import qualified Data.Aeson as A
+
+#if MIN_VERSION_aeson(2, 0, 0)
+import qualified Data.Aeson.Key as Key
+#endif
+
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 import Data.List (sortOn)
 
 
@@ -71,6 +78,7 @@ import Graphics.Vega.VegaLite.Foundation
   , ttContentLabel
   , hAlignLabel
   , vAlignLabel
+  , (.=~)
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
@@ -79,9 +87,18 @@ import Graphics.Vega.VegaLite.Specification
 
 
 -- As of version 0.6.0.0, an empty list is mapped to True
-mprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
+#if MIN_VERSION_aeson(2, 0, 0)
+mprops_ :: Key.Key -> [MarkProperty] -> Pair
+#else
+mprops_ :: T.Text -> [MarkProperty] -> Pair
+#endif
 mprops_ f [] = f .= True
 mprops_ f mps = f .= object (map markProperty mps)
+
+-- Used by Configuration to create top-level data
+oldMprops_ :: T.Text -> [MarkProperty] -> LabelledSpec
+oldMprops_ f [] = f .=~ True
+oldMprops_ f mps = f .=~ object (map markProperty mps)
 
 
 -- | Type of visual mark used to represent data in the visualization.
@@ -713,7 +730,7 @@ data MarkProperty
       --   @since 0.9.0.0
 
 
-markProperty :: MarkProperty -> LabelledSpec
+markProperty :: MarkProperty -> Pair
 
 -- special case the gradients
 markProperty (MColorGradient dir stops opts) =
@@ -868,7 +885,7 @@ gradientSpec dir stops props =
   let sortedStops = sortOn fst stops
   in object ([ "gradient" .= colorGradientLabel dir
              , "stops" .= map stopSpec sortedStops ]
-             ++ map gradientProperty props)
+              ++ map gradientProperty props)
 
 
 {-|
@@ -1024,10 +1041,10 @@ data MarkErrorExtent
 -- This is a little different from the other calls since I wanted to
 -- make sure the scale factor was encoded as a number not a string.
 --
-extent_ :: T.Text -> LabelledSpec
+extent_ :: T.Text -> Pair
 extent_ v = "extent" .= v
 
-markErrorExtentLSpec :: MarkErrorExtent -> LabelledSpec
+markErrorExtentLSpec :: MarkErrorExtent -> Pair
 markErrorExtentLSpec ConfidenceInterval = extent_ "ci"
 markErrorExtentLSpec StdErr             = extent_ "stderr"
 markErrorExtentLSpec StdDev             = extent_ "stdev"
@@ -1129,7 +1146,7 @@ data GradientProperty
     --   only). The default is 0.5.
 
 
-gradientProperty :: GradientProperty -> LabelledSpec
+gradientProperty :: GradientProperty -> Pair
 gradientProperty (GrX1 x) = "x1" .= x
 gradientProperty (GrX2 x) = "x2" .= x
 gradientProperty (GrY1 x) = "y1" .= x

@@ -32,6 +32,8 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
+
 
 import Graphics.Vega.VegaLite.Foundation
   ( APosition
@@ -70,7 +72,7 @@ import Graphics.Vega.VegaLite.Scale
   ( ScaleNice
   , scaleNiceSpec
   )
-import Graphics.Vega.VegaLite.Specification (VLSpec, LabelledSpec)
+import Graphics.Vega.VegaLite.Specification (VLSpec)
 import Graphics.Vega.VegaLite.Time
   ( DateTime
   , dateTimeSpec
@@ -165,7 +167,7 @@ data LegendLayout
   | LeLTopRight [BaseLegendLayout]
 
 
-legendLayoutSpec :: LegendLayout -> LabelledSpec
+legendLayoutSpec :: LegendLayout -> Pair
 legendLayoutSpec (LeLAnchor anc) = "anchor" .= anchorLabel anc
 legendLayoutSpec (LeLBottom bl) = "bottom" .= toBLSpec bl
 legendLayoutSpec (LeLBottomLeft bl) = "bottom-left" .= toBLSpec bl
@@ -210,7 +212,7 @@ data BaseLegendLayout
 toBLSpec :: [BaseLegendLayout] -> VLSpec
 toBLSpec = object . map baseLegendLayoutSpec
 
-baseLegendLayoutSpec :: BaseLegendLayout -> LabelledSpec
+baseLegendLayoutSpec :: BaseLegendLayout -> Pair
 baseLegendLayoutSpec (BLeLAnchor anc) = "anchor" .= anchorLabel anc
 baseLegendLayoutSpec (BLeLBounds bnds) = "bounds" .= boundsSpec bnds
 baseLegendLayoutSpec (BLeLCenter b) = "center" .= b
@@ -490,7 +492,7 @@ data LegendProperty
     | LZIndex ZIndex
       -- ^ The z-index at which to draw the legend.
 
-legendProperty :: LegendProperty -> LabelledSpec
+legendProperty :: LegendProperty -> Pair
 legendProperty (LAria b) = "aria" .= b
 legendProperty (LAriaDescription t) = "description" .= t
 legendProperty (LClipHeight x) = "clipHeight" .= x
@@ -569,7 +571,7 @@ legendProperty (LeY x) = "legendY" .= x
 legendProperty (LZIndex z) = "zindex" .= z
 
 
-legendProp_ :: [LegendProperty] -> LabelledSpec
+legendProp_ :: [LegendProperty] -> Pair
 legendProp_ [] = "legend" .= A.Null
 legendProp_ lps = "legend" .= object (map legendProperty lps)
 

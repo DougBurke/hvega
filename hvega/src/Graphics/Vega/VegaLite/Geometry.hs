@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Geometry
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -35,10 +35,13 @@ module Graphics.Vega.VegaLite.Geometry
        ) where
 
 import qualified Data.Aeson as A
+
 import qualified Data.Text as T
 
 import Control.Arrow (second)
+
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 
 #if !(MIN_VERSION_base(4, 12, 0))
 import Data.Monoid ((<>))
@@ -49,11 +52,13 @@ import Graphics.Vega.VegaLite.Data
   ( DataValue
   , dataValueSpec
   )
-import Graphics.Vega.VegaLite.Foundation (fromT)
+import Graphics.Vega.VegaLite.Foundation
+  ( fromT
+  , toObject
+  )
 import Graphics.Vega.VegaLite.Specification
   ( VLProperty(VLData, VLProjection)
   , VLSpec
-  , LabelledSpec
   , PropertySpec
   )
 import Graphics.Vega.VegaLite.Input
@@ -61,7 +66,7 @@ import Graphics.Vega.VegaLite.Input
   )
 
 
-type_ :: T.Text -> LabelledSpec
+type_ :: T.Text -> Pair
 type_ t = "type" .= t
 
 
@@ -285,7 +290,7 @@ data ProjectionProperty
       -- ^ @Satellite@ map projection tilt.
 
 
-projectionProperty :: ProjectionProperty -> LabelledSpec
+projectionProperty :: ProjectionProperty -> Pair
 projectionProperty (PrType proj) = "type" .= projectionLabel proj
 projectionProperty (PrClipAngle numOrNull) = "clipAngle" .= maybe A.Null toJSON numOrNull
 projectionProperty (PrClipExtent rClip) =
@@ -366,7 +371,7 @@ geometry gType properties =
           <> if null properties
              then []
              else [("properties",
-                    object (map (second dataValueSpec) properties))]
+                    toObject (map (second dataValueSpec) properties))]
          )
 
 
@@ -477,7 +482,7 @@ data GraticuleProperty
     --   The default is @2.5@.
 
 
-graticuleProperty :: GraticuleProperty -> LabelledSpec
+graticuleProperty :: GraticuleProperty -> Pair
 graticuleProperty (GrExtent (lng1, lat1) (lng2, lat2)) =
   "extent" .= [[lng1, lat1], [lng2, lat2]]
 graticuleProperty (GrExtentMajor (lng1, lat1) (lng2, lat2)) =

@@ -2,7 +2,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Scale
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -29,6 +29,7 @@ module Graphics.Vega.VegaLite.Scale
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 
 
 import Graphics.Vega.VegaLite.Foundation
@@ -39,7 +40,6 @@ import Graphics.Vega.VegaLite.Foundation
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
-  , LabelledSpec
   , SelectionLabel
   )
 import Graphics.Vega.VegaLite.Time
@@ -151,7 +151,7 @@ data DomainLimits
     -- ^ Date-time values that define a scale domain.
 
 
-scaleDomainProperty :: ScaleDomain -> LabelledSpec
+scaleDomainProperty :: ScaleDomain -> Pair
 
 scaleDomainProperty (DMax x) = "domainMax" .= x
 scaleDomainProperty (DMaxTime dts) = "domainMax" .= dateTimeSpec dts

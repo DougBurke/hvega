@@ -52,46 +52,54 @@ jobs:
             ghc: 9.0.1
 
     steps:
-    - uses: actions/checkout@v2
-      if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/main'
+      - uses: actions/checkout@v2
+        if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/main'
 
-    - uses: haskell/actions/setup@v1
-      id: setup-haskell-cabal
-      name: Setup Haskell
-      with:
-        ghc-version: ${{ matrix.ghc }}
-        cabal-version: ${{ matrix.cabal }}
+      - uses: haskell/actions/setup@v1
+        id: setup-haskell-cabal
+        name: Setup Haskell
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          cabal-version: ${{ matrix.cabal }}
 
-    - name: Configure
-      working-directory: ./hvega
-      run: |
-        cabal configure --enable-tests --enable-benchmarks --test-show-details=direct
+      - name: Configure
+        working-directory: ./hvega
+        run: |
+          cabal configure --enable-tests --enable-benchmarks --test-show-details=direct
 
-    - name: Freeze
-      working-directory: ./hvega
-      run: |
-        cabal freeze
+      - name: Freeze
+        working-directory: ./hvega
+        run: |
+          cabal freeze
 
-    - uses: actions/cache@v2.1.3
-      name: Cache ~/.cabal/store
-      with:
-        path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
-        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
+      - uses: actions/cache@v2.1.3
+        name: Cache ~/.cabal/store
+        with:
+          path: ${{ steps.setup-haskell-cabal.outputs.cabal-store }}
+          key: ${{ runner.os }}-${{ matrix.ghc }}-${{ hashFiles('cabal.project.freeze') }}
 
-    - name: Install dependencies
-      working-directory: ./hvega
-      run: |
-        cabal build all --only-dependencies
+      - name: Install dependencies
+        working-directory: ./hvega
+        run: |
+          cabal build all --only-dependencies
 
-    - name: Build
-      working-directory: ./hvega
-      run: |
-        cabal build all
+      - name: Build
+        working-directory: ./hvega
+        run: |
+          cabal build all
 
-    - name: Test
-      working-directory: ./hvega
-      run: |
-        cabal test all
+      - name: List - non Windows
+        working-directory: ./hvega
+        shell: bash
+        run: |
+          if [ "$RUNNER_OS" != "Windows" ]; then
+            egrep 'any.aeson|any.base|any.bytestring|any.containers|any.filepath|any.tasty|any.text|any.unordered-containers' ../cabal.project.freeze
+          fi
+
+      - name: Test
+        working-directory: ./hvega
+        run: |
+          cabal test all
 
   stack:
     name: stack / ghc ${{ matrix.ghc }}
@@ -102,32 +110,46 @@ jobs:
         ghc: ["8.10.4"]
 
     steps:
-    - uses: actions/checkout@v2
-      if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/main'
+      - uses: actions/checkout@v2
+        if: github.event.action == 'opened' || github.event.action == 'synchronize' || github.event.ref == 'refs/heads/main'
 
-    - uses: haskell/actions/setup@v1
-      name: Setup Haskell Stack
-      with:
-        ghc-version: ${{ matrix.ghc }}
-        stack-version: ${{ matrix.stack }}
+      - uses: haskell/actions/setup@v1
+        name: Setup Haskell Stack
+        with:
+          ghc-version: ${{ matrix.ghc }}
+          stack-version: ${{ matrix.stack }}
 
-    - uses: actions/cache@v2.1.3
-      name: Cache ~/.stack
-      with:
-        path: ~/.stack
-        key: ${{ runner.os }}-${{ matrix.ghc }}-stack
+      - uses: actions/cache@v2.1.3
+        name: Cache ~/.stack
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-${{ matrix.ghc }}-stack
 
-    - name: Install dependencies
-      working-directory: ./hvega
-      run: |
-        stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --only-dependencies
+      - name: Install dependencies
+        working-directory: ./hvega
+        run: |
+          stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --only-dependencies
 
-    - name: Build
-      working-directory: ./hvega
-      run: |
-        stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks
+      - name: Build
+        working-directory: ./hvega
+        run: |
+          stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks
 
-    - name: Test
-      working-directory: ./hvega
-      run: |
-        stack test --system-ghc
+      - name: List
+        working-directory: ./hvega
+        run: |
+          stack list aeson
+          stack list aeson-pretty
+          stack list base
+          stack list bytestring
+          stack list containers
+          stack list filepath
+          stack list tasty
+          stack list tasty-golden
+          stack list text
+          stack list unordered-containers
+
+      - name: Test
+        working-directory: ./hvega
+        run: |
+          stack test --system-ghc

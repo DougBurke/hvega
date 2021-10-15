@@ -3,7 +3,7 @@
 
 {-|
 Module      : Graphics.Vega.VegaLite.Transform
-Copyright   : (c) Douglas Burke, 2018-2020
+Copyright   : (c) Douglas Burke, 2018-2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
@@ -46,6 +46,7 @@ import qualified Data.Aeson as A
 import qualified Data.Text as T
 
 import Data.Aeson ((.=), object, toJSON)
+import Data.Aeson.Types (Pair)
 import Data.Maybe (mapMaybe)
 
 #if !(MIN_VERSION_base(4, 12, 0))
@@ -62,13 +63,12 @@ import Graphics.Vega.VegaLite.Foundation
   ( FieldName
   , SortField
   , sortFieldSpec
-  , field_
+  -- , field_
   , fromT
   , allowNull
   )
 import Graphics.Vega.VegaLite.Specification
   ( VLSpec
-  , LabelledSpec
   , TransformSpec(..)
   , SelectionLabel
   )
@@ -195,10 +195,10 @@ operationSpec Variance = "variance"
 operationSpec VarianceP = "variancep"
 
 
-aggregate_ :: Operation -> LabelledSpec
+aggregate_ :: Operation -> Pair
 aggregate_ op = "aggregate" .= operationSpec op
 
-op_ :: Operation -> LabelledSpec
+op_ :: Operation -> Pair
 op_ op = "op" .= operationSpec op
 
 
@@ -219,11 +219,11 @@ data Window
       --   that do not apply to fields such as 'Count', 'Rank', and 'DenseRank'.
 
 
-windowFieldProperty :: Window -> LabelledSpec
+windowFieldProperty :: Window -> Pair
 windowFieldProperty (WAggregateOp op) = "op" .= operationSpec op
 windowFieldProperty (WOp op) = "op" .= wOperationLabel op
 windowFieldProperty (WParam n) = "param" .= n
-windowFieldProperty (WField f) = field_ f
+windowFieldProperty (WField f) = "field" .= f  -- was "field_ f"
 
 
 -- | Window-specific operation for transformations (for use with 'WOp').
@@ -340,7 +340,7 @@ data BinProperty
       -- ^ Pick the step size from this list.
 
 
-binProperty :: BinProperty -> LabelledSpec
+binProperty :: BinProperty -> Pair
 binProperty (AlreadyBinned b) = "binned" .= b
 binProperty (BinAnchor x) = "anchor" .= x
 binProperty (Base x) = "base" .= x
@@ -354,11 +354,11 @@ binProperty (Step x) = "step" .= x
 binProperty (Steps xs) = "steps" .= xs
 
 
-bin :: [BinProperty] -> LabelledSpec
+bin :: [BinProperty] -> Pair
 bin [] = "bin" .= True
 bin xs = "bin" .= object (map binProperty xs)
 
-binned_ :: LabelledSpec
+binned_ :: Pair
 binned_ = "bin" .= fromT "binned"
 
 
@@ -462,7 +462,7 @@ data ImputeProperty
       -- ^ The replacement value (when using @ImMethod 'ImValue'@).
 
 
-imputeProperty :: ImputeProperty -> LabelledSpec
+imputeProperty :: ImputeProperty -> Pair
 imputeProperty (ImFrame m1 m2) = "frame" .= map allowNull [m1, m2]
 imputeProperty (ImKeyVals dVals) = "keyvals" .= dataValuesSpecs dVals
 imputeProperty (ImKeyValSequence start stop step) =
@@ -497,7 +497,7 @@ imputePropertySpecValue (ImNewValue dVal) = Just (dataValueSpec dVal)
 imputePropertySpecValue _ = Nothing
 
 
-impute_ :: [ImputeProperty] -> LabelledSpec
+impute_ :: [ImputeProperty] -> Pair
 impute_ ips = "impute" .= object (map imputeProperty ips)
 
 

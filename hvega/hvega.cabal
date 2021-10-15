@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.11.0.1
+version:             0.12.0.0
 synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
@@ -159,7 +159,7 @@ library
                        Graphics.Vega.VegaLite.Time
                        Graphics.Vega.VegaLite.Transform
   build-depends:       base >= 4.9 && < 5
-                     , aeson >= 0.11 && < 1.6
+                     , aeson >= 0.11 && < 2.1
                      , text == 1.2.*
                      , unordered-containers == 0.2.*
 
@@ -215,7 +215,7 @@ test-suite test
                        Gallery.Scatter
                        Gallery.Table
 
-  build-depends:       aeson >= 1.4.2 && < 1.6
+  build-depends:       aeson >= 1.4.2 && < 2.1
                      , aeson-pretty == 0.8.*
                      , base >= 4 && < 5
                      , bytestring == 0.10.*

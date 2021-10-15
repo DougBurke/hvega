@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
@@ -9,7 +10,11 @@ module Gallery.Label (testSpecs) where
 
 import Data.Aeson (Value(Object))
 import Data.Aeson.QQ.Simple (aesonQQ)
+#if MIN_VERSION_aeson(2, 0, 0)
+import Data.Aeson.KeyMap (empty)
+#else
 import Data.HashMap.Strict (empty)
+#endif
 
 import Graphics.Vega.VegaLite
 

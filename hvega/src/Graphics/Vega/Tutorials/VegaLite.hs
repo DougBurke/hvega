@@ -19,7 +19,7 @@ The Elm tutorial is based on the talk given by
 <https://youtu.be/9uaHRWj04D4 Wongsuphasawat et al at the 2017 Open Vis Conf>.
 
 The tutorial targets version 4 of the Vega-Lite specification and
-the functionality provided in version @0.11.0.0@ of hvega (although
+the functionality provided in version @0.12.0.0@ of hvega (although
 a number of examples could be simplified by removing the
 now-optional type information as of Vega-Lite 4.14).
 
@@ -361,7 +361,8 @@ import Graphics.Vega.VegaLite
 -- example, @elm-vegalite@ provides @pQuant n@ which in @hvega@ is the
 -- combination of @'PName' n@ and @'PmType' 'Quantitative'@ in @hvega@.
 -- The top-level functions - such as 'dataFromUrl', 'encoding', and
--- 'filter' - are generally the same.
+-- 'filter' - are generally the same. As the VegaLite schema has expanded
+-- over time the differences between the two approaches has also grown.
 --
 -- Version @0.5.0.0@ does introduce more-significant changes, in that
 -- there are now separate types for a number of functions - such as
