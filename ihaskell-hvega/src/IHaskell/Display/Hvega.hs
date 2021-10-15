@@ -3,7 +3,7 @@
 
 {-|
 Module      : IHaskell.Display.Hvega
-Copyright   : (c) Douglas Burke 2018, 2019, 2020
+Copyright   : (c) Douglas Burke 2018, 2019, 2020, 2021
 License     : BSD3
 
 Maintainer  : dburke.gw@gmail.com
