@@ -11,4 +11,4 @@ extra-deps:
 - git: https://github.com/hasufell/aeson-pretty
   commit: e902ab866bb41d990b66af3644aeb352ff7aaf6f
 
-resolver: lts-18.7
+resolver: lts-18.13

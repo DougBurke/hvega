@@ -1,0 +1,8 @@
+flags: {}
+
+packages:
+- .
+
+extra-deps: []
+
+resolver: lts-14.27
