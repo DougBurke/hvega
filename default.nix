@@ -15,7 +15,7 @@ let
   ihaskell-hvega = ps.callCabal2nix "ihaskell-hvega" (gitignore ihaskellvegaDir) {};
 
 in import "${sources.IHaskell}/release.nix" {
-  compiler = "ghc8104";
+  compiler = "ghc8107";
   nixpkgs = pkgs;
   # packages = p: [ hvega ihaskell-hvega ];
   packages = p: [ hvega ihaskell-hvega p.aeson p.aeson-pretty p.Frames p.foldl p.formatting p.microlens ];
