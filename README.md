@@ -15,8 +15,10 @@ This code is released under the BSD3 license.
 See the [hvega README](https://github.com/DougBurke/hvega/tree/main/hvega#readme)
 for more details than given here.
 
+[![Hackage](https://img.shields.io/hackage/v/hvega.svg)](https://hackage.haskell.org/package/hvega)
 [![vega-lite version](https://img.shields.io/badge/Vega--Lite-v4.15-purple.svg)](https://vega.github.io/vega-lite/)
 [![GitHub CI](https://github.com/DougBurke/hvega/workflows/hvega-CI/badge.svg)](https://github.com/DougBurke/hvega/actions)
+[![Dependencies status](https://img.shields.io/hackage-deps/v/hvega.svg)](http://packdeps.haskellers.com/feed?needle=hvega)
 
 Create [Vega-Lite](https://vega.github.io/vega-lite/) visualizations in
 Haskell. It targets version 4.15 of the Vega-Lite specification. Note that
