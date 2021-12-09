@@ -855,6 +855,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Version 0.12
          --
+         -- $update01201
          -- $update01200
          
          -- ** Version 0.11
@@ -1267,6 +1268,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01201
+-- The @0.12.0.1@ release is purely to support bytestring 0.11 when
+-- running the tests. There are no changes to the code.
 
 -- $update01200
 -- The @0.12.0.0@ release allows @hvega@ to be built with version 2.0 of the
