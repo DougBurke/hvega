@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.5.0.1
+
+Support text 2.0.
+
 ## 0.5.0.0
 
 Bump minimum supported IHaskell version to 0.10.
