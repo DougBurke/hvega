@@ -855,6 +855,7 @@ module Graphics.Vega.VegaLite
 
          -- ** Version 0.12
          --
+         -- $update01202
          -- $update01201
          -- $update01200
          
@@ -1268,6 +1269,10 @@ import qualified Graphics.Vega.VegaLite.Transform as VL
 -- $update
 -- The following section describes how to update code that used
 -- an older version of @hvega@.
+
+-- $update01202
+-- The @0.12.0.2@ release adds support for version 2.0 of the text package.
+-- There are no changes to the code.
 
 -- $update01201
 -- The @0.12.0.1@ release is purely to support bytestring 0.11 when
