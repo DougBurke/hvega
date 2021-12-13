@@ -26,18 +26,18 @@ If we have the following Vega-Lite definition:
 
 import Graphics.Vega.VegaLite
 
-vl1 = 'toVegaLite' ['description' desc, 'background' "white", 'dat' [], 'mark' 'Bar' 'barOpts', 'enc' []] where
+vl1 = 'Graphics.Vega.VegaLite.toVegaLite' ['Graphics.Vega.VegaLite.description' desc, 'Graphics.Vega.VegaLite.background' "white", dat [], 'Graphics.Vega.VegaLite.mark' 'Graphics.Vega.VegaLite.Bar' barOpts, enc []] where
     desc = "A very exciting bar chart"
 
-    dat = 'dataFromRows' ['Parse' [("start", 'FoDate' "%Y-%m-%d")]]
-          . 'dataRow' [("start", 'Str' "2011-03-25"), ("count", 'Number' 23)]
+    dat = 'Graphics.Vega.VegaLite.dataFromRows' ['Graphics.Vega.VegaLite.Parse' [("start", 'Graphics.Vega.VegaLite.FoDate' "%Y-%m-%d")]]
+          . 'Graphics.Vega.VegaLite.dataRow' [("start", 'Graphics.Vega.VegaLite.Str' "2011-03-25"), ("count", 'Graphics.Vega.VegaLite.Number' 23)]
           . dataRow [("start", Str "2011-04-02"), ("count", Number 45)]
           . dataRow [("start", Str "2011-04-12"), ("count", Number 3)]
 
-    barOpts = ['MOpacity' 0.4, 'MColor' "teal"]
+    barOpts = ['Graphics.Vega.VegaLite.MOpacity' 0.4, 'Graphics.Vega.VegaLite.MColor' "teal"]
 
-    enc = 'encoding'
-          . 'position' 'X' ['PName' "start", 'PmType' 'Temporal', 'PAxis' ['AxTitle' "Inception date"]]
+    enc = 'Graphics.Vega.VegaLite.encoding'
+          . 'Graphics.Vega.VegaLite.position' 'Graphics.Vega.VegaLite.X' ['Graphics.Vega.VegaLite.PName' "start", 'Graphics.Vega.VegaLite.PmType' 'Graphics.Vega.VegaLite.Temporal', 'Graphics.Vega.VegaLite.PAxis' ['Graphics.Vega.VegaLite.AxTitle' "Inception date"]]
           . position Y [PName "count", PmType Quantitative]
 @
 
@@ -45,7 +45,7 @@ then it can be displayed automatically in Jupyter Lab by
 
 > vlShow vl1
 
-where @vlShow@ should be imported automatically by IHaskell.
+where 'vlShow' should be imported automatically by IHaskell.
 -}
 
 module IHaskell.Display.Hvega (vlShow, VegaLiteLab) where
@@ -72,7 +72,7 @@ import IHaskell.Display (IHaskellDisplay(..), Display(..)
 --   to the @vegaEmbed@ call.
 --
 --   Note that local file access is __not__ guaranteed to work - e.g.
---   @dataFromUrl@ where the file name refers to a local file -
+--   'Graphics.Vega.VegaLite.dataFromUrl' where the file name refers to a local file -
 --   since the JavaScript @fs@ module may not be loaded.
 --
 instance IHaskellDisplay VegaLite where
@@ -133,7 +133,7 @@ vlShow = VLL
 --   a Jupyter notebook.
 --
 --   Note that local file access is __not__ guaranteed to work - e.g.
---   @dataFromUrl@ where the file name refers to a local file -
+--   'Graphics.Vega.VegaLite.dataFromUrl' where the file name refers to a local file -
 --   since the JavaScript @fs@ module may not be loaded.
 --
 --   It would be nice to create a PNG version for non-browser viewers,
