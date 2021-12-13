@@ -1,5 +1,5 @@
 name:                ihaskell-hvega
-version:             0.5.0.1
+version:             0.5.0.2
 synopsis:            IHaskell display instance for hvega types.
 description:         Support Vega-Lite visualizations in IHaskell notebooks.
 homepage:            https://github.com/DougBurke/hvega
