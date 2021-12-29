@@ -4,6 +4,11 @@
 }:
 
 let
+  # There must be a better way than this! I just want to avoid
+  # excessive compilation when using a non-standard compiler.
+  #
+  isDefaultCompiler = compiler == "ghc8107";
+
   # since we are in a sub-directory
   # gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
   gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ../.gitignore ];
@@ -21,11 +26,12 @@ let
     ];
     buildInputs = [
       pkgs.haskellPackages.cabal-install
-      pkgs.haskellPackages.haskell-language-server
       pkgs.haskellPackages.hlint
       pkgs.niv
+    ] ++ pkgs.lib.optionals isDefaultCompiler [
+      pkgs.haskellPackages.haskell-language-server
     ];
-    withHoogle = true;
+    withHoogle = isDefaultCompiler;
   };
 
   # exe = pkgs.haskell.lib.justStaticExecutables (myHaskellPackages."hvega");
