@@ -5,4 +5,4 @@ packages:
 
 extra-deps: []
 
-resolver: nightly-2022-04-23
+resolver: nightly-2022-06-15
