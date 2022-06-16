@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.12.0.3
+
+Bump to support aeson version 2.1.
+
 ## 0.12.0.2
 
 Bump to support text version 2.0. All hail our new UTF-8 rulers.
