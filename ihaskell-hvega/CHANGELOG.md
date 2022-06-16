@@ -1,6 +1,10 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.5.0.3
+
+Support aeson 2.1.
+
 ## 0.5.0.2
 
 Improve links in the haddock documentation. There are no code changes.
