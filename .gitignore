@@ -19,3 +19,6 @@ stack*yaml.lock
 # We create these from a otebook so never check them in
 notebooks/line.json.vl
 notebooks/interactive.json.vl
+
+# jupyenv or jupyter lab can create this directory
+.jupyter/
