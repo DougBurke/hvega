@@ -1,13 +1,13 @@
 { sources ? import ../nix/sources.nix
 , pkgs ? import sources.nixpkgs {}
-, compiler ? "ghc8107"
+, compiler ? "ghc928"
 }:
 
 let
   # There must be a better way than this! I just want to avoid
   # excessive compilation when using a non-standard compiler.
   #
-  isDefaultCompiler = compiler == "ghc8107";
+  isDefaultCompiler = compiler == "ghc8107";  # drop HLS for now
 
   # since we are in a sub-directory
   # gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
