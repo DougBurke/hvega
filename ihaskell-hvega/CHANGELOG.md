@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.5.0.4
+
+Support aeson 2.2. I have not been using IHaskell recently so I do
+not know if this even builds nowadays.
+
 ## 0.5.0.3
 
 Support aeson 2.1.

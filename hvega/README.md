@@ -67,7 +67,8 @@ Red Supergiant stars, which are massive enough that they will go supernova
 at some point, and so there was
 [some speculation](https://en.wikipedia.org/wiki/Betelgeuse#2019%E2%80%932020_fading)
 that we could see a "naked-eye" supernova (even though the current models
-suggest that Betelgeuse has about 100,000 more years to go before this happens).
+suggest that Betelgeuse has about 100,000 more years to go before this happens,
+and the rapid brightening in mid 2023 has also got some people's hopes up).
 This interest lead to a lot of observations added to the
 [American Association of Variable Star Observers](https://www.aavso.org/)
 database, which we are going to look at below. This example is rather-more
