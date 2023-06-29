@@ -145,13 +145,16 @@ which contains plots you can view; e.g. with
 [Vega View](https://hackage.haskell.org/package/vega-view) or
 [Vega-Desktop](https://github.com/vega/vega-desktop).
 
-The [`notebooks/` directory](https://github.com/DougBurke/hvega/tree/master/notebooks) contains a (very small, very random) sample
-of notebooks experimenting with `hvega`. I recommend using
-[Tweag I/O's jupyterWith environment](https://github.com/tweag/jupyterWith)
-to view these. At present there is support for `Jupyter notebook`,
-whereas the support for `Jupyter lab` is unfortunately limited (due
-to limitations on the current IHaskell environment and differences
-between the Jupyter Lab versions).
+The [`notebooks/`
+directory](https://github.com/DougBurke/hvega/tree/master/notebooks)
+contains a (very small, very random) sample of notebooks experimenting
+with `hvega`. I recommend using [Tweag I/O's jupyterWith
+environment](https://github.com/tweag/jupyterWith) to view these
+(although I have not been able to get this to work with the circa 2023
+changes to jupyterwith). At present there is support for `Jupyter
+notebook`, whereas the support for `Jupyter lab` is unfortunately
+limited (due to limitations on the current IHaskell environment and
+differences between the Jupyter Lab versions).
 
 There is also a
 [Data Haskell example notebook](https://github.com/DataHaskell/data-glue/blob/master/tutorials/jlab_hvega.ipynb),
@@ -160,8 +163,9 @@ which [starts here](https://www.tweag.io/posts/2019-09-20-monad-bayes-1.html).
 
 # Development
 
-I created this as a piece of procrastination, while procrastinating with
-a different task. At present I am not using it, due to lack of time. Please
-pop on over to
-[GitHub](https://github.com/DougBurke/hvega/), or ping me on Twitter
-[@doug_burke](https://twitter.com/doug_burke) if you would like to help.
+I created this as a piece of procrastination, while procrastinating
+with a different task. At present I am not using it, due to lack of
+time. Please pop on over to
+[GitHub](https://github.com/DougBurke/hvega/), or ping me on Mastodon
+[@dburke@mastodon.social](https://mastodon.social/@dburke) if you
+would like to help.

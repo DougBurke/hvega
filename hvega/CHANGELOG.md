@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.12.0.4
+
+Bump to support aeson version 2.2 (tests may require building with
+the --allower-newer=aeson option).
+
 ## 0.12.0.3
 
 Bump to support aeson version 2.1.
