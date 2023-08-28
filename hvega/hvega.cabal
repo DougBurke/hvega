@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.12.0.5
+version:             0.12.0.6
 synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
@@ -160,7 +160,7 @@ library
                        Graphics.Vega.VegaLite.Transform
   build-depends:       base >= 4.9 && < 5
                      , aeson >= 0.11 && < 2.3
-                     , text >= 1.2 && < 2.1
+                     , text >= 1.2 && < 2.2
                      , unordered-containers == 0.2.*
 
   default-language:    Haskell2010
