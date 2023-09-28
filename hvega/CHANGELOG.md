@@ -1,9 +1,14 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.12.0.7
+
+Bump to support containers version 0.7.
+
 ## 0.12.0.6
 
-Bump to support text version 2.1.
+Bump to support text version 2.1. This appears to have been un-released,
+so is a secret just between you and I.
 
 ## 0.12.0.5
 
