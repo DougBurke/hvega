@@ -3,7 +3,8 @@ For the latest version of this document, please see
 
 ## 0.5.0.5
 
-Support text 2.1 (still not using this, so does it even work?).
+Support text 2.1 and IHaskell 0.11 (I am still not using IHaskell
+so there's no guarantee this will work).
 
 ## 0.5.0.4
 
