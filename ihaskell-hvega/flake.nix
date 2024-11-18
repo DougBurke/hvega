@@ -27,7 +27,8 @@
       devShell = forAllSystems (system: let haskellPackages = nixpkgsFor.${system}.haskellPackages;
         in haskellPackages.shellFor {
           packages = p: [self.packages.${system}.ihaskell-hvega];
-          withHoogle = true;
+          # withHoogle = true;
+          withHoogle = false;
           buildInputs = with haskellPackages; [
             haskell-language-server
             hlint
