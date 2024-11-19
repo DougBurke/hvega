@@ -24,7 +24,7 @@ library
   build-depends:       base >= 4.7 && < 5
                      , aeson >= 0.11 && < 2.3
                      , hvega < 0.13
-                     , ihaskell >= 0.10 && < 0.12
+                     , ihaskell >= 0.10 && < 0.13
                      , text >= 1.2 && < 2.2
 
   default-language:    Haskell2010
