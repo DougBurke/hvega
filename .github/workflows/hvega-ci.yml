@@ -26,13 +26,13 @@ jobs:
         cabal: ["latest"]
 
         os: [ubuntu-latest]
-        ghc-version: ["9.10", "9.8", "9.6", "9.4"]
+        ghc: ["9.10", "9.8", "9.6", "9.4"]
 
         include:
           - os: macOS-latest
-            ghc-version: '9.6'
+            ghc: '9.6'
           - os: windows-latest
-            ghc-version: '9.6'
+            ghc: '9.6'
 
     steps:
       - uses: actions/checkout@v4
