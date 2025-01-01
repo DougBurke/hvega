@@ -24,22 +24,30 @@
       });
       defaultPackage = forAllSystems (system: self.packages.${system}.ihaskell-hvega);
       checks = self.packages;
-      devShell = forAllSystems (system: let haskellPackages = nixpkgsFor.${system}.haskellPackages;
+      devShell = forAllSystems (system:
+        let haskellPackages = nixpkgsFor.${system}.haskellPackages;
+            hPackages = with haskellPackages; [
+              # haskell-language-server
+              hlint
+              cabal-install
+	      ];
+            pPackages = nixpkgsFor.${system}.python3.withPackages (
+	      ps: with ps; [
+	        ipython
+	        jupyter
+	      ]);
         in haskellPackages.shellFor {
           packages = p: [self.packages.${system}.ihaskell-hvega];
           # withHoogle = true;
           withHoogle = false;
-          buildInputs = with haskellPackages; [
-            haskell-language-server
-            hlint
-            cabal-install
-          ];
+          buildInputs = hPackages ++ [pPackages];
         # Change the prompt to show that you are in a devShell
         shellHook = ''
   echo -e "*** \e[1;32mWelcome to ihaskell-hvega\e[0m ***"
   ghc --version
   cabal --version
   hlint --version
+  jupyter --version
   echo -e ""
   export PS1='ihaskell-hvega:\A \e[1;34m\w\e[0m '
 	'';
