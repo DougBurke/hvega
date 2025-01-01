@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.5.0.6
+
+Allow building with IHaskell 0.12 (still not managed to get my
+setup working so I haven't been able to actually test this).
+
 ## 0.5.0.5
 
 Support text 2.1 and IHaskell 0.11 (I am still not using IHaskell
