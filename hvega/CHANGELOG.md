@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
+## 0.12.0.8
+
+Bump to support containers version 0.8 (only needed if building the
+tests).
+
 ## 0.12.0.7
 
 Bump to support containers version 0.7.

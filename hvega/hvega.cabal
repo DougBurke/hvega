@@ -1,5 +1,5 @@
 name:                hvega
-version:             0.12.0.7
+version:             0.12.0.8
 synopsis:            Create Vega-Lite visualizations (version 4) in Haskell.
 description:         This is based on the elm-vegalite package
                      (<http://package.elm-lang.org/packages/gicentre/elm-vegalite/latest>)
@@ -10,7 +10,7 @@ license:             BSD3
 license-file:        LICENSE
 author:              Douglas Burke
 maintainer:          dburke.gw@gmail.com
-copyright:           2018-2023 Douglas Burke
+copyright:           2018-2025 Douglas Burke
 category:            Graphics
 build-type:          Simple
 extra-source-files:  README.md
@@ -219,7 +219,7 @@ test-suite test
                      , aeson-pretty == 0.8.*
                      , base
                      , bytestring >= 0.10 && < 0.13
-                     , containers >= 0.5.7 && < 0.8
+                     , containers >= 0.5.7 && < 0.9
                      , filepath
                      , tasty
                      , tasty-golden >= 2.2 && < 2.4
