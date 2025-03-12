@@ -13,8 +13,8 @@ maintainer:          dburke.gw@gmail.com
 copyright:           2018-2025 Douglas Burke
 category:            Graphics
 build-type:          Simple
+extra-doc-files:     CHANGELOG.md
 extra-source-files:  README.md
-                     CHANGELOG.md
                      stack.yaml
                      default.nix
                      shell.nix
@@ -217,7 +217,7 @@ test-suite test
 
   build-depends:       aeson >= 1.4.2
                      , aeson-pretty == 0.8.*
-                     , base
+                     , base >= 4.9 && < 5
                      , bytestring >= 0.10 && < 0.13
                      , containers >= 0.5.7 && < 0.9
                      , filepath
@@ -240,7 +240,7 @@ executable    playtutorial
   if flag(tools)
     build-depends:     aeson
                      , aeson-pretty == 0.8.*
-                     , base
+                     , base >= 4.9 && < 5
                      , bytestring
                      , directory
                      , filepath
@@ -261,7 +261,7 @@ executable    getbetelgeuse
 
   if flag(tools)
     build-depends:     aeson
-                     , base
+                     , base >= 4.9 && < 5
                      , bytestring
                      , http-conduit >= 2.3 && < 2.4
                      , tagsoup >= 0.14 && < 0.15
