@@ -1,29 +1,30 @@
+cabal-version:       2.2
+
 name:                ihaskell-hvega
-version:             0.5.0.6
+version:             0.6.0.0
 synopsis:            IHaskell display instance for hvega types.
 description:         Support Vega-Lite visualizations in IHaskell notebooks.
 homepage:            https://github.com/DougBurke/hvega
 bug-reports:         https://github.com/DougBurke/hvega/issues
-license:             BSD3
+license:             BSD-3-Clause
 license-file:        LICENSE
 author:              Douglas Burke
 maintainer:          dburke.gw@gmail.com
 copyright:           2018-2025 Douglas Burke
 category:            Development
 build-type:          Simple
+extra-doc-files:     CHANGELOG.md
 extra-source-files:  README.md
-                     CHANGELOG.md
                      stack.yaml
                      default.nix
                      shell.nix
-cabal-version:       1.18
 
 library
   hs-source-dirs:      src
   exposed-modules:     IHaskell.Display.Hvega
   build-depends:       base >= 4.7 && < 5
                      , aeson >= 0.11 && < 2.3
-                     , hvega < 0.13
+                     , hvega < 0.14
                      , ihaskell >= 0.10 && < 0.13
                      , text >= 1.2 && < 2.2
 

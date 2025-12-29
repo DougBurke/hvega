@@ -1,10 +1,18 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/hvega/CHANGELOG.md).
 
-## 0.12.0.8
+## 0.13.0.0
+
+Updated the minimum cabal version from 1.18 to 2.2. In order to
+have a consistent set of aeson packages the minimum version of
+aeson has been updated from 0.11 to 1.4.2 (as that is required to
+test the code).
 
 Bump to support containers version 0.8 (only needed if building the
 tests).
+
+There is no functional change in the code, but with the build changes
+I felt a version bump was warranted.
 
 ## 0.12.0.7
 
