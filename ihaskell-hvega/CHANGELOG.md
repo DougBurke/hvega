@@ -1,6 +1,11 @@
 For the latest version of this document, please see
 [https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md](https://github.com/DougBurke/hvega/blob/master/ihaskell-hvega/CHANGELOG.md).
 
+## 0.5.0.7
+
+Allow building with IHaskell 0.13 (this is even less tested than
+the support for IHaskell 0.12).
+
 ## 0.5.0.6
 
 Allow building with IHaskell 0.12 (still not managed to get my
