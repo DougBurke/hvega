@@ -127,19 +127,19 @@ jobs:
         run: |
           stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks
 
-      - name: List
-        working-directory: ./hvega
-        run: |
-          stack list aeson
-          stack list aeson-pretty
-          stack list base
-          stack list bytestring
-          stack list containers
-          stack list filepath
-          stack list tasty
-          stack list tasty-golden
-          stack list text
-          stack list unordered-containers
+      #- name: List
+      #  working-directory: ./hvega
+      #  run: |
+      #    stack list aeson
+      #    stack list aeson-pretty
+      #    stack list base
+      #    stack list bytestring
+      #    stack list containers
+      #    stack list filepath
+      #    stack list tasty
+      #    stack list tasty-golden
+      #    stack list text
+      #    stack list unordered-containers
 
       - name: Test
         working-directory: ./hvega
