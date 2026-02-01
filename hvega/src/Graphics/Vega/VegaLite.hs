@@ -314,6 +314,7 @@ module Graphics.Vega.VegaLite
        , VL.toHtmlFile
        , VL.toHtmlWith
        , VL.toHtmlFileWith
+       , VL.view
 
          -- * Creating the Data Specification
          --
@@ -921,6 +922,7 @@ import qualified Graphics.Vega.VegaLite.Selection as VL
 import qualified Graphics.Vega.VegaLite.Specification as VL
 import qualified Graphics.Vega.VegaLite.Time as VL
 import qualified Graphics.Vega.VegaLite.Transform as VL
+import qualified Graphics.Vega.VegaLite.View as VL
 
 
 -- Documentation
